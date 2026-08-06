@@ -21,13 +21,21 @@ upstream/
 models/*.gguf
 models/culture/
 
+# Everything under outputs/ is tracked -- the summary tables, the manifests and
+# the reports -- and so is all of figures/, the publication plates. Three
+# exceptions, none of which a reader loses anything by not receiving:
+
 # Per-prompt raw LLM responses: regenerable, and too many small files to
 # version. Inference logs are covered by the generic logs/ rule below.
-# Everything else under outputs/ (summary tables, manifests, reports) and all
-# of figures/ (the publication plates) is tracked.
 outputs/**/raw/
 
-# LaTeX build products. paper.tex itself is versioned.
+# The booktabs rendering of every report table. Each file re-encodes the CSV of
+# the same name beside it and ./run_reports.sh writes it again on demand, so
+# versioning it bought nothing and cost 6.6 MB of generated LaTeX -- enough for
+# GitHub to report this Python project as 96% TeX.
+outputs/reports/tex/
+
+# LaTeX build products.
 *.aux
 *.bbl
 *.blg

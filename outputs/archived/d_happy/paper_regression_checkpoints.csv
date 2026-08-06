@@ -1,0 +1,9 @@
+paper_table,metric,model,expected,actual,tolerance,passed
+Table 5,adjusted_r_squared,social,0.387,0.3828101327234359,0.005,True
+Table 5,adjusted_r_squared,center,0.829,0.8296718110386937,0.002,True
+Table 5,adjusted_r_squared,full,0.858,0.8566478042088467,0.002,True
+Table 5,bic_r,social,-2276.0,-2278.374425514188,10.0,True
+Table 5,bic_r,center,-3250.0,-3257.725267223137,10.0,True
+Table 5,bic_r,full,-3245.0,-3246.644520841582,10.0,True
+Table 6,f_statistic,add_social,6.73,6.44085187599223,0.5,True
+Table 6,f_statistic,add_center,2126.66,2126.3781365790687,0.5,True

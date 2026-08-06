@@ -1,0 +1,70 @@
+{
+  "artifacts": {
+    "figures/archived/d_religiousp/fig_distance_comparison.pdf": "54a93c536b078ed1ab0658b59622e0ff9141a9456e8ecef2fbd3ea852091308c",
+    "figures/archived/d_religiousp/fig_distance_comparison.png": "58808152e94a6220c3d28443e03d740645f3cc40ca744181d8d603c0bb19ba5a",
+    "figures/archived/d_religiousp/fig_full_coefficients.pdf": "c68003e70c635ade455264c2d84764cd60fa256032bfb0e896fcae81b9744a8f",
+    "figures/archived/d_religiousp/fig_full_coefficients.png": "b85f23265a6783fe973d895f38d5f6a35a9b57b70022570b126197ecec3d66f3",
+    "figures/archived/d_religiousp/fig_full_standardized_coefficients.pdf": "cae290c3150cd3b9caf135e559f8da16c5b0770c432b879a0f4ceb48dfae6650",
+    "figures/archived/d_religiousp/fig_full_standardized_coefficients.png": "51954c7efdbb8d0db861ac7f43f692adafb2a9c5af79e229983d81e965ec4ede",
+    "figures/archived/d_religiousp/fig_mds.pdf": "3d9392fcc892a79e007ac38efc818eafd731f9825f8ceaedb5b1504b1695e3e8",
+    "figures/archived/d_religiousp/fig_mds.png": "f22b702450e7f9ecccb75f9db6e0f7b660dbdce1e531a1c8ef19626047c679fc",
+    "figures/archived/d_religiousp/fig_nemd_density_quality.pdf": "2f4a3c0d9883b8a7f934614e1a2b6ce4c45c91096e199d696ea9c4a1912d832d",
+    "figures/archived/d_religiousp/fig_nemd_density_quality.png": "ab6d1d44c1e4973858bc5fa98c72f2daebe58f7335d4ceac101f6569c1cdc700",
+    "figures/archived/d_religiousp/fig_social_coefficients.pdf": "a58eaf313cd629f70fbc4184a48ed132a95247d9be3bdf3fe959b847d477aed7",
+    "figures/archived/d_religiousp/fig_social_coefficients.png": "fe62505445a6890046b5ff72082cbdb9c16575f0c71ab72055682aa387b623e7",
+    "outputs/archived/d_religiousp/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/archived/d_religiousp/f_tests.csv": "e3d40870957d1b4d52c1019721f9c1af3c382f8fbf9bce3910110bcbf4e98d03",
+    "outputs/archived/d_religiousp/full_coefficients.csv": "5d9776e58d059fe8f3a34fccdd56d15df470de1a247b9b87edfb68eef6fc7529",
+    "outputs/archived/d_religiousp/full_standardized_coefficients.csv": "e2f73e81ed477722ef6b1643a866f36ab6890c0a90b790c7eb55f56f39b954f5",
+    "outputs/archived/d_religiousp/pairwise_dispersion.csv": "4d0cef5d747dcd463c16fa561d46434aecba89966c7fc7ea86fcc9ada511194f",
+    "outputs/archived/d_religiousp/paper_regression_checkpoints.csv": "1acb84fe52723c480f61c1eb8efed7976506d9332e38293ec9ededc0d50df754",
+    "outputs/archived/d_religiousp/quality_bands.csv": "c4ade8c2849e30a384a21b5c55d0fe2be57d657c0b84f833fe90f05d19f06f5f",
+    "outputs/archived/d_religiousp/regression_fit.csv": "93d2f3a8ea932309272ddf3ced2c95322a72421b2041184d12bbb9551ed9cba9",
+    "outputs/archived/d_religiousp/response_distributions.csv": "b899f7e743f5fedabadfa01c610cb4aae099df4e351d8f3b7bee662b2514c6ba",
+    "outputs/archived/d_religiousp/social_coefficients.csv": "3ab640567a7546c73bc51b3432eda53f274aca86e02ead2ec69489a9ed5601ef",
+    "outputs/archived/d_religiousp/subpopulation_distances.csv": "9a666eb1d032977d29bf10f45b9323761e2b519e35d3bea4ea3552d6e8c92c89",
+    "outputs/archived/d_religiousp/summary_metrics.csv": "00efd5b39b5e7f0a5a717c67796856647d3b0596a937adb13abe1845acbcda6e"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-05T23:12:03.721181+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 7,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Mixtral-8x7B-v0.1.Q4_K_M",
+    "question": "d_religiousp",
+    "question_label": "Religion",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "archived"
+}

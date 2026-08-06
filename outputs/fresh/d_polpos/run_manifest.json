@@ -1,0 +1,70 @@
+{
+  "artifacts": {
+    "figures/fresh/d_polpos/fig_distance_comparison.pdf": "a0b154fbb266563cbe015202416b689c105db40b309462958107dfb1e3b8d391",
+    "figures/fresh/d_polpos/fig_distance_comparison.png": "055c494b0012982b67dff8f97c589b82a73efa69873137b38e3e7d9fc26cf1ff",
+    "figures/fresh/d_polpos/fig_full_coefficients.pdf": "aecbee03a540f0218850d8c193e3e37848be74f27a11a7261390f8d95ed76f27",
+    "figures/fresh/d_polpos/fig_full_coefficients.png": "77c9c6fab7fea8ad59b51a993c45fb0b037ae6aef21c0cfbc47051a07baafe8b",
+    "figures/fresh/d_polpos/fig_full_standardized_coefficients.pdf": "668f364c67687904f1a3379e1f153ce2e851f9edcd31f68d6eb286632beba188",
+    "figures/fresh/d_polpos/fig_full_standardized_coefficients.png": "ca7f66b66150825f2d8a6c175067db3b42db4bb30d933eb986341df6f70c4c3a",
+    "figures/fresh/d_polpos/fig_mds.pdf": "54916314ce203cf050cfef6830214aa197a914d1c0f635ea437911b9fed53b2d",
+    "figures/fresh/d_polpos/fig_mds.png": "21400ef1764834791c95d34878641118d6125f45bcaee621606b49796a6f6977",
+    "figures/fresh/d_polpos/fig_nemd_density_quality.pdf": "5a7d3199fe027e2617df7a400ff0a0a3fa646e8eca843e608a4905c4225b5801",
+    "figures/fresh/d_polpos/fig_nemd_density_quality.png": "e8e3eef172180e3f380c82ea141d0d37be619da5dc3ad8cf6a6f7d100466574b",
+    "figures/fresh/d_polpos/fig_social_coefficients.pdf": "9f52d4c7ba5e88d24f2ec7f98df68ee6e678f4179d9b1346e3720d146fd59db7",
+    "figures/fresh/d_polpos/fig_social_coefficients.png": "6a8c4b17cd834e50cb414257505aaa25dc8b1826eb26585469baf3abd6024970",
+    "outputs/fresh/d_polpos/center_holdouts.csv": "36cd5791e1de98aca8342d017eab98b37dd13706701fb826f9054a2c5d149425",
+    "outputs/fresh/d_polpos/f_tests.csv": "d2c968393598669d50270365f44b25bbcb8fa8d7d3e1e5efbfc4b1b694cce9aa",
+    "outputs/fresh/d_polpos/full_coefficients.csv": "1f3cff8988917239612fbe4a407cc96576051e2b58c9173f9375b5a8a432a85d",
+    "outputs/fresh/d_polpos/full_standardized_coefficients.csv": "c349f3f39da945e7e3169f1bcccaf95f99d2b934f4863c8ca5d80fe98902b0ae",
+    "outputs/fresh/d_polpos/pairwise_dispersion.csv": "01dafc077cf6e0024e600db2547a3ff00a843dccf3ffbd84c63edb953199ef64",
+    "outputs/fresh/d_polpos/paper_regression_checkpoints.csv": "834765b3a130161644b67914a1e050f72d0639f7c20a5a9343332e366af42d86",
+    "outputs/fresh/d_polpos/quality_bands.csv": "767eb7f09e9bb0abc36c9f0e00d5344ae460f12067c65f8b7540ab5bf9d91662",
+    "outputs/fresh/d_polpos/regression_fit.csv": "13468716ff5351560e7dd86dfdd7489c7069e5cfa43c2f2e7bd8bb0ad3870fba",
+    "outputs/fresh/d_polpos/response_distributions.csv": "b970a89af3194852a489c6ff44c16fb6c642dda7131ed642c72a8c11cd5d957f",
+    "outputs/fresh/d_polpos/social_coefficients.csv": "d8d4e3c388b3ae610a3e2c7899ab78561ea28c95df808fa963d5ea016546787c",
+    "outputs/fresh/d_polpos/subpopulation_distances.csv": "3e0ec131c6ae0e03688f1c94f5cb8736b1d4b63e245b8c1eff15259dac44790b",
+    "outputs/fresh/d_polpos/summary_metrics.csv": "5852077e2da1098455abec3e52ddc3ac2dad130c784455fae12737899927e057"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-06T07:08:36.754940+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Mixtral-8x7B-v0.1.Q4_K_M",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "fresh"
+}

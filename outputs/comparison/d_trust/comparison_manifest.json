@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-06T05:16:59.377330+00:00",
+  "parameters": {
+    "methods": [
+      "NTP",
+      "FA"
+    ],
+    "alpha": 0.05,
+    "equivalence_margin_nEMD": 0.005,
+    "cluster": "country-survey wave",
+    "permutations_requested_for_monte_carlo": 100000,
+    "seed": 20240110
+  },
+  "inputs": {
+    "archived_directory": "/home/neemias/machine-bias-reproduction/outputs/archived/d_trust",
+    "fresh_directory": "/home/neemias/machine-bias-reproduction/outputs/fresh/d_trust",
+    "sha256": {
+      "archived/subpopulation_distances.csv": "cdc8134ea9384087cef04b8e019462755c776dfa52167c24a9b41c5b2147ca9c",
+      "archived/summary_metrics.csv": "b14f7c7d7c60b5106b05e3c3cc9dc6c733fb3bd60806015d187871cf425d84f0",
+      "archived/response_distributions.csv": "77e571cc2ec79aae1b77ff604f6d8a5e53ce5c111ea84847939f581144f65d11",
+      "archived/regression_fit.csv": "7dcbed58f7d914763ddf15344ae0abb654a4d18e704fd9e766925fcd57cae073",
+      "archived/social_coefficients.csv": "15bca1cc5357ea050459bf3ab3f0901b13ab7b1a76932c68a821492e4889a28f",
+      "archived/full_coefficients.csv": "3400934606c98460e37eb9616e1b902bbb9c933545a9a56b7253a47fc292e4b6",
+      "archived/full_standardized_coefficients.csv": "1e67c86b181f453899b1ba2ecc96a783031c3c4fdb8944571636c6a0bbea431c",
+      "fresh/subpopulation_distances.csv": "8b2381388f4683ba1e0a51d04626f3f6f9ce3cc94b12dc885350ba0ab09e24f0",
+      "fresh/summary_metrics.csv": "83cf3d37d67de1469312c59650479cb76d31d55ee3fe3088cae46bf0ba18b3ed",
+      "fresh/response_distributions.csv": "9a96cf9ae51e78a85812bc83991c1a2863f04215bb222b4921d80b60b6c03bc2",
+      "fresh/regression_fit.csv": "0f0af4c299b0582f39d12dc5ad0b62b0d24e621598e64313cafd99fbccd24b46",
+      "fresh/social_coefficients.csv": "aea953f6239a7abc0ff3faed8ad4ffaff1fe563cfe8f7868a0b7e9a5618d8264",
+      "fresh/full_coefficients.csv": "eaa80919e1e891e97cac7c9385e3ddf4fbeb3b38fc4a2232bcc95ab4847e7421",
+      "fresh/full_standardized_coefficients.csv": "44180fb0fc46226577fca3d5363a297c3ee5f1203b1ba8166befbf152955c0d0"
+    }
+  },
+  "artifacts": {
+    "statistical_tests.csv": "e9695b6cbca23d50365133f4e5bafcc0ebc4f48cd704e466b93ab7f5035d10d6",
+    "subpopulation_differences.csv": "6afaa8ec44c68256d45724d318d6569db4cdb1eb9c000cd6d0fe96af9734a85d",
+    "cluster_differences.csv": "1eb47e33f19b890df7a6e9918d3179439e6d6ecc8b43db6351d2e7cf2f1505dc",
+    "summary_metric_changes.csv": "f79179e4ed52bef47efeab75ecbb120f3fbf39d4760eb4fd78ae11680605f4c1",
+    "response_distribution_changes.csv": "a1aa02030b31e2456310a62a7f2a34f0cbd4b57910648a4ee144f585526f6ec6",
+    "regression_fit_changes.csv": "42313838fd024218c36b22957157ca773a4438b7082bca316ef7accd24f564c4",
+    "coefficient_changes.csv": "a7e50c320e9f094f45972e48e13729aa7e90ff8207222cd83350982191211292",
+    "fig_archived_vs_fresh.png": "cffab6e72a8493967f9cbe2f3ad6a132d12a5665fdd000897b3a57182c149f12",
+    "fig_archived_vs_fresh.pdf": "f470453de5d1ff0e01427cc568b79b2c79566dc8ad865553a08a3f2a751e21ac"
+  }
+}

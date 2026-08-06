@@ -1,0 +1,70 @@
+{
+  "artifacts": {
+    "figures/fresh/d_religiousp/fig_distance_comparison.pdf": "5696c85c8a46cc6bbb87c6b71a1cd45409801f6aa02f078ff4630b9c327348ca",
+    "figures/fresh/d_religiousp/fig_distance_comparison.png": "a3b481d7fcff8bf582434c7b6f9cf56849887f6131db5d9b70acc8fc592e7254",
+    "figures/fresh/d_religiousp/fig_full_coefficients.pdf": "c0921b187a4be401f97c49bb01f56f39b7dfa96c107d1161687c6d458cb0c532",
+    "figures/fresh/d_religiousp/fig_full_coefficients.png": "c94c1b053f0f9d9f52773958fc59997b863488381c982edacff0c574ec78ff8e",
+    "figures/fresh/d_religiousp/fig_full_standardized_coefficients.pdf": "fea75e97ee8e639452be3335b9ba0a180f5f670f8379ebb819b54d014e5049ea",
+    "figures/fresh/d_religiousp/fig_full_standardized_coefficients.png": "6bcf71a2a41e2da8568a5823a832b8238249b6f60a9280f4aa5d4335762a9cc7",
+    "figures/fresh/d_religiousp/fig_mds.pdf": "a6a189a61f005f030a5eb21af1afca5ad169e4c5c9a81e530614a8d567947b5e",
+    "figures/fresh/d_religiousp/fig_mds.png": "9f85cf07bb0bedf3a990e61e3a6f58e52be91df4b9cd894cbdcb12dcb519c2a4",
+    "figures/fresh/d_religiousp/fig_nemd_density_quality.pdf": "38d004a87ef381db9121b6e40effd95369c7759f5db7155b9c404802d9b0bd47",
+    "figures/fresh/d_religiousp/fig_nemd_density_quality.png": "fe1472dc9fb1315f2a111be5e6c2a7821b7f56d621470c139bbf8ddceb73895a",
+    "figures/fresh/d_religiousp/fig_social_coefficients.pdf": "b040b76217ee24b138a0dd6c99b62f8c7b20d2ad8da10b6007b440030e3dc17c",
+    "figures/fresh/d_religiousp/fig_social_coefficients.png": "9b267f903f11086e12dbd13659b097015df31440c2053a877a6396162cc6ea77",
+    "outputs/fresh/d_religiousp/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/fresh/d_religiousp/f_tests.csv": "180e74e4cee6593cc9a667e32a5bec4f2e47c3096441c6c8701c0240e5467612",
+    "outputs/fresh/d_religiousp/full_coefficients.csv": "2e5958e81a2e778beb6e30844dc8aeb06049ff9dec994af44db13d15b15830f5",
+    "outputs/fresh/d_religiousp/full_standardized_coefficients.csv": "f230d322c266c07947a964c28b6e1c7ef9a0290df75f484c7d2678d52487632c",
+    "outputs/fresh/d_religiousp/pairwise_dispersion.csv": "be7b8d2812f7480feb0d7719ae1186a57aff0b745381d2efe2846c0aedc2045a",
+    "outputs/fresh/d_religiousp/paper_regression_checkpoints.csv": "93f5b90d83fd2b79550c113f8cbd6602a10108429b597e16458ea2979ff48813",
+    "outputs/fresh/d_religiousp/quality_bands.csv": "c4c67fa809598c99047ac7203ad578f23f940822622d0048c65c4391c2d5881b",
+    "outputs/fresh/d_religiousp/regression_fit.csv": "1f3fe83c5af1d5a6e153cd6113f956e8f251cc5c65d9a70b637dfc04a10a5061",
+    "outputs/fresh/d_religiousp/response_distributions.csv": "4e3f81a17e94ec27ad141c1df57d34807451c1eb0e2509c17e9ef364b02b2586",
+    "outputs/fresh/d_religiousp/social_coefficients.csv": "f63d89ea66c27d3af4b13098b7e4a3e410f48ea7990984cc043326813ce8fb45",
+    "outputs/fresh/d_religiousp/subpopulation_distances.csv": "dc5696055ed8c5ec042d474af0111b3ac5867831243492419658d05dd110e3e9",
+    "outputs/fresh/d_religiousp/summary_metrics.csv": "d31b650377256fbe32438b7bb2aa0890962fda2256bc94eb1c405937054c1973"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-06T04:51:07.868651+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 7,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Mixtral-8x7B-v0.1.Q4_K_M",
+    "question": "d_religiousp",
+    "question_label": "Religion",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "fresh"
+}

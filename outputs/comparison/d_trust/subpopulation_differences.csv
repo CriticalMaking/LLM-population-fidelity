@@ -1,0 +1,1375 @@
+method,subpopulation,nEMD_archived,nEMD_fresh,country_wave,change_fresh_minus_archived,direction
+FA,Australia 1995 Female 25-34 High Homemaker Married,0.223604826546003,0.1274509803921568,Australia 1995,-0.0961538461538462,fresh_better
+FA,Australia 1995 Female 25-34 High Working Cohabiting,0.2272727272727273,0.1818181818181818,Australia 1995,-0.0454545454545455,fresh_better
+FA,Australia 1995 Female 25-34 High Working Divorced or separated,0.0903271692745378,0.0412517780938834,Australia 1995,-0.0490753911806544,fresh_better
+FA,Australia 1995 Female 25-34 High Working Married,0.0476190476190476,0.1666666666666666,Australia 1995,0.119047619047619,fresh_worse
+FA,Australia 1995 Female 25-34 High Working Single,0.0526315789473684,0.0,Australia 1995,-0.0526315789473684,fresh_better
+FA,Australia 1995 Female 25-34 Middle Homemaker Divorced or separated,0.4857142857142857,0.2857142857142858,Australia 1995,-0.1999999999999999,fresh_better
+FA,Australia 1995 Female 25-34 Middle Homemaker Married,0.3448275862068966,0.1724137931034483,Australia 1995,-0.1724137931034483,fresh_better
+FA,Australia 1995 Female 25-34 Middle Working Divorced or separated,0.2857142857142858,0.0476190476190476,Australia 1995,-0.2380952380952382,fresh_better
+FA,Australia 1995 Female 25-34 Middle Working Married,0.4186046511627907,0.1162790697674419,Australia 1995,-0.3023255813953488,fresh_better
+FA,Australia 1995 Female 35-44 High Working Married,0.18,0.18,Australia 1995,0.0,unchanged
+FA,Australia 1995 Female 35-44 Middle Homemaker Married,0.1862068965517241,0.0471264367816092,Australia 1995,-0.1390804597701149,fresh_better
+FA,Australia 1995 Female 35-44 Middle Working Married,0.28,0.02,Australia 1995,-0.26,fresh_better
+FA,Australia 1995 Female 45-54 High Homemaker Married,0.0454545454545455,0.1818181818181818,Australia 1995,0.1363636363636363,fresh_worse
+FA,Australia 1995 Female 45-54 High Retired Divorced or separated,0.0294117647058823,0.1470588235294118,Australia 1995,0.1176470588235295,fresh_worse
+FA,Australia 1995 Female 45-54 High Working Married,0.0526315789473684,0.1842105263157895,Australia 1995,0.1315789473684211,fresh_worse
+FA,Australia 1995 Female 45-54 Middle Homemaker Married,0.4827586206896551,0.2413793103448275,Australia 1995,-0.24137931034482757,fresh_better
+FA,Australia 1995 Female 45-54 Middle Working Divorced or separated,0.3611111111111111,0.0,Australia 1995,-0.3611111111111111,fresh_better
+FA,Australia 1995 Female 45-54 Middle Working Married,0.3333333333333333,0.2352941176470588,Australia 1995,-0.09803921568627452,fresh_better
+FA,Australia 1995 Female 55-64 Middle Retired Married,0.3793103448275862,0.2413793103448275,Australia 1995,-0.13793103448275867,fresh_better
+FA,Australia 1995 Female 65-74 Middle Retired Married,0.3058823529411765,0.0666666666666667,Australia 1995,-0.2392156862745098,fresh_better
+FA,Australia 1995 Female 65-74 Middle Retired Widowed,0.2572055137844611,0.0115914786967418,Australia 1995,-0.2456140350877193,fresh_better
+FA,Australia 1995 Female 75+ Middle Retired Widowed,0.131578947368421,0.1315789473684211,Australia 1995,1.1102230246251565e-16,unchanged
+FA,Australia 1995 Female <25 High Student Single,0.4039408866995075,0.3004926108374384,Australia 1995,-0.10344827586206912,fresh_better
+FA,Australia 1995 Female <25 High Working Single,0.4101694915254237,0.1268361581920904,Australia 1995,-0.2833333333333333,fresh_better
+FA,Australia 1995 Female <25 Middle Student Single,0.4083947816222348,0.106069200226886,Australia 1995,-0.3023255813953488,fresh_better
+FA,Australia 1995 Female <25 Middle Working Single,0.4385964912280702,0.2105263157894736,Australia 1995,-0.22807017543859662,fresh_better
+FA,Australia 1995 Male 25-34 High Working Cohabiting,0.1363636363636363,0.090909090909091,Australia 1995,-0.0454545454545453,fresh_better
+FA,Australia 1995 Male 25-34 High Working Married,0.198781838316722,0.1522702104097453,Australia 1995,-0.04651162790697669,fresh_better
+FA,Australia 1995 Male 25-34 High Working Single,0.1636500754147813,0.028657616892911,Australia 1995,-0.1349924585218703,fresh_better
+FA,Australia 1995 Male 25-34 Middle Working Cohabiting,0.3043478260869565,0.1956521739130435,Australia 1995,-0.108695652173913,fresh_better
+FA,Australia 1995 Male 25-34 Middle Working Married,0.3161683277962347,0.0094130675526025,Australia 1995,-0.3067552602436322,fresh_better
+FA,Australia 1995 Male 25-34 Middle Working Single,0.3044096728307254,0.0938833570412517,Australia 1995,-0.2105263157894737,fresh_better
+FA,Australia 1995 Male 35-44 High Working Married,0.2057971014492755,0.0200828157349897,Australia 1995,-0.18571428571428578,fresh_better
+FA,Australia 1995 Male 35-44 Middle NA Married,0.2764705882352941,0.1336134453781513,Australia 1995,-0.14285714285714277,fresh_better
+FA,Australia 1995 Male 35-44 Middle Working Married,0.2711864406779661,0.0847457627118645,Australia 1995,-0.1864406779661016,fresh_better
+FA,Australia 1995 Male 45-54 High Working Cohabiting,0.2453781512605042,0.0453781512605042,Australia 1995,-0.19999999999999998,fresh_better
+FA,Australia 1995 Male 45-54 High Working Married,0.0911747516072472,0.0572764465225014,Australia 1995,-0.0338983050847458,fresh_better
+FA,Australia 1995 Male 45-54 Middle Retired Married,0.1818181818181818,0.1818181818181818,Australia 1995,0.0,unchanged
+FA,Australia 1995 Male 45-54 Middle Working Married,0.2702104097452936,0.0841638981173865,Australia 1995,-0.18604651162790709,fresh_better
+FA,Australia 1995 Male 55-64 Middle Retired Divorced or separated,0.4871794871794872,0.2564102564102565,Australia 1995,-0.23076923076923073,fresh_better
+FA,Australia 1995 Male 55-64 Middle Retired Married,0.1653439153439153,0.0582010582010582,Australia 1995,-0.1071428571428571,fresh_better
+FA,Australia 1995 Male 55-64 Middle Working Married,0.1785714285714286,0.0714285714285715,Australia 1995,-0.10714285714285711,fresh_better
+FA,Australia 1995 Male 65-74 High Retired Married,0.3157894736842105,0.1052631578947368,Australia 1995,-0.21052631578947373,fresh_better
+FA,Australia 1995 Male 65-74 Middle Retired Married,0.3392857142857143,0.125,Australia 1995,-0.2142857142857143,fresh_better
+FA,Australia 1995 Male 65-74 Middle Retired Widowed,0.4134693877551021,0.1534693877551021,Australia 1995,-0.26,fresh_better
+FA,Australia 1995 Male 75+ Middle Retired Married,0.24,0.0,Australia 1995,-0.24,fresh_better
+FA,Australia 1995 Male <25 High Student Single,0.2532467532467532,0.0194805194805195,Australia 1995,-0.23376623376623373,fresh_better
+FA,Australia 1995 Male <25 High Working Single,0.2105263157894737,0.0701754385964913,Australia 1995,-0.1403508771929824,fresh_better
+FA,Australia 1995 Male <25 Middle Student Single,0.4423076923076923,0.1153846153846154,Australia 1995,-0.32692307692307687,fresh_better
+FA,Australia 1995 Male <25 Middle Working Single,0.4848484848484848,0.2121212121212121,Australia 1995,-0.2727272727272727,fresh_better
+FA,Australia 2005 Female 25-34 High Homemaker Married,0.131578947368421,0.1842105263157896,Australia 2005,0.05263157894736861,fresh_worse
+FA,Australia 2005 Female 25-34 High Working Cohabiting,0.1071428571428573,0.0714285714285716,Australia 2005,-0.0357142857142857,fresh_better
+FA,Australia 2005 Female 25-34 High Working Married,0.159090909090909,0.0681818181818181,Australia 2005,-0.09090909090909091,fresh_better
+FA,Australia 2005 Female 25-34 High Working Single,0.3611111111111111,0.0833333333333334,Australia 2005,-0.2777777777777777,fresh_better
+FA,Australia 2005 Female 35-44 High Working Divorced or separated,0.3,0.0333333333333334,Australia 2005,-0.2666666666666666,fresh_better
+FA,Australia 2005 Female 35-44 High Working Married,0.1509433962264151,0.0943396226415094,Australia 2005,-0.05660377358490569,fresh_better
+FA,Australia 2005 Female 35-44 Middle Working Married,0.0799999999999999,0.04,Australia 2005,-0.039999999999999904,fresh_better
+FA,Australia 2005 Female 45-54 High Working Married,0.0663461538461538,0.2413461538461538,Australia 2005,0.175,fresh_worse
+FA,Australia 2005 Female 45-54 Middle Retired Single,0.0,0.05,Australia 2005,0.05,fresh_worse
+FA,Australia 2005 Female 45-54 Middle Working Married,0.1052631578947368,0.0789473684210526,Australia 2005,-0.026315789473684195,fresh_better
+FA,Australia 2005 Female 55-64 High Working Married,0.1739130434782608,0.2173913043478261,Australia 2005,0.0434782608695653,fresh_worse
+FA,Australia 2005 Female 55-64 Middle Homemaker Married,0.40625,0.125,Australia 2005,-0.28125,fresh_better
+FA,Australia 2005 Female 55-64 Middle Retired Divorced or separated,0.1666666666666668,0.0,Australia 2005,-0.1666666666666668,fresh_better
+FA,Australia 2005 Female 55-64 Middle Retired Married,0.4947089947089948,0.4232804232804233,Australia 2005,-0.07142857142857151,fresh_better
+FA,Australia 2005 Female 55-64 Middle Working Married,0.0,0.2173913043478261,Australia 2005,0.2173913043478261,fresh_worse
+FA,Australia 2005 Female 65-74 High Retired Married,0.0517241379310344,0.0344827586206896,Australia 2005,-0.0172413793103448,fresh_better
+FA,Australia 2005 Female 65-74 High Retired Widowed,0.0575880758807588,0.1863143631436314,Australia 2005,0.1287262872628726,fresh_worse
+FA,Australia 2005 Female 65-74 Middle Retired Married,0.2554347826086957,0.0054347826086956,Australia 2005,-0.25000000000000006,fresh_better
+FA,Australia 2005 Female 65-74 Middle Retired Widowed,0.0781512605042017,0.1352941176470589,Australia 2005,0.057142857142857204,fresh_worse
+FA,Australia 2005 Female 75+ Middle Retired Widowed,0.1103896103896103,0.0714285714285714,Australia 2005,-0.038961038961038905,fresh_better
+FA,Australia 2005 Female <25 High Working Single,0.1323529411764706,0.1029411764705882,Australia 2005,-0.029411764705882387,fresh_better
+FA,Australia 2005 Male 25-34 High Working Married,0.1463414634146341,0.0975609756097561,Australia 2005,-0.04878048780487801,fresh_better
+FA,Australia 2005 Male 25-34 High Working Single,0.1428571428571429,0.0,Australia 2005,-0.1428571428571429,fresh_better
+FA,Australia 2005 Male 35-44 High Working Married,0.0588235294117647,0.0,Australia 2005,-0.0588235294117647,fresh_better
+FA,Australia 2005 Male 35-44 Middle Working Married,0.0810810810810811,0.1081081081081081,Australia 2005,0.027027027027027,fresh_worse
+FA,Australia 2005 Male 35-44 Middle Working Single,0.5238095238095238,0.1904761904761904,Australia 2005,-0.3333333333333334,fresh_better
+FA,Australia 2005 Male 45-54 High Working Divorced or separated,0.1272727272727272,0.0363636363636363,Australia 2005,-0.09090909090909091,fresh_better
+FA,Australia 2005 Male 45-54 High Working Married,0.0245192307692307,0.0706730769230769,Australia 2005,0.0461538461538462,fresh_worse
+FA,Australia 2005 Male 45-54 Middle Working Married,0.2004429678848284,0.0321151716500553,Australia 2005,-0.16832779623477312,fresh_better
+FA,Australia 2005 Male 55-64 High Retired Married,0.0091787439613528,0.1647342995169082,Australia 2005,0.15555555555555542,fresh_worse
+FA,Australia 2005 Male 55-64 High Working Married,0.06,0.0999999999999999,Australia 2005,0.0399999999999999,fresh_worse
+FA,Australia 2005 Male 55-64 Middle Working Married,0.642292490118577,0.2509881422924901,Australia 2005,-0.3913043478260869,fresh_better
+FA,Australia 2005 Male 65-74 High Retired Married,0.05,0.0499999999999999,Australia 2005,-1.0408340855860843e-16,unchanged
+FA,Australia 2005 Male 65-74 Middle Retired Married,0.1716611172770995,0.0773214946355901,Australia 2005,-0.09433962264150941,fresh_better
+FA,Australia 2005 Male 75+ Middle Retired Married,0.1416666666666667,0.0583333333333333,Australia 2005,-0.0833333333333334,fresh_better
+FA,Australia 2005 Male <25 High Working Single,0.2,0.0,Australia 2005,-0.2,fresh_better
+FA,Australia 2018 Female 25-34 High Working Cohabiting,0.0,0.0689655172413793,Australia 2018,0.0689655172413793,fresh_worse
+FA,Australia 2018 Female 25-34 High Working Married,0.0625,0.0625,Australia 2018,0.0,unchanged
+FA,Australia 2018 Female 25-34 High Working Single,0.0606060606060606,0.0606060606060607,Australia 2018,9.71445146547012e-17,unchanged
+FA,Australia 2018 Female 25-34 Middle Working Married,0.3235294117647059,0.1764705882352941,Australia 2018,-0.1470588235294118,fresh_better
+FA,Australia 2018 Female 35-44 High Homemaker Married,0.0212765957446809,0.1063829787234043,Australia 2018,0.0851063829787234,fresh_worse
+FA,Australia 2018 Female 35-44 High Working Cohabiting,0.075,0.125,Australia 2018,0.05,fresh_worse
+FA,Australia 2018 Female 35-44 High Working Married,0.1276595744680851,0.0425531914893617,Australia 2018,-0.08510638297872339,fresh_better
+FA,Australia 2018 Female 35-44 High Working Single,0.0,0.4074074074074074,Australia 2018,0.4074074074074074,fresh_worse
+FA,Australia 2018 Female 35-44 Middle Homemaker Married,0.2244897959183673,0.1020408163265306,Australia 2018,-0.12244897959183669,fresh_better
+FA,Australia 2018 Female 35-44 Middle Working Married,0.0344827586206897,0.1379310344827586,Australia 2018,0.1034482758620689,fresh_worse
+FA,Australia 2018 Female 45-54 High Working Married,0.1636363636363637,0.0727272727272727,Australia 2018,-0.090909090909091,fresh_better
+FA,Australia 2018 Female 45-54 Middle Working Cohabiting,0.1515151515151515,0.0909090909090909,Australia 2018,-0.060606060606060594,fresh_better
+FA,Australia 2018 Female 45-54 Middle Working Married,0.0454545454545454,0.0454545454545455,Australia 2018,9.71445146547012e-17,unchanged
+FA,Australia 2018 Female 55-64 High Working Divorced or separated,0.2162162162162162,0.2972972972972973,Australia 2018,0.08108108108108111,fresh_worse
+FA,Australia 2018 Female 55-64 High Working Married,0.1765389082462253,0.0098722415795587,Australia 2018,-0.1666666666666666,fresh_better
+FA,Australia 2018 Female 55-64 Middle Retired Married,0.21875,0.09375,Australia 2018,-0.125,fresh_better
+FA,Australia 2018 Female 55-64 Middle Working Divorced or separated,0.2000000000000001,0.15,Australia 2018,-0.0500000000000001,fresh_better
+FA,Australia 2018 Female 55-64 Middle Working Married,0.1320754716981132,0.1698113207547169,Australia 2018,0.03773584905660368,fresh_worse
+FA,Australia 2018 Female 55-64 Middle Working Widowed,0.0,0.2857142857142858,Australia 2018,0.2857142857142858,fresh_worse
+FA,Australia 2018 Female 65-74 High Retired Married,0.1892473118279571,0.4795698924731183,Australia 2018,0.29032258064516125,fresh_worse
+FA,Australia 2018 Female 65-74 High Retired Widowed,0.2,0.3875,Australia 2018,0.1875,fresh_worse
+FA,Australia 2018 Female 65-74 Low Retired Married,0.2997448979591837,0.0063775510204081,Australia 2018,-0.2933673469387756,fresh_better
+FA,Australia 2018 Female 65-74 Middle Retired Divorced or separated,0.0251491901108269,0.1035805626598466,Australia 2018,0.07843137254901969,fresh_worse
+FA,Australia 2018 Female 65-74 Middle Retired Married,0.1515151515151515,0.2121212121212121,Australia 2018,0.06060606060606061,fresh_worse
+FA,Australia 2018 Female 65-74 Middle Retired Widowed,0.0645161290322581,0.064516129032258,Australia 2018,-1.1102230246251565e-16,unchanged
+FA,Australia 2018 Female 75+ Low Retired Widowed,0.0256916996047431,0.08300395256917,Australia 2018,0.057312252964426894,fresh_worse
+FA,Australia 2018 Female 75+ Middle Retired Married,0.238095238095238,0.1428571428571429,Australia 2018,-0.0952380952380951,fresh_better
+FA,Australia 2018 Female 75+ Middle Retired Widowed,0.12,0.12,Australia 2018,0.0,unchanged
+FA,Australia 2018 Female <25 Middle Student Single,0.3783783783783784,0.0810810810810811,Australia 2018,-0.2972972972972973,fresh_better
+FA,Australia 2018 Female <25 Middle Working Single,0.0,0.064516129032258,Australia 2018,0.064516129032258,fresh_worse
+FA,Australia 2018 Male 25-34 High Working Married,0.2285714285714287,0.3142857142857145,Australia 2018,0.0857142857142858,fresh_worse
+FA,Australia 2018 Male 25-34 High Working Single,0.1290322580645161,0.064516129032258,Australia 2018,-0.0645161290322581,fresh_better
+FA,Australia 2018 Male 35-44 High Working Married,0.0564516129032258,0.2439516129032258,Australia 2018,0.1875,fresh_worse
+FA,Australia 2018 Male 35-44 Middle Working Married,0.1470588235294118,0.0588235294117647,Australia 2018,-0.0882352941176471,fresh_better
+FA,Australia 2018 Male 45-54 High Working Married,0.0454545454545455,0.1818181818181819,Australia 2018,0.1363636363636364,fresh_worse
+FA,Australia 2018 Male 45-54 Middle Working Married,0.0714285714285716,0.2142857142857144,Australia 2018,0.1428571428571428,fresh_worse
+FA,Australia 2018 Male 45-54 Middle Working Single,0.1147540983606558,0.1147540983606558,Australia 2018,0.0,unchanged
+FA,Australia 2018 Male 55-64 High Unemployed Married,0.1904761904761905,0.0952380952380953,Australia 2018,-0.09523809523809519,fresh_better
+FA,Australia 2018 Male 55-64 High Working Married,0.0181818181818181,0.1454545454545455,Australia 2018,0.1272727272727274,fresh_worse
+FA,Australia 2018 Male 55-64 Middle Working Divorced or separated,0.1,0.0,Australia 2018,-0.1,fresh_better
+FA,Australia 2018 Male 55-64 Middle Working Married,0.1631016042780749,0.072192513368984,Australia 2018,-0.09090909090909091,fresh_better
+FA,Australia 2018 Male 65-74 High Retired Divorced or separated,0.0,0.2424242424242425,Australia 2018,0.2424242424242425,fresh_worse
+FA,Australia 2018 Male 65-74 High Retired Married,0.0952380952380952,0.1666666666666666,Australia 2018,0.0714285714285714,fresh_worse
+FA,Australia 2018 Male 65-74 Low Retired Married,0.2820512820512821,0.1339031339031339,Australia 2018,-0.1481481481481482,fresh_better
+FA,Australia 2018 Male 65-74 Middle Retired Divorced or separated,0.3613445378151261,0.0470588235294118,Australia 2018,-0.3142857142857143,fresh_better
+FA,Australia 2018 Male 65-74 Middle Retired Married,0.0,0.2191780821917809,Australia 2018,0.2191780821917809,fresh_worse
+FA,Australia 2018 Male 75+ High Retired Married,0.1994301994301994,0.0142450142450142,Australia 2018,-0.1851851851851852,fresh_better
+FA,Australia 2018 Male 75+ Low Retired Widowed,0.0,0.1304347826086956,Australia 2018,0.1304347826086956,fresh_worse
+FA,Australia 2018 Male 75+ Middle Retired Married,0.3043478260869565,0.0434782608695653,Australia 2018,-0.2608695652173912,fresh_better
+FA,Australia 2018 Male <25 Middle Student Single,0.2272727272727273,0.1818181818181818,Australia 2018,-0.0454545454545455,fresh_better
+FA,Germany 1997 Female 25-34 High Student Cohabiting,0.1390804597701149,0.189080459770115,Germany 1997,0.0500000000000001,fresh_worse
+FA,Germany 1997 Female 25-34 High Working Cohabiting,0.0280970625798213,0.1443167305236271,Germany 1997,0.11621966794380578,fresh_worse
+FA,Germany 1997 Female 25-34 High Working Married,0.1262626262626263,0.154040404040404,Germany 1997,0.027777777777777707,fresh_worse
+FA,Germany 1997 Female 25-34 High Working Single,0.2691860465116279,0.0563953488372093,Germany 1997,-0.2127906976744186,fresh_better
+FA,Germany 1997 Female 25-34 Middle Homemaker Married,0.5355102040816326,0.2355102040816327,Germany 1997,-0.29999999999999993,fresh_better
+FA,Germany 1997 Female 25-34 Middle NA Married,0.3896296296296296,0.1674074074074074,Germany 1997,-0.2222222222222222,fresh_better
+FA,Germany 1997 Female 25-34 Middle Working Married,0.4462406588378832,0.3257587311270398,Germany 1997,-0.12048192771084343,fresh_better
+FA,Germany 1997 Female 25-34 Middle Working Single,0.1724137931034483,0.0,Germany 1997,-0.1724137931034483,fresh_better
+FA,Germany 1997 Female 35-44 High Working Divorced or separated,0.1505747126436782,0.0827586206896552,Germany 1997,-0.067816091954023,fresh_better
+FA,Germany 1997 Female 35-44 High Working Married,0.2668825161887143,0.0966697502312674,Germany 1997,-0.1702127659574469,fresh_better
+FA,Germany 1997 Female 35-44 Middle Unemployed Divorced or separated,0.3530778164924506,0.1149825783972125,Germany 1997,-0.23809523809523814,fresh_better
+FA,Germany 1997 Female 35-44 Middle Working Divorced or separated,0.2094155844155845,0.0665584415584416,Germany 1997,-0.1428571428571429,fresh_better
+FA,Germany 1997 Female 35-44 Middle Working Married,0.3895405669599219,0.1622678396871946,Germany 1997,-0.2272727272727273,fresh_better
+FA,Germany 1997 Female 45-54 Middle Homemaker Married,0.0,0.1071428571428572,Germany 1997,0.1071428571428572,fresh_worse
+FA,Germany 1997 Female 45-54 Middle Unemployed Married,0.4902882205513785,0.349937343358396,Germany 1997,-0.1403508771929825,fresh_better
+FA,Germany 1997 Female 45-54 Middle Working Married,0.2653061224489796,0.1020408163265306,Germany 1997,-0.163265306122449,fresh_better
+FA,Germany 1997 Female 55-64 High Retired Married,0.0684210526315789,0.131578947368421,Germany 1997,0.0631578947368421,fresh_worse
+FA,Germany 1997 Female 55-64 Middle Retired Married,0.4909090909090909,0.1454545454545455,Germany 1997,-0.3454545454545454,fresh_better
+FA,Germany 1997 Female 55-64 Middle Retired Widowed,0.3636363636363636,0.1212121212121212,Germany 1997,-0.24242424242424238,fresh_better
+FA,Germany 1997 Female 65-74 High Retired Widowed,0.2238095238095238,0.4142857142857143,Germany 1997,0.19047619047619052,fresh_worse
+FA,Germany 1997 Female 65-74 Low Retired Widowed,0.4782608695652174,0.2608695652173914,Germany 1997,-0.217391304347826,fresh_better
+FA,Germany 1997 Female 65-74 Middle Retired Divorced or separated,0.5714285714285714,0.0952380952380952,Germany 1997,-0.47619047619047616,fresh_better
+FA,Germany 1997 Female 65-74 Middle Retired Married,0.4782608695652174,0.2173913043478261,Germany 1997,-0.2608695652173913,fresh_better
+FA,Germany 1997 Female 65-74 Middle Retired Widowed,0.2777777777777778,0.2222222222222222,Germany 1997,-0.05555555555555558,fresh_better
+FA,Germany 1997 Female 75+ Middle Retired Widowed,0.2504201680672269,0.0352941176470589,Germany 1997,-0.215126050420168,fresh_better
+FA,Germany 1997 Female <25 High Student Single,0.352832512315271,0.3700738916256159,Germany 1997,0.017241379310344862,fresh_worse
+FA,Germany 1997 Female <25 High Working Single,0.0388888888888889,0.1611111111111111,Germany 1997,0.12222222222222219,fresh_worse
+FA,Germany 1997 Female <25 Middle Working Single,0.3934837092731829,0.2030075187969924,Germany 1997,-0.1904761904761905,fresh_better
+FA,Germany 1997 Male 25-34 High Student Single,0.2619047619047619,0.0714285714285714,Germany 1997,-0.19047619047619052,fresh_better
+FA,Germany 1997 Male 25-34 High Working Married,0.3152173913043479,0.1485507246376813,Germany 1997,-0.1666666666666666,fresh_better
+FA,Germany 1997 Male 25-34 High Working Single,0.2048517520215633,0.0441374663072777,Germany 1997,-0.16071428571428562,fresh_better
+FA,Germany 1997 Male 25-34 Middle Unemployed Single,0.331578947368421,0.168421052631579,Germany 1997,-0.16315789473684197,fresh_better
+FA,Germany 1997 Male 25-34 Middle Working Cohabiting,0.4521739130434783,0.2782608695652174,Germany 1997,-0.17391304347826092,fresh_better
+FA,Germany 1997 Male 25-34 Middle Working Married,0.3404558404558404,0.2293447293447294,Germany 1997,-0.11111111111111097,fresh_better
+FA,Germany 1997 Male 25-34 Middle Working Single,0.3337837837837838,0.2587837837837837,Germany 1997,-0.07500000000000012,fresh_better
+FA,Germany 1997 Male 35-44 High Working Married,0.1516793066088841,0.0108342361863489,Germany 1997,-0.1408450704225352,fresh_better
+FA,Germany 1997 Male 35-44 Middle Unemployed Married,0.348404255319149,0.2234042553191489,Germany 1997,-0.12500000000000008,fresh_better
+FA,Germany 1997 Male 35-44 Middle Working Divorced or separated,0.3620199146514936,0.1778093883357041,Germany 1997,-0.1842105263157895,fresh_better
+FA,Germany 1997 Male 35-44 Middle Working Married,0.3272727272727272,0.0,Germany 1997,-0.3272727272727272,fresh_better
+FA,Germany 1997 Male 45-54 High Working Married,0.3747474747474748,0.1202020202020202,Germany 1997,-0.2545454545454546,fresh_better
+FA,Germany 1997 Male 45-54 Middle Working Married,0.4529220779220779,0.1562187812187813,Germany 1997,-0.2967032967032966,fresh_better
+FA,Germany 1997 Male 55-64 High Retired Married,0.2083333333333334,0.1666666666666666,Germany 1997,-0.041666666666666796,fresh_better
+FA,Germany 1997 Male 55-64 Middle Retired Married,0.5487804878048781,0.3780487804878049,Germany 1997,-0.1707317073170732,fresh_better
+FA,Germany 1997 Male 65-74 High Retired Married,0.5172413793103449,0.3448275862068966,Germany 1997,-0.1724137931034483,fresh_better
+FA,Germany 1997 Male 65-74 Middle Retired Married,0.3905141843971633,0.1821808510638298,Germany 1997,-0.20833333333333348,fresh_better
+FA,Germany 1997 Male 65-74 Middle Retired Widowed,0.3529411764705882,0.0588235294117647,Germany 1997,-0.2941176470588235,fresh_better
+FA,Germany 1997 Male <25 High Student Cohabiting,0.2967032967032968,0.1538461538461538,Germany 1997,-0.14285714285714302,fresh_better
+FA,Germany 1997 Male <25 High Student Single,0.0492610837438424,0.0886699507389163,Germany 1997,0.0394088669950739,fresh_worse
+FA,Germany 1997 Male <25 Middle Working Single,0.5183823529411766,0.2536764705882353,Germany 1997,-0.26470588235294135,fresh_better
+FA,Germany 2006 Female 25-34 High Homemaker Married,0.2719696969696971,0.1469696969696969,Germany 2006,-0.1250000000000002,fresh_better
+FA,Germany 2006 Female 25-34 High Working Single,0.1401098901098902,0.217032967032967,Germany 2006,0.07692307692307682,fresh_worse
+FA,Germany 2006 Female 25-34 Middle Homemaker Married,0.3114224137931034,0.0926724137931034,Germany 2006,-0.21875000000000003,fresh_better
+FA,Germany 2006 Female 25-34 Middle Working Married,0.4521739130434783,0.1913043478260869,Germany 2006,-0.2608695652173914,fresh_better
+FA,Germany 2006 Female 25-34 Middle Working Single,0.2926136363636363,0.1714015151515151,Germany 2006,-0.12121212121212119,fresh_better
+FA,Germany 2006 Female 35-44 High Working Married,0.1825396825396826,0.0813492063492063,Germany 2006,-0.10119047619047632,fresh_better
+FA,Germany 2006 Female 35-44 Middle Unemployed Married,0.4723320158102768,0.1679841897233202,Germany 2006,-0.3043478260869566,fresh_better
+FA,Germany 2006 Female 35-44 Middle Working Cohabiting,0.2222222222222223,0.1388888888888889,Germany 2006,-0.0833333333333334,fresh_better
+FA,Germany 2006 Female 35-44 Middle Working Divorced or separated,0.2956521739130434,0.0521739130434782,Germany 2006,-0.24347826086956517,fresh_better
+FA,Germany 2006 Female 35-44 Middle Working Married,0.3274828767123288,0.0946061643835616,Germany 2006,-0.23287671232876717,fresh_better
+FA,Germany 2006 Female 45-54 High Working Married,0.4313725490196078,0.1372549019607843,Germany 2006,-0.2941176470588235,fresh_better
+FA,Germany 2006 Female 45-54 Middle Homemaker Married,0.2916666666666667,0.1416666666666667,Germany 2006,-0.15,fresh_better
+FA,Germany 2006 Female 45-54 Middle Unemployed Divorced or separated,0.3839899937460913,0.2864290181363352,Germany 2006,-0.09756097560975607,fresh_better
+FA,Germany 2006 Female 45-54 Middle Unemployed Married,0.2964426877470356,0.2964426877470356,Germany 2006,0.0,unchanged
+FA,Germany 2006 Female 45-54 Middle Working Divorced or separated,0.2608695652173913,0.0869565217391304,Germany 2006,-0.1739130434782609,fresh_better
+FA,Germany 2006 Female 45-54 Middle Working Married,0.3212951432129514,0.1706102117061021,Germany 2006,-0.15068493150684928,fresh_better
+FA,Germany 2006 Female 55-64 Low Retired Married,0.3761904761904762,0.0761904761904762,Germany 2006,-0.3,fresh_better
+FA,Germany 2006 Female 55-64 Low Retired Widowed,0.2266666666666668,0.0666666666666667,Germany 2006,-0.1600000000000001,fresh_better
+FA,Germany 2006 Female 55-64 Middle Homemaker Married,0.3205741626794258,0.0023923444976077,Germany 2006,-0.31818181818181807,fresh_better
+FA,Germany 2006 Female 55-64 Middle Retired Married,0.3555555555555556,0.2444444444444444,Germany 2006,-0.11111111111111122,fresh_better
+FA,Germany 2006 Female 55-64 Middle Retired Widowed,0.408695652173913,0.1913043478260869,Germany 2006,-0.2173913043478261,fresh_better
+FA,Germany 2006 Female 55-64 Middle Working Married,0.456140350877193,0.2180451127819549,Germany 2006,-0.2380952380952381,fresh_better
+FA,Germany 2006 Female 65-74 High Retired Married,0.5394736842105263,0.1894736842105263,Germany 2006,-0.35000000000000003,fresh_better
+FA,Germany 2006 Female 65-74 Low Retired Married,0.4279069767441861,0.2186046511627907,Germany 2006,-0.2093023255813954,fresh_better
+FA,Germany 2006 Female 65-74 Low Retired Widowed,0.3213859020310635,0.1600955794504183,Germany 2006,-0.16129032258064518,fresh_better
+FA,Germany 2006 Female 65-74 Middle Retired Divorced or separated,0.5,0.0,Germany 2006,-0.5,fresh_better
+FA,Germany 2006 Female 65-74 Middle Retired Married,0.1310463121783876,0.0871355060034305,Germany 2006,-0.043910806174957115,fresh_better
+FA,Germany 2006 Female 65-74 Middle Retired Widowed,0.3603174603174603,0.0619047619047619,Germany 2006,-0.2984126984126984,fresh_better
+FA,Germany 2006 Female 75+ Low Retired Widowed,0.2532833020637899,0.2045028142589118,Germany 2006,-0.04878048780487809,fresh_better
+FA,Germany 2006 Female 75+ Middle Retired Widowed,0.3763736263736264,0.0521978021978022,Germany 2006,-0.32417582417582425,fresh_better
+FA,Germany 2006 Female <25 High Student Single,0.1081871345029241,0.0292397660818714,Germany 2006,-0.0789473684210527,fresh_better
+FA,Germany 2006 Female <25 Middle Student Single,0.2719298245614036,0.1140350877192983,Germany 2006,-0.15789473684210528,fresh_better
+FA,Germany 2006 Female <25 Middle Working Single,0.4333333333333333,0.2833333333333333,Germany 2006,-0.14999999999999997,fresh_better
+FA,Germany 2006 Male 25-34 High Working Single,0.1553884711779449,0.1077694235588972,Germany 2006,-0.047619047619047714,fresh_better
+FA,Germany 2006 Male 25-34 Middle Working Married,0.1302521008403361,0.0350140056022408,Germany 2006,-0.09523809523809529,fresh_better
+FA,Germany 2006 Male 25-34 Middle Working Single,0.3154761904761904,0.1488095238095238,Germany 2006,-0.1666666666666666,fresh_better
+FA,Germany 2006 Male 35-44 High Working Married,0.1680602006688964,0.0142140468227425,Germany 2006,-0.1538461538461539,fresh_better
+FA,Germany 2006 Male 35-44 Middle Working Married,0.2982978723404255,0.0217021276595744,Germany 2006,-0.2765957446808511,fresh_better
+FA,Germany 2006 Male 45-54 High Working Married,0.238479262672811,0.1094470046082949,Germany 2006,-0.1290322580645161,fresh_better
+FA,Germany 2006 Male 45-54 Middle Unemployed Married,0.3648459383753501,0.1736694677871149,Germany 2006,-0.19117647058823523,fresh_better
+FA,Germany 2006 Male 45-54 Middle Working Divorced or separated,0.2764227642276423,0.2032520325203253,Germany 2006,-0.07317073170731697,fresh_better
+FA,Germany 2006 Male 45-54 Middle Working Married,0.3527149321266968,0.117420814479638,Germany 2006,-0.23529411764705882,fresh_better
+FA,Germany 2006 Male 55-64 High Retired Married,0.0416666666666666,0.0833333333333334,Germany 2006,0.041666666666666796,fresh_worse
+FA,Germany 2006 Male 55-64 High Working Married,0.0741758241758241,0.0741758241758241,Germany 2006,0.0,unchanged
+FA,Germany 2006 Male 55-64 Middle Retired Married,0.2911111111111111,0.0874074074074074,Germany 2006,-0.2037037037037037,fresh_better
+FA,Germany 2006 Male 55-64 Middle Working Married,0.1258581235697941,0.0045766590389016,Germany 2006,-0.12128146453089249,fresh_better
+FA,Germany 2006 Male 65-74 High Retired Married,0.3031539888682746,0.1213358070500927,Germany 2006,-0.1818181818181819,fresh_better
+FA,Germany 2006 Male 65-74 Low Retired Married,0.4823170731707317,0.2140243902439024,Germany 2006,-0.2682926829268293,fresh_better
+FA,Germany 2006 Male 65-74 Middle Retired Married,0.3283864396915467,0.190455405208788,Germany 2006,-0.13793103448275867,fresh_better
+FA,Germany 2006 Male 65-74 Middle Retired Single,0.260545905707196,0.0620347394540944,Germany 2006,-0.19851116625310158,fresh_better
+FA,Germany 2006 Male 65-74 Middle Retired Widowed,0.3593073593073593,0.1307359307359307,Germany 2006,-0.2285714285714286,fresh_better
+FA,Germany 2006 Male 75+ Middle Retired Married,0.2309090909090909,0.0709090909090909,Germany 2006,-0.16,fresh_better
+FA,Germany 2006 Male <25 High Student Single,0.1723076923076922,0.2123076923076923,Germany 2006,0.04000000000000012,fresh_worse
+FA,Germany 2006 Male <25 Middle Student Single,0.4563307493540052,0.2563307493540052,Germany 2006,-0.2,fresh_better
+FA,Germany 2006 Male <25 Middle Working Single,0.1363636363636364,0.0,Germany 2006,-0.1363636363636364,fresh_better
+FA,Germany 2018 Female 25-34 High Working Cohabiting,0.0271739130434782,0.0271739130434782,Germany 2018,0.0,unchanged
+FA,Germany 2018 Female 25-34 Middle Working Cohabiting,0.4772727272727273,0.2954545454545454,Germany 2018,-0.18181818181818188,fresh_better
+FA,Germany 2018 Female 25-34 Middle Working Single,0.4317375886524823,0.0150709219858156,Germany 2018,-0.4166666666666667,fresh_better
+FA,Germany 2018 Female 35-44 High Homemaker Married,0.15625,0.15625,Germany 2018,0.0,unchanged
+FA,Germany 2018 Female 35-44 High Working Married,0.0554187192118226,0.2278325123152709,Germany 2018,0.17241379310344832,fresh_worse
+FA,Germany 2018 Female 35-44 Middle Working Married,0.2154440154440155,0.0532818532818533,Germany 2018,-0.1621621621621622,fresh_better
+FA,Germany 2018 Female 45-54 High Working Married,0.095529699938763,0.0312308634415187,Germany 2018,-0.0642988364972443,fresh_better
+FA,Germany 2018 Female 45-54 High Working Single,0.0434227330779056,0.0434227330779056,Germany 2018,0.0,unchanged
+FA,Germany 2018 Female 45-54 Middle Working Divorced or separated,0.3333333333333333,0.1388888888888889,Germany 2018,-0.19444444444444442,fresh_better
+FA,Germany 2018 Female 45-54 Middle Working Married,0.131578947368421,0.0263157894736842,Germany 2018,-0.1052631578947368,fresh_better
+FA,Germany 2018 Female 55-64 Middle Homemaker Married,0.2222222222222223,0.0222222222222222,Germany 2018,-0.2000000000000001,fresh_better
+FA,Germany 2018 Female 55-64 Middle Working Married,0.1686909581646424,0.0917678812415654,Germany 2018,-0.07692307692307701,fresh_better
+FA,Germany 2018 Female 65-74 High Retired Widowed,0.0692599620493359,0.166034155597723,Germany 2018,0.0967741935483871,fresh_worse
+FA,Germany 2018 Female 65-74 Low Retired Married,0.2682926829268294,0.1707317073170733,Germany 2018,-0.0975609756097561,fresh_better
+FA,Germany 2018 Female 65-74 Middle Retired Married,0.1564927857935627,0.1265260821309656,Germany 2018,-0.0299667036625971,fresh_better
+FA,Germany 2018 Female 65-74 Middle Retired Widowed,0.15625,0.34375,Germany 2018,0.1875,fresh_worse
+FA,Germany 2018 Female 75+ Low Retired Widowed,0.2758620689655172,0.2758620689655172,Germany 2018,0.0,unchanged
+FA,Germany 2018 Female 75+ Middle Retired Married,0.2857142857142857,0.1428571428571429,Germany 2018,-0.1428571428571428,fresh_better
+FA,Germany 2018 Female 75+ Middle Retired Widowed,0.0344827586206897,0.1379310344827586,Germany 2018,0.1034482758620689,fresh_worse
+FA,Germany 2018 Female <25 Middle Student Single,0.0072100313479623,0.0761755485893417,Germany 2018,0.06896551724137939,fresh_worse
+FA,Germany 2018 Male 25-34 High Working Married,0.0494505494505494,0.2637362637362638,Germany 2018,0.2142857142857144,fresh_worse
+FA,Germany 2018 Male 25-34 High Working Single,0.1786833855799374,0.2392894461859979,Germany 2018,0.0606060606060605,fresh_worse
+FA,Germany 2018 Male 25-34 Middle Student Cohabiting,0.1428571428571428,0.1071428571428572,Germany 2018,-0.03571428571428559,fresh_better
+FA,Germany 2018 Male 25-34 Middle Student Single,0.0331262939958592,0.20703933747412,Germany 2018,0.1739130434782608,fresh_worse
+FA,Germany 2018 Male 25-34 Middle Working Married,0.28125,0.15625,Germany 2018,-0.125,fresh_better
+FA,Germany 2018 Male 25-34 Middle Working Single,0.2696577243293247,0.1632747456059204,Germany 2018,-0.10638297872340433,fresh_better
+FA,Germany 2018 Male 35-44 High Working Married,0.0646153846153846,0.1800000000000001,Germany 2018,0.1153846153846155,fresh_worse
+FA,Germany 2018 Male 35-44 Middle Working Married,0.3290780141843971,0.2226950354609929,Germany 2018,-0.10638297872340419,fresh_better
+FA,Germany 2018 Male 45-54 High Working Married,0.0497539639147076,0.0658829961727721,Germany 2018,0.016129032258064502,fresh_worse
+FA,Germany 2018 Male 45-54 Middle Working Divorced or separated,0.5,0.3333333333333333,Germany 2018,-0.16666666666666669,fresh_better
+FA,Germany 2018 Male 45-54 Middle Working Married,0.1379571248423708,0.1081967213114754,Germany 2018,-0.029760403530895402,fresh_better
+FA,Germany 2018 Male 55-64 High Working Married,0.0493506493506493,0.0207792207792207,Germany 2018,-0.0285714285714286,fresh_better
+FA,Germany 2018 Male 55-64 Middle Working Married,0.2885375494071146,0.3320158102766798,Germany 2018,0.04347826086956519,fresh_worse
+FA,Germany 2018 Male 65-74 High Retired Divorced or separated,0.15625,0.0625,Germany 2018,-0.09375,fresh_better
+FA,Germany 2018 Male 65-74 High Retired Married,0.0916666666666666,0.194047619047619,Germany 2018,0.10238095238095239,fresh_worse
+FA,Germany 2018 Male 65-74 Middle Retired Married,0.3898305084745763,0.1355932203389831,Germany 2018,-0.2542372881355932,fresh_better
+FA,Germany 2018 Male 75+ High Retired Married,0.1666666666666666,0.0666666666666667,Germany 2018,-0.09999999999999991,fresh_better
+FA,Germany 2018 Male 75+ Middle Retired Married,0.2540229885057471,0.1206896551724138,Germany 2018,-0.1333333333333333,fresh_better
+FA,Germany 2018 Male 75+ Middle Retired Widowed,0.2,0.0888888888888889,Germany 2018,-0.1111111111111111,fresh_better
+FA,Germany 2018 Male <25 Middle Student Single,0.3014112903225806,0.0514112903225806,Germany 2018,-0.25,fresh_better
+FA,Mexico 1996 Female 25-34 High Homemaker Married,0.507563025210084,0.4218487394957984,Mexico 1996,-0.08571428571428563,fresh_better
+FA,Mexico 1996 Female 25-34 High Working Cohabiting,0.1433823529411765,0.0036764705882352,Mexico 1996,-0.1397058823529413,fresh_better
+FA,Mexico 1996 Female 25-34 High Working Married,0.4469696969696971,0.3863636363636363,Mexico 1996,-0.060606060606060774,fresh_better
+FA,Mexico 1996 Female 25-34 High Working Single,0.2283333333333334,0.1883333333333333,Mexico 1996,-0.04000000000000009,fresh_better
+FA,Mexico 1996 Female 25-34 Low Homemaker Married,0.5,0.1818181818181818,Mexico 1996,-0.31818181818181823,fresh_better
+FA,Mexico 1996 Female 25-34 Middle Homemaker Married,0.2477827050997783,0.0022172949002217,Mexico 1996,-0.24556541019955658,fresh_better
+FA,Mexico 1996 Female 25-34 Middle Unemployed Married,0.3295019157088122,0.260536398467433,Mexico 1996,-0.06896551724137923,fresh_better
+FA,Mexico 1996 Female 25-34 Middle Working Divorced or separated,0.2229885057471264,0.0229885057471265,Mexico 1996,-0.1999999999999999,fresh_better
+FA,Mexico 1996 Female 25-34 Middle Working Married,0.2789739749110655,0.1505336079385884,Mexico 1996,-0.12844036697247713,fresh_better
+FA,Mexico 1996 Female 25-34 Middle Working Single,0.2575250836120402,0.1421404682274247,Mexico 1996,-0.11538461538461547,fresh_better
+FA,Mexico 1996 Female 35-44 High Working Married,0.5303030303030303,0.4053030303030303,Mexico 1996,-0.125,fresh_better
+FA,Mexico 1996 Female 35-44 Middle Homemaker Married,0.3900862068965517,0.1713362068965517,Mexico 1996,-0.21875,fresh_better
+FA,Mexico 1996 Female 45-54 Low Homemaker Married,0.4725868725868726,0.2023166023166024,Mexico 1996,-0.2702702702702702,fresh_better
+FA,Mexico 1996 Female 45-54 Low Homemaker Widowed,0.0769230769230769,0.1923076923076923,Mexico 1996,0.11538461538461539,fresh_worse
+FA,Mexico 1996 Female 45-54 Middle Homemaker Married,0.0797619047619048,0.0083333333333334,Mexico 1996,-0.0714285714285714,fresh_better
+FA,Mexico 1996 Female 55-64 Middle Working Widowed,0.5227272727272727,0.1136363636363636,Mexico 1996,-0.4090909090909091,fresh_better
+FA,Mexico 1996 Female <25 High Student Single,0.3806451612903226,0.2516129032258065,Mexico 1996,-0.12903225806451613,fresh_better
+FA,Mexico 1996 Female <25 High Working Single,0.35,0.1416666666666666,Mexico 1996,-0.20833333333333337,fresh_better
+FA,Mexico 1996 Female <25 Middle Homemaker Married,0.2427536231884058,0.2844202898550725,Mexico 1996,0.04166666666666671,fresh_worse
+FA,Mexico 1996 Female <25 Middle Student Single,0.363986013986014,0.0367132867132867,Mexico 1996,-0.32727272727272727,fresh_better
+FA,Mexico 1996 Female <25 Middle Working Single,0.3181818181818182,0.1818181818181818,Mexico 1996,-0.13636363636363638,fresh_better
+FA,Mexico 1996 Male 25-34 High Unemployed Married,0.4583333333333334,0.25,Mexico 1996,-0.20833333333333343,fresh_better
+FA,Mexico 1996 Male 25-34 High Working Cohabiting,0.3526315789473684,0.168421052631579,Mexico 1996,-0.1842105263157894,fresh_better
+FA,Mexico 1996 Male 25-34 High Working Married,0.4074074074074074,0.2592592592592592,Mexico 1996,-0.1481481481481482,fresh_better
+FA,Mexico 1996 Male 25-34 High Working Single,0.3851389676687465,0.292115711854793,Mexico 1996,-0.09302325581395349,fresh_better
+FA,Mexico 1996 Male 25-34 Middle Working Cohabiting,0.2998776009791922,0.0440636474908201,Mexico 1996,-0.2558139534883721,fresh_better
+FA,Mexico 1996 Male 25-34 Middle Working Married,0.4138266796494644,0.198636806231743,Mexico 1996,-0.2151898734177214,fresh_better
+FA,Mexico 1996 Male 25-34 Middle Working Single,0.1333333333333333,0.0333333333333333,Mexico 1996,-0.1,fresh_better
+FA,Mexico 1996 Male 35-44 High Working Married,0.4919354838709677,0.3356854838709677,Mexico 1996,-0.15625,fresh_better
+FA,Mexico 1996 Male 35-44 Middle Working Married,0.5172413793103448,0.3448275862068965,Mexico 1996,-0.17241379310344823,fresh_better
+FA,Mexico 1996 Male 35-44 Middle Working Single,0.1992277992277992,0.1722007722007722,Mexico 1996,-0.027027027027027,fresh_better
+FA,Mexico 1996 Male 45-54 High Working Married,0.3451612903225807,0.4741935483870968,Mexico 1996,0.12903225806451613,fresh_worse
+FA,Mexico 1996 Male 45-54 Low Unemployed Divorced or separated,0.2927272727272727,0.0127272727272727,Mexico 1996,-0.28,fresh_better
+FA,Mexico 1996 Male 45-54 Low Working Married,0.4923404255319149,0.2523404255319149,Mexico 1996,-0.24000000000000005,fresh_better
+FA,Mexico 1996 Male 45-54 Middle Working Married,0.6156976744186048,0.3366279069767443,Mexico 1996,-0.2790697674418605,fresh_better
+FA,Mexico 1996 Male <25 High Student Single,0.4437735849056603,0.2362264150943396,Mexico 1996,-0.20754716981132074,fresh_better
+FA,Mexico 1996 Male <25 High Working Single,0.4810606060606061,0.5227272727272727,Mexico 1996,0.04166666666666663,fresh_worse
+FA,Mexico 1996 Male <25 Middle Student Single,0.3467023172905525,0.1408199643493762,Mexico 1996,-0.20588235294117632,fresh_better
+FA,Mexico 1996 Male <25 Middle Unemployed Single,0.5,0.0555555555555555,Mexico 1996,-0.44444444444444453,fresh_better
+FA,Mexico 1996 Male <25 Middle Working Single,0.1585714285714286,0.0557142857142857,Mexico 1996,-0.10285714285714291,fresh_better
+FA,Mexico 2005 Female 25-34 High Homemaker Married,0.55,0.375,Mexico 2005,-0.17500000000000004,fresh_better
+FA,Mexico 2005 Female 25-34 High Working Married,0.4782608695652174,0.5652173913043479,Mexico 2005,0.08695652173913049,fresh_worse
+FA,Mexico 2005 Female 25-34 High Working Single,0.40625,0.21875,Mexico 2005,-0.1875,fresh_better
+FA,Mexico 2005 Female 25-34 Low Homemaker Married,0.380952380952381,0.380952380952381,Mexico 2005,0.0,unchanged
+FA,Mexico 2005 Female 25-34 Middle Homemaker Cohabiting,0.5833333333333333,0.3055555555555556,Mexico 2005,-0.2777777777777777,fresh_better
+FA,Mexico 2005 Female 25-34 Middle Homemaker Married,0.5,0.3369565217391305,Mexico 2005,-0.1630434782608695,fresh_better
+FA,Mexico 2005 Female 25-34 Middle Working Married,0.4736842105263157,0.4210526315789473,Mexico 2005,-0.05263157894736842,fresh_better
+FA,Mexico 2005 Female 35-44 High Homemaker Married,0.3214285714285714,0.1428571428571429,Mexico 2005,-0.1785714285714285,fresh_better
+FA,Mexico 2005 Female 35-44 High Working Married,0.2334693877551022,0.1534693877551021,Mexico 2005,-0.0800000000000001,fresh_better
+FA,Mexico 2005 Female 35-44 Middle Homemaker Cohabiting,0.4074074074074074,0.2592592592592593,Mexico 2005,-0.14814814814814808,fresh_better
+FA,Mexico 2005 Female 35-44 Middle Homemaker Married,0.607843137254902,0.3725490196078431,Mexico 2005,-0.23529411764705893,fresh_better
+FA,Mexico 2005 Female 35-44 Middle Working Divorced or separated,0.3043478260869565,0.3478260869565217,Mexico 2005,0.04347826086956519,fresh_worse
+FA,Mexico 2005 Female 45-54 Low Homemaker Married,0.6666666666666667,0.3333333333333333,Mexico 2005,-0.3333333333333334,fresh_better
+FA,Mexico 2005 Female 45-54 Middle Homemaker Married,0.5142450142450142,0.329059829059829,Mexico 2005,-0.18518518518518523,fresh_better
+FA,Mexico 2005 Female 55-64 Low Homemaker Married,0.6296296296296295,0.3333333333333333,Mexico 2005,-0.2962962962962962,fresh_better
+FA,Mexico 2005 Female 55-64 Middle Homemaker Married,0.75,0.35,Mexico 2005,-0.4,fresh_better
+FA,Mexico 2005 Female 65-74 Low Homemaker Widowed,0.2413793103448276,0.0344827586206896,Mexico 2005,-0.206896551724138,fresh_better
+FA,Mexico 2005 Female 65-74 Middle Retired Widowed,0.3044354838709677,0.0080645161290322,Mexico 2005,-0.2963709677419355,fresh_better
+FA,Mexico 2005 Female <25 High Student Single,0.2304409672830726,0.1251778093883357,Mexico 2005,-0.10526315789473689,fresh_better
+FA,Mexico 2005 Female <25 High Working Single,0.3783783783783784,0.2162162162162162,Mexico 2005,-0.1621621621621622,fresh_better
+FA,Mexico 2005 Female <25 Middle Homemaker Single,0.52,0.24,Mexico 2005,-0.28,fresh_better
+FA,Mexico 2005 Female NA Low Homemaker Cohabiting,0.2689393939393939,0.2083333333333333,Mexico 2005,-0.060606060606060635,fresh_better
+FA,Mexico 2005 Female NA Low Homemaker Married,0.3903654485049834,0.2043189368770765,Mexico 2005,-0.1860465116279069,fresh_better
+FA,Mexico 2005 Male 25-34 High Working Married,0.4313725490196078,0.3444160272804775,Mexico 2005,-0.08695652173913032,fresh_better
+FA,Mexico 2005 Male 25-34 High Working Single,0.5675675675675675,0.1351351351351352,Mexico 2005,-0.43243243243243235,fresh_better
+FA,Mexico 2005 Male 25-34 Middle Working Cohabiting,0.375,0.2916666666666667,Mexico 2005,-0.08333333333333331,fresh_better
+FA,Mexico 2005 Male 25-34 Middle Working Married,0.4614019520851818,0.3389529724933453,Mexico 2005,-0.12244897959183654,fresh_better
+FA,Mexico 2005 Male 25-34 Middle Working Single,0.4,0.3666666666666667,Mexico 2005,-0.033333333333333326,fresh_better
+FA,Mexico 2005 Male 35-44 High Working Married,0.5490196078431373,0.3529411764705883,Mexico 2005,-0.196078431372549,fresh_better
+FA,Mexico 2005 Male 35-44 Middle Working Cohabiting,0.5517241379310345,0.3448275862068966,Mexico 2005,-0.2068965517241379,fresh_better
+FA,Mexico 2005 Male 35-44 Middle Working Married,0.4878048780487805,0.3170731707317074,Mexico 2005,-0.1707317073170731,fresh_better
+FA,Mexico 2005 Male 45-54 High Working Married,0.574468085106383,0.2765957446808511,Mexico 2005,-0.29787234042553196,fresh_better
+FA,Mexico 2005 Male 45-54 Low Working Cohabiting,0.6521739130434783,0.1304347826086956,Mexico 2005,-0.5217391304347827,fresh_better
+FA,Mexico 2005 Male 45-54 Low Working Married,0.4358974358974359,0.3846153846153846,Mexico 2005,-0.05128205128205132,fresh_better
+FA,Mexico 2005 Male 45-54 Middle Unemployed Married,0.4074074074074074,0.2592592592592593,Mexico 2005,-0.14814814814814808,fresh_better
+FA,Mexico 2005 Male 45-54 Middle Working Married,0.5714285714285715,0.4571428571428572,Mexico 2005,-0.11428571428571432,fresh_better
+FA,Mexico 2005 Male 55-64 Low Unemployed Married,0.6000000000000001,0.3,Mexico 2005,-0.3000000000000001,fresh_better
+FA,Mexico 2005 Male 55-64 Low Working Married,0.3503893214682982,0.28587319243604,Mexico 2005,-0.06451612903225823,fresh_better
+FA,Mexico 2005 Male 55-64 Middle Working Married,0.375,0.25,Mexico 2005,-0.125,fresh_better
+FA,Mexico 2005 Male 55-64 Middle Working Single,0.4482758620689654,0.2758620689655172,Mexico 2005,-0.17241379310344823,fresh_better
+FA,Mexico 2005 Male <25 High Student Single,0.4318181818181819,0.2954545454545455,Mexico 2005,-0.13636363636363635,fresh_better
+FA,Mexico 2005 Male <25 High Working Single,0.3488372093023256,0.3488372093023256,Mexico 2005,0.0,unchanged
+FA,Mexico 2005 Male <25 Middle Student Single,0.4761904761904762,0.3333333333333333,Mexico 2005,-0.1428571428571429,fresh_better
+FA,Mexico 2005 Male <25 Middle Working Married,0.375,0.5833333333333333,Mexico 2005,0.20833333333333326,fresh_worse
+FA,Mexico 2005 Male <25 Middle Working Single,0.4666666666666667,0.1333333333333334,Mexico 2005,-0.33333333333333326,fresh_better
+FA,Mexico 2018 Female 25-34 High Homemaker Married,0.6521739130434783,0.391304347826087,Mexico 2018,-0.2608695652173913,fresh_better
+FA,Mexico 2018 Female 25-34 High Working Married,0.4523809523809524,0.4285714285714286,Mexico 2018,-0.02380952380952378,fresh_better
+FA,Mexico 2018 Female 25-34 Low Homemaker Married,0.4583333333333334,0.3333333333333333,Mexico 2018,-0.1250000000000001,fresh_better
+FA,Mexico 2018 Female 25-34 Low Working Married,0.5,0.375,Mexico 2018,-0.125,fresh_better
+FA,Mexico 2018 Female 25-34 Middle Homemaker Cohabiting,0.421875,0.3125,Mexico 2018,-0.109375,fresh_better
+FA,Mexico 2018 Female 25-34 Middle Homemaker Married,0.509090909090909,0.2727272727272727,Mexico 2018,-0.23636363636363633,fresh_better
+FA,Mexico 2018 Female 25-34 Middle Working Married,0.5,0.4000000000000001,Mexico 2018,-0.09999999999999992,fresh_better
+FA,Mexico 2018 Female 25-34 Middle Working Single,0.3658536585365853,0.3902439024390244,Mexico 2018,0.0243902439024391,fresh_worse
+FA,Mexico 2018 Female 35-44 Middle Homemaker Cohabiting,0.5217391304347826,0.1739130434782609,Mexico 2018,-0.34782608695652173,fresh_better
+FA,Mexico 2018 Female 35-44 Middle Homemaker Married,0.5294117647058824,0.3529411764705882,Mexico 2018,-0.17647058823529416,fresh_better
+FA,Mexico 2018 Female 35-44 Middle Working Cohabiting,0.5,0.3181818181818183,Mexico 2018,-0.1818181818181817,fresh_better
+FA,Mexico 2018 Female 35-44 Middle Working Divorced or separated,0.4200000000000001,0.16,Mexico 2018,-0.2600000000000001,fresh_better
+FA,Mexico 2018 Female 35-44 Middle Working Married,0.52,0.52,Mexico 2018,0.0,unchanged
+FA,Mexico 2018 Female 45-54 Low Homemaker Cohabiting,0.525,0.4500000000000001,Mexico 2018,-0.0749999999999999,fresh_better
+FA,Mexico 2018 Female 45-54 Low Homemaker Married,0.6774193548387099,0.3225806451612903,Mexico 2018,-0.35483870967741954,fresh_better
+FA,Mexico 2018 Female 45-54 Middle Homemaker Married,0.3846153846153846,0.3076923076923077,Mexico 2018,-0.07692307692307687,fresh_better
+FA,Mexico 2018 Female 45-54 Middle Working Married,0.5483870967741935,0.2903225806451612,Mexico 2018,-0.2580645161290323,fresh_better
+FA,Mexico 2018 Female 55-64 Low Homemaker Married,0.2857142857142857,0.3714285714285714,Mexico 2018,0.08571428571428569,fresh_worse
+FA,Mexico 2018 Female 55-64 Low Working Divorced or separated,0.3,0.55,Mexico 2018,0.25000000000000006,fresh_worse
+FA,Mexico 2018 Female 55-64 Low Working Married,0.5769230769230769,0.1923076923076923,Mexico 2018,-0.3846153846153846,fresh_better
+FA,Mexico 2018 Female 65-74 Low Homemaker Married,0.52,0.28,Mexico 2018,-0.24,fresh_better
+FA,Mexico 2018 Female 65-74 Low Homemaker Widowed,0.411764705882353,0.1764705882352941,Mexico 2018,-0.23529411764705888,fresh_better
+FA,Mexico 2018 Female 65-74 Low Working Widowed,0.5833333333333334,0.4583333333333333,Mexico 2018,-0.12500000000000006,fresh_better
+FA,Mexico 2018 Female <25 Middle Student Single,0.6440677966101694,0.288135593220339,Mexico 2018,-0.35593220338983045,fresh_better
+FA,Mexico 2018 Female <25 Middle Working Cohabiting,0.4831309041835359,0.2780026990553307,Mexico 2018,-0.20512820512820518,fresh_better
+FA,Mexico 2018 Male 25-34 High Working Married,0.6285714285714286,0.3999999999999999,Mexico 2018,-0.22857142857142865,fresh_better
+FA,Mexico 2018 Male 25-34 High Working Single,0.5151515151515151,0.3939393939393939,Mexico 2018,-0.12121212121212122,fresh_better
+FA,Mexico 2018 Male 25-34 Middle Working Cohabiting,0.3488372093023256,0.4186046511627907,Mexico 2018,0.06976744186046513,fresh_worse
+FA,Mexico 2018 Male 25-34 Middle Working Married,0.5689655172413793,0.3275862068965517,Mexico 2018,-0.24137931034482762,fresh_better
+FA,Mexico 2018 Male 25-34 Middle Working Single,0.4273809523809523,0.2746031746031747,Mexico 2018,-0.15277777777777762,fresh_better
+FA,Mexico 2018 Male 35-44 High Working Married,0.6911764705882353,0.4264705882352941,Mexico 2018,-0.2647058823529412,fresh_better
+FA,Mexico 2018 Male 35-44 Low Working Married,0.5,0.3448275862068966,Mexico 2018,-0.15517241379310343,fresh_better
+FA,Mexico 2018 Male 35-44 Middle Working Cohabiting,0.45,0.6499999999999999,Mexico 2018,0.1999999999999999,fresh_worse
+FA,Mexico 2018 Male 35-44 Middle Working Married,0.4318181818181817,0.3636363636363637,Mexico 2018,-0.06818181818181801,fresh_better
+FA,Mexico 2018 Male 45-54 Low Unemployed Married,0.4864864864864865,0.3243243243243243,Mexico 2018,-0.16216216216216223,fresh_better
+FA,Mexico 2018 Male 45-54 Low Working Married,0.2962962962962963,0.2592592592592593,Mexico 2018,-0.03703703703703698,fresh_better
+FA,Mexico 2018 Male 45-54 Middle Working Cohabiting,0.5161290322580645,0.3548387096774194,Mexico 2018,-0.16129032258064513,fresh_better
+FA,Mexico 2018 Male 45-54 Middle Working Married,0.6851851851851851,0.425925925925926,Mexico 2018,-0.25925925925925913,fresh_better
+FA,Mexico 2018 Male 55-64 Low Working Married,0.6595744680851063,0.4468085106382979,Mexico 2018,-0.21276595744680843,fresh_better
+FA,Mexico 2018 Male 55-64 Middle Retired Married,0.5,0.3636363636363637,Mexico 2018,-0.1363636363636363,fresh_better
+FA,Mexico 2018 Male 55-64 Middle Working Married,0.6470588235294118,0.3921568627450981,Mexico 2018,-0.2549019607843137,fresh_better
+FA,Mexico 2018 Male 65-74 Low Working Married,0.6410256410256411,0.4358974358974359,Mexico 2018,-0.20512820512820518,fresh_better
+FA,Mexico 2018 Male 75+ Low Unemployed Widowed,0.6190476190476191,0.2380952380952381,Mexico 2018,-0.38095238095238093,fresh_better
+FA,Mexico 2018 Male <25 Middle Student Single,0.3902439024390244,0.2926829268292683,Mexico 2018,-0.09756097560975613,fresh_better
+FA,Mexico 2018 Male <25 Middle Unemployed Single,0.4,0.1,Mexico 2018,-0.30000000000000004,fresh_better
+FA,Mexico 2018 Male <25 Middle Working Single,0.5161290322580645,0.3548387096774194,Mexico 2018,-0.16129032258064513,fresh_better
+FA,Russia 1995 Female 25-34 High Homemaker Married,0.5671052631578949,0.3921052631578949,Russia 1995,-0.175,fresh_better
+FA,Russia 1995 Female 25-34 High Working Married,0.4808857808857809,0.2990675990675991,Russia 1995,-0.18181818181818177,fresh_better
+FA,Russia 1995 Female 25-34 High Working Single,0.4396551724137932,0.0948275862068965,Russia 1995,-0.3448275862068967,fresh_better
+FA,Russia 1995 Female 25-34 Middle Homemaker Married,0.4137931034482759,0.2241379310344827,Russia 1995,-0.1896551724137932,fresh_better
+FA,Russia 1995 Female 25-34 Middle Working Divorced or separated,0.375,0.125,Russia 1995,-0.25,fresh_better
+FA,Russia 1995 Female 25-34 Middle Working Married,0.315923317683881,0.3020344287949922,Russia 1995,-0.013888888888888784,fresh_better
+FA,Russia 1995 Female 25-34 Middle Working Single,0.3496296296296296,0.2014814814814814,Russia 1995,-0.14814814814814822,fresh_better
+FA,Russia 1995 Female 35-44 High Working Divorced or separated,0.3048726953467954,0.2166374012291484,Russia 1995,-0.088235294117647,fresh_better
+FA,Russia 1995 Female 35-44 High Working Married,0.4178938594053904,0.2867463184217839,Russia 1995,-0.13114754098360654,fresh_better
+FA,Russia 1995 Female 35-44 Middle Working Divorced or separated,0.4912854030501089,0.1579520697167756,Russia 1995,-0.3333333333333333,fresh_better
+FA,Russia 1995 Female 35-44 Middle Working Married,0.479317697228145,0.3650319829424307,Russia 1995,-0.11428571428571427,fresh_better
+FA,Russia 1995 Female 45-54 High Working Married,0.6304878048780488,0.4841463414634146,Russia 1995,-0.14634146341463417,fresh_better
+FA,Russia 1995 Female 45-54 High Working Widowed,0.2380952380952381,0.0952380952380952,Russia 1995,-0.1428571428571429,fresh_better
+FA,Russia 1995 Female 45-54 Middle Working Married,0.3968253968253968,0.2063492063492064,Russia 1995,-0.1904761904761904,fresh_better
+FA,Russia 1995 Female 55-64 High Retired Married,0.4442307692307692,0.2442307692307692,Russia 1995,-0.2,fresh_better
+FA,Russia 1995 Female 55-64 Middle Retired Divorced or separated,0.3333333333333333,0.1904761904761904,Russia 1995,-0.1428571428571429,fresh_better
+FA,Russia 1995 Female 55-64 Middle Retired Married,0.3708333333333333,0.2108333333333333,Russia 1995,-0.16,fresh_better
+FA,Russia 1995 Female 55-64 Middle Retired Widowed,0.3096539162112933,0.1667967733541504,Russia 1995,-0.14285714285714288,fresh_better
+FA,Russia 1995 Female 65-74 High Retired Widowed,0.3776923076923077,0.1661538461538462,Russia 1995,-0.2115384615384615,fresh_better
+FA,Russia 1995 Female 65-74 Low Retired Widowed,0.2121212121212121,0.090909090909091,Russia 1995,-0.1212121212121211,fresh_better
+FA,Russia 1995 Female 65-74 Middle Retired Married,0.4182692307692308,0.0144230769230769,Russia 1995,-0.40384615384615385,fresh_better
+FA,Russia 1995 Female 65-74 Middle Retired Widowed,0.3118804331249047,0.070916577703218,Russia 1995,-0.2409638554216867,fresh_better
+FA,Russia 1995 Female 75+ Low Retired Widowed,0.3043478260869566,0.1739130434782608,Russia 1995,-0.1304347826086958,fresh_better
+FA,Russia 1995 Female 75+ Middle Retired Widowed,0.1105072463768116,0.0271739130434782,Russia 1995,-0.0833333333333334,fresh_better
+FA,Russia 1995 Female <25 High Student Married,0.5652173913043479,0.2608695652173913,Russia 1995,-0.3043478260869566,fresh_better
+FA,Russia 1995 Female <25 High Student Single,0.4941927990708479,0.1846689895470383,Russia 1995,-0.3095238095238096,fresh_better
+FA,Russia 1995 Male 25-34 High Working Married,0.4205882352941176,0.2920168067226891,Russia 1995,-0.1285714285714285,fresh_better
+FA,Russia 1995 Male 25-34 Middle Working Married,0.5230769230769231,0.2307692307692308,Russia 1995,-0.29230769230769227,fresh_better
+FA,Russia 1995 Male 35-44 High Unemployed Married,0.4343434343434343,0.2954545454545455,Russia 1995,-0.13888888888888878,fresh_better
+FA,Russia 1995 Male 35-44 High Working Married,0.5560171721368232,0.4180861376540646,Russia 1995,-0.13793103448275862,fresh_better
+FA,Russia 1995 Male 35-44 Middle Unemployed Married,0.2500000000000001,0.0357142857142858,Russia 1995,-0.2142857142857143,fresh_better
+FA,Russia 1995 Male 35-44 Middle Working Married,0.4491940581542351,0.1660082174462706,Russia 1995,-0.2831858407079645,fresh_better
+FA,Russia 1995 Male 45-54 High Working Divorced or separated,0.466589861751152,0.1440092165898617,Russia 1995,-0.3225806451612903,fresh_better
+FA,Russia 1995 Male 45-54 High Working Married,0.4590254706533777,0.3427464008859358,Russia 1995,-0.1162790697674419,fresh_better
+FA,Russia 1995 Male 45-54 Middle Working Married,0.4774774774774775,0.2467082467082467,Russia 1995,-0.23076923076923078,fresh_better
+FA,Russia 1995 Male 55-64 High Working Married,0.3633074935400516,0.2521963824289405,Russia 1995,-0.1111111111111111,fresh_better
+FA,Russia 1995 Male 55-64 Middle Retired Married,0.3999999999999999,0.0666666666666667,Russia 1995,-0.3333333333333332,fresh_better
+FA,Russia 1995 Male 55-64 Middle Retired Widowed,0.2859756097560976,0.0908536585365853,Russia 1995,-0.1951219512195123,fresh_better
+FA,Russia 1995 Male 55-64 Middle Working Married,0.429951690821256,0.2777777777777778,Russia 1995,-0.15217391304347822,fresh_better
+FA,Russia 1995 Male 65-74 Middle Retired Married,0.3294930875576037,0.2183819764464926,Russia 1995,-0.1111111111111111,fresh_better
+FA,Russia 1995 Male <25 High Student Single,0.411764705882353,0.2941176470588236,Russia 1995,-0.11764705882352938,fresh_better
+FA,Russia 1995 Male <25 High Working Single,0.5951056729699666,0.1757508342602892,Russia 1995,-0.41935483870967744,fresh_better
+FA,Russia 1995 Male <25 Middle Working Single,0.2173913043478261,0.1739130434782608,Russia 1995,-0.0434782608695653,fresh_better
+FA,Russia 2006 Female 25-34 High Homemaker Married,0.3995354239256679,0.2328687572590012,Russia 2006,-0.16666666666666669,fresh_better
+FA,Russia 2006 Female 25-34 High Unemployed Divorced or separated,0.290909090909091,0.1545454545454545,Russia 2006,-0.1363636363636365,fresh_better
+FA,Russia 2006 Female 25-34 High Working Married,0.2908594138102335,0.2302533532041729,Russia 2006,-0.06060606060606061,fresh_better
+FA,Russia 2006 Female 25-34 High Working Single,0.4210526315789474,0.2368421052631579,Russia 2006,-0.1842105263157895,fresh_better
+FA,Russia 2006 Female 25-34 Middle Homemaker Married,0.3846153846153846,0.2307692307692308,Russia 2006,-0.15384615384615377,fresh_better
+FA,Russia 2006 Female 25-34 Middle Working Married,0.2219132369299222,0.2864293659621802,Russia 2006,0.06451612903225801,fresh_worse
+FA,Russia 2006 Female 35-44 High Working Divorced or separated,0.2894736842105263,0.2394736842105264,Russia 2006,-0.04999999999999993,fresh_better
+FA,Russia 2006 Female 35-44 High Working Married,0.2666666666666667,0.1435897435897437,Russia 2006,-0.12307692307692303,fresh_better
+FA,Russia 2006 Female 35-44 Middle Homemaker Married,0.4750733137829912,0.262952101661779,Russia 2006,-0.2121212121212122,fresh_better
+FA,Russia 2006 Female 35-44 Middle Working Divorced or separated,0.4642857142857143,0.2857142857142857,Russia 2006,-0.1785714285714286,fresh_better
+FA,Russia 2006 Female 35-44 Middle Working Married,0.480654761904762,0.1212797619047619,Russia 2006,-0.35937500000000006,fresh_better
+FA,Russia 2006 Female 45-54 High Working Divorced or separated,0.3244444444444444,0.3614814814814815,Russia 2006,0.03703703703703709,fresh_worse
+FA,Russia 2006 Female 45-54 High Working Married,0.4726720647773279,0.279689608636977,Russia 2006,-0.19298245614035092,fresh_better
+FA,Russia 2006 Female 45-54 High Working Widowed,0.2121212121212121,0.1666666666666667,Russia 2006,-0.045454545454545386,fresh_better
+FA,Russia 2006 Female 45-54 Middle Working Divorced or separated,0.5772727272727273,0.0772727272727272,Russia 2006,-0.5000000000000001,fresh_better
+FA,Russia 2006 Female 45-54 Middle Working Married,0.281784005468216,0.1649008885850991,Russia 2006,-0.11688311688311692,fresh_better
+FA,Russia 2006 Female 45-54 Middle Working Widowed,0.4565217391304348,0.2391304347826087,Russia 2006,-0.2173913043478261,fresh_better
+FA,Russia 2006 Female 55-64 High Retired Married,0.3859574468085106,0.2059574468085107,Russia 2006,-0.17999999999999988,fresh_better
+FA,Russia 2006 Female 55-64 Middle Retired Married,0.3051470588235294,0.2463235294117647,Russia 2006,-0.05882352941176469,fresh_better
+FA,Russia 2006 Female 55-64 Middle Retired Widowed,0.1485714285714285,0.0771428571428571,Russia 2006,-0.0714285714285714,fresh_better
+FA,Russia 2006 Female 65-74 High Retired Widowed,0.3374613003095976,0.0479876160990712,Russia 2006,-0.2894736842105264,fresh_better
+FA,Russia 2006 Female 65-74 Middle Retired Married,0.3545310015898251,0.0238473767885533,Russia 2006,-0.3306836248012718,fresh_better
+FA,Russia 2006 Female 65-74 Middle Retired Widowed,0.380952380952381,0.0017636684303351,Russia 2006,-0.3791887125220459,fresh_better
+FA,Russia 2006 Female <25 High Student Single,0.415580182529335,0.1274445893089961,Russia 2006,-0.2881355932203389,fresh_better
+FA,Russia 2006 Female <25 Middle Student Single,0.2656058751529989,0.0563035495716034,Russia 2006,-0.2093023255813955,fresh_better
+FA,Russia 2006 Male 25-34 High Working Cohabiting,0.2863636363636364,0.240909090909091,Russia 2006,-0.045454545454545386,fresh_better
+FA,Russia 2006 Male 25-34 High Working Married,0.4590909090909091,0.2590909090909092,Russia 2006,-0.1999999999999999,fresh_better
+FA,Russia 2006 Male 25-34 Middle Working Cohabiting,0.669761273209549,0.3594164456233422,Russia 2006,-0.31034482758620685,fresh_better
+FA,Russia 2006 Male 25-34 Middle Working Married,0.4029806259314457,0.1570789865871833,Russia 2006,-0.24590163934426237,fresh_better
+FA,Russia 2006 Male 25-34 Middle Working Single,0.286842105263158,0.136842105263158,Russia 2006,-0.15000000000000002,fresh_better
+FA,Russia 2006 Male 35-44 High Unemployed Married,0.562857142857143,0.4557142857142857,Russia 2006,-0.10714285714285726,fresh_better
+FA,Russia 2006 Male 35-44 High Working Married,0.4771428571428571,0.1838095238095239,Russia 2006,-0.2933333333333332,fresh_better
+FA,Russia 2006 Male 35-44 Middle Unemployed Married,0.4294354838709677,0.2419354838709677,Russia 2006,-0.1875,fresh_better
+FA,Russia 2006 Male 35-44 Middle Working Divorced or separated,0.1864623243933589,0.0485312899106002,Russia 2006,-0.13793103448275873,fresh_better
+FA,Russia 2006 Male 35-44 Middle Working Married,0.4670033670033671,0.0851851851851852,Russia 2006,-0.3818181818181819,fresh_better
+FA,Russia 2006 Male 45-54 High Working Divorced or separated,0.1895604395604395,0.0824175824175824,Russia 2006,-0.1071428571428571,fresh_better
+FA,Russia 2006 Male 45-54 High Working Married,0.5267857142857143,0.3431122448979593,Russia 2006,-0.18367346938775503,fresh_better
+FA,Russia 2006 Male 45-54 Middle Working Married,0.3820033955857386,0.1078098471986418,Russia 2006,-0.2741935483870968,fresh_better
+FA,Russia 2006 Male 55-64 High Retired Married,0.5663129973474801,0.2904509283819628,Russia 2006,-0.2758620689655173,fresh_better
+FA,Russia 2006 Male 55-64 High Working Married,0.3509090909090909,0.2309090909090909,Russia 2006,-0.12,fresh_better
+FA,Russia 2006 Male 55-64 Middle Retired Married,0.477832512315271,0.2364532019704434,Russia 2006,-0.24137931034482762,fresh_better
+FA,Russia 2006 Male 55-64 Middle Working Married,0.51,0.2242857142857143,Russia 2006,-0.2857142857142857,fresh_better
+FA,Russia 2006 Male 65-74 Middle Retired Married,0.3205128205128206,0.0512820512820514,Russia 2006,-0.2692307692307692,fresh_better
+FA,Russia 2006 Male 65-74 Middle Retired Widowed,0.4921052631578948,0.1921052631578947,Russia 2006,-0.30000000000000016,fresh_better
+FA,Russia 2006 Male <25 High Student Single,0.1998122359568143,0.0913785010170552,Russia 2006,-0.1084337349397591,fresh_better
+FA,Russia 2006 Male <25 High Working Single,0.3693693693693694,0.1129591129591129,Russia 2006,-0.2564102564102565,fresh_better
+FA,Russia 2006 Male <25 Middle Student Single,0.3402027027027027,0.0347972972972973,Russia 2006,-0.3054054054054054,fresh_better
+FA,Russia 2006 Male <25 Middle Working Single,0.4169884169884171,0.2007722007722008,Russia 2006,-0.2162162162162163,fresh_better
+FA,Russia 2017 Female 25-34 High Homemaker Divorced or separated,0.108695652173913,0.0253623188405797,Russia 2017,-0.0833333333333333,fresh_better
+FA,Russia 2017 Female 25-34 High Homemaker Married,0.1815384615384615,0.2584615384615384,Russia 2017,0.0769230769230769,fresh_worse
+FA,Russia 2017 Female 25-34 High Working Divorced or separated,0.5102040816326531,0.2448979591836735,Russia 2017,-0.26530612244897955,fresh_better
+FA,Russia 2017 Female 25-34 High Working Married,0.2391304347826087,0.2826086956521739,Russia 2017,0.04347826086956519,fresh_worse
+FA,Russia 2017 Female 25-34 High Working Single,0.5644736842105263,0.1894736842105263,Russia 2017,-0.37500000000000006,fresh_better
+FA,Russia 2017 Female 35-44 High Working Divorced or separated,0.3478260869565219,0.3478260869565219,Russia 2017,0.0,unchanged
+FA,Russia 2017 Female 35-44 High Working Married,0.3153120464441219,0.1266328011611031,Russia 2017,-0.18867924528301883,fresh_better
+FA,Russia 2017 Female 35-44 High Working Single,0.4563492063492064,0.3849206349206349,Russia 2017,-0.07142857142857151,fresh_better
+FA,Russia 2017 Female 35-44 Low Homemaker Married,0.5,0.1500000000000001,Russia 2017,-0.34999999999999987,fresh_better
+FA,Russia 2017 Female 35-44 Middle Homemaker Married,0.4,0.1333333333333334,Russia 2017,-0.2666666666666666,fresh_better
+FA,Russia 2017 Female 35-44 Middle Working Divorced or separated,0.3333333333333333,0.0512820512820514,Russia 2017,-0.28205128205128194,fresh_better
+FA,Russia 2017 Female 45-54 High Working Divorced or separated,0.3801520608243297,0.0664265706282513,Russia 2017,-0.31372549019607837,fresh_better
+FA,Russia 2017 Female 45-54 High Working Married,0.4045454545454545,0.2772727272727273,Russia 2017,-0.1272727272727272,fresh_better
+FA,Russia 2017 Female 45-54 High Working Widowed,0.3974358974358974,0.2122507122507122,Russia 2017,-0.1851851851851852,fresh_better
+FA,Russia 2017 Female 45-54 Middle Working Divorced or separated,0.4482758620689654,0.3103448275862069,Russia 2017,-0.1379310344827585,fresh_better
+FA,Russia 2017 Female 45-54 Middle Working Married,0.4229885057471265,0.1563218390804598,Russia 2017,-0.2666666666666667,fresh_better
+FA,Russia 2017 Female 55-64 High Retired Divorced or separated,0.5142857142857143,0.2571428571428572,Russia 2017,-0.2571428571428572,fresh_better
+FA,Russia 2017 Female 55-64 High Retired Married,0.4504830917874396,0.2977053140096619,Russia 2017,-0.15277777777777773,fresh_better
+FA,Russia 2017 Female 55-64 High Retired Widowed,0.3426724137931034,0.1260775862068965,Russia 2017,-0.21659482758620693,fresh_better
+FA,Russia 2017 Female 55-64 Middle Retired Married,0.5738461538461539,0.2276923076923077,Russia 2017,-0.3461538461538462,fresh_better
+FA,Russia 2017 Female 65-74 High Retired Widowed,0.0895752895752896,0.2077220077220077,Russia 2017,0.1181467181467181,fresh_worse
+FA,Russia 2017 Female 65-74 Low Retired Widowed,0.4152823920265781,0.2059800664451828,Russia 2017,-0.20930232558139528,fresh_better
+FA,Russia 2017 Female 65-74 Middle Retired Widowed,0.3483577917540182,0.2372466806429071,Russia 2017,-0.1111111111111111,fresh_better
+FA,Russia 2017 Female 75+ Low Retired Widowed,0.2727272727272727,0.2424242424242424,Russia 2017,-0.030303030303030304,fresh_better
+FA,Russia 2017 Female <25 High Student Single,0.2121212121212121,0.2121212121212121,Russia 2017,0.0,unchanged
+FA,Russia 2017 Female <25 High Working Single,0.3333333333333333,0.0999999999999999,Russia 2017,-0.23333333333333342,fresh_better
+FA,Russia 2017 Female <25 Middle Student Single,0.2436575052854123,0.1300211416490487,Russia 2017,-0.11363636363636359,fresh_better
+FA,Russia 2017 Male 25-34 High Working Married,0.5522123893805313,0.2478645632935745,Russia 2017,-0.30434782608695676,fresh_better
+FA,Russia 2017 Male 25-34 High Working Single,0.466403162055336,0.2707509881422925,Russia 2017,-0.19565217391304351,fresh_better
+FA,Russia 2017 Male 25-34 Middle Working Married,0.3555555555555555,0.1555555555555556,Russia 2017,-0.1999999999999999,fresh_better
+FA,Russia 2017 Male 25-34 Middle Working Single,0.3825757575757575,0.0189393939393939,Russia 2017,-0.3636363636363636,fresh_better
+FA,Russia 2017 Male 35-44 High Working Married,0.4881644223954643,0.1587526576895819,Russia 2017,-0.3294117647058824,fresh_better
+FA,Russia 2017 Male 35-44 Middle Working Married,0.6158333333333333,0.2158333333333333,Russia 2017,-0.4,fresh_better
+FA,Russia 2017 Male 45-54 High Working Divorced or separated,0.1636363636363637,0.1636363636363637,Russia 2017,0.0,unchanged
+FA,Russia 2017 Male 45-54 High Working Married,0.3814229249011858,0.3162055335968379,Russia 2017,-0.0652173913043479,fresh_better
+FA,Russia 2017 Male 45-54 Middle Unemployed Married,0.4939516129032258,0.1502016129032258,Russia 2017,-0.34375,fresh_better
+FA,Russia 2017 Male 45-54 Middle Working Divorced or separated,0.28,0.2,Russia 2017,-0.08000000000000002,fresh_better
+FA,Russia 2017 Male 55-64 High Retired Married,0.5,0.1666666666666667,Russia 2017,-0.33333333333333326,fresh_better
+FA,Russia 2017 Male 55-64 High Working Divorced or separated,0.5,0.1666666666666667,Russia 2017,-0.33333333333333326,fresh_better
+FA,Russia 2017 Male 55-64 High Working Married,0.3246031746031746,0.3523809523809524,Russia 2017,0.02777777777777779,fresh_worse
+FA,Russia 2017 Male 55-64 Low Retired Married,0.2800000000000001,0.12,Russia 2017,-0.1600000000000001,fresh_better
+FA,Russia 2017 Male 65-74 High Retired Widowed,0.2712215320910973,0.0973084886128364,Russia 2017,-0.17391304347826086,fresh_better
+FA,Russia 2017 Male 65-74 Low Retired Widowed,0.3666666666666667,0.1666666666666667,Russia 2017,-0.19999999999999998,fresh_better
+FA,Russia 2017 Male <25 High Working Single,0.2873563218390805,0.3206896551724138,Russia 2017,0.033333333333333326,fresh_worse
+FA,Russia 2017 Male <25 Middle Student Single,0.3622448979591837,0.0153061224489796,Russia 2017,-0.3469387755102041,fresh_better
+FA,United States 1995 Female 25-34 High Unemployed Single,0.2483870967741935,0.0419354838709677,United States 1995,-0.20645161290322578,fresh_better
+FA,United States 1995 Female 25-34 High Working Married,0.196078431372549,0.1568627450980392,United States 1995,-0.039215686274509776,fresh_better
+FA,United States 1995 Female 25-34 Middle Homemaker Married,0.0277777777777777,0.0555555555555556,United States 1995,0.0277777777777779,fresh_worse
+FA,United States 1995 Female 25-34 Middle Working Married,0.3137254901960786,0.2352941176470588,United States 1995,-0.0784313725490198,fresh_better
+FA,United States 1995 Female 25-34 Middle Working Single,0.375,0.0416666666666667,United States 1995,-0.3333333333333333,fresh_better
+FA,United States 1995 Female 35-44 High Homemaker Married,0.123076923076923,0.0307692307692307,United States 1995,-0.0923076923076923,fresh_better
+FA,United States 1995 Female 35-44 High Working Divorced or separated,0.217391304347826,0.0434782608695653,United States 1995,-0.1739130434782607,fresh_better
+FA,United States 1995 Female 35-44 High Working Married,0.1623188405797101,0.1405797101449275,United States 1995,-0.021739130434782594,fresh_better
+FA,United States 1995 Female 35-44 Middle Unemployed Married,0.3598484848484848,0.3901515151515151,United States 1995,0.030303030303030276,fresh_worse
+FA,United States 1995 Female 35-44 Middle Working Married,0.21875,0.09375,United States 1995,-0.125,fresh_better
+FA,United States 1995 Female 45-54 High Working Married,0.2144268774703557,0.0681818181818182,United States 1995,-0.14624505928853748,fresh_better
+FA,United States 1995 Female 45-54 Middle Working Married,0.386842105263158,0.261842105263158,United States 1995,-0.125,fresh_better
+FA,United States 1995 Female 55-64 Middle Homemaker Married,0.4285714285714286,0.0571428571428571,United States 1995,-0.3714285714285715,fresh_better
+FA,United States 1995 Female 65-74 High Retired Married,0.3939393939393939,0.1515151515151515,United States 1995,-0.24242424242424243,fresh_better
+FA,United States 1995 Female 65-74 High Retired Widowed,0.0962072155411656,0.1591119333950046,United States 1995,0.062904717853839,fresh_worse
+FA,United States 1995 Female 65-74 Middle Retired Married,0.1423751686909582,0.1140350877192983,United States 1995,-0.02834008097165991,fresh_better
+FA,United States 1995 Female 65-74 Middle Retired Widowed,0.2481060606060606,0.0700757575757575,United States 1995,-0.1780303030303031,fresh_better
+FA,United States 1995 Female 75+ Middle Retired Widowed,0.3611111111111111,0.1944444444444444,United States 1995,-0.1666666666666667,fresh_better
+FA,United States 1995 Female <25 High Working Single,0.2857142857142857,0.0238095238095239,United States 1995,-0.2619047619047618,fresh_better
+FA,United States 1995 Male 25-34 High Working Married,0.3974087784241142,0.139344262295082,United States 1995,-0.2580645161290322,fresh_better
+FA,United States 1995 Male 25-34 High Working Single,0.2769230769230769,0.0769230769230769,United States 1995,-0.19999999999999998,fresh_better
+FA,United States 1995 Male 25-34 Middle Working Married,0.3603988603988605,0.4344729344729345,United States 1995,0.07407407407407401,fresh_worse
+FA,United States 1995 Male 25-34 Middle Working Single,0.4761904761904762,0.4285714285714286,United States 1995,-0.047619047619047616,fresh_better
+FA,United States 1995 Male 35-44 High Working Married,0.4145658263305323,0.1400560224089636,United States 1995,-0.2745098039215687,fresh_better
+FA,United States 1995 Male 35-44 Middle Working Married,0.3703703703703703,0.1111111111111111,United States 1995,-0.2592592592592592,fresh_better
+FA,United States 1995 Male 45-54 High Working Divorced or separated,0.16,0.08,United States 1995,-0.08,fresh_better
+FA,United States 1995 Male 45-54 High Working Married,0.2727272727272729,0.0363636363636363,United States 1995,-0.23636363636363658,fresh_better
+FA,United States 1995 Male 45-54 Middle Working Divorced or separated,0.6075268817204301,0.1236559139784946,United States 1995,-0.4838709677419355,fresh_better
+FA,United States 1995 Male 45-54 Middle Working Married,0.1925465838509317,0.1925465838509317,United States 1995,0.0,unchanged
+FA,United States 1995 Male 55-64 High Retired Married,0.2692307692307693,0.0384615384615385,United States 1995,-0.23076923076923078,fresh_better
+FA,United States 1995 Male 55-64 High Working Married,0.1385281385281385,0.1385281385281385,United States 1995,0.0,unchanged
+FA,United States 1995 Male 55-64 Middle Retired Married,0.5507936507936508,0.3007936507936508,United States 1995,-0.25000000000000006,fresh_better
+FA,United States 1995 Male 55-64 Middle Unemployed Married,0.5421052631578946,0.2921052631578948,United States 1995,-0.24999999999999983,fresh_better
+FA,United States 1995 Male 55-64 Middle Working Married,0.2523076923076923,0.0938461538461539,United States 1995,-0.15846153846153838,fresh_better
+FA,United States 1995 Male 65-74 High Retired Married,0.3090676883780333,0.070242656449553,United States 1995,-0.23882503192848026,fresh_better
+FA,United States 1995 Male 65-74 Middle Retired Married,0.3226775956284154,0.2243169398907105,United States 1995,-0.09836065573770492,fresh_better
+FA,United States 1995 Male 75+ Middle Retired Widowed,0.2409274193548387,0.0090725806451613,United States 1995,-0.23185483870967738,fresh_better
+FA,United States 1995 Male <25 Middle Student Single,0.3272727272727272,0.1272727272727273,United States 1995,-0.19999999999999993,fresh_better
+FA,United States 1995 Male <25 Middle Working Single,0.5116666666666666,0.3516666666666667,United States 1995,-0.15999999999999992,fresh_better
+FA,United States 2006 Female 25-34 High Working Married,0.3,0.1,United States 2006,-0.19999999999999998,fresh_better
+FA,United States 2006 Female 25-34 High Working Single,0.0,0.0370370370370371,United States 2006,0.0370370370370371,fresh_worse
+FA,United States 2006 Female 25-34 Middle Homemaker Married,0.5,0.2272727272727273,United States 2006,-0.2727272727272727,fresh_better
+FA,United States 2006 Female 25-34 Middle Working Single,0.34375,0.03125,United States 2006,-0.3125,fresh_better
+FA,United States 2006 Female 35-44 High Homemaker Married,0.1600000000000001,0.16,United States 2006,-8.326672684688674e-17,unchanged
+FA,United States 2006 Female 35-44 High Working Married,0.0384615384615384,0.0576923076923077,United States 2006,0.0192307692307693,fresh_worse
+FA,United States 2006 Female 35-44 High Working Single,0.0,0.0833333333333334,United States 2006,0.0833333333333334,fresh_worse
+FA,United States 2006 Female 35-44 Middle Homemaker Married,0.2682926829268293,0.1707317073170732,United States 2006,-0.09756097560975607,fresh_better
+FA,United States 2006 Female 35-44 Middle Working Married,0.2470355731225296,0.1600790513833992,United States 2006,-0.0869565217391304,fresh_better
+FA,United States 2006 Female 45-54 High Working Divorced or separated,0.0,0.2580645161290324,United States 2006,0.2580645161290324,fresh_worse
+FA,United States 2006 Female 45-54 Middle Working Married,0.2580645161290322,0.1612903225806451,United States 2006,-0.0967741935483871,fresh_better
+FA,United States 2006 Female 55-64 Middle Homemaker Married,0.2608695652173914,0.1304347826086956,United States 2006,-0.13043478260869582,fresh_better
+FA,United States 2006 Female 55-64 Middle Retired Married,0.15,0.05,United States 2006,-0.09999999999999999,fresh_better
+FA,United States 2006 Female 55-64 Middle Working Divorced or separated,0.2432432432432432,0.054054054054054,United States 2006,-0.1891891891891892,fresh_better
+FA,United States 2006 Female 55-64 Middle Working Married,0.15,0.0999999999999999,United States 2006,-0.0500000000000001,fresh_better
+FA,United States 2006 Female 65-74 Middle Retired Divorced or separated,0.1954022988505747,0.2620689655172414,United States 2006,0.06666666666666671,fresh_worse
+FA,United States 2006 Female 65-74 Middle Retired Married,0.210752688172043,0.1440860215053764,United States 2006,-0.06666666666666662,fresh_better
+FA,United States 2006 Female 65-74 Middle Retired Widowed,0.0128048780487805,0.0847560975609755,United States 2006,0.071951219512195,fresh_worse
+FA,United States 2006 Female <25 Middle NA Single,0.2888888888888889,0.1111111111111111,United States 2006,-0.1777777777777778,fresh_better
+FA,United States 2006 Female <25 Middle Working Single,0.2953846153846154,0.1030769230769231,United States 2006,-0.19230769230769232,fresh_better
+FA,United States 2006 Male 25-34 High Working Married,0.0833333333333333,0.0277777777777777,United States 2006,-0.0555555555555556,fresh_better
+FA,United States 2006 Male 25-34 Middle Working Married,0.4565217391304348,0.2608695652173913,United States 2006,-0.19565217391304351,fresh_better
+FA,United States 2006 Male 35-44 High Working Married,0.2058823529411765,0.088235294117647,United States 2006,-0.1176470588235295,fresh_better
+FA,United States 2006 Male 35-44 High Working Single,0.2352941176470589,0.0294117647058823,United States 2006,-0.2058823529411766,fresh_better
+FA,United States 2006 Male 35-44 Middle Working Married,0.3428571428571428,0.2,United States 2006,-0.1428571428571428,fresh_better
+FA,United States 2006 Male 35-44 Middle Working Single,0.2424242424242425,0.0909090909090909,United States 2006,-0.1515151515151516,fresh_better
+FA,United States 2006 Male 45-54 High Working Divorced or separated,0.0357142857142857,0.0,United States 2006,-0.0357142857142857,fresh_better
+FA,United States 2006 Male 45-54 High Working Married,0.0482180293501047,0.0296995108315862,United States 2006,-0.018518518518518497,fresh_better
+FA,United States 2006 Male 45-54 Middle NA Married,0.2164502164502164,0.2164502164502164,United States 2006,0.0,unchanged
+FA,United States 2006 Male 45-54 Middle Working Divorced or separated,0.1111111111111111,0.0,United States 2006,-0.1111111111111111,fresh_better
+FA,United States 2006 Male 45-54 Middle Working Married,0.2142857142857143,0.1607142857142857,United States 2006,-0.0535714285714286,fresh_better
+FA,United States 2006 Male 55-64 Middle Retired Divorced or separated,0.1142857142857143,0.1428571428571429,United States 2006,0.02857142857142861,fresh_worse
+FA,United States 2006 Male 55-64 Middle Retired Married,0.1470588235294118,0.0294117647058823,United States 2006,-0.1176470588235295,fresh_better
+FA,United States 2006 Male 65-74 High Retired Married,0.0416666666666666,0.2083333333333333,United States 2006,0.16666666666666669,fresh_worse
+FA,United States 2006 Male 65-74 Middle Retired Married,0.4,0.12,United States 2006,-0.28,fresh_better
+FA,United States 2006 Male 75+ Middle Retired Married,0.2592592592592592,0.1851851851851852,United States 2006,-0.07407407407407399,fresh_better
+FA,United States 2006 Male <25 Middle Working Single,0.3939393939393939,0.1666666666666667,United States 2006,-0.2272727272727272,fresh_better
+FA,United States 2017 Female 25-34 High Homemaker Married,0.1785714285714285,0.1071428571428572,United States 2017,-0.07142857142857129,fresh_better
+FA,United States 2017 Female 25-34 High Working Cohabiting,0.0869565217391305,0.0217391304347825,United States 2017,-0.065217391304348,fresh_better
+FA,United States 2017 Female 25-34 High Working Married,0.2771084337349399,0.1204819277108434,United States 2017,-0.15662650602409647,fresh_better
+FA,United States 2017 Female 25-34 High Working Single,0.1304347826086956,0.0760869565217391,United States 2017,-0.0543478260869565,fresh_better
+FA,United States 2017 Female 25-34 Middle Homemaker Cohabiting,0.35,0.075,United States 2017,-0.27499999999999997,fresh_better
+FA,United States 2017 Female 25-34 Middle Homemaker Married,0.4727272727272728,0.2,United States 2017,-0.27272727272727276,fresh_better
+FA,United States 2017 Female 25-34 Middle Working Cohabiting,0.5135135135135135,0.2162162162162162,United States 2017,-0.29729729729729726,fresh_better
+FA,United States 2017 Female 25-34 Middle Working Married,0.3,0.1666666666666668,United States 2017,-0.1333333333333332,fresh_better
+FA,United States 2017 Female 25-34 Middle Working Single,0.3695652173913045,0.2826086956521739,United States 2017,-0.0869565217391306,fresh_better
+FA,United States 2017 Female 35-44 High Homemaker Married,0.12,0.1999999999999999,United States 2017,0.0799999999999999,fresh_worse
+FA,United States 2017 Female 35-44 High Working Divorced or separated,0.5517241379310345,0.1379310344827586,United States 2017,-0.4137931034482759,fresh_better
+FA,United States 2017 Female 35-44 High Working Married,0.0222222222222222,0.0222222222222223,United States 2017,1.0061396160665481e-16,unchanged
+FA,United States 2017 Female 35-44 Middle Homemaker Married,0.2258064516129032,0.2580645161290322,United States 2017,0.032258064516129004,fresh_worse
+FA,United States 2017 Female 35-44 Middle Working Married,0.3695652173913044,0.1739130434782608,United States 2017,-0.19565217391304357,fresh_better
+FA,United States 2017 Female 45-54 High Homemaker Married,0.1923076923076923,0.0,United States 2017,-0.1923076923076923,fresh_better
+FA,United States 2017 Female 45-54 High Working Married,0.0512820512820512,0.0769230769230769,United States 2017,0.025641025641025703,fresh_worse
+FA,United States 2017 Female 45-54 Middle Unemployed Divorced or separated,0.0563218390804598,0.010344827586207,United States 2017,-0.0459770114942528,fresh_better
+FA,United States 2017 Female 45-54 Middle Working Divorced or separated,0.4375,0.0,United States 2017,-0.4375,fresh_better
+FA,United States 2017 Female 45-54 Middle Working Married,0.4772727272727273,0.0454545454545455,United States 2017,-0.43181818181818177,fresh_better
+FA,United States 2017 Female 45-54 Middle Working Single,0.7083333333333335,0.25,United States 2017,-0.4583333333333335,fresh_better
+FA,United States 2017 Female 55-64 High Working Divorced or separated,0.2758620689655172,0.0344827586206897,United States 2017,-0.24137931034482749,fresh_better
+FA,United States 2017 Female 55-64 Middle Retired Married,0.236842105263158,0.0789473684210526,United States 2017,-0.1578947368421054,fresh_better
+FA,United States 2017 Female 55-64 Middle Working Married,0.2727272727272728,0.2727272727272728,United States 2017,0.0,unchanged
+FA,United States 2017 Female 65-74 Middle Retired Divorced or separated,0.2727272727272728,0.1363636363636363,United States 2017,-0.13636363636363652,fresh_better
+FA,United States 2017 Female 65-74 Middle Retired Married,0.1818181818181818,0.0454545454545455,United States 2017,-0.1363636363636363,fresh_better
+FA,United States 2017 Female 65-74 Middle Retired Widowed,0.1052631578947368,0.0789473684210526,United States 2017,-0.026315789473684195,fresh_better
+FA,United States 2017 Female <25 High Unemployed Single,0.3333333333333333,0.0476190476190476,United States 2017,-0.2857142857142857,fresh_better
+FA,United States 2017 Female <25 High Working Single,0.3111111111111111,0.1333333333333334,United States 2017,-0.17777777777777773,fresh_better
+FA,United States 2017 Female <25 Middle Unemployed Single,0.3710106382978724,0.1418439716312056,United States 2017,-0.2291666666666668,fresh_better
+FA,United States 2017 Female <25 Middle Working Single,0.3131359851988899,0.1854764107308049,United States 2017,-0.127659574468085,fresh_better
+FA,United States 2017 Male 25-34 High Unemployed Single,0.2916666666666667,0.0416666666666667,United States 2017,-0.25,fresh_better
+FA,United States 2017 Male 25-34 High Working Cohabiting,0.1666666666666666,0.0333333333333333,United States 2017,-0.1333333333333333,fresh_better
+FA,United States 2017 Male 25-34 High Working Married,0.1875000000000001,0.0208333333333333,United States 2017,-0.1666666666666668,fresh_better
+FA,United States 2017 Male 25-34 High Working Single,0.2,0.0999999999999999,United States 2017,-0.10000000000000012,fresh_better
+FA,United States 2017 Male 25-34 Middle Working Married,0.419053185271771,0.1987142022209235,United States 2017,-0.22033898305084748,fresh_better
+FA,United States 2017 Male 25-34 Middle Working Single,0.3902439024390244,0.0731707317073171,United States 2017,-0.3170731707317073,fresh_better
+FA,United States 2017 Male 35-44 High Working Divorced or separated,0.0476190476190476,0.1428571428571428,United States 2017,0.09523809523809519,fresh_worse
+FA,United States 2017 Male 35-44 High Working Married,0.1619047619047618,0.0095238095238094,United States 2017,-0.1523809523809524,fresh_better
+FA,United States 2017 Male 35-44 High Working Single,0.3243243243243243,0.054054054054054,United States 2017,-0.2702702702702703,fresh_better
+FA,United States 2017 Male 35-44 Middle Working Married,0.2666666666666667,0.0666666666666667,United States 2017,-0.2,fresh_better
+FA,United States 2017 Male 45-54 High Unemployed Divorced or separated,0.1818181818181818,0.0,United States 2017,-0.1818181818181818,fresh_better
+FA,United States 2017 Male 45-54 High Working Divorced or separated,0.0,0.0454545454545455,United States 2017,0.0454545454545455,fresh_worse
+FA,United States 2017 Male 45-54 High Working Married,0.2297297297297297,0.0135135135135135,United States 2017,-0.21621621621621617,fresh_better
+FA,United States 2017 Male 45-54 Middle NA Married,0.4368421052631578,0.2368421052631579,United States 2017,-0.1999999999999999,fresh_better
+FA,United States 2017 Male 45-54 Middle Unemployed Married,0.3,0.0,United States 2017,-0.3,fresh_better
+FA,United States 2017 Male 45-54 Middle Working Divorced or separated,0.2037037037037037,0.037037037037037,United States 2017,-0.16666666666666669,fresh_better
+FA,United States 2017 Male 45-54 Middle Working Married,0.4390243902439025,0.1219512195121951,United States 2017,-0.3170731707317074,fresh_better
+FA,United States 2017 Male 45-54 Middle Working Single,0.1891891891891892,0.054054054054054,United States 2017,-0.1351351351351352,fresh_better
+FA,United States 2017 Male 55-64 High Retired Married,0.2195121951219512,0.024390243902439,United States 2017,-0.1951219512195122,fresh_better
+FA,United States 2017 Male 55-64 High Working Divorced or separated,0.1428571428571429,0.1071428571428572,United States 2017,-0.0357142857142857,fresh_better
+FA,United States 2017 Male 55-64 High Working Married,0.1269841269841269,0.0,United States 2017,-0.1269841269841269,fresh_better
+FA,United States 2017 Male 55-64 High Working Single,0.3703703703703704,0.037037037037037,United States 2017,-0.3333333333333334,fresh_better
+FA,United States 2017 Male 55-64 Middle Retired Divorced or separated,0.2083333333333334,0.125,United States 2017,-0.0833333333333334,fresh_better
+FA,United States 2017 Male 55-64 Middle Retired Married,0.2666666666666666,0.1,United States 2017,-0.1666666666666666,fresh_better
+FA,United States 2017 Male 55-64 Middle Working Married,0.0775193798449613,0.3410852713178294,United States 2017,0.26356589147286813,fresh_worse
+FA,United States 2017 Male 65-74 High Retired Married,0.1060606060606061,0.0909090909090909,United States 2017,-0.015151515151515207,fresh_better
+FA,United States 2017 Male 65-74 High Retired Widowed,0.1875,0.25,United States 2017,0.0625,fresh_worse
+FA,United States 2017 Male 65-74 High Working Married,0.1999999999999999,0.2,United States 2017,1.1102230246251565e-16,unchanged
+FA,United States 2017 Male 65-74 Middle Retired Married,0.3333333333333333,0.0,United States 2017,-0.3333333333333333,fresh_better
+FA,United States 2017 Male 65-74 Middle Retired Widowed,0.1111111111111111,0.1481481481481481,United States 2017,0.03703703703703701,fresh_worse
+FA,United States 2017 Male 75+ Middle Retired Married,0.15,0.15,United States 2017,0.0,unchanged
+FA,United States 2017 Male <25 High Working Single,0.1515151515151515,0.1212121212121212,United States 2017,-0.03030303030303029,fresh_better
+FA,United States 2017 Male <25 Middle Unemployed Single,0.1807692307692309,0.0115384615384616,United States 2017,-0.1692307692307693,fresh_better
+FA,United States 2017 Male <25 Middle Working Single,0.3805496828752642,0.1987315010570824,United States 2017,-0.1818181818181818,fresh_better
+NTP,Australia 1995 Female 25-34 High Homemaker Married,0.1517886801722545,0.1495242471943718,Australia 1995,-0.002264432977882702,fresh_better
+NTP,Australia 1995 Female 25-34 High Working Cohabiting,0.1503219997340986,0.140414728281626,Australia 1995,-0.00990727145247261,fresh_better
+NTP,Australia 1995 Female 25-34 High Working Divorced or separated,0.141118695352698,0.1534738787676204,Australia 1995,0.012355183414922394,fresh_worse
+NTP,Australia 1995 Female 25-34 High Working Married,0.1850691856372924,0.1845410031148474,Australia 1995,-0.0005281825224450198,fresh_better
+NTP,Australia 1995 Female 25-34 High Working Single,0.048107422496143,0.0595103352520995,Australia 1995,0.0114029127559565,fresh_worse
+NTP,Australia 1995 Female 25-34 Middle Homemaker Divorced or separated,0.2463845235960825,0.2473340646670955,Australia 1995,0.0009495410710129992,fresh_worse
+NTP,Australia 1995 Female 25-34 Middle Homemaker Married,0.1550485779499185,0.1608239248609182,Australia 1995,0.005775346910999707,fresh_worse
+NTP,Australia 1995 Female 25-34 Middle Working Divorced or separated,0.0929890516258421,0.0906175409685583,Australia 1995,-0.002371510657283804,fresh_better
+NTP,Australia 1995 Female 25-34 Middle Working Married,0.2248697343260743,0.2194919036814561,Australia 1995,-0.005377830644618192,fresh_better
+NTP,Australia 1995 Female 35-44 High Working Married,0.1252254050970076,0.1130165494206262,Australia 1995,-0.012208855676381414,fresh_better
+NTP,Australia 1995 Female 35-44 Middle Homemaker Married,0.0511148963851491,0.0494436114829881,Australia 1995,-0.0016712849021610007,fresh_better
+NTP,Australia 1995 Female 35-44 Middle Working Married,0.0186834812164307,0.0014969561501242,Australia 1995,-0.017186525066306503,fresh_better
+NTP,Australia 1995 Female 45-54 High Homemaker Married,0.1760772493752565,0.1760543467129466,Australia 1995,-2.290266230992044e-05,fresh_better
+NTP,Australia 1995 Female 45-54 High Retired Divorced or separated,0.0875757985255297,0.0893500026594965,Australia 1995,0.0017742041339667974,fresh_worse
+NTP,Australia 1995 Female 45-54 High Working Married,0.101995418730535,0.0955674670923962,Australia 1995,-0.006427951638138793,fresh_better
+NTP,Australia 1995 Female 45-54 Middle Homemaker Married,0.1121983075964041,0.1132359826118333,Australia 1995,0.0010376750154292014,fresh_worse
+NTP,Australia 1995 Female 45-54 Middle Working Divorced or separated,0.0864645938078562,0.0796740506412647,Australia 1995,-0.006790543166591501,fresh_better
+NTP,Australia 1995 Female 45-54 Middle Working Married,0.1478472959761524,0.1585992904437853,Australia 1995,0.010751994467632892,fresh_worse
+NTP,Australia 1995 Female 55-64 Middle Retired Married,0.1130222174628027,0.1156534764752553,Australia 1995,0.0026312590124526053,fresh_worse
+NTP,Australia 1995 Female 65-74 Middle Retired Married,0.051099055070503,0.0489163282586246,Australia 1995,-0.002182726811878394,fresh_better
+NTP,Australia 1995 Female 65-74 Middle Retired Widowed,0.0245173827448583,0.0191920347846801,Australia 1995,-0.005325347960178202,fresh_better
+NTP,Australia 1995 Female 75+ Middle Retired Widowed,0.0333399302081057,0.037119774045507,Australia 1995,0.003779843837401299,fresh_worse
+NTP,Australia 1995 Female <25 High Student Single,0.1999386789763503,0.204797401062016,Australia 1995,0.0048587220856657065,fresh_worse
+NTP,Australia 1995 Female <25 High Working Single,0.1190417973756116,0.1036529397815282,Australia 1995,-0.0153888575940834,fresh_better
+NTP,Australia 1995 Female <25 Middle Student Single,0.1924675785879893,0.1914047123753384,Australia 1995,-0.0010628662126508925,fresh_better
+NTP,Australia 1995 Female <25 Middle Working Single,0.2345116154143686,0.2403104973907375,Australia 1995,0.005798881976368908,fresh_worse
+NTP,Australia 1995 Male 25-34 High Working Cohabiting,0.0550749437375502,0.055721848884466,Australia 1995,0.0006469051469157952,fresh_worse
+NTP,Australia 1995 Male 25-34 High Working Married,0.1675398516760578,0.1545969893263228,Australia 1995,-0.012942862349735018,fresh_better
+NTP,Australia 1995 Male 25-34 High Working Single,0.0224697727535824,0.0260159409976455,Australia 1995,0.0035461682440630984,fresh_worse
+NTP,Australia 1995 Male 25-34 Middle Working Cohabiting,0.0385782556689304,0.0347128854977075,Australia 1995,-0.003865370171222904,fresh_better
+NTP,Australia 1995 Male 25-34 Middle Working Married,0.1152266535582071,0.0826696148382685,Australia 1995,-0.032557038719938605,fresh_better
+NTP,Australia 1995 Male 25-34 Middle Working Single,0.0220786445637687,0.0098383669955032,Australia 1995,-0.0122402775682655,fresh_better
+NTP,Australia 1995 Male 35-44 High Working Married,0.0174542219495676,0.0061837613821911,Australia 1995,-0.0112704605673765,fresh_better
+NTP,Australia 1995 Male 35-44 Middle NA Married,0.1830506787580601,0.1781725498753897,Australia 1995,-0.004878128882670418,fresh_better
+NTP,Australia 1995 Male 35-44 Middle Working Married,0.0756641823356433,0.0572366363490204,Australia 1995,-0.018427545986622898,fresh_better
+NTP,Australia 1995 Male 45-54 High Working Cohabiting,0.0467077869828007,0.0426868859393119,Australia 1995,-0.004020901043488803,fresh_better
+NTP,Australia 1995 Male 45-54 High Working Married,0.0029091460359228,0.0149196824527386,Australia 1995,0.0120105364168158,fresh_worse
+NTP,Australia 1995 Male 45-54 Middle Retired Married,0.0190002498301591,0.0259004830185057,Australia 1995,0.006900233188346597,fresh_worse
+NTP,Australia 1995 Male 45-54 Middle Working Married,0.1439531668938143,0.1124361000792976,Australia 1995,-0.0315170668145167,fresh_better
+NTP,Australia 1995 Male 55-64 Middle Retired Divorced or separated,0.140816228512006,0.1453808500377328,Australia 1995,0.004564621525726786,fresh_worse
+NTP,Australia 1995 Male 55-64 Middle Retired Married,0.0946970992775818,0.1035236463110494,Australia 1995,0.008826547033467608,fresh_worse
+NTP,Australia 1995 Male 55-64 Middle Working Married,0.0692460898842137,0.0396087104207182,Australia 1995,-0.029637379463495497,fresh_better
+NTP,Australia 1995 Male 65-74 High Retired Married,0.1276573029003645,0.1246324126083011,Australia 1995,-0.0030248902920634035,fresh_better
+NTP,Australia 1995 Male 65-74 Middle Retired Married,0.1464677681880334,0.1506957393276305,Australia 1995,0.004227971139597109,fresh_worse
+NTP,Australia 1995 Male 65-74 Middle Retired Widowed,0.0676565306040706,0.0645458449354731,Australia 1995,-0.0031106856685974987,fresh_better
+NTP,Australia 1995 Male 75+ Middle Retired Married,0.1123296964168546,0.1137586041275022,Australia 1995,0.0014289077106476034,fresh_worse
+NTP,Australia 1995 Male <25 High Student Single,0.0725253361773179,0.0699517312789386,Australia 1995,-0.0025736048983793086,fresh_better
+NTP,Australia 1995 Male <25 High Working Single,0.0828164941386173,0.0889257742786743,Australia 1995,0.006109280140057002,fresh_worse
+NTP,Australia 1995 Male <25 Middle Student Single,0.1364367615718107,0.1307496379191134,Australia 1995,-0.005687123652697301,fresh_better
+NTP,Australia 1995 Male <25 Middle Working Single,0.1575628708709369,0.1525713087050186,Australia 1995,-0.004991562165918312,fresh_better
+NTP,Australia 2005 Female 25-34 High Homemaker Married,0.0707246214151386,0.0643372632364333,Australia 2005,-0.00638735817870531,fresh_better
+NTP,Australia 2005 Female 25-34 High Working Cohabiting,0.042303209858281,0.0316285701115459,Australia 2005,-0.010674639746735104,fresh_better
+NTP,Australia 2005 Female 25-34 High Working Married,0.0932777957482775,0.0945552646218566,Australia 2005,0.001277468873579088,fresh_worse
+NTP,Australia 2005 Female 25-34 High Working Single,0.1256289515230394,0.1342917542712715,Australia 2005,0.008662802748232085,fresh_worse
+NTP,Australia 2005 Female 35-44 High Working Divorced or separated,0.0026609778404235,4.935450440757272e-05,Australia 2005,-0.0026116233360159273,fresh_better
+NTP,Australia 2005 Female 35-44 High Working Married,0.0448734979584533,0.0329009786001161,Australia 2005,-0.011972519358337201,fresh_better
+NTP,Australia 2005 Female 35-44 Middle Working Married,0.0350918543338776,0.0151437216253517,Australia 2005,-0.019948132708525898,fresh_better
+NTP,Australia 2005 Female 45-54 High Working Married,0.1312741838968715,0.1248351736107115,Australia 2005,-0.006439010286160007,fresh_better
+NTP,Australia 2005 Female 45-54 Middle Retired Single,0.0146293729543685,0.0299497167122786,Australia 2005,0.015320343757910098,fresh_worse
+NTP,Australia 2005 Female 45-54 Middle Working Married,0.0968667174640458,0.0885790313774537,Australia 2005,-0.008287686086592111,fresh_better
+NTP,Australia 2005 Female 55-64 High Working Married,0.17190297531045,0.1754555723588737,Australia 2005,0.0035525970484237,fresh_worse
+NTP,Australia 2005 Female 55-64 Middle Homemaker Married,0.138927549123764,0.1413742244935136,Australia 2005,0.0024466753697496013,fresh_worse
+NTP,Australia 2005 Female 55-64 Middle Retired Divorced or separated,0.0688733930389087,0.0740927199514061,Australia 2005,0.0052193269124973934,fresh_worse
+NTP,Australia 2005 Female 55-64 Middle Retired Married,0.3146984715941091,0.323853141226192,Australia 2005,0.009154669632082946,fresh_worse
+NTP,Australia 2005 Female 55-64 Middle Working Married,0.1158769027046535,0.1078921864176583,Australia 2005,-0.007984716286995208,fresh_better
+NTP,Australia 2005 Female 65-74 High Retired Married,0.0364400302541669,0.0364058643486291,Australia 2005,-3.416590553780019e-05,fresh_better
+NTP,Australia 2005 Female 65-74 High Retired Widowed,0.1236087496526194,0.1202706515656933,Australia 2005,-0.003338098086926103,fresh_better
+NTP,Australia 2005 Female 65-74 Middle Retired Married,0.0855837669763445,0.0909978356686542,Australia 2005,0.005414068692309704,fresh_worse
+NTP,Australia 2005 Female 65-74 Middle Retired Widowed,0.0949434727179904,0.0995950813677216,Australia 2005,0.004651608649731201,fresh_worse
+NTP,Australia 2005 Female 75+ Middle Retired Widowed,0.2094498373471298,0.2096619694083145,Australia 2005,0.00021213206118469996,fresh_worse
+NTP,Australia 2005 Female <25 High Working Single,0.0053857941837872,0.0168761981689355,Australia 2005,0.0114904039851483,fresh_worse
+NTP,Australia 2005 Male 25-34 High Working Married,0.0173345295394338,0.0212090515357827,Australia 2005,0.003874521996348898,fresh_worse
+NTP,Australia 2005 Male 25-34 High Working Single,0.0210239350795746,0.0154840492877157,Australia 2005,-0.005539885791858901,fresh_better
+NTP,Australia 2005 Male 35-44 High Working Married,0.0335788300224378,0.0039584682746012,Australia 2005,-0.0296203617478366,fresh_better
+NTP,Australia 2005 Male 35-44 Middle Working Married,0.1081298662198555,0.1166379089953264,Australia 2005,0.008508042775470903,fresh_worse
+NTP,Australia 2005 Male 35-44 Middle Working Single,0.1512776073955353,0.1646510335048912,Australia 2005,0.01337342610935588,fresh_worse
+NTP,Australia 2005 Male 45-54 High Working Divorced or separated,0.1418702201409773,0.1378565003792956,Australia 2005,-0.004013719761681717,fresh_better
+NTP,Australia 2005 Male 45-54 High Working Married,0.0139001878408284,0.015226910378052,Australia 2005,0.0013267225372235996,fresh_worse
+NTP,Australia 2005 Male 45-54 Middle Working Married,0.0764852666841655,0.0892447994684729,Australia 2005,0.0127595327843074,fresh_worse
+NTP,Australia 2005 Male 55-64 High Retired Married,0.1054985822254909,0.0936044769530738,Australia 2005,-0.011894105272417091,fresh_better
+NTP,Australia 2005 Male 55-64 High Working Married,0.0493967312574387,0.0287104206421767,Australia 2005,-0.020686310615262,fresh_better
+NTP,Australia 2005 Male 55-64 Middle Working Married,0.2429218185042201,0.2330238826475528,Australia 2005,-0.00989793585666729,fresh_better
+NTP,Australia 2005 Male 65-74 High Retired Married,0.0896132931113241,0.0946056241476638,Australia 2005,0.004992331036339698,fresh_worse
+NTP,Australia 2005 Male 65-74 Middle Retired Married,0.0110423423231332,0.0065890605711649,Australia 2005,-0.004453281751968299,fresh_better
+NTP,Australia 2005 Male 75+ Middle Retired Married,0.0125309030214947,0.0340402578264581,Australia 2005,0.021509354804963403,fresh_worse
+NTP,Australia 2005 Male <25 High Working Single,0.0166264957851833,0.0003466170773966,Australia 2005,-0.0162798787077867,fresh_better
+NTP,Australia 2018 Female 25-34 High Working Cohabiting,0.03986243749487,0.0447024584436097,Australia 2018,0.004840020948739698,fresh_worse
+NTP,Australia 2018 Female 25-34 High Working Married,0.0389218907803296,0.0258744502604174,Australia 2018,-0.0130474405199122,fresh_better
+NTP,Australia 2018 Female 25-34 High Working Single,0.0714547525752674,0.0857855945684212,Australia 2018,0.014330841993153806,fresh_worse
+NTP,Australia 2018 Female 25-34 Middle Working Married,0.2131870292565402,0.1915675633623845,Australia 2018,-0.0216194658941557,fresh_better
+NTP,Australia 2018 Female 35-44 High Homemaker Married,0.0680971697289892,0.0623606292300239,Australia 2018,-0.005736540498965298,fresh_better
+NTP,Australia 2018 Female 35-44 High Working Cohabiting,0.2131790116429329,0.2170215615016105,Australia 2018,0.003842549858677602,fresh_worse
+NTP,Australia 2018 Female 35-44 High Working Married,0.0068127760227685,0.0184638132401684,Australia 2018,0.011651037217399901,fresh_worse
+NTP,Australia 2018 Female 35-44 High Working Single,0.2156370304248948,0.2194027799458922,Australia 2018,0.003765749520997397,fresh_worse
+NTP,Australia 2018 Female 35-44 Middle Homemaker Married,0.0492375389653808,0.0448554313960465,Australia 2018,-0.004382107569334298,fresh_better
+NTP,Australia 2018 Female 35-44 Middle Working Married,0.1033347064051135,0.0965971454603417,Australia 2018,-0.006737560944771792,fresh_better
+NTP,Australia 2018 Female 45-54 High Working Married,0.0316284922036257,0.0397288047552952,Australia 2018,0.0081003125516695,fresh_worse
+NTP,Australia 2018 Female 45-54 Middle Working Cohabiting,0.02289063280279,0.0226097910980582,Australia 2018,-0.00028084170473179765,fresh_better
+NTP,Australia 2018 Female 45-54 Middle Working Married,0.0131456716494123,0.0165907658364217,Australia 2018,0.0034450941870094003,fresh_worse
+NTP,Australia 2018 Female 55-64 High Working Divorced or separated,0.2963258720733027,0.3058469768987515,Australia 2018,0.009521104825448823,fresh_worse
+NTP,Australia 2018 Female 55-64 High Working Married,0.0236444329447029,0.0192701317186287,Australia 2018,-0.004374301226074198,fresh_better
+NTP,Australia 2018 Female 55-64 Middle Retired Married,0.042399229481816,0.0381870666144783,Australia 2018,-0.0042121628673377,fresh_better
+NTP,Australia 2018 Female 55-64 Middle Working Divorced or separated,0.1897770434617995,0.1912693249959952,Australia 2018,0.0014922815341956996,fresh_worse
+NTP,Australia 2018 Female 55-64 Middle Working Married,0.0698032767142891,0.074117995827218,Australia 2018,0.004314719112928897,fresh_worse
+NTP,Australia 2018 Female 55-64 Middle Working Widowed,0.2020987243879409,0.1947402570578991,Australia 2018,-0.007358467330041807,fresh_better
+NTP,Australia 2018 Female 65-74 High Retired Married,0.3570015985478636,0.3676555375582996,Australia 2018,0.010653939010435987,fresh_worse
+NTP,Australia 2018 Female 65-74 High Retired Widowed,0.2858274400234223,0.2945642034209022,Australia 2018,0.008736763397479919,fresh_worse
+NTP,Australia 2018 Female 65-74 Low Retired Married,0.1558927504383787,0.1502474604594864,Australia 2018,-0.005645289978892298,fresh_better
+NTP,Australia 2018 Female 65-74 Middle Retired Divorced or separated,0.1064735757725318,0.1040785094548404,Australia 2018,-0.002395066317691402,fresh_better
+NTP,Australia 2018 Female 65-74 Middle Retired Married,0.0764412049091224,0.0866224063497526,Australia 2018,0.0101812014406302,fresh_worse
+NTP,Australia 2018 Female 65-74 Middle Retired Widowed,0.1968021546640703,0.2021697111662366,Australia 2018,0.005367556502166304,fresh_worse
+NTP,Australia 2018 Female 75+ Low Retired Widowed,0.0589996059185906,0.049601486912608,Australia 2018,-0.0093981190059826,fresh_better
+NTP,Australia 2018 Female 75+ Middle Retired Married,0.0848289728164674,0.0850038640817965,Australia 2018,0.00017489126532910237,fresh_worse
+NTP,Australia 2018 Female 75+ Middle Retired Widowed,0.0582114982604978,0.0562354402530345,Australia 2018,-0.0019760580074632966,fresh_better
+NTP,Australia 2018 Female <25 Middle Student Single,0.1181051843875164,0.1078895830007078,Australia 2018,-0.01021560138680859,fresh_better
+NTP,Australia 2018 Female <25 Middle Working Single,0.037752959036058,0.0478440197401847,Australia 2018,0.0100910607041267,fresh_worse
+NTP,Australia 2018 Male 25-34 High Working Married,0.2824014978749412,0.2874167540571054,Australia 2018,0.005015256182164196,fresh_worse
+NTP,Australia 2018 Male 25-34 High Working Single,0.1887106491673375,0.1791056917593662,Australia 2018,-0.00960495740797132,fresh_better
+NTP,Australia 2018 Male 35-44 High Working Married,0.2586409214944125,0.2305393379073465,Australia 2018,-0.028101583587065992,fresh_better
+NTP,Australia 2018 Male 35-44 Middle Working Married,0.0639275908470154,0.0693271237277222,Australia 2018,0.005399532880706812,fresh_worse
+NTP,Australia 2018 Male 45-54 High Working Married,0.1828796037218789,0.1694616664179822,Australia 2018,-0.013417937303896704,fresh_better
+NTP,Australia 2018 Male 45-54 Middle Working Married,0.1668277418329602,0.1658194158287173,Australia 2018,-0.0010083260042429154,fresh_better
+NTP,Australia 2018 Male 45-54 Middle Working Single,0.0722876875126947,0.0723944019682837,Australia 2018,0.00010671445558900483,fresh_worse
+NTP,Australia 2018 Male 55-64 High Unemployed Married,0.0248445329212008,0.0190703841315844,Australia 2018,-0.0057741487896164,fresh_better
+NTP,Australia 2018 Male 55-64 High Working Married,0.0695321516557172,0.0935383730560714,Australia 2018,0.024006221400354202,fresh_worse
+NTP,Australia 2018 Male 55-64 Middle Working Divorced or separated,0.0849330037832258,0.0797024292723672,Australia 2018,-0.005230574510858593,fresh_better
+NTP,Australia 2018 Male 55-64 Middle Working Married,0.01283922568362,0.0143424934055215,Australia 2018,0.0015032677219014995,fresh_worse
+NTP,Australia 2018 Male 65-74 High Retired Divorced or separated,0.2576225381908996,0.2577955502441885,Australia 2018,0.00017301205328890124,fresh_worse
+NTP,Australia 2018 Male 65-74 High Retired Married,0.1641758625351245,0.1687143037860792,Australia 2018,0.004538441250954706,fresh_worse
+NTP,Australia 2018 Male 65-74 Low Retired Married,0.0884179707266326,0.0761436645908106,Australia 2018,-0.012274306135822005,fresh_better
+NTP,Australia 2018 Male 65-74 Middle Retired Divorced or separated,0.0095635862911447,0.0129087761525237,Australia 2018,0.0033451898613790013,fresh_worse
+NTP,Australia 2018 Male 65-74 Middle Retired Married,0.1176759278121059,0.1237780004203029,Australia 2018,0.006102072608197007,fresh_worse
+NTP,Australia 2018 Male 75+ High Retired Married,0.0999993220863178,0.1103797618315947,Australia 2018,0.010380439745276901,fresh_worse
+NTP,Australia 2018 Male 75+ Low Retired Widowed,0.105496207009191,0.1012898011328758,Australia 2018,-0.004206405876315197,fresh_better
+NTP,Australia 2018 Male 75+ Middle Retired Married,0.021289667357569,0.0059547338416314,Australia 2018,-0.0153349335159376,fresh_better
+NTP,Australia 2018 Male <25 Middle Student Single,0.0341563251885501,0.0319686931412974,Australia 2018,-0.0021876320472527036,fresh_better
+NTP,Germany 1997 Female 25-34 High Student Cohabiting,0.2119227338796374,0.2193438851807871,Germany 1997,0.007421151301149703,fresh_worse
+NTP,Germany 1997 Female 25-34 High Working Cohabiting,0.0558081882819058,0.065981749768974,Germany 1997,0.010173561487068203,fresh_worse
+NTP,Germany 1997 Female 25-34 High Working Married,0.0703616742082315,0.0543772841921856,Germany 1997,-0.015984390016045902,fresh_better
+NTP,Germany 1997 Female 25-34 High Working Single,0.0011519010676893,0.0100116831260251,Germany 1997,0.0088597820583358,fresh_worse
+NTP,Germany 1997 Female 25-34 Middle Homemaker Married,0.205271831994154,0.2040323208193397,Germany 1997,-0.0012395111748143006,fresh_better
+NTP,Germany 1997 Female 25-34 Middle NA Married,0.1645202511328237,0.1697411662043449,Germany 1997,0.005220915071521198,fresh_worse
+NTP,Germany 1997 Female 25-34 Middle Working Married,0.2331486218437763,0.2392183110391058,Germany 1997,0.006069689195329492,fresh_worse
+NTP,Germany 1997 Female 25-34 Middle Working Single,0.0412867788610786,0.0383123915046366,Germany 1997,-0.002974387356442003,fresh_better
+NTP,Germany 1997 Female 35-44 High Working Divorced or separated,0.0960638317568547,0.0971534795830568,Germany 1997,0.001089647826202092,fresh_worse
+NTP,Germany 1997 Female 35-44 High Working Married,0.0974822566533507,0.0844451843595971,Germany 1997,-0.013037072293753602,fresh_better
+NTP,Germany 1997 Female 35-44 Middle Unemployed Divorced or separated,0.1391364098564396,0.143766277124347,Germany 1997,0.0046298672679074004,fresh_worse
+NTP,Germany 1997 Female 35-44 Middle Working Divorced or separated,0.0973545809264306,0.1013772188409743,Germany 1997,0.0040226379145437,fresh_worse
+NTP,Germany 1997 Female 35-44 Middle Working Married,0.1482249438354814,0.137021951381267,Germany 1997,-0.011202992454214411,fresh_better
+NTP,Germany 1997 Female 45-54 Middle Homemaker Married,0.1279617122241427,0.1276478754836285,Germany 1997,-0.0003138367405142173,fresh_better
+NTP,Germany 1997 Female 45-54 Middle Unemployed Married,0.3519510151748373,0.3395770517559821,Germany 1997,-0.012373963418855216,fresh_better
+NTP,Germany 1997 Female 45-54 Middle Working Married,0.145651780220927,0.1550444894985326,Germany 1997,0.009392709277605604,fresh_worse
+NTP,Germany 1997 Female 55-64 High Retired Married,0.1601835486920256,0.1552570844575424,Germany 1997,-0.004926464234483202,fresh_better
+NTP,Germany 1997 Female 55-64 Middle Retired Married,0.1948478547009555,0.1978944218158861,Germany 1997,0.003046567114930593,fresh_worse
+NTP,Germany 1997 Female 55-64 Middle Retired Widowed,0.0917958653334415,0.0849632447801255,Germany 1997,-0.006832620553316002,fresh_better
+NTP,Germany 1997 Female 65-74 High Retired Widowed,0.3264808717228116,0.3319160523403004,Germany 1997,0.005435180617488822,fresh_worse
+NTP,Germany 1997 Female 65-74 Low Retired Widowed,0.2235251380049664,0.2294778534476497,Germany 1997,0.005952715442683304,fresh_worse
+NTP,Germany 1997 Female 65-74 Middle Retired Divorced or separated,0.0916631023089091,0.0844003376873204,Germany 1997,-0.007262764621588702,fresh_better
+NTP,Germany 1997 Female 65-74 Middle Retired Married,0.2758657465810362,0.2706265149581762,Germany 1997,-0.005239231622859997,fresh_better
+NTP,Germany 1997 Female 65-74 Middle Retired Widowed,0.0804718352026413,0.0937371024272277,Germany 1997,0.013265267224586402,fresh_worse
+NTP,Germany 1997 Female 75+ Middle Retired Widowed,0.0786677782275094,0.077637159701604,Germany 1997,-0.0010306185259053996,fresh_better
+NTP,Germany 1997 Female <25 High Student Single,0.183706073631794,0.1871130392075435,Germany 1997,0.0034069655757494877,fresh_worse
+NTP,Germany 1997 Female <25 High Working Single,0.1279343894786302,0.1310668149708495,Germany 1997,0.0031324254922192873,fresh_worse
+NTP,Germany 1997 Female <25 Middle Working Single,0.0445708287389654,0.0456912318087248,Germany 1997,0.0011204030697593986,fresh_worse
+NTP,Germany 1997 Male 25-34 High Student Single,0.0513950047038852,0.0319984248258874,Germany 1997,-0.019396579877997804,fresh_better
+NTP,Germany 1997 Male 25-34 High Working Married,0.145185068897579,0.1474889899660481,Germany 1997,0.002303921068469078,fresh_worse
+NTP,Germany 1997 Male 25-34 High Working Single,0.0078776682403209,0.0034224437671642,Germany 1997,-0.004455224473156699,fresh_better
+NTP,Germany 1997 Male 25-34 Middle Unemployed Single,0.0052390081317801,0.0098399824193657,Germany 1997,0.004600974287585601,fresh_worse
+NTP,Germany 1997 Male 25-34 Middle Working Cohabiting,0.2676969388256902,0.2738774825579547,Germany 1997,0.00618054373226451,fresh_worse
+NTP,Germany 1997 Male 25-34 Middle Working Married,0.1700912508529811,0.1962481644393927,Germany 1997,0.02615691358641159,fresh_worse
+NTP,Germany 1997 Male 25-34 Middle Working Single,0.221605575849881,0.2242791557013553,Germany 1997,0.0026735798514742892,fresh_worse
+NTP,Germany 1997 Male 35-44 High Working Married,0.0064688578716207,0.0141281397600762,Germany 1997,0.0076592818884555,fresh_worse
+NTP,Germany 1997 Male 35-44 Middle Unemployed Married,0.1528054562047229,0.1594348331745059,Germany 1997,0.006629376969782996,fresh_worse
+NTP,Germany 1997 Male 35-44 Middle Working Divorced or separated,0.1466817284376489,0.1502396110959684,Germany 1997,0.0035578826583194945,fresh_worse
+NTP,Germany 1997 Male 35-44 Middle Working Married,0.1338147136298094,0.1364822366485564,Germany 1997,0.002667523018747009,fresh_worse
+NTP,Germany 1997 Male 45-54 High Working Married,0.1938870409522393,0.185368708254706,Germany 1997,-0.008518332697533298,fresh_better
+NTP,Germany 1997 Male 45-54 Middle Working Married,0.2371613608969081,0.2300293916125518,Germany 1997,-0.007131969284356304,fresh_better
+NTP,Germany 1997 Male 55-64 High Retired Married,0.0170135671893756,0.0086940044710754,Germany 1997,-0.0083195627183002,fresh_better
+NTP,Germany 1997 Male 55-64 Middle Retired Married,0.2920911148553941,0.2885101982525461,Germany 1997,-0.0035809166028479833,fresh_better
+NTP,Germany 1997 Male 65-74 High Retired Married,0.3081049949958408,0.3149385351950989,Germany 1997,0.006833540199258081,fresh_worse
+NTP,Germany 1997 Male 65-74 Middle Retired Married,0.1770501515385528,0.1868699257098566,Germany 1997,0.009819774171303808,fresh_worse
+NTP,Germany 1997 Male 65-74 Middle Retired Widowed,0.0678568640175988,0.0637956305941416,Germany 1997,-0.004061233423457197,fresh_better
+NTP,Germany 1997 Male <25 High Student Cohabiting,0.1382186845108702,0.1329560970336317,Germany 1997,-0.005262587477238484,fresh_better
+NTP,Germany 1997 Male <25 High Student Single,0.0816904564796409,0.0991498801144469,Germany 1997,0.017459423634806,fresh_worse
+NTP,Germany 1997 Male <25 Middle Working Single,0.2556014928747627,0.2476129567274332,Germany 1997,-0.0079885361473295,fresh_better
+NTP,Germany 2006 Female 25-34 High Homemaker Married,0.232323515505502,0.2328770952170728,Germany 2006,0.0005535797115708008,fresh_worse
+NTP,Germany 2006 Female 25-34 High Working Single,0.072058599073808,0.0792184561389176,Germany 2006,0.007159857065109604,fresh_worse
+NTP,Germany 2006 Female 25-34 Middle Homemaker Married,0.0745103923796579,0.073572333697501,Germany 2006,-0.000938058682156892,fresh_better
+NTP,Germany 2006 Female 25-34 Middle Working Married,0.2722222646941308,0.2894870045890144,Germany 2006,0.017264739894883585,fresh_worse
+NTP,Germany 2006 Female 25-34 Middle Working Single,0.0656735535823935,0.0701566476750332,Germany 2006,0.0044830940926396945,fresh_worse
+NTP,Germany 2006 Female 35-44 High Working Married,0.0408177668494837,0.0282125984918052,Germany 2006,-0.012605168357678498,fresh_better
+NTP,Germany 2006 Female 35-44 Middle Unemployed Married,0.266380646483229,0.2617354879317525,Germany 2006,-0.004645158551476514,fresh_better
+NTP,Germany 2006 Female 35-44 Middle Working Cohabiting,0.0947691086265775,0.0956692091694265,Germany 2006,0.0009001005428490028,fresh_worse
+NTP,Germany 2006 Female 35-44 Middle Working Divorced or separated,0.0527694308239482,0.0554932851961885,Germany 2006,0.002723854372240299,fresh_worse
+NTP,Germany 2006 Female 35-44 Middle Working Married,0.1275571568371498,0.1265224955686503,Germany 2006,-0.0010346612684994927,fresh_better
+NTP,Germany 2006 Female 45-54 High Working Married,0.1897204828028584,0.1977097090650164,Germany 2006,0.007989226262158006,fresh_worse
+NTP,Germany 2006 Female 45-54 Middle Homemaker Married,0.0841580177346864,0.0806210289466836,Germany 2006,-0.003536988788002793,fresh_better
+NTP,Germany 2006 Female 45-54 Middle Unemployed Divorced or separated,0.1925256713768183,0.1924457853776197,Germany 2006,-7.98859991986145e-05,fresh_better
+NTP,Germany 2006 Female 45-54 Middle Unemployed Married,0.2076971792420852,0.2029295612445639,Germany 2006,-0.0047676179975212896,fresh_better
+NTP,Germany 2006 Female 45-54 Middle Working Divorced or separated,0.1425688240839086,0.1454041226445138,Germany 2006,0.0028352985606051873,fresh_worse
+NTP,Germany 2006 Female 45-54 Middle Working Married,0.0976795768678411,0.0986415625714276,Germany 2006,0.000961985703586507,fresh_worse
+NTP,Germany 2006 Female 55-64 Low Retired Married,0.0801800405695323,0.0752208655854459,Germany 2006,-0.004959174984086406,fresh_better
+NTP,Germany 2006 Female 55-64 Low Retired Widowed,0.0359658233324686,0.0443243154212842,Germany 2006,0.008358492088815596,fresh_worse
+NTP,Germany 2006 Female 55-64 Middle Homemaker Married,0.1012944534920049,0.1003534885490735,Germany 2006,-0.0009409649429314021,fresh_better
+NTP,Germany 2006 Female 55-64 Middle Retired Married,0.1940185457468033,0.1968701927400836,Germany 2006,0.0028516469932803046,fresh_worse
+NTP,Germany 2006 Female 55-64 Middle Retired Widowed,0.1246911556824393,0.1157695786136403,Germany 2006,-0.008921577068798994,fresh_better
+NTP,Germany 2006 Female 55-64 Middle Working Married,0.2581577018687599,0.2443389187340903,Germany 2006,-0.01381878313466961,fresh_better
+NTP,Germany 2006 Female 65-74 High Retired Married,0.246118637997853,0.253526950811767,Germany 2006,0.00740831281391402,fresh_worse
+NTP,Germany 2006 Female 65-74 Low Retired Married,0.222859455263892,0.2237446013283315,Germany 2006,0.0008851460644394848,fresh_worse
+NTP,Germany 2006 Female 65-74 Low Retired Widowed,0.0903537977696034,0.085796261055814,Germany 2006,-0.00455753671378939,fresh_better
+NTP,Germany 2006 Female 65-74 Middle Retired Divorced or separated,0.1144847214221955,0.1262644439817042,Germany 2006,0.011779722559508696,fresh_worse
+NTP,Germany 2006 Female 65-74 Middle Retired Married,0.0069289600869598,0.0127666037684915,Germany 2006,0.005837643681531699,fresh_worse
+NTP,Germany 2006 Female 65-74 Middle Retired Widowed,0.0785380174243262,0.0771335509182011,Germany 2006,-0.0014044665061251072,fresh_better
+NTP,Germany 2006 Female 75+ Low Retired Widowed,0.0293235028438673,0.0352866839145267,Germany 2006,0.005963181070659396,fresh_worse
+NTP,Germany 2006 Female 75+ Middle Retired Widowed,0.085702956869052,0.0877844118047188,Germany 2006,0.0020814549356668044,fresh_worse
+NTP,Germany 2006 Female <25 High Student Single,0.0034606784407853,0.0006085819815065,Germany 2006,-0.0028520964592788,fresh_better
+NTP,Germany 2006 Female <25 Middle Student Single,0.0263918235636595,0.0338011917916789,Germany 2006,0.007409368228019398,fresh_worse
+NTP,Germany 2006 Female <25 Middle Working Single,0.263875033458074,0.2719535467520521,Germany 2006,0.008078513293978073,fresh_worse
+NTP,Germany 2006 Male 25-34 High Working Single,0.1270201769389007,0.1195349907332113,Germany 2006,-0.007485186205689387,fresh_better
+NTP,Germany 2006 Male 25-34 Middle Working Married,0.0390860040565163,0.0399467380874362,Germany 2006,0.0008607340309199005,fresh_worse
+NTP,Germany 2006 Male 25-34 Middle Working Single,0.0609638364542098,0.0616357417365569,Germany 2006,0.0006719052823470975,fresh_worse
+NTP,Germany 2006 Male 35-44 High Working Married,0.0006431988300287,0.0033851341067318,Germany 2006,0.0027419352767031,fresh_worse
+NTP,Germany 2006 Male 35-44 Middle Working Married,0.1211723236200656,0.1194891089636894,Germany 2006,-0.0016832146563761918,fresh_better
+NTP,Germany 2006 Male 45-54 High Working Married,0.0330703559284387,0.0388938484801137,Germany 2006,0.005823492551675004,fresh_worse
+NTP,Germany 2006 Male 45-54 Middle Unemployed Married,0.1897012791296347,0.1913219378526103,Germany 2006,0.0016206587229756209,fresh_worse
+NTP,Germany 2006 Male 45-54 Middle Working Divorced or separated,0.0395815987897112,0.0347167978534019,Germany 2006,-0.004864800936309303,fresh_better
+NTP,Germany 2006 Male 45-54 Middle Working Married,0.1348623830471103,0.1500253601722514,Germany 2006,0.015162977125141114,fresh_worse
+NTP,Germany 2006 Male 55-64 High Retired Married,0.0004485423366229,0.0095319630154349,Germany 2006,0.009083420678812001,fresh_worse
+NTP,Germany 2006 Male 55-64 High Working Married,0.0509274848378621,0.0533431281280636,Germany 2006,0.002415643290201497,fresh_worse
+NTP,Germany 2006 Male 55-64 Middle Retired Married,0.114775072115439,0.1156131152016861,Germany 2006,0.0008380430862471033,fresh_worse
+NTP,Germany 2006 Male 55-64 Middle Working Married,0.0268466893404518,0.0339674233895155,Germany 2006,0.007120734049063701,fresh_worse
+NTP,Germany 2006 Male 65-74 High Retired Married,0.124271659837804,0.1083951319800208,Germany 2006,-0.015876527857783193,fresh_better
+NTP,Germany 2006 Male 65-74 Low Retired Married,0.2265976869478457,0.2338084128813126,Germany 2006,0.007210725933466888,fresh_worse
+NTP,Germany 2006 Male 65-74 Middle Retired Married,0.1266399738605794,0.1315118326673743,Germany 2006,0.004871858806794888,fresh_worse
+NTP,Germany 2006 Male 65-74 Middle Retired Single,0.0128159274534315,0.0114486329584644,Germany 2006,-0.0013672944949671,fresh_better
+NTP,Germany 2006 Male 65-74 Middle Retired Widowed,0.1590918953284557,0.1566747375464222,Germany 2006,-0.0024171577820334966,fresh_better
+NTP,Germany 2006 Male 75+ Middle Retired Married,0.0317343279448423,0.0314343195401823,Germany 2006,-0.00030000840466000434,fresh_better
+NTP,Germany 2006 Male <25 High Student Single,0.0436735951441984,0.0543319932071242,Germany 2006,0.010658398062925803,fresh_worse
+NTP,Germany 2006 Male <25 Middle Student Single,0.1501163280287454,0.1368184847215207,Germany 2006,-0.013297843307224694,fresh_better
+NTP,Germany 2006 Male <25 Middle Working Single,0.0320185016502035,0.0303026826854744,Germany 2006,-0.0017158189647290996,fresh_better
+NTP,Germany 2018 Female 25-34 High Working Cohabiting,0.180595477692027,0.1864408168914934,Germany 2018,0.005845339199466393,fresh_worse
+NTP,Germany 2018 Female 25-34 Middle Working Cohabiting,0.1760938357223164,0.1896962723440771,Germany 2018,0.013602436621760694,fresh_worse
+NTP,Germany 2018 Female 25-34 Middle Working Single,0.132987420319031,0.1409226190505415,Germany 2018,0.007935198731510495,fresh_worse
+NTP,Germany 2018 Female 35-44 High Homemaker Married,0.0668649785220624,0.0709568982104399,Germany 2018,0.004091919688377507,fresh_worse
+NTP,Germany 2018 Female 35-44 High Working Married,0.0570740542681935,0.0683521277862188,Germany 2018,0.011278073518025296,fresh_worse
+NTP,Germany 2018 Female 35-44 Middle Working Married,0.054610161408494,0.0459861466204599,Germany 2018,-0.008624014788034103,fresh_better
+NTP,Germany 2018 Female 45-54 High Working Married,0.0906815767032708,0.0913152834815625,Germany 2018,0.0006337067782916928,fresh_worse
+NTP,Germany 2018 Female 45-54 High Working Single,0.1540627214263075,0.1541286391320908,Germany 2018,6.591770578329159e-05,fresh_worse
+NTP,Germany 2018 Female 45-54 Middle Working Divorced or separated,0.0228980133930845,0.0196319797352131,Germany 2018,-0.0032660336578714012,fresh_better
+NTP,Germany 2018 Female 45-54 Middle Working Married,0.0668986698514536,0.0565836751975113,Germany 2018,-0.010314994653942297,fresh_better
+NTP,Germany 2018 Female 55-64 Middle Homemaker Married,0.0120836800999112,0.0135103088136401,Germany 2018,0.0014266287137288999,fresh_worse
+NTP,Germany 2018 Female 55-64 Middle Working Married,0.0418093633233459,0.0341960826157383,Germany 2018,-0.0076132807076075976,fresh_better
+NTP,Germany 2018 Female 65-74 High Retired Widowed,0.175290467673506,0.1777495130493576,Germany 2018,0.002459045375851593,fresh_worse
+NTP,Germany 2018 Female 65-74 Low Retired Married,0.1385939862669968,0.1479140017642136,Germany 2018,0.00932001549721681,fresh_worse
+NTP,Germany 2018 Female 65-74 Middle Retired Married,0.0249186712549741,0.0160634101576671,Germany 2018,-0.008855261097307002,fresh_better
+NTP,Germany 2018 Female 65-74 Middle Retired Widowed,0.2476035524159668,0.2536014224359822,Germany 2018,0.005997870020015422,fresh_worse
+NTP,Germany 2018 Female 75+ Low Retired Widowed,0.1467154375438031,0.1372060427342993,Germany 2018,-0.009509394809503802,fresh_better
+NTP,Germany 2018 Female 75+ Middle Retired Married,0.0876966828391671,0.0961088114565773,Germany 2018,0.008412128617410211,fresh_worse
+NTP,Germany 2018 Female 75+ Middle Retired Widowed,0.1733244451983222,0.1724418242289803,Germany 2018,-0.0008826209693419129,fresh_better
+NTP,Germany 2018 Female <25 Middle Student Single,0.1050896410190945,0.1076320463756378,Germany 2018,0.0025424053565432925,fresh_worse
+NTP,Germany 2018 Male 25-34 High Working Married,0.1444048048866973,0.1341873207670443,Germany 2018,-0.010217484119653009,fresh_better
+NTP,Germany 2018 Male 25-34 High Working Single,0.2329240394921635,0.2183524663651898,Germany 2018,-0.014571573126973714,fresh_better
+NTP,Germany 2018 Male 25-34 Middle Student Cohabiting,0.022457120673997,0.0206249265661199,Germany 2018,-0.0018321941078771019,fresh_better
+NTP,Germany 2018 Male 25-34 Middle Student Single,0.0086721317615074,0.0045166759331726,Germany 2018,-0.0041554558283348,fresh_better
+NTP,Germany 2018 Male 25-34 Middle Working Married,0.0520281717181205,0.0661217383260075,Germany 2018,0.014093566607887,fresh_worse
+NTP,Germany 2018 Male 25-34 Middle Working Single,0.1135011577804699,0.12475523656933,Germany 2018,0.011254078788860103,fresh_worse
+NTP,Germany 2018 Male 35-44 High Working Married,0.1128347295522696,0.105872379281056,Germany 2018,-0.006962350271213599,fresh_better
+NTP,Germany 2018 Male 35-44 Middle Working Married,0.1995291303658316,0.2260999421921007,Germany 2018,0.02657081182626911,fresh_worse
+NTP,Germany 2018 Male 45-54 High Working Married,0.1449415832432063,0.13971507405728,Germany 2018,-0.005226509185926292,fresh_better
+NTP,Germany 2018 Male 45-54 Middle Working Divorced or separated,0.1586954519152639,0.1616529279948461,Germany 2018,0.0029574760795821886,fresh_worse
+NTP,Germany 2018 Male 45-54 Middle Working Married,0.0606251630927393,0.0351034097526328,Germany 2018,-0.0255217533401065,fresh_better
+NTP,Germany 2018 Male 55-64 High Working Married,0.0427156130988879,0.0506189424347947,Germany 2018,0.007903329335906803,fresh_worse
+NTP,Germany 2018 Male 55-64 Middle Working Married,0.0959299483553692,0.1024685158636709,Germany 2018,0.006538567508301701,fresh_worse
+NTP,Germany 2018 Male 65-74 High Retired Divorced or separated,0.0005756095051765,0.0062528160169376,Germany 2018,0.0056772065117611,fresh_worse
+NTP,Germany 2018 Male 65-74 High Retired Married,0.0800562229894454,0.0770440068772601,Germany 2018,-0.003012216112185301,fresh_better
+NTP,Germany 2018 Male 65-74 Middle Retired Married,0.0919031101768302,0.0837383713734415,Germany 2018,-0.008164738803388694,fresh_better
+NTP,Germany 2018 Male 75+ High Retired Married,0.0542420874039328,0.0729306110188475,Germany 2018,0.0186885236149147,fresh_worse
+NTP,Germany 2018 Male 75+ Middle Retired Married,0.0348415045217535,0.0389743258484724,Germany 2018,0.004132821326718904,fresh_worse
+NTP,Germany 2018 Male 75+ Middle Retired Widowed,0.1021321455637614,0.0981973855682342,Germany 2018,-0.003934759995527212,fresh_better
+NTP,Germany 2018 Male <25 Middle Student Single,0.0457761554468061,0.0517874230750046,Germany 2018,0.006011267628198501,fresh_worse
+NTP,Mexico 1996 Female 25-34 High Homemaker Married,0.2471237927925687,0.2522514732822237,Mexico 1996,0.0051276804896550066,fresh_worse
+NTP,Mexico 1996 Female 25-34 High Working Cohabiting,0.0996493583216386,0.1087315333128771,Mexico 1996,0.009082174991238506,fresh_worse
+NTP,Mexico 1996 Female 25-34 High Working Married,0.3210021763136891,0.3404595467367395,Mexico 1996,0.019457370423050402,fresh_worse
+NTP,Mexico 1996 Female 25-34 High Working Single,0.2037683602174123,0.1983171150054803,Mexico 1996,-0.005451245211931993,fresh_better
+NTP,Mexico 1996 Female 25-34 Low Homemaker Married,0.3114634969017725,0.3193913976695604,Mexico 1996,0.007927900767787877,fresh_worse
+NTP,Mexico 1996 Female 25-34 Middle Homemaker Married,0.0640077163401305,0.064704334584992,Mexico 1996,0.0006966182448615021,fresh_worse
+NTP,Mexico 1996 Female 25-34 Middle Unemployed Married,0.2084468039059548,0.2029037581922845,Mexico 1996,-0.005543045713670286,fresh_better
+NTP,Mexico 1996 Female 25-34 Middle Working Divorced or separated,0.0601658161344198,0.0592092368597088,Mexico 1996,-0.0009565792747109961,fresh_better
+NTP,Mexico 1996 Female 25-34 Middle Working Married,0.1498571195543939,0.156924886697255,Mexico 1996,0.007067767142861087,fresh_worse
+NTP,Mexico 1996 Female 25-34 Middle Working Single,0.0115571944011894,0.0007910993971004,Mexico 1996,-0.010766095004089,fresh_better
+NTP,Mexico 1996 Female 35-44 High Working Married,0.4015270400453698,0.4082021883800847,Mexico 1996,0.0066751483347148866,fresh_worse
+NTP,Mexico 1996 Female 35-44 Middle Homemaker Married,0.2685975593611085,0.2572136821474514,Mexico 1996,-0.011383877213657134,fresh_better
+NTP,Mexico 1996 Female 45-54 Low Homemaker Married,0.1791349351175964,0.177376686870381,Mexico 1996,-0.0017582482472154048,fresh_better
+NTP,Mexico 1996 Female 45-54 Low Homemaker Widowed,0.0165442274166986,0.023472746518971,Mexico 1996,0.0069285191022724,fresh_worse
+NTP,Mexico 1996 Female 45-54 Middle Homemaker Married,0.1000834257829756,0.1030446688442034,Mexico 1996,0.002961243061227789,fresh_worse
+NTP,Mexico 1996 Female 55-64 Middle Working Widowed,0.1172438047148964,0.1137015836276529,Mexico 1996,-0.0035422210872435023,fresh_better
+NTP,Mexico 1996 Female <25 High Student Single,0.2591761750559652,0.260387154366979,Mexico 1996,0.0012109793110138267,fresh_worse
+NTP,Mexico 1996 Female <25 High Working Single,0.1073919445276262,0.1058113485170259,Mexico 1996,-0.001580596010600302,fresh_better
+NTP,Mexico 1996 Female <25 Middle Homemaker Married,0.2614341435441072,0.2742401714510707,Mexico 1996,0.012806027906963502,fresh_worse
+NTP,Mexico 1996 Female <25 Middle Student Single,0.0539497730615254,0.0474158898595836,Mexico 1996,-0.006533883201941801,fresh_better
+NTP,Mexico 1996 Female <25 Middle Working Single,0.084778834473003,0.0844314501522495,Mexico 1996,-0.00034738432075349934,fresh_better
+NTP,Mexico 1996 Male 25-34 High Unemployed Married,0.2191064469516278,0.2204484924194311,Mexico 1996,0.00134204546780331,fresh_worse
+NTP,Mexico 1996 Male 25-34 High Working Cohabiting,0.3019329409850271,0.3056828855559078,Mexico 1996,0.003749944570880681,fresh_worse
+NTP,Mexico 1996 Male 25-34 High Working Married,0.240166966010023,0.2460878980796063,Mexico 1996,0.005920932069583301,fresh_worse
+NTP,Mexico 1996 Male 25-34 High Working Single,0.2958455487401122,0.3171152455391769,Mexico 1996,0.021269696799064708,fresh_worse
+NTP,Mexico 1996 Male 25-34 Middle Working Cohabiting,0.0310610078977401,0.0375414944086113,Mexico 1996,0.0064804865108712,fresh_worse
+NTP,Mexico 1996 Male 25-34 Middle Working Married,0.2004640266052587,0.1971012217270087,Mexico 1996,-0.0033628048782499975,fresh_better
+NTP,Mexico 1996 Male 25-34 Middle Working Single,0.0196846624215446,0.0157620232339319,Mexico 1996,-0.003922639187612698,fresh_better
+NTP,Mexico 1996 Male 35-44 High Working Married,0.3234726551379409,0.3218103020188395,Mexico 1996,-0.0016623531191014007,fresh_better
+NTP,Mexico 1996 Male 35-44 Middle Working Married,0.245965871317633,0.2388244917268195,Mexico 1996,-0.0071413795908135125,fresh_better
+NTP,Mexico 1996 Male 35-44 Middle Working Single,0.0937077924551651,0.0939773464849274,Mexico 1996,0.00026955402976229503,fresh_worse
+NTP,Mexico 1996 Male 45-54 High Working Married,0.2611201553575454,0.2605678929249744,Mexico 1996,-0.0005522624325710046,fresh_better
+NTP,Mexico 1996 Male 45-54 Low Unemployed Divorced or separated,0.1684238745949486,0.1730072147974879,Mexico 1996,0.00458334020253931,fresh_worse
+NTP,Mexico 1996 Male 45-54 Low Working Married,0.3613874056745082,0.3662857763482015,Mexico 1996,0.004898370673693253,fresh_worse
+NTP,Mexico 1996 Male 45-54 Middle Working Married,0.3204038809898287,0.3200690356245806,Mexico 1996,-0.00033484536524808206,fresh_better
+NTP,Mexico 1996 Male <25 High Student Single,0.3168550379096336,0.3249084113632581,Mexico 1996,0.008053373453624502,fresh_worse
+NTP,Mexico 1996 Male <25 High Working Single,0.2870426804504613,0.3046758372622926,Mexico 1996,0.017633156811831308,fresh_worse
+NTP,Mexico 1996 Male <25 Middle Student Single,0.212944624364482,0.211788906070841,Mexico 1996,-0.0011557182936410004,fresh_better
+NTP,Mexico 1996 Male <25 Middle Unemployed Single,0.2053050222220246,0.2044368900667535,Mexico 1996,-0.0008681321552710952,fresh_better
+NTP,Mexico 1996 Male <25 Middle Working Single,0.0637832730157034,0.0793978402558904,Mexico 1996,0.015614567240187005,fresh_worse
+NTP,Mexico 2005 Female 25-34 High Homemaker Married,0.3711338125169277,0.3659117639773973,Mexico 2005,-0.0052220485395303995,fresh_better
+NTP,Mexico 2005 Female 25-34 High Working Married,0.3664221569247866,0.3630997842056084,Mexico 2005,-0.0033223727191781793,fresh_better
+NTP,Mexico 2005 Female 25-34 High Working Single,0.2421153988689184,0.2420290482612848,Mexico 2005,-8.635060763359514e-05,fresh_better
+NTP,Mexico 2005 Female 25-34 Low Homemaker Married,0.2900860877264112,0.2876778425527897,Mexico 2005,-0.0024082451736214816,fresh_better
+NTP,Mexico 2005 Female 25-34 Middle Homemaker Cohabiting,0.3111987825897004,0.3181870548025497,Mexico 2005,0.006988272212849311,fresh_worse
+NTP,Mexico 2005 Female 25-34 Middle Homemaker Married,0.3679283267777899,0.3780981882451635,Mexico 2005,0.010169861467373587,fresh_worse
+NTP,Mexico 2005 Female 25-34 Middle Working Married,0.4118981220220264,0.4110489503769531,Mexico 2005,-0.00084917164507331,fresh_better
+NTP,Mexico 2005 Female 35-44 High Homemaker Married,0.1923354363867216,0.1986415337268388,Mexico 2005,0.006306097340117195,fresh_worse
+NTP,Mexico 2005 Female 35-44 High Working Married,0.1645537559840145,0.1592928531902474,Mexico 2005,-0.005260902793767092,fresh_better
+NTP,Mexico 2005 Female 35-44 Middle Homemaker Cohabiting,0.2865684827168782,0.2786129772149763,Mexico 2005,-0.007955505501901883,fresh_better
+NTP,Mexico 2005 Female 35-44 Middle Homemaker Married,0.355878187160866,0.3441808210043956,Mexico 2005,-0.011697366156470379,fresh_better
+NTP,Mexico 2005 Female 35-44 Middle Working Divorced or separated,0.35518602443778,0.3553041902575299,Mexico 2005,0.0001181658197498825,fresh_worse
+NTP,Mexico 2005 Female 45-54 Low Homemaker Married,0.3233329426674616,0.329407802055351,Mexico 2005,0.006074859387889375,fresh_worse
+NTP,Mexico 2005 Female 45-54 Middle Homemaker Married,0.3236508355860698,0.3092035790293472,Mexico 2005,-0.014447256556722576,fresh_better
+NTP,Mexico 2005 Female 55-64 Low Homemaker Married,0.3260468818523265,0.3053608240058147,Mexico 2005,-0.020686057846511785,fresh_better
+NTP,Mexico 2005 Female 55-64 Middle Homemaker Married,0.4169176310300829,0.4049980429850232,Mexico 2005,-0.011919588045059715,fresh_better
+NTP,Mexico 2005 Female 65-74 Low Homemaker Widowed,0.1216298321197773,0.1275487967458811,Mexico 2005,0.005918964626103793,fresh_worse
+NTP,Mexico 2005 Female 65-74 Middle Retired Widowed,0.0931992602925146,0.0984190422990698,Mexico 2005,0.005219782006555193,fresh_worse
+NTP,Mexico 2005 Female <25 High Student Single,0.2016396860818604,0.1978223649764482,Mexico 2005,-0.0038173211054121914,fresh_better
+NTP,Mexico 2005 Female <25 High Working Single,0.2401150416683506,0.2517163320282354,Mexico 2005,0.011601290359884803,fresh_worse
+NTP,Mexico 2005 Female <25 Middle Homemaker Single,0.2468535971641542,0.2515183686109866,Mexico 2005,0.004664771446832389,fresh_worse
+NTP,Mexico 2005 Female NA Low Homemaker Cohabiting,0.2564240621797967,0.2635812026352752,Mexico 2005,0.0071571404554784945,fresh_worse
+NTP,Mexico 2005 Female NA Low Homemaker Married,0.2606737229515151,0.2607629646719007,Mexico 2005,8.924172038560219e-05,fresh_worse
+NTP,Mexico 2005 Male 25-34 High Working Married,0.3290748874905366,0.3201141500941175,Mexico 2005,-0.008960737396419116,fresh_better
+NTP,Mexico 2005 Male 25-34 High Working Single,0.3013530494393527,0.3082864583536846,Mexico 2005,0.006933408914331918,fresh_worse
+NTP,Mexico 2005 Male 25-34 Middle Working Cohabiting,0.3543834934631983,0.3556102211583987,Mexico 2005,0.0012267276952003803,fresh_worse
+NTP,Mexico 2005 Male 25-34 Middle Working Married,0.3526033265673176,0.3600765363071554,Mexico 2005,0.007473209739837838,fresh_worse
+NTP,Mexico 2005 Male 25-34 Middle Working Single,0.34054333170255,0.340289221904489,Mexico 2005,-0.00025410979806100853,fresh_better
+NTP,Mexico 2005 Male 35-44 High Working Married,0.3922505887115702,0.3934493989167231,Mexico 2005,0.0011988102051528893,fresh_worse
+NTP,Mexico 2005 Male 35-44 Middle Working Cohabiting,0.3719080306332685,0.3721157254005314,Mexico 2005,0.00020769476726290037,fresh_worse
+NTP,Mexico 2005 Male 35-44 Middle Working Married,0.2704976317359181,0.2837018025675718,Mexico 2005,0.013204170831653705,fresh_worse
+NTP,Mexico 2005 Male 45-54 High Working Married,0.3254503537999823,0.3205556546132169,Mexico 2005,-0.004894699186765383,fresh_better
+NTP,Mexico 2005 Male 45-54 Low Working Cohabiting,0.3207523369270822,0.3185870548206612,Mexico 2005,-0.0021652821064210293,fresh_better
+NTP,Mexico 2005 Male 45-54 Low Working Married,0.3645198024236237,0.3491004056849044,Mexico 2005,-0.015419396738719282,fresh_better
+NTP,Mexico 2005 Male 45-54 Middle Unemployed Married,0.2236352761586507,0.2330923206937157,Mexico 2005,0.00945704453506499,fresh_worse
+NTP,Mexico 2005 Male 45-54 Middle Working Married,0.2943914362362454,0.2741889333292259,Mexico 2005,-0.020202502907019526,fresh_better
+NTP,Mexico 2005 Male 55-64 Low Unemployed Married,0.2258501261472703,0.2422905630677128,Mexico 2005,0.016440436920442503,fresh_worse
+NTP,Mexico 2005 Male 55-64 Low Working Married,0.3975668679156211,0.4082758583321747,Mexico 2005,0.010708990416553599,fresh_worse
+NTP,Mexico 2005 Male 55-64 Middle Working Married,0.2592188467582067,0.2516732804518503,Mexico 2005,-0.007545566306356444,fresh_better
+NTP,Mexico 2005 Male 55-64 Middle Working Single,0.2543876828818485,0.2610785255555208,Mexico 2005,0.006690842673672315,fresh_worse
+NTP,Mexico 2005 Male <25 High Student Single,0.2872918552973053,0.2789092965007123,Mexico 2005,-0.008382558796592998,fresh_better
+NTP,Mexico 2005 Male <25 High Working Single,0.3195126299248185,0.324226578416651,Mexico 2005,0.004713948491832487,fresh_worse
+NTP,Mexico 2005 Male <25 Middle Student Single,0.2073703067643297,0.2044654083222387,Mexico 2005,-0.002904898442090992,fresh_better
+NTP,Mexico 2005 Male <25 Middle Working Married,0.408097717911005,0.3946883590590631,Mexico 2005,-0.013409358851941944,fresh_better
+NTP,Mexico 2005 Male <25 Middle Working Single,0.221229487657547,0.2122660994691647,Mexico 2005,-0.008963388188382299,fresh_better
+NTP,Mexico 2018 Female 25-34 High Homemaker Married,0.4146517061668894,0.4231252928122807,Mexico 2018,0.008473586645391273,fresh_worse
+NTP,Mexico 2018 Female 25-34 High Working Married,0.3335549171481813,0.3392406748997278,Mexico 2018,0.005685757751546505,fresh_worse
+NTP,Mexico 2018 Female 25-34 Low Homemaker Married,0.2775959918896357,0.2849348475998684,Mexico 2018,0.007338855710232739,fresh_worse
+NTP,Mexico 2018 Female 25-34 Low Working Married,0.4078659961620965,0.4003752526803014,Mexico 2018,-0.007490743481795126,fresh_better
+NTP,Mexico 2018 Female 25-34 Middle Homemaker Cohabiting,0.3014501361176371,0.2972586675158069,Mexico 2018,-0.004191468601830228,fresh_better
+NTP,Mexico 2018 Female 25-34 Middle Homemaker Married,0.3379664269360629,0.35137130401266,Mexico 2018,0.0134048770765971,fresh_worse
+NTP,Mexico 2018 Female 25-34 Middle Working Married,0.2979207172989843,0.3023720604187333,Mexico 2018,0.0044513431197490405,fresh_worse
+NTP,Mexico 2018 Female 25-34 Middle Working Single,0.2041477030370295,0.2069952836772643,Mexico 2018,0.002847580640234798,fresh_worse
+NTP,Mexico 2018 Female 35-44 Middle Homemaker Cohabiting,0.2271419815395188,0.2244489874746124,Mexico 2018,-0.0026929940649064177,fresh_better
+NTP,Mexico 2018 Female 35-44 Middle Homemaker Married,0.344463802435819,0.3469256628110733,Mexico 2018,0.00246186037525431,fresh_worse
+NTP,Mexico 2018 Female 35-44 Middle Working Cohabiting,0.3466854312203145,0.340413223470305,Mexico 2018,-0.006272207750009473,fresh_better
+NTP,Mexico 2018 Female 35-44 Middle Working Divorced or separated,0.2079955315589904,0.2062979224683616,Mexico 2018,-0.0016976090906287988,fresh_better
+NTP,Mexico 2018 Female 35-44 Middle Working Married,0.3798622334003451,0.3442606683711793,Mexico 2018,-0.03560156502916578,fresh_better
+NTP,Mexico 2018 Female 45-54 Low Homemaker Cohabiting,0.277963426709175,0.275001770325641,Mexico 2018,-0.002961656383534017,fresh_better
+NTP,Mexico 2018 Female 45-54 Low Homemaker Married,0.3589903250817329,0.352208641993759,Mexico 2018,-0.006781683087973889,fresh_better
+NTP,Mexico 2018 Female 45-54 Middle Homemaker Married,0.2563017874191967,0.2568429579248305,Mexico 2018,0.0005411705056337923,fresh_worse
+NTP,Mexico 2018 Female 45-54 Middle Working Married,0.3453846785330005,0.3502396133875626,Mexico 2018,0.004854934854562121,fresh_worse
+NTP,Mexico 2018 Female 55-64 Low Homemaker Married,0.2858149698802402,0.285869354493256,Mexico 2018,5.43846130158232e-05,fresh_worse
+NTP,Mexico 2018 Female 55-64 Low Working Divorced or separated,0.3825942873954771,0.3763691802402801,Mexico 2018,-0.006225107155196974,fresh_better
+NTP,Mexico 2018 Female 55-64 Low Working Married,0.3470588280604433,0.3484430362720232,Mexico 2018,0.0013842082115799181,fresh_worse
+NTP,Mexico 2018 Female 65-74 Low Homemaker Married,0.3226997709274293,0.3456526363381245,Mexico 2018,0.02295286541069519,fresh_worse
+NTP,Mexico 2018 Female 65-74 Low Homemaker Widowed,0.2348866579579371,0.2367742183069413,Mexico 2018,0.001887560349004197,fresh_worse
+NTP,Mexico 2018 Female 65-74 Low Working Widowed,0.3532617216308908,0.3537757246786284,Mexico 2018,0.0005140030477375768,fresh_worse
+NTP,Mexico 2018 Female <25 Middle Student Single,0.3125918002451879,0.3133091372632944,Mexico 2018,0.0007173370181065009,fresh_worse
+NTP,Mexico 2018 Female <25 Middle Working Cohabiting,0.2413278877654697,0.2429419495467228,Mexico 2018,0.00161406178125309,fresh_worse
+NTP,Mexico 2018 Male 25-34 High Working Married,0.4056892761162349,0.4086867730232539,Mexico 2018,0.002997496907019004,fresh_worse
+NTP,Mexico 2018 Male 25-34 High Working Single,0.3642176407756227,0.3651972359908142,Mexico 2018,0.000979595215191531,fresh_worse
+NTP,Mexico 2018 Male 25-34 Middle Working Cohabiting,0.3288894739261895,0.3258691690131655,Mexico 2018,-0.003020304913024019,fresh_better
+NTP,Mexico 2018 Male 25-34 Middle Working Married,0.3508872862519893,0.3607782118482393,Mexico 2018,0.009890925596250044,fresh_worse
+NTP,Mexico 2018 Male 25-34 Middle Working Single,0.2978777196435702,0.2937177286826259,Mexico 2018,-0.004159990960944271,fresh_better
+NTP,Mexico 2018 Male 35-44 High Working Married,0.4103753422113025,0.4088054070438441,Mexico 2018,-0.0015699351674584028,fresh_better
+NTP,Mexico 2018 Male 35-44 Low Working Married,0.3726177729409315,0.3692722656695776,Mexico 2018,-0.003345507271353909,fresh_better
+NTP,Mexico 2018 Male 35-44 Middle Working Cohabiting,0.4215914338827132,0.4217922930842883,Mexico 2018,0.00020085920157508763,fresh_worse
+NTP,Mexico 2018 Male 35-44 Middle Working Married,0.2219017432494595,0.2497743447420625,Mexico 2018,0.02787260149260301,fresh_worse
+NTP,Mexico 2018 Male 45-54 Low Unemployed Married,0.3728029518514065,0.3686914707557484,Mexico 2018,-0.0041114810956581205,fresh_better
+NTP,Mexico 2018 Male 45-54 Low Working Married,0.33387545854957,0.3430730542890201,Mexico 2018,0.00919759573945006,fresh_worse
+NTP,Mexico 2018 Male 45-54 Middle Working Cohabiting,0.4213033856884128,0.4209449988445982,Mexico 2018,-0.0003583868438146176,fresh_better
+NTP,Mexico 2018 Male 45-54 Middle Working Married,0.4159095491524097,0.4095330740606396,Mexico 2018,-0.006376475091770084,fresh_better
+NTP,Mexico 2018 Male 55-64 Low Working Married,0.3545536043796132,0.3569579530133429,Mexico 2018,0.0024043486337296804,fresh_worse
+NTP,Mexico 2018 Male 55-64 Middle Retired Married,0.3541456962173634,0.34576660765804,Mexico 2018,-0.0083790885593234,fresh_better
+NTP,Mexico 2018 Male 55-64 Middle Working Married,0.3884491406235041,0.4075168800455064,Mexico 2018,0.019067739422002294,fresh_worse
+NTP,Mexico 2018 Male 65-74 Low Working Married,0.3793707566383558,0.3830667210828458,Mexico 2018,0.0036959644444899964,fresh_worse
+NTP,Mexico 2018 Male 75+ Low Unemployed Widowed,0.2291739128884814,0.2349409840883284,Mexico 2018,0.005767071199846985,fresh_worse
+NTP,Mexico 2018 Male <25 Middle Student Single,0.2397455994675799,0.2299984901255121,Mexico 2018,-0.009747109342067795,fresh_better
+NTP,Mexico 2018 Male <25 Middle Unemployed Single,0.2470996707677841,0.2400698596428712,Mexico 2018,-0.00702981112491291,fresh_better
+NTP,Mexico 2018 Male <25 Middle Working Single,0.3589801807557383,0.3498684577804779,Mexico 2018,-0.009111722975260361,fresh_better
+NTP,Russia 1995 Female 25-34 High Homemaker Married,0.3256121423683669,0.3203067489292701,Russia 1995,-0.005305393439096806,fresh_better
+NTP,Russia 1995 Female 25-34 High Working Married,0.2798903794346991,0.2880366803363197,Russia 1995,0.008146300901620607,fresh_worse
+NTP,Russia 1995 Female 25-34 High Working Single,0.1929757800595513,0.1933826856460014,Russia 1995,0.0004069055864500959,fresh_worse
+NTP,Russia 1995 Female 25-34 Middle Homemaker Married,0.2024328503115423,0.2004737863729629,Russia 1995,-0.0019590639385793918,fresh_better
+NTP,Russia 1995 Female 25-34 Middle Working Divorced or separated,0.1301473081111905,0.123655500663687,Russia 1995,-0.006491807447503495,fresh_better
+NTP,Russia 1995 Female 25-34 Middle Working Married,0.2105616499117469,0.2048209958354002,Russia 1995,-0.005740654076346691,fresh_better
+NTP,Russia 1995 Female 25-34 Middle Working Single,0.1386654002578169,0.1251788602725111,Russia 1995,-0.013486539985305801,fresh_better
+NTP,Russia 1995 Female 35-44 High Working Divorced or separated,0.1194317763682726,0.1150407772502155,Russia 1995,-0.004390999118057098,fresh_better
+NTP,Russia 1995 Female 35-44 High Working Married,0.279809567482149,0.2786914352029788,Russia 1995,-0.0011181322791702364,fresh_better
+NTP,Russia 1995 Female 35-44 Middle Working Divorced or separated,0.1901317023893328,0.1846298203065921,Russia 1995,-0.005501882082740689,fresh_better
+NTP,Russia 1995 Female 35-44 Middle Working Married,0.3220063939531729,0.2995469177561529,Russia 1995,-0.02245947619701999,fresh_better
+NTP,Russia 1995 Female 45-54 High Working Married,0.3880749513463277,0.3869851957291307,Russia 1995,-0.0010897556171969858,fresh_better
+NTP,Russia 1995 Female 45-54 High Working Widowed,0.1721328042802355,0.1699501426924498,Russia 1995,-0.0021826615877857114,fresh_better
+NTP,Russia 1995 Female 45-54 Middle Working Married,0.261976210843949,0.2426909724780603,Russia 1995,-0.01928523836588872,fresh_better
+NTP,Russia 1995 Female 55-64 High Retired Married,0.235414344473527,0.2410701107146727,Russia 1995,0.005655766241145693,fresh_worse
+NTP,Russia 1995 Female 55-64 Middle Retired Divorced or separated,0.1611054937044783,0.1473141071050058,Russia 1995,-0.013791386599472488,fresh_better
+NTP,Russia 1995 Female 55-64 Middle Retired Married,0.1573475035031638,0.1540069081427557,Russia 1995,-0.003340595360408094,fresh_better
+NTP,Russia 1995 Female 55-64 Middle Retired Widowed,0.087252565947728,0.0728880830162675,Russia 1995,-0.014364482931460504,fresh_better
+NTP,Russia 1995 Female 65-74 High Retired Widowed,0.1626537273021845,0.1624200416033229,Russia 1995,-0.00023368569886159096,fresh_better
+NTP,Russia 1995 Female 65-74 Low Retired Widowed,0.0778533888585638,0.079470649657239,Russia 1995,0.0016172607986752047,fresh_worse
+NTP,Russia 1995 Female 65-74 Middle Retired Married,0.0883130396787934,0.0792398607535584,Russia 1995,-0.009073178925235001,fresh_better
+NTP,Russia 1995 Female 65-74 Middle Retired Widowed,0.0393171853293399,0.0245134529427112,Russia 1995,-0.014803732386628701,fresh_better
+NTP,Russia 1995 Female 75+ Low Retired Widowed,0.0308677061744356,0.0339470889510032,Russia 1995,0.0030793827765676005,fresh_worse
+NTP,Russia 1995 Female 75+ Middle Retired Widowed,0.0383525028608847,0.0392186762576822,Russia 1995,0.0008661733967975024,fresh_worse
+NTP,Russia 1995 Female <25 High Student Married,0.315176651529644,0.310296598654492,Russia 1995,-0.00488005287515203,fresh_better
+NTP,Russia 1995 Female <25 High Student Single,0.1253427311033875,0.1181941197001742,Russia 1995,-0.007148611403213309,fresh_better
+NTP,Russia 1995 Male 25-34 High Working Married,0.2860175766614303,0.2779649502716957,Russia 1995,-0.008052626389734585,fresh_better
+NTP,Russia 1995 Male 25-34 Middle Working Married,0.2389644343119401,0.223409895577772,Russia 1995,-0.015554538734168094,fresh_better
+NTP,Russia 1995 Male 35-44 High Unemployed Married,0.3542436720295385,0.3466307952383739,Russia 1995,-0.007612876791164569,fresh_better
+NTP,Russia 1995 Male 35-44 High Working Married,0.3953985257453161,0.3820971071645805,Russia 1995,-0.01330141858073558,fresh_better
+NTP,Russia 1995 Male 35-44 Middle Unemployed Married,0.0363151473658426,0.0264108946603229,Russia 1995,-0.009904252705519697,fresh_better
+NTP,Russia 1995 Male 35-44 Middle Working Married,0.2103828052353165,0.1979594631379029,Russia 1995,-0.012423342097413581,fresh_better
+NTP,Russia 1995 Male 45-54 High Working Divorced or separated,0.2375806083876964,0.231339404171797,Russia 1995,-0.00624120421589941,fresh_better
+NTP,Russia 1995 Male 45-54 High Working Married,0.2768954991436217,0.2738323362002005,Russia 1995,-0.003063162943421238,fresh_better
+NTP,Russia 1995 Male 45-54 Middle Working Married,0.2866571961552917,0.2770684949527893,Russia 1995,-0.009588701202502437,fresh_better
+NTP,Russia 1995 Male 55-64 High Working Married,0.2045448630509141,0.1933741365015937,Russia 1995,-0.011170726549320387,fresh_better
+NTP,Russia 1995 Male 55-64 Middle Retired Married,0.1055305957794188,0.1080673368679668,Russia 1995,0.0025367410885479974,fresh_worse
+NTP,Russia 1995 Male 55-64 Middle Retired Widowed,0.0989399604681061,0.0874692806954766,Russia 1995,-0.0114706797726295,fresh_better
+NTP,Russia 1995 Male 55-64 Middle Working Married,0.2591146953439941,0.2465022972234273,Russia 1995,-0.012612398120566803,fresh_better
+NTP,Russia 1995 Male 65-74 Middle Retired Married,0.2014699759266037,0.1940568551768509,Russia 1995,-0.007413120749752811,fresh_better
+NTP,Russia 1995 Male <25 High Student Single,0.1284093313357409,0.1255485542469077,Russia 1995,-0.0028607770888331996,fresh_better
+NTP,Russia 1995 Male <25 High Working Single,0.2185541823324027,0.218457108356104,Russia 1995,-9.707397629871162e-05,fresh_better
+NTP,Russia 1995 Male <25 Middle Working Single,0.1688360623691396,0.1726665377159691,Russia 1995,0.0038304753468295094,fresh_worse
+NTP,Russia 2006 Female 25-34 High Homemaker Married,0.2533175632894109,0.2535464845415466,Russia 2006,0.00022892125213569425,fresh_worse
+NTP,Russia 2006 Female 25-34 High Unemployed Divorced or separated,0.0938082456588748,0.0908099411659761,Russia 2006,-0.0029983044928987013,fresh_better
+NTP,Russia 2006 Female 25-34 High Working Married,0.1512214414408948,0.155992062593924,Russia 2006,0.004770621153029203,fresh_worse
+NTP,Russia 2006 Female 25-34 High Working Single,0.2563043079878153,0.2516261158827952,Russia 2006,-0.004678192105020074,fresh_better
+NTP,Russia 2006 Female 25-34 Middle Homemaker Married,0.1963074161456183,0.1982950806701651,Russia 2006,0.001987664524546795,fresh_worse
+NTP,Russia 2006 Female 25-34 Middle Working Married,0.1579768125784145,0.1405931924477024,Russia 2006,-0.017383620130712096,fresh_better
+NTP,Russia 2006 Female 35-44 High Working Divorced or separated,0.1696691796967857,0.1600567339110852,Russia 2006,-0.009612445785700474,fresh_better
+NTP,Russia 2006 Female 35-44 High Working Married,0.1822721479794917,0.1721867247236259,Russia 2006,-0.01008542325586581,fresh_better
+NTP,Russia 2006 Female 35-44 Middle Homemaker Married,0.263710565347942,0.255792063211427,Russia 2006,-0.007918502136515015,fresh_better
+NTP,Russia 2006 Female 35-44 Middle Working Divorced or separated,0.0960981803280968,0.090780165220076,Russia 2006,-0.00531801510802081,fresh_better
+NTP,Russia 2006 Female 35-44 Middle Working Married,0.2173942152987278,0.2161256747894788,Russia 2006,-0.0012685405092489888,fresh_better
+NTP,Russia 2006 Female 45-54 High Working Divorced or separated,0.2460739174595585,0.2396615164836195,Russia 2006,-0.006412400975939009,fresh_better
+NTP,Russia 2006 Female 45-54 High Working Married,0.3088997008427275,0.3023901267082899,Russia 2006,-0.00650957413443759,fresh_better
+NTP,Russia 2006 Female 45-54 High Working Widowed,0.0639026589465865,0.0642539244479107,Russia 2006,0.0003512655013241939,fresh_worse
+NTP,Russia 2006 Female 45-54 Middle Working Divorced or separated,0.1999845916574652,0.2026401789013328,Russia 2006,0.00265558724386758,fresh_worse
+NTP,Russia 2006 Female 45-54 Middle Working Married,0.150357900216656,0.1420359495386197,Russia 2006,-0.008321950678036288,fresh_better
+NTP,Russia 2006 Female 45-54 Middle Working Widowed,0.198297434526941,0.1908384715654486,Russia 2006,-0.007458962961492427,fresh_better
+NTP,Russia 2006 Female 55-64 High Retired Married,0.2273179103085334,0.2227466376403248,Russia 2006,-0.004571272668208615,fresh_better
+NTP,Russia 2006 Female 55-64 Middle Retired Married,0.0728067755699157,0.0655096970680048,Russia 2006,-0.0072970785019109,fresh_better
+NTP,Russia 2006 Female 55-64 Middle Retired Widowed,0.0403831442764828,0.036008356793848,Russia 2006,-0.004374787482634798,fresh_better
+NTP,Russia 2006 Female 65-74 High Retired Widowed,0.0708818189776718,0.064234113619927,Russia 2006,-0.00664770535774481,fresh_better
+NTP,Russia 2006 Female 65-74 Middle Retired Married,0.0983489447633111,0.1033419347267483,Russia 2006,0.004992989963437194,fresh_worse
+NTP,Russia 2006 Female 65-74 Middle Retired Widowed,0.0321770699356387,0.0298695606864149,Russia 2006,-0.0023075092492238006,fresh_better
+NTP,Russia 2006 Female <25 High Student Single,0.2067796221923329,0.2166261535701542,Russia 2006,0.009846531377821294,fresh_worse
+NTP,Russia 2006 Female <25 Middle Student Single,0.0374358254080159,0.0334700747473224,Russia 2006,-0.003965750660693497,fresh_better
+NTP,Russia 2006 Male 25-34 High Working Cohabiting,0.132282581654462,0.1190021325544232,Russia 2006,-0.013280449100038796,fresh_better
+NTP,Russia 2006 Male 25-34 High Working Married,0.2149855750076698,0.2340465871088242,Russia 2006,0.019061012101154406,fresh_worse
+NTP,Russia 2006 Male 25-34 Middle Working Cohabiting,0.2727593736876227,0.2709386503000207,Russia 2006,-0.0018207233876020301,fresh_better
+NTP,Russia 2006 Male 25-34 Middle Working Married,0.2261296992508025,0.2349735884895017,Russia 2006,0.008843889238699193,fresh_worse
+NTP,Russia 2006 Male 25-34 Middle Working Single,0.1703419749674045,0.1622888712241897,Russia 2006,-0.008053103743214801,fresh_better
+NTP,Russia 2006 Male 35-44 High Unemployed Married,0.3772252439601077,0.3823982217420475,Russia 2006,0.005172977781939814,fresh_worse
+NTP,Russia 2006 Male 35-44 High Working Married,0.2663642202104838,0.2799155721351313,Russia 2006,0.013551351924647514,fresh_worse
+NTP,Russia 2006 Male 35-44 Middle Unemployed Married,0.1547610477934922,0.1558648327822313,Russia 2006,0.0011037849887390871,fresh_worse
+NTP,Russia 2006 Male 35-44 Middle Working Divorced or separated,0.0685875088471259,0.0653529772689474,Russia 2006,-0.003234531578178504,fresh_better
+NTP,Russia 2006 Male 35-44 Middle Working Married,0.1524600504223345,0.1399410674078729,Russia 2006,-0.012518983014461582,fresh_better
+NTP,Russia 2006 Male 45-54 High Working Divorced or separated,0.0501837907256661,0.0457525291851841,Russia 2006,-0.004431261540482005,fresh_better
+NTP,Russia 2006 Male 45-54 High Working Married,0.3343684308382929,0.3376569441664183,Russia 2006,0.0032885133281254086,fresh_worse
+NTP,Russia 2006 Male 45-54 Middle Working Married,0.175924872957385,0.1906727913685574,Russia 2006,0.0147479184111724,fresh_worse
+NTP,Russia 2006 Male 55-64 High Retired Married,0.2846084965160735,0.2881905972965156,Russia 2006,0.003582100780442077,fresh_worse
+NTP,Russia 2006 Male 55-64 High Working Married,0.1193981429663569,0.1375091803997555,Russia 2006,0.01811103743339859,fresh_worse
+NTP,Russia 2006 Male 55-64 Middle Retired Married,0.2834857596552436,0.2832805047969938,Russia 2006,-0.00020525485824979262,fresh_better
+NTP,Russia 2006 Male 55-64 Middle Working Married,0.2293356273429737,0.2294851250484356,Russia 2006,0.00014949770546190955,fresh_worse
+NTP,Russia 2006 Male 65-74 Middle Retired Married,0.083528989400619,0.0891916287285471,Russia 2006,0.005662639327928112,fresh_worse
+NTP,Russia 2006 Male 65-74 Middle Retired Widowed,0.2000409033737683,0.1991418152443151,Russia 2006,-0.0008990881294531905,fresh_better
+NTP,Russia 2006 Male <25 High Student Single,0.0477167077046606,0.0355602597329681,Russia 2006,-0.012156447971692498,fresh_better
+NTP,Russia 2006 Male <25 High Working Single,0.1903558527109776,0.1850956754890546,Russia 2006,-0.0052601772219230125,fresh_better
+NTP,Russia 2006 Male <25 Middle Student Single,0.0992360391930955,0.0893213028818079,Russia 2006,-0.0099147363112876,fresh_better
+NTP,Russia 2006 Male <25 Middle Working Single,0.1482191028281989,0.1434269458274034,Russia 2006,-0.004792157000795494,fresh_better
+NTP,Russia 2017 Female 25-34 High Homemaker Divorced or separated,0.082587211244348,0.0797759690141739,Russia 2017,-0.0028112422301740936,fresh_better
+NTP,Russia 2017 Female 25-34 High Homemaker Married,0.1830901630108172,0.1918406184212545,Russia 2017,0.008750455410437286,fresh_worse
+NTP,Russia 2017 Female 25-34 High Working Divorced or separated,0.1887556813201125,0.1871373712323897,Russia 2017,-0.001618310087722813,fresh_better
+NTP,Russia 2017 Female 25-34 High Working Married,0.2752394954795424,0.2812448062248819,Russia 2017,0.006005310745339498,fresh_worse
+NTP,Russia 2017 Female 25-34 High Working Single,0.234000824470269,0.2426704519233578,Russia 2017,0.008669627453088802,fresh_worse
+NTP,Russia 2017 Female 35-44 High Working Divorced or separated,0.1167039923045949,0.1079864348127924,Russia 2017,-0.008717557491802502,fresh_better
+NTP,Russia 2017 Female 35-44 High Working Married,0.2282359397203724,0.2095166723025185,Russia 2017,-0.018719267417853902,fresh_better
+NTP,Russia 2017 Female 35-44 High Working Single,0.2380559652570694,0.229846923459801,Russia 2017,-0.00820904179726839,fresh_better
+NTP,Russia 2017 Female 35-44 Low Homemaker Married,0.2455028295516965,0.2499912864911491,Russia 2017,0.004488456939452601,fresh_worse
+NTP,Russia 2017 Female 35-44 Middle Homemaker Married,0.2174781997998556,0.2235009977991676,Russia 2017,0.006022797999311991,fresh_worse
+NTP,Russia 2017 Female 35-44 Middle Working Divorced or separated,0.0396746672116793,0.0414357953822608,Russia 2017,0.001761128170581494,fresh_worse
+NTP,Russia 2017 Female 45-54 High Working Divorced or separated,0.0775718053205817,0.0818999281159917,Russia 2017,0.0043281227954100054,fresh_worse
+NTP,Russia 2017 Female 45-54 High Working Married,0.276567597280849,0.2662129661312026,Russia 2017,-0.01035463114964641,fresh_better
+NTP,Russia 2017 Female 45-54 High Working Widowed,0.1216697234373821,0.1213248466315126,Russia 2017,-0.0003448768058694901,fresh_better
+NTP,Russia 2017 Female 45-54 Middle Working Divorced or separated,0.1980320482418456,0.1997319932127609,Russia 2017,0.0016999449709153014,fresh_worse
+NTP,Russia 2017 Female 45-54 Middle Working Married,0.1346545582872698,0.1428343053073054,Russia 2017,0.0081797470200356,fresh_worse
+NTP,Russia 2017 Female 55-64 High Retired Divorced or separated,0.1560879349708557,0.1534500464962298,Russia 2017,-0.002637888474625899,fresh_better
+NTP,Russia 2017 Female 55-64 High Retired Married,0.2624907657000178,0.2604991042851626,Russia 2017,-0.0019916614148551837,fresh_better
+NTP,Russia 2017 Female 55-64 High Retired Widowed,0.0063257286132409,9.195654984472943e-06,Russia 2017,-0.006316532958256427,fresh_better
+NTP,Russia 2017 Female 55-64 Middle Retired Married,0.2879203941271855,0.2957486555276302,Russia 2017,0.00782826140044468,fresh_worse
+NTP,Russia 2017 Female 65-74 High Retired Widowed,0.0025748712215647,0.0026442965107943,Russia 2017,6.942528922960003e-05,fresh_worse
+NTP,Russia 2017 Female 65-74 Low Retired Widowed,0.2072004188730868,0.2063543343782976,Russia 2017,-0.0008460844947892066,fresh_better
+NTP,Russia 2017 Female 65-74 Middle Retired Widowed,0.1184584802468285,0.1202449541521694,Russia 2017,0.00178647390534091,fresh_worse
+NTP,Russia 2017 Female 75+ Low Retired Widowed,0.2059562730066704,0.2119534682670579,Russia 2017,0.0059971952603875,fresh_worse
+NTP,Russia 2017 Female <25 High Student Single,0.0550569747433518,0.0539339271971739,Russia 2017,-0.0011230475461778966,fresh_better
+NTP,Russia 2017 Female <25 High Working Single,0.1642687598864236,0.1808362755106607,Russia 2017,0.01656751562423711,fresh_worse
+NTP,Russia 2017 Female <25 Middle Student Single,0.0689690183950526,0.0775148352707966,Russia 2017,0.008545816875744003,fresh_worse
+NTP,Russia 2017 Male 25-34 High Working Married,0.2839186074780518,0.2679941318002775,Russia 2017,-0.01592447567777433,fresh_better
+NTP,Russia 2017 Male 25-34 High Working Single,0.1946093527813674,0.203177809079707,Russia 2017,0.008568456298339605,fresh_worse
+NTP,Russia 2017 Male 25-34 Middle Working Married,0.2041009922822316,0.2051347759742545,Russia 2017,0.0010337836920228938,fresh_worse
+NTP,Russia 2017 Male 25-34 Middle Working Single,0.0526529225436123,0.0577233299318173,Russia 2017,0.005070407388205002,fresh_worse
+NTP,Russia 2017 Male 35-44 High Working Married,0.2692622356090369,0.2605762302056929,Russia 2017,-0.008686005403343966,fresh_better
+NTP,Russia 2017 Male 35-44 Middle Working Married,0.3137173481782276,0.3176921794533571,Russia 2017,0.003974831275129487,fresh_worse
+NTP,Russia 2017 Male 45-54 High Working Divorced or separated,0.2159684641794725,0.2140628866460413,Russia 2017,-0.0019055775334311797,fresh_better
+NTP,Russia 2017 Male 45-54 High Working Married,0.295626713824366,0.3112962243383604,Russia 2017,0.0156695105139944,fresh_worse
+NTP,Russia 2017 Male 45-54 Middle Unemployed Married,0.2217136647612336,0.2224359544987653,Russia 2017,0.0007222897375316895,fresh_worse
+NTP,Russia 2017 Male 45-54 Middle Working Divorced or separated,0.1561148262023926,0.1542015045156478,Russia 2017,-0.0019133216867447955,fresh_better
+NTP,Russia 2017 Male 55-64 High Retired Married,0.3479115553200246,0.3504096910191413,Russia 2017,0.0024981356991167214,fresh_worse
+NTP,Russia 2017 Male 55-64 High Working Divorced or separated,0.299654879172643,0.2888346008157272,Russia 2017,-0.010820278356915791,fresh_better
+NTP,Russia 2017 Male 55-64 High Working Married,0.1829292926286895,0.173548190155248,Russia 2017,-0.00938110247344151,fresh_better
+NTP,Russia 2017 Male 55-64 Low Retired Married,0.1530847311019897,0.1546667156194132,Russia 2017,0.0015819845174235014,fresh_worse
+NTP,Russia 2017 Male 65-74 High Retired Widowed,0.0100914181883043,0.0003162971734204,Russia 2017,-0.0097751210148839,fresh_better
+NTP,Russia 2017 Male 65-74 Low Retired Widowed,0.1560405890146892,0.153387571901173,Russia 2017,-0.002653017113516204,fresh_better
+NTP,Russia 2017 Male <25 High Working Single,0.0995157766616207,0.1107533801096899,Russia 2017,0.011237603448069192,fresh_worse
+NTP,Russia 2017 Male <25 Middle Student Single,0.1422981425207491,0.1421944672134509,Russia 2017,-0.00010367530729821217,fresh_better
+NTP,United States 1995 Female 25-34 High Unemployed Single,0.0553842882956227,0.0617550105601787,United States 1995,0.006370722264556004,fresh_worse
+NTP,United States 1995 Female 25-34 High Working Married,0.1311707829727845,0.1332406262089838,United States 1995,0.002069843236199298,fresh_worse
+NTP,United States 1995 Female 25-34 Middle Homemaker Married,0.0913531829913456,0.0963478172873927,United States 1995,0.004994634296047101,fresh_worse
+NTP,United States 1995 Female 25-34 Middle Working Married,0.1848777912411033,0.1759784759674523,United States 1995,-0.008899315273650982,fresh_better
+NTP,United States 1995 Female 25-34 Middle Working Single,0.173821412026882,0.1800327482910588,United States 1995,0.006211336264176803,fresh_worse
+NTP,United States 1995 Female 35-44 High Homemaker Married,0.1033585965633392,0.1025170517496414,United States 1995,-0.0008415448136978032,fresh_better
+NTP,United States 1995 Female 35-44 High Working Divorced or separated,0.0601221167522927,0.0627011473720884,United States 1995,0.002579030619795704,fresh_worse
+NTP,United States 1995 Female 35-44 High Working Married,0.013809130848318,0.0185255905727129,United States 1995,0.004716459724394899,fresh_worse
+NTP,United States 1995 Female 35-44 Middle Unemployed Married,0.2444758559718276,0.2389754824204157,United States 1995,-0.005500373551411919,fresh_better
+NTP,United States 1995 Female 35-44 Middle Working Married,0.010114673525095,0.0317462811737546,United States 1995,0.021631607648659602,fresh_worse
+NTP,United States 1995 Female 45-54 High Working Married,0.0133094556718006,0.0149917433103679,United States 1995,0.001682287638567299,fresh_worse
+NTP,United States 1995 Female 45-54 Middle Working Married,0.2144530822571957,0.211569508473416,United States 1995,-0.002883573783779708,fresh_better
+NTP,United States 1995 Female 55-64 Middle Homemaker Married,0.0855591075760977,0.0792342481714422,United States 1995,-0.006324859404655506,fresh_better
+NTP,United States 1995 Female 65-74 High Retired Married,0.126338086344979,0.135548733691825,United States 1995,0.009210647346845985,fresh_worse
+NTP,United States 1995 Female 65-74 High Retired Widowed,0.1089062524768186,0.1083772637825521,United States 1995,-0.0005289886942664995,fresh_better
+NTP,United States 1995 Female 65-74 Middle Retired Married,0.0231311392044087,0.0314522454639828,United States 1995,0.0083211062595741,fresh_worse
+NTP,United States 1995 Female 65-74 Middle Retired Widowed,0.0229492774515439,0.0265325785007145,United States 1995,0.0035833010491705987,fresh_worse
+NTP,United States 1995 Female 75+ Middle Retired Widowed,0.1266614380809996,0.1350335326189961,United States 1995,0.008372094537996477,fresh_worse
+NTP,United States 1995 Female <25 High Working Single,0.0086405802340735,0.0182426433397296,United States 1995,0.009602063105656101,fresh_worse
+NTP,United States 1995 Male 25-34 High Working Married,0.2228502811798023,0.1993492343757402,United States 1995,-0.023501046804062092,fresh_better
+NTP,United States 1995 Male 25-34 High Working Single,0.1415661509220418,0.1366313892907925,United States 1995,-0.0049347616312493126,fresh_better
+NTP,United States 1995 Male 25-34 Middle Working Married,0.1849397762633456,0.1922717188917362,United States 1995,0.0073319426283905975,fresh_worse
+NTP,United States 1995 Male 25-34 Middle Working Single,0.3270460083371117,0.3355154873090052,United States 1995,0.008469478971893485,fresh_worse
+NTP,United States 1995 Male 35-44 High Working Married,0.1278644334368345,0.1346450534019452,United States 1995,0.0067806199651106736,fresh_worse
+NTP,United States 1995 Male 35-44 Middle Working Married,0.1609025244359616,0.1652465316476038,United States 1995,0.004344007211642215,fresh_worse
+NTP,United States 1995 Male 45-54 High Working Divorced or separated,0.0389481937885286,0.0372529803530772,United States 1995,-0.001695213435451405,fresh_better
+NTP,United States 1995 Male 45-54 High Working Married,0.0057493903420188,0.0030731017163663,United States 1995,-0.0026762886256524996,fresh_better
+NTP,United States 1995 Male 45-54 Middle Working Divorced or separated,0.1822636941427823,0.1804557082335951,United States 1995,-0.001807985909187182,fresh_better
+NTP,United States 1995 Male 45-54 Middle Working Married,0.1586131957006751,0.1719358448548086,United States 1995,0.013322649154133476,fresh_worse
+NTP,United States 1995 Male 55-64 High Retired Married,0.0904853768073593,0.094048799874495,United States 1995,0.0035634230671357098,fresh_worse
+NTP,United States 1995 Male 55-64 High Working Married,0.003307106794217,0.0020853959701567,United States 1995,-0.0012217108240603,fresh_better
+NTP,United States 1995 Male 55-64 Middle Retired Married,0.2857559287358844,0.2734095065341873,United States 1995,-0.012346422201697127,fresh_better
+NTP,United States 1995 Male 55-64 Middle Unemployed Married,0.2529697981319928,0.2559522168256303,United States 1995,0.002982418693637523,fresh_worse
+NTP,United States 1995 Male 55-64 Middle Working Married,0.0109201726088157,0.0136402118365733,United States 1995,0.0027200392277575997,fresh_worse
+NTP,United States 1995 Male 65-74 High Retired Married,0.0245099917986685,0.0197189480852353,United States 1995,-0.0047910437134332,fresh_better
+NTP,United States 1995 Male 65-74 Middle Retired Married,0.1217243338543209,0.131435192873845,United States 1995,0.009710859019524107,fresh_worse
+NTP,United States 1995 Male 75+ Middle Retired Widowed,0.065939244543833,0.0705564583010056,United States 1995,0.004617213757172597,fresh_worse
+NTP,United States 1995 Male <25 Middle Student Single,0.1145903234357957,0.1210762317973513,United States 1995,0.0064859083615556035,fresh_worse
+NTP,United States 1995 Male <25 Middle Working Single,0.2224466101328533,0.2209283872149347,United States 1995,-0.001518222917918588,fresh_better
+NTP,United States 2006 Female 25-34 High Working Married,0.2458433598279955,0.2500423802377783,United States 2006,0.0041990204097828165,fresh_worse
+NTP,United States 2006 Female 25-34 High Working Single,0.0962791994765953,0.0897332481063936,United States 2006,-0.006545951370201697,fresh_better
+NTP,United States 2006 Female 25-34 Middle Homemaker Married,0.2145460871132936,0.2016021926565217,United States 2006,-0.012943894456771882,fresh_better
+NTP,United States 2006 Female 25-34 Middle Working Single,0.1513007115572691,0.1554132270561686,United States 2006,0.004112515498899516,fresh_worse
+NTP,United States 2006 Female 35-44 High Homemaker Married,0.0434152257442475,0.041801350314888,United States 2006,-0.0016138754293595,fresh_better
+NTP,United States 2006 Female 35-44 High Working Married,0.0297903716564179,0.0195483034847011,United States 2006,-0.010242068171716797,fresh_better
+NTP,United States 2006 Female 35-44 High Working Single,0.1741221944491066,0.169915413801283,United States 2006,-0.004206780647823594,fresh_better
+NTP,United States 2006 Female 35-44 Middle Homemaker Married,0.1089069886905391,0.103664164208278,United States 2006,-0.005242824482261099,fresh_better
+NTP,United States 2006 Female 35-44 Middle Working Married,0.1453164528481103,0.1524408465009775,United States 2006,0.007124393652867211,fresh_worse
+NTP,United States 2006 Female 45-54 High Working Divorced or separated,0.2348286913287254,0.2249650118845437,United States 2006,-0.009863679444181678,fresh_better
+NTP,United States 2006 Female 45-54 Middle Working Married,0.0844768170387513,0.0682314056032854,United States 2006,-0.0162454114354659,fresh_better
+NTP,United States 2006 Female 55-64 Middle Homemaker Married,0.0693577268849248,0.0715792102037476,United States 2006,0.0022214833188228117,fresh_worse
+NTP,United States 2006 Female 55-64 Middle Retired Married,0.0538051664829256,0.046184078060694,United States 2006,-0.007621088422231595,fresh_better
+NTP,United States 2006 Female 55-64 Middle Working Divorced or separated,0.0523754841572529,0.0467068857064215,United States 2006,-0.005668598450831397,fresh_better
+NTP,United States 2006 Female 55-64 Middle Working Married,0.0317821919918058,0.0264354117631193,United States 2006,-0.005346780228686499,fresh_better
+NTP,United States 2006 Female 65-74 Middle Retired Divorced or separated,0.1551498338408853,0.1563200648035353,United States 2006,0.0011702309626500096,fresh_worse
+NTP,United States 2006 Female 65-74 Middle Retired Married,0.0559948153393243,0.0574738026152178,United States 2006,0.0014789872758934966,fresh_worse
+NTP,United States 2006 Female 65-74 Middle Retired Widowed,0.1422423554629814,0.1403905243620309,United States 2006,-0.0018518311009504962,fresh_better
+NTP,United States 2006 Female <25 Middle NA Single,0.0573685884475708,0.0540113868337323,United States 2006,-0.003357201613838498,fresh_better
+NTP,United States 2006 Female <25 Middle Working Single,0.1031933171932515,0.1059499447310765,United States 2006,0.0027566275378249905,fresh_worse
+NTP,United States 2006 Male 25-34 High Working Married,0.0599540430638523,0.1088837475936257,United States 2006,0.048929704529773396,fresh_worse
+NTP,United States 2006 Male 25-34 Middle Working Married,0.2508719582920489,0.2488175262837259,United States 2006,-0.002054432008323004,fresh_better
+NTP,United States 2006 Male 35-44 High Working Married,0.1155765801668168,0.1339415273638831,United States 2006,0.0183649471970663,fresh_worse
+NTP,United States 2006 Male 35-44 High Working Single,0.054551643483779,0.0594312869055875,United States 2006,0.004879643421808501,fresh_worse
+NTP,United States 2006 Male 35-44 Middle Working Married,0.0793533972331457,0.0583856094920984,United States 2006,-0.0209677877410473,fresh_better
+NTP,United States 2006 Male 35-44 Middle Working Single,0.0925745205445721,0.1048853438145239,United States 2006,0.012310823269951796,fresh_worse
+NTP,United States 2006 Male 45-54 High Working Divorced or separated,0.0544967779091427,0.0484850547268561,United States 2006,-0.006011723182286599,fresh_better
+NTP,United States 2006 Male 45-54 High Working Married,0.095358650826808,0.0879574753336769,United States 2006,-0.007401175493131101,fresh_better
+NTP,United States 2006 Male 45-54 Middle NA Married,0.2081490857002538,0.2084725679359075,United States 2006,0.00032348223565367706,fresh_worse
+NTP,United States 2006 Male 45-54 Middle Working Divorced or separated,0.0688798526922861,0.0734159486259953,United States 2006,0.004536095933709211,fresh_worse
+NTP,United States 2006 Male 45-54 Middle Working Married,0.0667092353105545,0.0712718839275519,United States 2006,0.0045626486169974,fresh_worse
+NTP,United States 2006 Male 55-64 Middle Retired Divorced or separated,0.043945106438228,0.0459314233936727,United States 2006,0.0019863169554446974,fresh_worse
+NTP,United States 2006 Male 55-64 Middle Retired Married,0.0434006452560423,0.0379307554028035,United States 2006,-0.005469889853238798,fresh_better
+NTP,United States 2006 Male 65-74 High Retired Married,0.1238936285177867,0.0967427030685549,United States 2006,-0.027150925449231797,fresh_better
+NTP,United States 2006 Male 65-74 Middle Retired Married,0.0501276755332951,0.0514553675851903,United States 2006,0.0013276920518952018,fresh_worse
+NTP,United States 2006 Male 75+ Middle Retired Married,0.0558005968729655,0.038575775553127,United States 2006,-0.017224821319838497,fresh_better
+NTP,United States 2006 Male <25 Middle Working Single,0.1416925399592428,0.1472675160058673,United States 2006,0.005574976046624491,fresh_worse
+NTP,United States 2017 Female 25-34 High Homemaker Married,0.0410661101341247,0.0365240516899589,United States 2017,-0.004542058444165803,fresh_better
+NTP,United States 2017 Female 25-34 High Working Cohabiting,0.0632515925428141,0.0649198732270686,United States 2017,0.0016682806842545084,fresh_worse
+NTP,United States 2017 Female 25-34 High Working Married,0.0358791114336036,0.0425854228834345,United States 2017,0.006706311449830894,fresh_worse
+NTP,United States 2017 Female 25-34 High Working Single,0.0795347392559053,0.0852832477997324,United States 2017,0.005748508543827094,fresh_worse
+NTP,United States 2017 Female 25-34 Middle Homemaker Cohabiting,0.1071894764900207,0.1079600581378555,United States 2017,0.000770581647834806,fresh_worse
+NTP,United States 2017 Female 25-34 Middle Homemaker Married,0.1878648568283427,0.1857823417685846,United States 2017,-0.0020825150597580944,fresh_better
+NTP,United States 2017 Female 25-34 Middle Working Cohabiting,0.2636918860512811,0.2587641207301108,United States 2017,-0.004927765321170285,fresh_better
+NTP,United States 2017 Female 25-34 Middle Working Married,0.0936021740237873,0.1163123139571051,United States 2017,0.022710139933317802,fresh_worse
+NTP,United States 2017 Female 25-34 Middle Working Single,0.1774576422960861,0.1745238410436612,United States 2017,-0.0029338012524249,fresh_better
+NTP,United States 2017 Female 35-44 High Homemaker Married,0.0543647003173828,0.0629518070466121,United States 2017,0.008587106729229299,fresh_worse
+NTP,United States 2017 Female 35-44 High Working Divorced or separated,0.1908451267357531,0.1953636550492342,United States 2017,0.004518528313481096,fresh_worse
+NTP,United States 2017 Female 35-44 High Working Married,0.0603146639135149,0.0524228670734333,United States 2017,-0.007891796840081601,fresh_better
+NTP,United States 2017 Female 35-44 Middle Homemaker Married,0.1570835171207301,0.1572082915208577,United States 2017,0.0001247744001275919,fresh_worse
+NTP,United States 2017 Female 35-44 Middle Working Married,0.1772747363733208,0.1775657141512308,United States 2017,0.00029097777790998425,fresh_worse
+NTP,United States 2017 Female 45-54 High Homemaker Married,0.0302822773273172,0.0332887567372971,United States 2017,0.0030064794099799,fresh_worse
+NTP,United States 2017 Female 45-54 High Working Married,0.0344422780550445,0.009699935476799,United States 2017,-0.024742342578245504,fresh_better
+NTP,United States 2017 Female 45-54 Middle Unemployed Divorced or separated,0.0169068391980795,0.0160460500580951,United States 2017,-0.0008607891399843998,fresh_better
+NTP,United States 2017 Female 45-54 Middle Working Divorced or separated,0.1367972083389759,0.1288840785245888,United States 2017,-0.007913129814387104,fresh_better
+NTP,United States 2017 Female 45-54 Middle Working Married,0.1519972140138797,0.1646784320705729,United States 2017,0.0126812180566932,fresh_worse
+NTP,United States 2017 Female 45-54 Middle Working Single,0.392769180238247,0.3883837312376008,United States 2017,-0.004385449000646191,fresh_better
+NTP,United States 2017 Female 55-64 High Working Divorced or separated,0.0763585649687668,0.078253912724812,United States 2017,0.0018953477560451903,fresh_worse
+NTP,United States 2017 Female 55-64 Middle Retired Married,0.0808213180617281,0.0759893965436825,United States 2017,-0.0048319215180455954,fresh_better
+NTP,United States 2017 Female 55-64 Middle Working Married,0.0028900043530898,0.0074115416020705,United States 2017,0.0045215372489807,fresh_worse
+NTP,United States 2017 Female 65-74 Middle Retired Divorced or separated,0.173749032345685,0.1771101566501063,United States 2017,0.003361124304421287,fresh_worse
+NTP,United States 2017 Female 65-74 Middle Retired Married,0.0255880897695367,0.0269054961831723,United States 2017,0.0013174064136356016,fresh_worse
+NTP,United States 2017 Female 65-74 Middle Retired Widowed,0.0999437868595125,0.0943421433597274,United States 2017,-0.005601643499785092,fresh_better
+NTP,United States 2017 Female <25 High Unemployed Single,0.0538324571791148,0.0618518688012382,United States 2017,0.008019411622123399,fresh_worse
+NTP,United States 2017 Female <25 High Working Single,0.1573060048951046,0.1488996304964869,United States 2017,-0.008406374398617689,fresh_better
+NTP,United States 2017 Female <25 Middle Unemployed Single,0.1244833986175821,0.1303005993166592,United States 2017,0.0058172006990770825,fresh_worse
+NTP,United States 2017 Female <25 Middle Working Single,0.1275751868075073,0.1300347379809995,United States 2017,0.002459551173492197,fresh_worse
+NTP,United States 2017 Male 25-34 High Unemployed Single,0.0012911632657049,0.0005093076029234,United States 2017,-0.0007818556627815001,fresh_better
+NTP,United States 2017 Male 25-34 High Working Cohabiting,0.0654874086380005,0.0542867168356419,United States 2017,-0.011200691802358595,fresh_better
+NTP,United States 2017 Male 25-34 High Working Married,0.0399037518848975,0.0198922044990263,United States 2017,-0.020011547385871197,fresh_better
+NTP,United States 2017 Male 25-34 High Working Single,0.0701084782679876,0.074796670388283,United States 2017,0.0046881921202953925,fresh_worse
+NTP,United States 2017 Male 25-34 Middle Working Married,0.1758892869371062,0.1734728746444586,United States 2017,-0.0024164122926476073,fresh_better
+NTP,United States 2017 Male 25-34 Middle Working Single,0.1721511381428416,0.1759544168948303,United States 2017,0.003803278751988687,fresh_worse
+NTP,United States 2017 Male 35-44 High Working Divorced or separated,0.1940767679895672,0.1985038070706339,United States 2017,0.004427039081066703,fresh_worse
+NTP,United States 2017 Male 35-44 High Working Married,0.0328529108138311,0.0318655983589579,United States 2017,-0.0009873124548731987,fresh_better
+NTP,United States 2017 Male 35-44 High Working Single,0.0730793484159418,0.0689876592221407,United States 2017,-0.004091689193801096,fresh_better
+NTP,United States 2017 Male 35-44 Middle Working Married,0.1557296011182997,0.1492406179076706,United States 2017,-0.006488983210629101,fresh_better
+NTP,United States 2017 Male 45-54 High Unemployed Divorced or separated,0.0407823947342959,0.0453249557365975,United States 2017,0.004542561002301597,fresh_worse
+NTP,United States 2017 Male 45-54 High Working Divorced or separated,0.081213287331841,0.07232312525415,United States 2017,-0.008890162077691,fresh_better
+NTP,United States 2017 Male 45-54 High Working Married,0.0024831854813807,0.0105072689367739,United States 2017,0.0080240834553932,fresh_worse
+NTP,United States 2017 Male 45-54 Middle NA Married,0.1553498347338877,0.1619279290955656,United States 2017,0.006578094361677916,fresh_worse
+NTP,United States 2017 Male 45-54 Middle Unemployed Married,0.0564601451158526,0.061799590547513,United States 2017,0.0053394454316604,fresh_worse
+NTP,United States 2017 Male 45-54 Middle Working Divorced or separated,0.0603515296070666,0.0607420257833273,United States 2017,0.0003904961762606976,fresh_worse
+NTP,United States 2017 Male 45-54 Middle Working Married,0.141920969980519,0.1366148179641169,United States 2017,-0.00530615201640211,fresh_better
+NTP,United States 2017 Male 45-54 Middle Working Single,0.0783980794855064,0.0860769544739266,United States 2017,0.007678874988420209,fresh_worse
+NTP,United States 2017 Male 55-64 High Retired Married,0.0048828880961346,0.0073141377687725,United States 2017,0.0024312496726379,fresh_worse
+NTP,United States 2017 Male 55-64 High Working Divorced or separated,0.0984011005078043,0.0965129210561154,United States 2017,-0.0018881794516888983,fresh_better
+NTP,United States 2017 Male 55-64 High Working Married,0.0602192211718787,0.0447805914561163,United States 2017,-0.015438629715762403,fresh_better
+NTP,United States 2017 Male 55-64 High Working Single,0.0709367394447326,0.071831042763319,United States 2017,0.0008943033185864063,fresh_worse
+NTP,United States 2017 Male 55-64 Middle Retired Divorced or separated,0.1779476429025331,0.1730047076964224,United States 2017,-0.0049429352061106935,fresh_better
+NTP,United States 2017 Male 55-64 Middle Retired Married,0.0644739667574563,0.058452094214087,United States 2017,-0.0060218725433692985,fresh_better
+NTP,United States 2017 Male 55-64 Middle Working Married,0.2287541949009711,0.2318842650473887,United States 2017,0.003130070146417613,fresh_worse
+NTP,United States 2017 Male 65-74 High Retired Married,0.135020517490127,0.1275877511435303,United States 2017,-0.007432766346596703,fresh_better
+NTP,United States 2017 Male 65-74 High Retired Widowed,0.2585751824080946,0.2493256307912323,United States 2017,-0.009249551616862278,fresh_better
+NTP,United States 2017 Male 65-74 High Working Married,0.1301561462879183,0.1035068133285541,United States 2017,-0.026649332959364197,fresh_better
+NTP,United States 2017 Male 65-74 Middle Retired Married,0.0260686079661053,0.0351341820951532,United States 2017,0.009065574129047897,fresh_worse
+NTP,United States 2017 Male 65-74 Middle Retired Widowed,0.1071593143321849,0.1050165870766697,United States 2017,-0.0021427272555151894,fresh_better
+NTP,United States 2017 Male 75+ Middle Retired Married,0.2000046461820604,0.1936804937489084,United States 2017,-0.006324152433152014,fresh_better
+NTP,United States 2017 Male <25 High Working Single,0.1872077457832568,0.2086369700308294,United States 2017,0.021429224247572598,fresh_worse
+NTP,United States 2017 Male <25 Middle Unemployed Single,0.0360308362887455,0.0374007081817753,United States 2017,0.0013698718930297976,fresh_worse
+NTP,United States 2017 Male <25 Middle Working Single,0.1643602184904051,0.172944464657938,United States 2017,0.008584246167532894,fresh_worse

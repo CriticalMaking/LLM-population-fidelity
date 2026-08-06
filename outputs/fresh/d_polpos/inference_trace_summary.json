@@ -1,0 +1,21 @@
+{
+  "code_revisions": [
+    "4a3ab35-dirty"
+  ],
+  "failed_records": [],
+  "indexed": 40885,
+  "missing": {
+    "fa": 0,
+    "ntp": 0
+  },
+  "model_sha256": [
+    "5e066c60d89d904db46c3bf577661040578a223a5a39ba3fd23ff091549767f0"
+  ],
+  "ok": true,
+  "problems": [],
+  "run_ids": [
+    "20260806T050324Z-921cd35a"
+  ],
+  "traced": 40885,
+  "untraced": 0
+}

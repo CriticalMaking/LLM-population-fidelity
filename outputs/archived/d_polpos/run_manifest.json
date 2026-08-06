@@ -1,0 +1,70 @@
+{
+  "artifacts": {
+    "figures/archived/d_polpos/fig_distance_comparison.pdf": "c1dbfc118a773e410aef06247c0e4cc028401dd52574117f5809a3a699a06b44",
+    "figures/archived/d_polpos/fig_distance_comparison.png": "8de2361eddb51f649c04cc07c5bd79c6a53c2d38949081260c3e4e8be71fc3fb",
+    "figures/archived/d_polpos/fig_full_coefficients.pdf": "8a31ece91883998171f2202c7388947f5fd01236578c810e1e76af60bf291410",
+    "figures/archived/d_polpos/fig_full_coefficients.png": "89f5ed850bc82ef2d7e89cff34683b81f1d5f0b51da5715e87bbe73e276feb21",
+    "figures/archived/d_polpos/fig_full_standardized_coefficients.pdf": "a34c70c944c357b77aee5fc9907f195b89c0b08e804d49c9fcabf3757e4625a2",
+    "figures/archived/d_polpos/fig_full_standardized_coefficients.png": "5a23a21981b8661f23f83898cc621866fa76ea4878fd9a01485eea267232f8f6",
+    "figures/archived/d_polpos/fig_mds.pdf": "12ea083c0bff8b96a8fd6b7edf09c6dfef71acf020b2d5cecae3cd62757654c8",
+    "figures/archived/d_polpos/fig_mds.png": "604adfeb2d62dfee15878a6f2193ed2167fa9f7f821f67a927e92dea41df87c4",
+    "figures/archived/d_polpos/fig_nemd_density_quality.pdf": "ab16ba2310743f487f0dbc806f23a8cf7dd9d5f5433e34f1bafe6aacb11c7902",
+    "figures/archived/d_polpos/fig_nemd_density_quality.png": "7fea490ca5bd0900654fb2c15a2fea3a9659c124f63460ea2edea8a6341171ef",
+    "figures/archived/d_polpos/fig_social_coefficients.pdf": "2e8968a594cd898466ce12e0ce6bf464492cbb52bbd91e5d34218100b4dcba65",
+    "figures/archived/d_polpos/fig_social_coefficients.png": "a480748bb6dd5012833d74f2e3af740296ada3ef43d53a029e0e99a2d1d08112",
+    "outputs/archived/d_polpos/center_holdouts.csv": "36cd5791e1de98aca8342d017eab98b37dd13706701fb826f9054a2c5d149425",
+    "outputs/archived/d_polpos/f_tests.csv": "16323325820dadc17928cb505e66d657e71dd83fbb8cfcc2903633b8cfb5259a",
+    "outputs/archived/d_polpos/full_coefficients.csv": "b31f0947037ede6a94c9a162327a4fc6cadaa42e28f87cd233c57dbe68f60212",
+    "outputs/archived/d_polpos/full_standardized_coefficients.csv": "946d864dd2291aa7d83acc2367e930becf2c2a0fb79c0e56bf22774a636a21f0",
+    "outputs/archived/d_polpos/pairwise_dispersion.csv": "788cce5c91da33e9fc6d2ec08d87881948b6128480be0e59840710bd9578fbf5",
+    "outputs/archived/d_polpos/paper_regression_checkpoints.csv": "dd9a879f0424c295e6fa1ebabe4dc4063ecfb70a84c68f1bac501cf93ceb2055",
+    "outputs/archived/d_polpos/quality_bands.csv": "53df9bf3ff3d87ed530fc20c29c798636ec62a040c7274952b382c98ac4cb4c1",
+    "outputs/archived/d_polpos/regression_fit.csv": "37476ea8d763c7acf0a8f8388228c68b3bbb562d31f1c4db5d91f900f322d5e5",
+    "outputs/archived/d_polpos/response_distributions.csv": "74d855c765479f21ddcbf8d46a08ce89ff7360069a6ea3d7a472b1980cafa84b",
+    "outputs/archived/d_polpos/social_coefficients.csv": "5c6f800dfbaeac316e753555448d5da80be4639787b7d13c1027a3201e50fb4d",
+    "outputs/archived/d_polpos/subpopulation_distances.csv": "ed6ff8edac9ccb129d1fa5dc2acbeac4e95e7ed73a0c5840d89c76010f199a58",
+    "outputs/archived/d_polpos/summary_metrics.csv": "d766d162980c423b12da4c9cab2a27765913dcb8c48453eac14406c4622af6e9"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-05T23:12:00.730854+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Mixtral-8x7B-v0.1.Q4_K_M",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "archived"
+}

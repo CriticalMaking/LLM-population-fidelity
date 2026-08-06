@@ -1,0 +1,111 @@
+country,variable,level,percent,n
+Australia,Sex,Female,55.70559147965005,5258
+Australia,Sex,Male,44.29440852034994,5258
+Australia,Age,35-44,17.03788311441081,5253
+Australia,Age,45-54,16.9998096325909,5253
+Australia,Age,55-64,16.771368741671424,5253
+Australia,Age,25-34,16.009899105273178,5253
+Australia,Age,65-74,13.725490196078432,5253
+Australia,Age,<25,11.707595659623072,5253
+Australia,Age,75+,7.74795355035218,5253
+Australia,Education,High,49.14596273291926,5152
+Australia,Education,Middle,47.03027950310559,5152
+Australia,Education,Low,3.823757763975155,5152
+Australia,Employment,Working,59.11591355599214,5090
+Australia,Employment,Retired,27.111984282907663,5090
+Australia,Employment,Homemaker,8.487229862475441,5090
+Australia,Employment,Student,3.43811394891945,5090
+Australia,Employment,Unemployed,1.8467583497053044,5090
+Australia,Marstat,Married,54.73965287049399,5243
+Australia,Marstat,Single,19.778752622544346,5243
+Australia,Marstat,Divorced or separated,10.242227732214381,5243
+Australia,Marstat,Cohabiting,8.334922754148389,5243
+Australia,Marstat,Widowed,6.904444020598893,5243
+Germany,Sex,Female,54.04058383766465,5618
+Germany,Sex,Male,45.95941616233535,5618
+Germany,Age,25-34,18.14293352343611,5611
+Germany,Age,45-54,17.94689003742648,5611
+Germany,Age,35-44,17.75084655141686,5611
+Germany,Age,55-64,15.220103368383533,5611
+Germany,Age,65-74,13.74086615576546,5611
+Germany,Age,<25,10.158617002316877,5611
+Germany,Age,75+,7.039743361254678,5611
+Germany,Education,Middle,58.80028735632183,5568
+Germany,Education,High,31.788793103448278,5568
+Germany,Education,Low,9.410919540229886,5568
+Germany,Employment,Working,51.51845790143662,5499
+Germany,Employment,Retired,28.53246044735406,5499
+Germany,Employment,Unemployed,8.583378796144753,5499
+Germany,Employment,Student,5.837424986361157,5499
+Germany,Employment,Homemaker,5.5282778687034,5499
+Germany,Marstat,Married,55.54165176975331,5594
+Germany,Marstat,Single,18.770110833035396,5594
+Germany,Marstat,Divorced or separated,8.670003575259207,5594
+Germany,Marstat,Widowed,8.652127279227743,5594
+Germany,Marstat,Cohabiting,8.366106542724348,5594
+Mexico,Sex,Female,50.05220296512842,4789
+Mexico,Sex,Male,49.947797034871584,4789
+Mexico,Age,25-34,26.53918890523219,4759
+Mexico,Age,<25,21.580163899978988,4759
+Mexico,Age,35-44,18.239125866778735,4759
+Mexico,Age,45-54,15.507459550325697,4759
+Mexico,Age,55-64,10.275267913427191,4759
+Mexico,Age,65-74,5.820550535826855,4759
+Mexico,Age,75+,2.0382433284303425,4759
+Mexico,Education,Middle,50.26112387716732,4787
+Mexico,Education,High,27.70002088991017,4787
+Mexico,Education,Low,22.0388552329225,4787
+Mexico,Employment,Working,56.92700574590338,4699
+Mexico,Employment,Homemaker,24.686103426260907,4699
+Mexico,Employment,Unemployed,7.8101723771015115,4699
+Mexico,Employment,Student,6.25665035113854,4699
+Mexico,Employment,Retired,4.320068099595659,4699
+Mexico,Marstat,Married,50.65611330972713,4801
+Mexico,Marstat,Single,23.57842116225786,4801
+Mexico,Marstat,Cohabiting,13.268069152259946,4801
+Mexico,Marstat,Divorced or separated,7.144344928139971,4801
+Mexico,Marstat,Widowed,5.35305144761508,4801
+Russia,Sex,Female,56.96073431922488,5883
+Russia,Sex,Male,43.03926568077511,5883
+Russia,Age,35-44,20.727767386498893,5881
+Russia,Age,25-34,18.653290256759057,5881
+Russia,Age,45-54,16.408774018024143,5881
+Russia,Age,<25,15.5585784730488,5881
+Russia,Age,55-64,14.725386838972964,5881
+Russia,Age,65-74,10.49141302499575,5881
+Russia,Age,75+,3.4347900017003914,5881
+Russia,Education,High,50.40164074517176,5851
+Russia,Education,Middle,44.06084430011964,5851
+Russia,Education,Low,5.5375149547085964,5851
+Russia,Employment,Working,59.331046312178394,5830
+Russia,Employment,Retired,24.59691252144082,5830
+Russia,Employment,Student,6.312178387650086,5830
+Russia,Employment,Unemployed,5.368782161234992,5830
+Russia,Employment,Homemaker,4.391080617495711,5830
+Russia,Marstat,Married,53.38590776615807,5833
+Russia,Marstat,Single,16.715240870906907,5833
+Russia,Marstat,Widowed,13.612206411794961,5833
+Russia,Marstat,Divorced or separated,12.034973427052975,5833
+Russia,Marstat,Cohabiting,4.251671524087091,5833
+United States,Sex,Male,51.62428067570076,5387
+United States,Sex,Female,48.37571932429924,5387
+United States,Age,25-34,22.735743570629893,5366
+United States,Age,35-44,19.008572493477452,5366
+United States,Age,45-54,16.54863958255684,5366
+United States,Age,55-64,14.498695490122996,5366
+United States,Age,<25,11.106969809914274,5366
+United States,Age,65-74,10.976518822213938,5366
+United States,Age,75+,5.1248602310846065,5366
+United States,Education,Middle,52.15033657442034,5348
+United States,Education,High,45.88631264023934,5348
+United States,Education,Low,1.963350785340314,5348
+United States,Employment,Working,65.5185987010431,5081
+United States,Employment,Retired,18.500295217476875,5081
+United States,Employment,Homemaker,8.38417634323952,5081
+United States,Employment,Unemployed,6.3963786656170045,5081
+United States,Employment,Student,1.2005510726234994,5081
+United States,Marstat,Married,55.322310979007995,5383
+United States,Marstat,Single,21.976592977893368,5383
+United States,Marstat,Divorced or separated,12.31655210848969,5383
+United States,Marstat,Widowed,5.684562511610626,5383
+United States,Marstat,Cohabiting,4.699981422998328,5383
