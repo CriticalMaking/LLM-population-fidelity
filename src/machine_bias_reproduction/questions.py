@@ -59,11 +59,21 @@ class Question:
     def ntp_answers(self, frame: pd.DataFrame) -> pd.DataFrame:
         """Return an NTP frame's answer block under this question's column names.
 
-        Renaming by position is what aligns the NTP 0-9 scale with the WVS 1-10 one.
+        Two layouts appear: the archived CSVs name d_polpos' answers ``X0``-``X9``,
+        while this reproduction's own runs write them as ``answer_columns``. Both
+        are accepted, and renaming the archived block by position is what aligns
+        the NTP 0-9 scale with the WVS 1-10 one.
         """
-        block = frame.loc[:, list(self.ntp_csv_columns)].copy()
-        block.columns = list(self.answer_columns)
-        return block
+        for source in (self.ntp_csv_columns, self.answer_columns):
+            if set(source).issubset(frame.columns):
+                block = frame.loc[:, list(source)].copy()
+                block.columns = list(self.answer_columns)
+                return block
+        raise KeyError(
+            f"NTP frame for {self.var} has none of the expected answer columns "
+            f"{list(self.ntp_csv_columns)} or {list(self.answer_columns)}; "
+            f"found {list(frame.columns)}"
+        )
 
 
 def _letters(count: int) -> tuple[str, ...]:
