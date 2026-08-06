@@ -1,0 +1,46 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.claude/
+htmlcov/
+dist/
+build/
+.DS_Store
+
+# The upstream replication package: a 736 MB archive plus a 790,000-entry
+# extraction. upstream/MANIFEST.json records the SHA-256 of everything consumed
+# from it, so provenance survives without versioning the payload.
+upstream/
+
+# Large model weights.
+models/*.gguf
+models/culture/
+
+# Per-prompt raw LLM responses: regenerable, and too many small files to
+# version. Inference logs are covered by the generic logs/ rule below.
+# Everything else under outputs/ (summary tables, manifests, reports) and all
+# of figures/ (the publication plates) is tracked.
+outputs/**/raw/
+
+# LaTeX build products. paper.tex itself is versioned.
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Runtime logs and temporary atomic-write files.
+logs/
+*.tmp
+
+
+
