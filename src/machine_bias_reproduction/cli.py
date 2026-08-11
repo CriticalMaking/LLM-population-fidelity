@@ -20,7 +20,7 @@ from culture import (
     resolve_models,
     staged_adapter,
 )
-from culture.figures import compare_cultures
+from culture.figures import compare_cultures, culture_mds
 from culture.runner import run_one
 
 from .analysis import run_analysis
@@ -319,6 +319,18 @@ def command_culture_compare(arguments: argparse.Namespace) -> None:
     )
 
 
+def command_culture_mds(arguments: argparse.Namespace) -> None:
+    """Build the culture-matched MDS plate from existing culture outputs."""
+    models = resolve_models(arguments.models)
+    cultures = resolve_cultures(arguments.cultures)
+    _json_print(
+        [
+            culture_mds(models, cultures, question)
+            for question in resolve_questions(arguments.questions)
+        ]
+    )
+
+
 def command_reports(arguments: argparse.Namespace) -> None:
     """Reproduce the paper's tables and figures."""
     from reports.report import build_reports
@@ -467,6 +479,17 @@ def build_parser() -> argparse.ArgumentParser:
     culture_compare.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
     _add_question_argument(culture_compare, plural=True)
     culture_compare.set_defaults(handler=command_culture_compare)
+
+    culture_mds_parser = subparsers.add_parser(
+        "culture-mds",
+        help="build the culture-matched MDS plate from existing outputs",
+    )
+    culture_mds_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
+    culture_mds_parser.add_argument(
+        "--cultures", nargs="+", help="cultures (default: all nine; only matched ones are drawn)"
+    )
+    _add_question_argument(culture_mds_parser, plural=True)
+    culture_mds_parser.set_defaults(handler=command_culture_mds)
 
     reports = subparsers.add_parser("reports", help="reproduce the paper's tables and figures")
     reports.add_argument(
