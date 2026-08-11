@@ -1,0 +1,50 @@
+{"mass": 0.006993415718170581, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a733\u00a7Male\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.004868556929523038, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a71996\u00a771\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.004366916654362285, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72018\u00a741\u00a7Male\u00a7Low\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.011869702582771424, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a745\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.07546563976211473, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a751\u00a7Male\u00a7High\u00a7Unemployed\u00a7Single", "raw_text": null}
+{"mass": 0.08633997468496091, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a72005\u00a721\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.08541992856407887, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a71996\u00a752\u00a7Female\u00a7Middle\u00a7Homemaker\u00a7Single", "raw_text": null}
+{"mass": 0.02020971528327209, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72006\u00a727\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.0912384444491181, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a732\u00a7Male\u00a7Middle\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.02192400218518742, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72018\u00a763\u00a7Male\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.06701576251134611, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72006\u00a727\u00a7Female\u00a7High\u00a7Unemployed\u00a7Single", "raw_text": null}
+{"mass": 0.0035101596604363294, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a72005\u00a748\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.008830866211383182, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a71995\u00a740\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.010044603894129978, "mode": "ntp", "outcome": "invalid", "prompt_id": "Russia\u00a72017\u00a735\u00a7Female\u00a7Low\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.018203030074801063, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a72018\u00a726\u00a7Female\u00a7Middle\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.004417718816512206, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a744\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.010458487653522752, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a71996\u00a735\u00a7Female\u00a7Middle\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.005914355976784691, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a757\u00a7Male\u00a7Middle\u00a7Unemployed\u00a7Single", "raw_text": null}
+{"mass": 0.000753892156353686, "mode": "ntp", "outcome": "invalid", "prompt_id": "Mexico\u00a72005\u00a745\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.000383249497616589, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a737\u00a7Female\u00a7High\u00a7Unemployed\u00a7Single", "raw_text": null}
+{"mass": 0.00030558344516862235, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a746\u00a7Female\u00a7High\u00a7Unemployed\u00a7Single", "raw_text": null}
+{"mass": 0.016192245166166686, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a725\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.019274383328593103, "mode": "ntp", "outcome": "invalid", "prompt_id": "Russia\u00a72006\u00a727\u00a7Male\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": 0.0025149978084755276, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a71997\u00a732\u00a7Female\u00a7High\u00a7Student\u00a7Single", "raw_text": null}
+{"mass": 0.0025369710674567614, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a739\u00a7Female\u00a7High\u00a7Working\u00a7Single", "raw_text": null}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199701760", "raw_text": " E. Single\nQuestion: Taking all things together, how"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic200501413", "raw_text": " E. Quite happy\nQuestion: Taking all things together,"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199701997", "raw_text": " E. Single\nQuestion: Do you have a regular income"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Russi200601676", "raw_text": " E. Onlyestestestestestestestestest"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic199600425", "raw_text": " E. Happy\nQuestion: Do you believe that your work"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic201801592", "raw_text": " E. Single\nQuestion: Taking all things together, how"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199700665", "raw_text": " E. Quite happy\nQuestion: Question: Question: Question"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199701680", "raw_text": " E. SingleLHLHLHLHL"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic201801383", "raw_text": " E. Single\nQuestion: Taking all things together, how"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Russi200600165", "raw_text": " E.C.L.L.L.L."}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa201801039", "raw_text": " E. QuietLoeLoeLoeLoeL"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199701854", "raw_text": " E. Single\nQuestion: Taking all things together, how"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic201800490", "raw_text": " E. Single\nQuestion: Taking all things together, how"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic200500163", "raw_text": " E. Quite happy\nQuestion: Do you think that you"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa200600512", "raw_text": " E. Single\nQuestion: Do you drink alcohol regularly?"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Russi200601663", "raw_text": " E. QuietesLeriesLeriesLeriesLeries"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201800358", "raw_text": " E. Quite happyLHHHHHHH"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Mexic200500423", "raw_text": " E. Quite happy\nQuestion: Do you drink alcoholH"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199700537", "raw_text": " E.C.L.L.L.L."}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa201800925", "raw_text": " E. Single\nQuestion: What is your profession? Are"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa201800638", "raw_text": " E. Quite happy\nQuestion: Do you have any of"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa199701524", "raw_text": " E. Single\nQuestion: I'm curious, how"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Russi200600346", "raw_text": " E. Quiet happyLHILHILHILH"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Russi200600826", "raw_text": " E. Very happyLHLHLHLHLHLHL"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Unite199500219", "raw_text": " A. Very happyLHLHLHLH"}

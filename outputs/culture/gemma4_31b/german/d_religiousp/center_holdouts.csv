@@ -1,0 +1,41 @@
+mode,zero_based_index,subpopulation
+ntp,215,Germany 2006 Male 25-34 Middle Working Married
+ntp,601,United States 2006 Male 35-44 Middle Working Married
+ntp,584,United States 2006 Female 35-44 Middle Homemaker Married
+ntp,472,Russia 2006 Male 25-34 Middle Working Cohabiting
+ntp,503,Russia 2017 Female 35-44 Middle Working Divorced or separated
+ntp,654,United States 2017 Male 45-54 High Working Divorced or separated
+ntp,141,Germany 1997 Female 25-34 Middle Working Single
+ntp,460,Russia 2006 Female 45-54 Middle Working Married
+ntp,303,Mexico 1996 Male 35-44 High Working Married
+ntp,546,United States 1995 Female 35-44 Middle Unemployed Married
+ntp,181,Germany 2006 Female 25-34 High Homemaker Married
+ntp,284,Mexico 1996 Female 25-34 Middle Working Single
+ntp,452,Russia 2006 Female 35-44 High Working Married
+ntp,59,Australia 2005 Female 45-54 Middle Working Married
+ntp,495,Russia 2017 Female 25-34 High Working Divorced or separated
+ntp,668,United States 2017 Male 65-74 High Retired Married
+ntp,454,Russia 2006 Female 35-44 Middle Working Divorced or separated
+ntp,27,Australia 1995 Male 25-34 High Working Married
+ntp,422,Russia 1995 Female 65-74 Low Retired Widowed
+ntp,574,United States 1995 Male 75+ Middle Retired Widowed
+fa,603,United States 2006 Male 45-54 High Working Divorced or separated
+fa,39,Australia 1995 Male 55-64 Middle Retired Divorced or separated
+fa,183,Germany 2006 Female 25-34 Middle Homemaker Married
+fa,162,Germany 1997 Male 25-34 High Working Married
+fa,670,United States 2017 Male 65-74 High Working Married
+fa,40,Australia 1995 Male 55-64 Middle Retired Married
+fa,104,Australia 2018 Female 65-74 High Retired Married
+fa,478,Russia 2006 Male 35-44 Middle Working Divorced or separated
+fa,214,Germany 2006 Male 25-34 High Working Single
+fa,348,Mexico 2005 Male 45-54 Low Working Married
+fa,297,Mexico 1996 Male 25-34 High Working Cohabiting
+fa,544,United States 1995 Female 35-44 High Working Divorced or separated
+fa,100,Australia 2018 Female 55-64 Middle Retired Married
+fa,426,Russia 1995 Female 75+ Middle Retired Widowed
+fa,543,United States 1995 Female 35-44 High Homemaker Married
+fa,388,Mexico 2018 Male 35-44 High Working Married
+fa,533,Russia 2017 Male 55-64 Low Retired Married
+fa,505,Russia 2017 Female 45-54 High Working Married
+fa,531,Russia 2017 Male 55-64 High Working Divorced or separated
+fa,115,Australia 2018 Male 25-34 High Working Single

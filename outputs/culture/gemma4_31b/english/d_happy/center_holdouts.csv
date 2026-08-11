@@ -1,0 +1,41 @@
+mode,zero_based_index,subpopulation
+ntp,587,United States 2006 Female 25-34 Middle Homemaker Married
+ntp,116,Australia 2018 Male 25-34 High Working Married
+ntp,148,Germany 1997 Female 35-44 Middle Working Married
+ntp,215,Germany 2006 Female <25 High Student Single
+ntp,601,United States 2006 Female 65-74 Middle Retired Widowed
+ntp,584,United States 1995 Male <25 Middle Working Single
+ntp,472,Russia 2006 Female 55-64 Middle Retired Married
+ntp,503,Russia 2017 Female 25-34 High Working Divorced or separated
+ntp,654,United States 2017 Male 25-34 High Working Single
+ntp,141,Germany 1997 Female 25-34 Middle NA Married
+ntp,460,Russia 2006 Female 35-44 High Working Divorced or separated
+ntp,303,Mexico 1996 Male 25-34 High Working Married
+ntp,546,United States 1995 Female 25-34 High Unemployed Single
+ntp,181,Germany 1997 Male 65-74 Middle Retired Widowed
+ntp,284,Mexico 1996 Female 25-34 Low Homemaker Married
+ntp,452,Russia 1995 Male <25 High Working Single
+ntp,59,Australia 2005 Female 45-54 Middle Working Married
+ntp,495,Russia 2006 Male 55-64 Middle Working Married
+ntp,673,United States 2017 Male 55-64 Middle Retired Divorced or separated
+ntp,454,Russia 2006 Female 25-34 High Homemaker Married
+fa,161,Germany 1997 Female <25 High Student Single
+fa,442,Russia 1995 Male 35-44 Middle Working Married
+fa,244,Germany 2018 Female 35-44 High Working Married
+fa,550,United States 1995 Female 25-34 Middle Working Single
+fa,603,United States 2006 Female <25 Middle Working Single
+fa,39,Australia 1995 Male 55-64 Middle Retired Divorced or separated
+fa,183,Germany 1997 Male <25 High Student Single
+fa,162,Germany 1997 Female <25 High Working Single
+fa,670,United States 2017 Male 55-64 High Working Divorced or separated
+fa,40,Australia 1995 Male 55-64 Middle Retired Married
+fa,104,Australia 2018 Female 55-64 Middle Working Widowed
+fa,478,Russia 2006 Female <25 Middle Student Single
+fa,214,Germany 2006 Female 75+ Middle Retired Widowed
+fa,348,Mexico 2005 Male 35-44 High Working Married
+fa,297,Mexico 1996 Female <25 High Working Single
+fa,544,Russia 2017 Male <25 High Working Single
+fa,100,Australia 2018 Female 55-64 High Working Married
+fa,426,Russia 1995 Female 55-64 Middle Retired Divorced or separated
+fa,543,Russia 2017 Male 65-74 Low Retired Widowed
+fa,388,Mexico 2018 Female <25 Middle Student Single

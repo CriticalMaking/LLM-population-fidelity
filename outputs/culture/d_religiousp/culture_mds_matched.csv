@@ -1,0 +1,19 @@
+model_key,model_label,culture,series,mode,subpopulations,countries,mean_nEMD
+gemma4_31b,Gemma-4-31B-it,english,Mixtral archived,NTP,276,Australia; United States,0.19442524037454534
+gemma4_31b,Gemma-4-31B-it,english,Mixtral fresh,NTP,276,Australia; United States,0.1948178653198928
+gemma4_31b,Gemma-4-31B-it,english,english,NTP,276,Australia; United States,0.3627067290814065
+gemma4_31b,Gemma-4-31B-it,english,Mixtral archived,FA,276,Australia; United States,0.15413209741594777
+gemma4_31b,Gemma-4-31B-it,english,Mixtral fresh,FA,276,Australia; United States,0.22223181843540354
+gemma4_31b,Gemma-4-31B-it,english,english,FA,276,Australia; United States,0.38232467831418315
+gemma4_31b,Gemma-4-31B-it,german,Mixtral archived,NTP,141,Germany,0.15530953522501906
+gemma4_31b,Gemma-4-31B-it,german,Mixtral fresh,NTP,141,Germany,0.15540021944245558
+gemma4_31b,Gemma-4-31B-it,german,german,NTP,141,Germany,0.37772560340425915
+gemma4_31b,Gemma-4-31B-it,german,Mixtral archived,FA,141,Germany,0.1562038197659427
+gemma4_31b,Gemma-4-31B-it,german,Mixtral fresh,FA,141,Germany,0.17522347225026716
+gemma4_31b,Gemma-4-31B-it,german,german,FA,141,Germany,0.39114161007290665
+gemma4_31b,Gemma-4-31B-it,spanish,Mixtral archived,NTP,128,Mexico,0.4031646574637626
+gemma4_31b,Gemma-4-31B-it,spanish,Mixtral fresh,NTP,128,Mexico,0.40491451250299054
+gemma4_31b,Gemma-4-31B-it,spanish,spanish,NTP,128,Mexico,0.30588687466673414
+gemma4_31b,Gemma-4-31B-it,spanish,Mixtral archived,FA,128,Mexico,0.31006038457465535
+gemma4_31b,Gemma-4-31B-it,spanish,Mixtral fresh,FA,128,Mexico,0.4259091303313246
+gemma4_31b,Gemma-4-31B-it,spanish,spanish,FA,128,Mexico,0.31509870941874163
