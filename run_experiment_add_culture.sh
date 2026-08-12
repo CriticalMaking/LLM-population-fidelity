@@ -25,14 +25,16 @@ Usage:
                                         [--redo] [--no-compare] [--dry-run]
   ./run_experiment_add_culture.sh compare [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
+  ./run_experiment_add_culture.sh summary [--models KEY...] [--cultures NAME...]
+                                          [--questions Q...]
 
 Models:    gemma4_31b, qwen3_vl_8b
 Cultures:  arabic bengali chinese english german korean portuguese spanish turkish
 Questions: d_happy d_polpos d_religiousp d_trust (default d_happy)
 
-Adapters answer the paper's own prompt, so their distances are comparable with
-the archived Mixtral run. How often each adapter can honour that prompt is
-measured per run in capacity.csv and charted in fig_culture_capacity.
+The finetuned culture MLLMs answer the paper's own prompt, so their distances are
+comparable with the archived Mixtral run. How often each one can honour that
+prompt is measured per run in capacity.csv and charted in fig_culture_capacity.
 
 Start with `adapters` to stage the LoRA weights under models/culture, then
 `smoke` to measure throughput and the valid-answer probe before committing.
@@ -48,7 +50,9 @@ pair, skips pairs already analysed, and rebuilds the comparison at the end.
 `run` is the single-invocation form for one pair or a small selection. Both are
 resumable: every prompt writes its own atomic result file, so an interrupted
 sweep continues where it stopped rather than starting over. `compare` rebuilds
-the cross-culture figures and reports from whatever has finished.
+the per-question cross-culture figures and tables from whatever has finished;
+`summary` builds the three cross-question charts the write-up argues from, each
+with the CSV of its own numbers beside it.
 EOF
 }
 
@@ -64,5 +68,6 @@ case "$command_name" in
     run) ./scripts/07_culture.sh "$@" ;;
     sweep) ./scripts/10_culture_sweep.sh "$@" ;;
     compare) ./scripts/09_culture_compare.sh "$@" ;;
+    summary) ./scripts/14_culture_summary.sh "$@" ;;
     *) echo "Unknown command: $command_name" >&2; usage >&2; exit 2 ;;
 esac

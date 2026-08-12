@@ -20,8 +20,10 @@ from culture import (
     resolve_models,
     staged_adapter,
 )
-from culture.figures import compare_cultures, culture_mds
+from culture.figures import compare_cultures
+from culture.mds import culture_mds
 from culture.runner import run_one
+from culture.summary import culture_summary
 
 from .analysis import run_analysis
 from .config import (
@@ -261,7 +263,7 @@ def command_culture_adapters(arguments: argparse.Namespace) -> None:
 
 
 def command_culture(arguments: argparse.Namespace) -> None:
-    """Run culture-adapter inference and analysis for every selected pair."""
+    """Run finetuned culture MLLM inference and analysis for every selected pair."""
     from culture.backend import TransformersBackend
 
     verify_upstream(full=False)
@@ -308,7 +310,7 @@ def command_culture(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_compare(arguments: argparse.Namespace) -> None:
-    """Build comparison figures and reports from existing culture outputs."""
+    """Build comparison figures and tables from existing culture outputs."""
     models = resolve_models(arguments.models)
     cultures = resolve_cultures(arguments.cultures)
     _json_print(
@@ -320,15 +322,31 @@ def command_culture_compare(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_mds(arguments: argparse.Namespace) -> None:
-    """Build the culture-matched MDS plate from existing culture outputs."""
+    """Build the culture MDS plates from existing culture outputs."""
     models = resolve_models(arguments.models)
     cultures = resolve_cultures(arguments.cultures)
+    questions = resolve_questions(arguments.questions)
     _json_print(
         [
-            culture_mds(models, cultures, question)
-            for question in resolve_questions(arguments.questions)
+            culture_mds(
+                models,
+                cultures,
+                question,
+                all_countries=arguments.all_countries,
+                # The outcomes row spans questions, so drawing it once per
+                # question would redraw the same figure and inflate the count.
+                outcomes=arguments.outcomes and question is questions[0],
+            )
+            for question in questions
         ]
     )
+
+
+def command_culture_summary(arguments: argparse.Namespace) -> None:
+    """Build the cross-question summary figures and tables."""
+    models = resolve_models(arguments.models)
+    cultures = resolve_cultures(arguments.cultures)
+    _json_print(culture_summary(models, cultures, arguments.questions))
 
 
 def command_reports(arguments: argparse.Namespace) -> None:
@@ -482,14 +500,35 @@ def build_parser() -> argparse.ArgumentParser:
 
     culture_mds_parser = subparsers.add_parser(
         "culture-mds",
-        help="build the culture-matched MDS plate from existing outputs",
+        help="build the culture MDS plates from existing outputs",
     )
     culture_mds_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
     culture_mds_parser.add_argument(
         "--cultures", nargs="+", help="cultures (default: all nine; only matched ones are drawn)"
     )
+    culture_mds_parser.add_argument(
+        "--all-countries",
+        action="store_true",
+        help="also draw the unrestricted plate over every WVS country",
+    )
+    culture_mds_parser.add_argument(
+        "--outcomes",
+        action="store_true",
+        help="also draw the per-culture row across happiness, politics and religion",
+    )
     _add_question_argument(culture_mds_parser, plural=True)
     culture_mds_parser.set_defaults(handler=command_culture_mds)
+
+    culture_summary_parser = subparsers.add_parser(
+        "culture-summary",
+        help="build the cross-question summary figures and tables",
+    )
+    culture_summary_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
+    culture_summary_parser.add_argument(
+        "--cultures", nargs="+", help="cultures (default: all nine)"
+    )
+    _add_question_argument(culture_summary_parser, plural=True)
+    culture_summary_parser.set_defaults(handler=command_culture_summary)
 
     reports = subparsers.add_parser("reports", help="reproduce the paper's tables and figures")
     reports.add_argument(

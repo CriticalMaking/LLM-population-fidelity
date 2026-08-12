@@ -5,7 +5,14 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from machine_bias_reproduction.config import MODELS_ROOT, PROJECT_ROOT, RunPaths, paths_for
+from machine_bias_reproduction.config import (
+    FIGURES_ROOT,
+    MODELS_ROOT,
+    OUTPUTS_ROOT,
+    PROJECT_ROOT,
+    RunPaths,
+    paths_for,
+)
 from machine_bias_reproduction.questions import Question, resolve_question
 
 CULTURES: tuple[str, ...] = (
@@ -44,6 +51,14 @@ Fifty retries cannot produce an answer the model never had probability on.
 ADAPTERS_ROOT = MODELS_ROOT / "culture"
 ADAPTERS_MANIFEST = ADAPTERS_ROOT / "ADAPTERS.json"
 DEFAULT_CHECKPOINT_ROOT = PROJECT_ROOT.parent / "culture-mllm" / "checkpoints"
+
+CULTURE_ROOT = OUTPUTS_ROOT / "culture"
+CULTURE_FIGURES = FIGURES_ROOT / "culture"
+"""Where every culture table and figure lands, under the repository's own trees.
+
+Named here rather than in a figure module so a table writer and a figure writer
+cannot drift apart on where a run's artifacts belong.
+"""
 
 
 @dataclass(frozen=True, slots=True)

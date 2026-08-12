@@ -14,8 +14,8 @@ Usage:
 Loads each base model once, attaches every selected culture LoRA, and runs
 batched NTP and FA inference followed by capacity measurement, per-run analysis
 and figures. Prompts are the paper's own, so the distances are comparable with
-the archived Mixtral run; capacity.csv records how often each adapter could
-answer in that format at all.
+the archived Mixtral run; capacity.csv records how often each finetuned culture
+MLLM could answer in that format at all.
 
 Results are per-prompt atomic files, so an interrupted run resumes where it
 stopped. Stage the work with --models and --cultures; the full sweep is days of

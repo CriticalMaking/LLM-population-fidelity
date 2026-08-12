@@ -128,8 +128,9 @@ for question in "${questions[@]}"; do
         outputs="$REPO_ROOT/outputs/culture/$model/$culture/$question"
         log="$LOG_DIR/$model-$culture-$question.log"
 
-        # capacity.csv, not summary_metrics.csv: a run whose adapter could not
-        # answer the paper's prompt writes no distances but is still complete.
+        # capacity.csv, not summary_metrics.csv: a run whose finetuned culture
+        # MLLM could not answer the paper's prompt writes no distances but is
+        # still complete.
         if [[ $skip_completed -eq 1 && -f "$outputs/capacity.csv" ]]; then
             echo "[$index/$total] $pair — already run, skipping (--redo to rerun)"
             printf '%s\t%s\t%s\tskipped\t0\t\t\t\t\n' "$model" "$culture" "$question" >> "$SUMMARY"

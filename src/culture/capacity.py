@@ -1,4 +1,4 @@
-"""How often an adapter can answer the paper's prompt at all."""
+"""How often a finetuned culture MLLM can answer the paper's prompt at all."""
 
 from __future__ import annotations
 
