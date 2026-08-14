@@ -17,6 +17,6 @@ case "${1:-}" in
 esac
 
 require_uv
-uv run --locked ruff format --check src tests
-uv run --locked ruff check src tests
+uv run --locked ruff format --check src tests scripts
+uv run --locked ruff check src tests scripts
 uv run --locked mypy
