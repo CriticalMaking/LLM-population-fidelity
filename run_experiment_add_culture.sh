@@ -25,6 +25,9 @@ Usage:
                                         [--redo] [--no-compare] [--dry-run]
   ./run_experiment_add_culture.sh compare [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
+  ./run_experiment_add_culture.sh mds [--models KEY...] [--cultures NAME...]
+                                      [--questions Q...] [--all-countries]
+                                      [--outcomes]
   ./run_experiment_add_culture.sh summary [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
 
@@ -51,8 +54,9 @@ pair, skips pairs already analysed, and rebuilds the comparison at the end.
 resumable: every prompt writes its own atomic result file, so an interrupted
 sweep continues where it stopped rather than starting over. `compare` rebuilds
 the per-question cross-culture figures and tables from whatever has finished;
-`summary` builds the three cross-question charts the write-up argues from, each
-with the CSV of its own numbers beside it.
+`mds` draws the shared-space plates beside each run, one per culture and
+question; `summary` builds the three cross-question charts the write-up argues
+from, each with the CSV of its own numbers beside it.
 EOF
 }
 
@@ -68,6 +72,7 @@ case "$command_name" in
     run) ./scripts/07_culture.sh "$@" ;;
     sweep) ./scripts/10_culture_sweep.sh "$@" ;;
     compare) ./scripts/09_culture_compare.sh "$@" ;;
+    mds) ./scripts/13_culture_mds.sh "$@" ;;
     summary) ./scripts/14_culture_summary.sh "$@" ;;
     *) echo "Unknown command: $command_name" >&2; usage >&2; exit 2 ;;
 esac

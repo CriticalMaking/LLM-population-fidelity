@@ -1,19 +1,3 @@
-"""Shared-space MDS plates: one culture, its references, the same respondents.
-
-Three plates are drawn from the same embedding machinery, and they answer three
-different questions:
-
-``fig_culture_mds_matched``
-    One culture on one outcome, restricted to the countries where its language is
-    dominant. The default view, and the tightest comparison available.
-``fig_culture_mds_all_countries``
-    The same culture and outcome over every WVS country, with the matched subset
-    ringed. Says what the matched plate leaves out.
-``fig_culture_mds_outcomes``
-    One culture across happiness, politics and religion at once, so an effect
-    that belongs to the question rather than to the model is visible as such.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -57,12 +41,6 @@ BoolArray = npt.NDArray[np.bool_]
 Embedding = tuple[pd.Index, FloatArray, dict[tuple[str, str], FloatArray]]
 
 OUTCOME_ROW: tuple[str, str, str] = ("d_happy", "d_polpos", "d_religiousp")
-"""The three outcomes ``fig_culture_mds_outcomes`` puts side by side.
-
-``d_trust`` is left out on purpose: it has two answers, so its MDS space is not
-comparable with the ordered outcomes and putting it in the row would invite
-exactly that comparison.
-"""
 
 
 def _series(
@@ -70,11 +48,6 @@ def _series(
     culture: str,
     question: Question,
 ) -> dict[str, PreparedData]:
-    """Load the finetuned culture MLLM and both Mixtral references for one culture.
-
-    A series whose consolidated CSVs are missing is dropped rather than raising,
-    so an unfinished cell of the sweep costs its own panel and nothing else.
-    """
     wanted: list[tuple[str, str, tuple[str, str] | None]] = [
         (label, source, None) for label, source in MDS_REFERENCES
     ]
@@ -95,14 +68,6 @@ def _embed(
     names: pd.Index,
     question: Question,
 ) -> Embedding | None:
-    """Embed every series in one shared MDS space over ``names``.
-
-    Following ``6-results.R:861-863`` -- as ``figures._mds`` does -- the WVS block
-    is repeated once per model block before the distance matrix is computed, so
-    the survey carries the same weight as the models it is being compared
-    against. One embedding covers both generation modes, which is what makes the
-    panels of a row comparable.
-    """
     if names.empty:
         return None
     columns = list(question.answer_columns)
@@ -128,7 +93,6 @@ def _embed(
 
 
 def _shared_names(series: dict[str, PreparedData]) -> pd.Index | None:
-    """Return the subpopulations every series retained, or ``None`` if disjoint."""
     shared: pd.Index | None = None
     for prepared in series.values():
         shared = prepared.names if shared is None else shared.intersection(prepared.names)
@@ -140,13 +104,6 @@ def _matched_mds_embedding(
     culture: str,
     question: Question,
 ) -> Embedding | None:
-    """Embed one culture restricted to the countries where its language dominates.
-
-    The subpopulations are the intersection of what all three series retained,
-    then restricted, so the finetuned culture MLLM and both Mixtral series are
-    scored on *identical* respondents and a difference between the clouds is the
-    model rather than the sample.
-    """
     shared = _shared_names(series)
     if shared is None:
         return None
@@ -158,31 +115,17 @@ def _all_countries_mds_embedding(
     series: dict[str, PreparedData],
     question: Question,
 ) -> Embedding | None:
-    """Embed one culture over every WVS respondent, with no country restriction.
-
-    The companion to ``_matched_mds_embedding``: same series, same maths, wider
-    sample. Reading the two together is what shows whether the matched subset is
-    representative of the survey or a corner of it.
-    """
     shared = _shared_names(series)
     return None if shared is None else _embed(series, shared, question)
 
 
 def _home_mask(names: pd.Index, culture: str) -> BoolArray:
-    """Return which of ``names`` live in the culture's own countries."""
     countries = countries_for(culture)
     mask = country_of(pd.Series(names, dtype="object")).isin(list(countries))
     return np.asarray(mask.to_numpy(), dtype=bool)
 
 
 def home_countries(culture: str) -> str:
-    """Name the WVS countries a culture's language is dominant in.
-
-    This is what "own countries" means everywhere in the culture figures, and it
-    is a country list rather than the culture's own name on purpose: ``spanish``
-    is a language fine-tune, and the only Spanish-dominant country with
-    respondents in this survey is Mexico -- Spain is not in the WVS slice at all.
-    """
     return ", ".join(countries_for(culture))
 
 
@@ -199,22 +142,6 @@ def _draw_panel(
     home: BoolArray | None = None,
     home_countries: str = "",
 ) -> list[tuple[str, float]]:
-    """Draw the survey cloud and every model series of one generation mode.
-
-    Returns each series' label with its mean nEMD over ``names``, in draw order,
-    so the caller can both annotate the panel and record the same numbers in its
-    table without computing them twice.
-
-    ``sample`` names the respondent countries in the survey's own legend entry.
-    Which respondents a panel covers is the first thing a reader needs and the
-    easiest thing to assume wrongly, so it is stated inside the figure rather
-    than left to the caption.
-
-    ``home`` marks the subpopulations in the culture's own countries. The matched
-    plates pass nothing because every point is already a home point; the
-    all-countries plate passes a mask so the matched subset stays visible inside
-    the wider cloud, labelled with ``home_countries``.
-    """
     columns = list(question.answer_columns)
     wvs_props = next(iter(series.values())).wvs_props.loc[names, columns]
     axis.scatter(
@@ -288,16 +215,6 @@ def _share_scale(
     wvs_coordinates: FloatArray,
     model_coordinates: dict[tuple[str, str], FloatArray],
 ) -> None:
-    """Put every panel of one embedding on one square, undistorted scale.
-
-    All panels come from a single embedding, so a cloud that looks tighter has to
-    be tighter, not zoomed.
-
-    The window is squared by padding the shorter dimension, never by stretching
-    it: the axes stay equal-aspect, so a distance still reads the same in both
-    directions. Squaring is what makes panels from *different* embeddings -- the
-    outcomes row -- come out the same size and line up.
-    """
     spread = np.vstack([wvs_coordinates, *model_coordinates.values()])
     half = max(float(np.ptp(spread[:, 0])), float(np.ptp(spread[:, 1]))) / 2 * 1.05
     for axis in axes:
@@ -316,7 +233,6 @@ def _rows(
     countries: str,
     subpopulations: int,
 ) -> list[dict[str, Any]]:
-    """Turn one panel's means into export rows, one per drawn series."""
     return [
         {
             "culture": culture,
@@ -333,12 +249,6 @@ def _rows(
 
 
 def _plate_series(model: CultureModel, culture: str, question: Question) -> dict[str, PreparedData]:
-    """Load a plate's series, or nothing when the plate would misrepresent the run.
-
-    The finetuned culture MLLM itself has to be there. Without this guard an
-    unfinished cell still draws a plate titled with the culture but holding only
-    the two Mixtral references, which reads as a result about that culture.
-    """
     if culture not in MATCHED_CULTURES:
         return {}
     series = _series(model, culture, question)
@@ -350,12 +260,6 @@ def _matched_plate(
     culture: str,
     question: Question,
 ) -> tuple[list[Path], pd.DataFrame]:
-    """Draw one culture's matched plate, one panel per generation mode.
-
-    The plate lands beside that run's other figures, in
-    ``figures/culture/<model>/<culture>/<question>/``, so a culture's evidence is
-    read in one place instead of being cropped out of a grid.
-    """
     series = _plate_series(model, culture, question)
     if not series:
         return [], pd.DataFrame()
@@ -408,12 +312,6 @@ def _all_countries_plate(
     culture: str,
     question: Question,
 ) -> tuple[list[Path], pd.DataFrame]:
-    """Draw the same culture over every WVS country, matched subset ringed.
-
-    The matched plate answers "how close is this model to its own people"; this
-    one answers "and where does that sit among everyone else". Russia appears
-    here and nowhere else: it has respondents but no finetuned culture MLLM.
-    """
     series = _plate_series(model, culture, question)
     if not series:
         return [], pd.DataFrame()
@@ -466,14 +364,6 @@ def _outcomes_row(
     culture: str,
     outcomes: tuple[str, ...] = OUTCOME_ROW,
 ) -> tuple[list[Path], pd.DataFrame]:
-    """Draw one culture's matched next-token panels across several outcomes.
-
-    Each outcome gets its own embedding -- they are different answer spaces and
-    could not share one -- so the panels are read for shape, not for distance
-    between them. Next-token only: two modes times three outcomes is a grid
-    nobody reads, and the collapse this row exists to show is a next-token
-    result.
-    """
     destination = CULTURE_FIGURES / model.key / culture
     panels: list[tuple[Question, dict[str, PreparedData], Embedding]] = []
     for name in outcomes:
@@ -524,7 +414,6 @@ def _outcomes_row(
 
 
 def _export(tables: list[pd.DataFrame], destination: Path) -> Path | None:
-    """Write the panel means beside the figures they annotate."""
     if not tables:
         return None
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -540,17 +429,6 @@ def culture_mds(
     all_countries: bool = False,
     outcomes: bool = False,
 ) -> dict[str, Any]:
-    """Build the MDS plates for one question, plus the shared coordinate export.
-
-    Each plate is written beside that run's other figures rather than into a
-    single per-question grid, so a culture can be read on its own. Cultures whose
-    run has not finished are skipped, which makes this safe to re-run while a
-    sweep is still going.
-
-    ``all_countries`` adds the unrestricted companion plate. ``outcomes`` adds the
-    per-culture row across ``OUTCOME_ROW``; it spans questions, so it is drawn
-    once per culture no matter which question was asked for.
-    """
     outcome = resolve_question(question)
     produced: list[Path] = []
     # Two exports, because the outcomes row spans questions: filing its panels

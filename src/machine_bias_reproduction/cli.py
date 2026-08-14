@@ -1,5 +1,3 @@
-"""Command-line interface used by the shell experiment harness."""
-
 from __future__ import annotations
 
 import argparse
@@ -14,9 +12,12 @@ from typing import Any, cast
 
 from culture import (
     ADAPTERS_MANIFEST,
+    BASE_ARM,
     DEFAULT_CHECKPOINT_ROOT,
     copy_adapters,
+    is_base,
     resolve_cultures,
+    resolve_finetuned_cultures,
     resolve_models,
     staged_adapter,
 )
@@ -87,7 +88,6 @@ def _run_context(
     model_hash: str,
     backend: InferenceBackend,
 ) -> RunContext:
-    """Build the identity stamped onto every record this invocation writes."""
     return RunContext(
         run_id=RunContext.new_run_id(),
         started_at=datetime.now(UTC).isoformat(),
@@ -136,7 +136,6 @@ def _inference_manifest(
 
 
 def command_archived(arguments: argparse.Namespace) -> None:
-    """Prepare provenance, analyze archived outputs, and print the result."""
     if not MANIFEST_PATH.exists():
         create_manifest()
     verify_upstream(full=False)
@@ -150,7 +149,6 @@ def command_archived(arguments: argparse.Namespace) -> None:
 
 
 def command_fresh(arguments: argparse.Namespace) -> None:
-    """Run resumable fresh Mixtral inference and, when complete, analysis."""
     model_path = Path(arguments.model)
     if not model_path.is_file():
         raise FileNotFoundError(f"Mixtral model not found: {model_path}")
@@ -224,7 +222,6 @@ def _write_trace_index(
     records_by_mode: Mapping[str, Sequence[PromptRecord]],
     paths: RunPaths,
 ) -> dict[str, Any]:
-    """Index and verify every stored inference, then persist both artifacts."""
     frame, summary = audit_traces(records_by_mode, paths)
     destination = paths.outputs / "inference_trace.csv"
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -234,7 +231,6 @@ def _write_trace_index(
 
 
 def command_trace(arguments: argparse.Namespace) -> None:
-    """Audit the per-inference traces of an existing fresh run."""
     question = resolve_question(arguments.question)
     paths = paths_for("fresh", question.var)
     paths.ensure()
@@ -252,18 +248,26 @@ def command_trace(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_adapters(arguments: argparse.Namespace) -> None:
-    """Stage the selected culture adapters under ``models/culture``."""
     manifest = copy_adapters(
         Path(arguments.source),
         resolve_models(arguments.models),
-        resolve_cultures(arguments.cultures),
+        resolve_finetuned_cultures(arguments.cultures),
         force=arguments.force,
     )
     _json_print({"counts": manifest["counts"], "manifest": str(ADAPTERS_MANIFEST)})
 
 
+def _culture_groups(model_key: str, cultures: list[str]) -> list[tuple[list[str], dict[str, Path]]]:
+    finetuned = [culture for culture in cultures if not is_base(culture)]
+    groups: list[tuple[list[str], dict[str, Path]]] = []
+    if finetuned:
+        groups.append((finetuned, {c: staged_adapter(model_key, c) for c in finetuned}))
+    if any(is_base(culture) for culture in cultures):
+        groups.append(([BASE_ARM], {}))
+    return groups
+
+
 def command_culture(arguments: argparse.Namespace) -> None:
-    """Run finetuned culture MLLM inference and analysis for every selected pair."""
     from culture.backend import TransformersBackend
 
     verify_upstream(full=False)
@@ -274,34 +278,34 @@ def command_culture(arguments: argparse.Namespace) -> None:
     results: list[dict[str, Any]] = []
     for question in questions:
         for model in models:
-            adapters = {culture: staged_adapter(model.key, culture) for culture in cultures}
-            print(
-                f"loading {model.base_model_id} ({model.quantization or 'unquantized'}) "
-                f"for {question.var}",
-                flush=True,
-            )
-            backend = TransformersBackend(
-                model,
-                adapters,
-                question,
-                batch_size=arguments.batch_size,
-                fa_max_new_tokens=arguments.fa_max_tokens,
-            )
-            for culture in cultures:
-                results.append(
-                    run_one(
-                        model,
-                        culture,
-                        question,
-                        backend,
-                        arguments,
-                        wvs,
-                        manifest_writer=_inference_manifest,
-                        trace_writer=_write_trace_index,
-                        sha256_file=sha256_file,
-                    )
+            for group, adapters in _culture_groups(model.key, cultures):
+                print(
+                    f"loading {model.base_model_id} ({model.quantization or 'unquantized'}) "
+                    f"for {question.var} — {', '.join(group)}",
+                    flush=True,
                 )
-            del backend
+                backend = TransformersBackend(
+                    model,
+                    adapters,
+                    question,
+                    batch_size=arguments.batch_size,
+                    fa_max_new_tokens=arguments.fa_max_tokens,
+                )
+                for culture in group:
+                    results.append(
+                        run_one(
+                            model,
+                            culture,
+                            question,
+                            backend,
+                            arguments,
+                            wvs,
+                            manifest_writer=_inference_manifest,
+                            trace_writer=_write_trace_index,
+                            sha256_file=sha256_file,
+                        )
+                    )
+                del backend
 
     comparison: list[dict[str, Any]] | None = None
     if not arguments.skip_compare and arguments.limit is None:
@@ -310,7 +314,6 @@ def command_culture(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_compare(arguments: argparse.Namespace) -> None:
-    """Build comparison figures and tables from existing culture outputs."""
     models = resolve_models(arguments.models)
     cultures = resolve_cultures(arguments.cultures)
     _json_print(
@@ -322,7 +325,6 @@ def command_culture_compare(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_mds(arguments: argparse.Namespace) -> None:
-    """Build the culture MDS plates from existing culture outputs."""
     models = resolve_models(arguments.models)
     cultures = resolve_cultures(arguments.cultures)
     questions = resolve_questions(arguments.questions)
@@ -343,14 +345,12 @@ def command_culture_mds(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_summary(arguments: argparse.Namespace) -> None:
-    """Build the cross-question summary figures and tables."""
     models = resolve_models(arguments.models)
     cultures = resolve_cultures(arguments.cultures)
     _json_print(culture_summary(models, cultures, arguments.questions))
 
 
 def command_reports(arguments: argparse.Namespace) -> None:
-    """Reproduce the paper's tables and figures."""
     from reports.report import build_reports
 
     _json_print(
@@ -363,7 +363,6 @@ def command_reports(arguments: argparse.Namespace) -> None:
 
 
 def command_verify(arguments: argparse.Namespace) -> None:
-    """Verify canonical upstream artifacts and generated archived results."""
     upstream = verify_upstream(full=arguments.full)
     payload: dict[str, object] = {"upstream": upstream}
     archived_summary = paths_for("archived", DEFAULT_QUESTION).outputs / "summary_metrics.csv"
@@ -373,12 +372,10 @@ def command_verify(arguments: argparse.Namespace) -> None:
 
 
 def command_manifest(_: argparse.Namespace) -> None:
-    """Regenerate the upstream manifest."""
     _json_print(create_manifest())
 
 
 def command_prompt_check(arguments: argparse.Namespace) -> None:
-    """Verify prompts are byte-identical to the upstream files, and count them."""
     from .config import UPSTREAM_DATA
 
     wvs = load_wvs()
@@ -422,7 +419,6 @@ def _add_question_argument(parser: argparse.ArgumentParser, *, plural: bool) -> 
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Build the public command parser."""
     parser = argparse.ArgumentParser(
         prog="machine-bias-reproduction",
         description="Reproduce Machine Bias: four WVS questions, NTP and FA.",
@@ -453,7 +449,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     adapters = subparsers.add_parser(
         "culture-adapters",
-        help="stage culture LoRA adapters under models/culture",
+        help="stage culture-finetuned LoRA weights under models/culture",
     )
     adapters.add_argument(
         "--source",
@@ -462,15 +458,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     adapters.add_argument("--models", nargs="+", help="model keys (default: all)")
     adapters.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
-    adapters.add_argument("--force", action="store_true", help="re-copy staged adapters")
+    adapters.add_argument("--force", action="store_true", help="re-copy staged weights")
     adapters.set_defaults(handler=command_culture_adapters)
 
     culture = subparsers.add_parser(
         "culture",
-        help="run culture-finetuned MLLM inference and analysis",
+        help="run culture-finetuned LLM inference and analysis",
     )
     culture.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
+    culture.add_argument(
+        "--cultures",
+        nargs="+",
+        help="arms: the nine cultures and 'base' (default: base and all nine)",
+    )
+    culture.add_argument(
+        "--first-countries",
+        nargs="+",
+        help="generate these countries' prompts first; ordering only, same final result",
+    )
     culture.add_argument("--mode", choices=("ntp", "fa", "all"), default="all")
     culture.add_argument("--limit", type=int, help="smoke-test only the first N prompts")
     culture.add_argument("--batch-size", type=int, help="override the model's default batch size")
@@ -494,7 +499,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="build cross-culture figures and reports from existing outputs",
     )
     culture_compare.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture_compare.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
+    culture_compare.add_argument("--cultures", nargs="+", help="arms (default: base and all nine)")
     _add_question_argument(culture_compare, plural=True)
     culture_compare.set_defaults(handler=command_culture_compare)
 
@@ -504,7 +509,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     culture_mds_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
     culture_mds_parser.add_argument(
-        "--cultures", nargs="+", help="cultures (default: all nine; only matched ones are drawn)"
+        "--cultures", nargs="+", help="arms (default: all; only matched cultures are drawn)"
     )
     culture_mds_parser.add_argument(
         "--all-countries",
@@ -525,7 +530,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     culture_summary_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
     culture_summary_parser.add_argument(
-        "--cultures", nargs="+", help="cultures (default: all nine)"
+        "--cultures", nargs="+", help="arms (default: base and all nine)"
     )
     _add_question_argument(culture_summary_parser, plural=True)
     culture_summary_parser.set_defaults(handler=command_culture_summary)
@@ -567,7 +572,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
-    """Run the selected CLI command."""
     parser = build_parser()
     arguments = parser.parse_args()
     arguments.handler(arguments)

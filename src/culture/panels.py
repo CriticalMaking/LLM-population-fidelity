@@ -1,10 +1,3 @@
-"""The per-question comparison panels: densities, capacity, quality, geography.
-
-Each function draws one figure from the frames ``tables.load_model_frames``
-returned and hands back the paths it wrote. None of them derives a number the
-exported CSVs do not also carry.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -25,13 +18,14 @@ from machine_bias_reproduction.questions import Question
 
 from .matching import WVS_COUNTRIES, countries_for, country_of
 from .palette import (
-    CULTURE_COLORS,
     MODES,
     OUTCOME_PALETTE,
     QUALITY_PALETTE,
     REFERENCE_COLOR,
+    arm_order,
+    culture_color,
 )
-from .registry import CULTURE_MODELS, PREFLIGHT_MIN_MASS, CultureModel
+from .registry import CULTURE_MODELS, PREFLIGHT_MIN_VALID_ANSWER_MASS, CultureModel
 from .tables import (
     has_distances,
     is_flagged,
@@ -62,7 +56,7 @@ def _draw_culture_densities(
             grid,
             density,
             label=f"{culture} (low mass)" if flagged else culture,
-            color=CULTURE_COLORS[culture],
+            color=culture_color(culture),
             linewidth=1.5,
             linestyle=":" if flagged else "solid",
             alpha=0.45 if flagged else 1.0,
@@ -90,7 +84,6 @@ def density_figure(
     question: Question,
     destination: Path,
 ) -> list[Path]:
-    """Overlay each culture's nEMD density against the paper's Mixtral baseline."""
     reference = reference_distances(question)
     figure, axes = plt.subplots(1, 2, figsize=(15, 6), sharey=True)
     for axis, mode in zip(axes, MODES, strict=True):
@@ -109,7 +102,6 @@ def distance_density_figure(
     frames: dict[str, dict[str, Any]],
     destination: Path,
 ) -> list[Path]:
-    """Draw one density panel per distance measure, per generation strategy."""
     names = list(DISTANCES)
     figure, axes = plt.subplots(
         len(MODES),
@@ -132,12 +124,6 @@ def capacity_figure(
     frames: dict[str, dict[str, Any]],
     destination: Path,
 ) -> list[Path]:
-    """Chart how often each finetuned culture MLLM answered the paper's prompt at all.
-
-    Left: the share of generations the paper's acceptance rules would take.
-    Right: the mass placed on any valid answer token — the same question asked
-    of the distribution rather than of the sampled text.
-    """
     rows: list[dict[str, Any]] = []
     for culture, tables in frames.items():
         capacity = tables.get("capacity")
@@ -159,7 +145,7 @@ def capacity_figure(
     figure, axes = plt.subplots(1, 2, figsize=(15, 6))
 
     if not frame.empty:
-        order = sorted(frame["culture"].unique())
+        order = arm_order(frame["culture"].unique())
         positions = np.arange(len(order))
         height = 0.38
         for index, mode in enumerate(MODES):
@@ -196,15 +182,15 @@ def capacity_figure(
         axes[1].barh(
             positions,
             np.nan_to_num(masses),
-            color=[CULTURE_COLORS[culture] for culture in order],
+            color=[culture_color(culture) for culture in order],
             height=0.6,
         )
         axes[1].axvline(
-            PREFLIGHT_MIN_MASS,
+            PREFLIGHT_MIN_VALID_ANSWER_MASS,
             color="#333333",
             linestyle=":",
             linewidth=1.2,
-            label=f"informative threshold ({PREFLIGHT_MIN_MASS:.2f})",
+            label=f"informative threshold ({PREFLIGHT_MIN_VALID_ANSWER_MASS:.2f})",
         )
         axes[1].set_xscale("log")
         axes[1].set_yticks(positions, order)
@@ -221,7 +207,6 @@ def quality_figure(
     destination: Path,
     stem: str = "fig_culture_quality_bands",
 ) -> list[Path]:
-    """Stack each culture's subpopulations into the paper's five quality bands."""
     rows: list[dict[str, Any]] = []
     for culture, tables in frames.items():
         quality = tables.get("quality")
@@ -267,7 +252,6 @@ def ranking_figure(
     destination: Path,
     stem: str = "fig_culture_ranking",
 ) -> list[Path]:
-    """Rank the cultures by mean subpopulation distance, both modes on one axis."""
     rows: list[dict[str, Any]] = []
     for culture, tables in frames.items():
         if not has_distances(tables):
@@ -349,7 +333,6 @@ def _country_matrix(frames: dict[str, dict[str, Any]], mode: str) -> pd.DataFram
 
 
 def country_heatmap(frames: dict[str, dict[str, Any]], destination: Path) -> list[Path]:
-    """Cross each culture with each respondent country; bold the matched cells."""
     figure, axes = plt.subplots(1, 2, figsize=(14, 6))
     for axis, mode in zip(axes, MODES, strict=True):
         matrix = _country_matrix(frames, mode).sort_index()
@@ -387,13 +370,12 @@ def response_shift(
     question: Question,
     destination: Path,
 ) -> list[Path]:
-    """Compare each culture's answer distribution against the survey's own."""
     columns = list(question.answer_columns)
     labels = [f"{code}. {name}" for code, name in zip(columns, question.wvs_labels, strict=True)]
     figure, axes = plt.subplots(1, 2, figsize=(15, 5.5), sharey=True)
     wvs: np.ndarray | None = None
     for axis, mode in zip(axes, MODES, strict=True):
-        cultures = sorted(
+        cultures = arm_order(
             culture for culture, tables in frames.items() if tables["responses"] is not None
         )
         width = 0.8 / max(len(cultures), 1)
@@ -408,7 +390,7 @@ def response_shift(
                 selected.iloc[0][columns].to_numpy(dtype=np.float64),
                 width=width,
                 label=culture,
-                color=CULTURE_COLORS[culture],
+                color=culture_color(culture),
             )
             if wvs is None:
                 wvs_row = responses[responses["method"] == "WVS"]
@@ -434,7 +416,6 @@ def matched_figures(
     question: Question,
     destination: Path,
 ) -> tuple[list[Path], pd.DataFrame]:
-    """Redraw the density, distance and ranking panels on the matched subsets."""
     matched = matched_frames(frames)
     if not matched:
         return [], pd.DataFrame()
@@ -454,11 +435,10 @@ def matched_figures(
 
 
 def cross_model_figure(tables: dict[str, pd.DataFrame], destination: Path) -> list[Path]:
-    """Put every base model's cultures on one axis, one marker per model."""
     combined = pd.concat(tables.values(), ignore_index=True)
     combined = combined[combined["mode"].notna()]
     figure, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
-    order = sorted(combined["culture"].unique())
+    order = arm_order(combined["culture"].unique())
     positions = {culture: index for index, culture in enumerate(order)}
     markers = {key: marker for key, marker in zip(tables, ("o", "s", "^", "D"), strict=False)}
     for axis, mode in zip(axes, MODES, strict=True):

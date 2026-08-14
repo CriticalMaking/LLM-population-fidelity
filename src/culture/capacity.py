@@ -1,5 +1,3 @@
-"""How often a finetuned culture MLLM can answer the paper's prompt at all."""
-
 from __future__ import annotations
 
 import json
@@ -12,12 +10,11 @@ import pandas as pd
 
 from machine_bias_reproduction.config import RunPaths
 
-from .registry import PREFLIGHT_MIN_MASS
+from .registry import PREFLIGHT_MIN_VALID_ANSWER_MASS
 
 MODES = ("ntp", "fa")
 OUTCOMES = ("valid", "invalid", "failed")
-EXAMPLE_LIMIT = 25
-"""Rejected generations kept per mode, so a failure can be read, not just counted."""
+REJECTED_EXAMPLES_KEPT_PER_MODE = 25
 
 CAPACITY_FILE = "capacity.csv"
 EXAMPLES_FILE = "capacity_examples.jsonl"
@@ -25,8 +22,6 @@ EXAMPLES_FILE = "capacity_examples.jsonl"
 
 @dataclass(frozen=True, slots=True)
 class ModeCapacity:
-    """One mode's answer-format compliance for one run."""
-
     mode: str
     prompts: int
     valid: int
@@ -38,11 +33,9 @@ class ModeCapacity:
 
     @property
     def valid_rate(self) -> float:
-        """Return the share of prompts answered in the paper's exact format."""
         return self.valid / self.prompts if self.prompts else 0.0
 
     def as_row(self) -> dict[str, Any]:
-        """Return the ``capacity.csv`` row."""
         return {
             "mode": self.mode.upper(),
             "prompts": self.prompts,
@@ -68,13 +61,6 @@ def _records(directory: Path) -> Iterator[dict[str, Any]]:
 
 
 def classify(record: dict[str, Any], mode: str) -> str:
-    """Classify one stored inference as valid, invalid or failed.
-
-    ``failed`` means the backend never produced a candidate. ``invalid`` means
-    it produced text no accepted answer matches — the case that matters here,
-    being the model declining the paper's answer contract rather than the
-    harness breaking.
-    """
     if record.get("error") or record.get("failed"):
         return "failed"
     result = record.get("result")
@@ -82,7 +68,7 @@ def classify(record: dict[str, Any], mode: str) -> str:
         return "failed"
     if mode == "ntp":
         mass = float(result.get("mass", 0.0)) if isinstance(result, dict) else 0.0
-        return "valid" if mass >= PREFLIGHT_MIN_MASS else "invalid"
+        return "valid" if mass >= PREFLIGHT_MIN_VALID_ANSWER_MASS else "invalid"
     return "valid" if result else "invalid"
 
 
@@ -96,7 +82,6 @@ def _rejected_text(record: dict[str, Any]) -> str | None:
 
 
 def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
-    """Walk a run's stored inferences and summarize answer-format compliance."""
     rows: list[dict[str, Any]] = []
     examples: list[dict[str, Any]] = []
     for mode in MODES:
@@ -109,7 +94,7 @@ def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
             result = record.get("result")
             if mode == "ntp" and isinstance(result, dict) and "mass" in result:
                 masses.append(float(result["mass"]))
-            if outcome != "valid" and kept < EXAMPLE_LIMIT:
+            if outcome != "valid" and kept < REJECTED_EXAMPLES_KEPT_PER_MODE:
                 examples.append(
                     {
                         "mode": mode,
@@ -140,7 +125,6 @@ def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
 
 
 def write(paths: RunPaths) -> pd.DataFrame:
-    """Measure a run and persist ``capacity.csv`` plus its rejected examples."""
     frame, examples = measure(paths)
     paths.outputs.mkdir(parents=True, exist_ok=True)
     frame.to_csv(paths.outputs / CAPACITY_FILE, index=False)
@@ -151,7 +135,6 @@ def write(paths: RunPaths) -> pd.DataFrame:
 
 
 def read(paths: RunPaths) -> pd.DataFrame | None:
-    """Read a run's capacity table, or ``None`` when it has not been measured."""
     path = paths.outputs / CAPACITY_FILE
     if not path.is_file():
         return None
@@ -161,6 +144,5 @@ def read(paths: RunPaths) -> pd.DataFrame | None:
 def progress_line(
     model_key: str, culture: str, mode: str, done: int, total: int, valid: int
 ) -> str:
-    """Return the rolling counter the sweep prints while a pair runs."""
     share = 100.0 * valid / done if done else 0.0
     return f"[{model_key}/{culture}] {mode}: {done}/{total} prompts, {valid} valid ({share:.1f}%)"

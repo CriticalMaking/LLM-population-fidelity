@@ -1,24 +1,3 @@
-"""Cross-question summaries: the three claims the culture extension rests on.
-
-Every other culture figure answers one question at a time. These read across
-happiness, politics and religion together, because each of the three claims is
-about the *pattern* over outcomes rather than about any one of them:
-
-``fig_overall_nemd``
-    How far each model sits from the survey overall. Lower is closer.
-``fig_compression``
-    How much each model squashes the spread between subpopulations. Above 1.0 the
-    model makes groups more alike than they really are -- the original paper's
-    failure mode; below 1.0 it spreads them wider than the survey does.
-``fig_home_advantage``
-    Whether a finetuned culture MLLM is closer to its *own* respondents than a
-    reference is, once the reference's own head start on those same respondents
-    is differenced out.
-
-Each figure has a CSV beside it carrying exactly the plotted numbers, so a value
-quoted anywhere downstream traces back to a file that can be re-derived.
-"""
-
 from __future__ import annotations
 
 import json
@@ -37,9 +16,9 @@ from machine_bias_reproduction.figures import _save
 from machine_bias_reproduction.inference import EVENT_LOG_NAME
 from machine_bias_reproduction.questions import Question, resolve_questions
 
-from .matching import country_of, home_splits
+from .matching import WVS_COUNTRIES, country_of, home_splits
 from .palette import MODES, mds_color
-from .registry import CULTURE_FIGURES, CULTURE_ROOT, CultureModel
+from .registry import BASE_ARM, CULTURE_FIGURES, CULTURE_ROOT, CultureModel, is_base
 from .tables import read_csv, read_csv_tsv
 
 matplotlib.use("Agg")
@@ -49,12 +28,6 @@ REFERENCES: tuple[tuple[str, str], ...] = (
     ("Mixtral archived", "archived"),
     ("Mixtral fresh", "fresh"),
 )
-"""The paper's own model, twice: its published run and a fresh re-run.
-
-Drawn side by side on purpose. The gap between two runs of one model is the size
-of run-to-run noise, which is the only yardstick these charts offer for whether a
-gap between models is worth reading.
-"""
 
 GRID = "#d8d8d8"
 INK = "#1a1a1a"
@@ -73,27 +46,15 @@ RC = {
 
 @contextmanager
 def _styled() -> Iterator[None]:
-    """Draw one figure under this module's shared chart styling.
-
-    ``rc_context`` is typed against matplotlib's literal key set, which a plain
-    dict cannot satisfy; the cast is confined here rather than at each figure.
-    """
     with plt.rc_context(cast(Any, RC)):
         yield
 
 
 def _series_color(series: str) -> str:
-    """Colour a bar exactly as the MDS plates colour the same series.
-
-    ``mds_color`` already spends black and grey on the two Mixtral references and
-    lifts Spanish out of grey to keep it distinguishable from them, which is the
-    same collision these bars have.
-    """
     return mds_color(series)
 
 
 def _summary_metrics(source: str, question: Question) -> dict[tuple[str, str], float] | None:
-    """Return one run's ``summary_metrics.csv`` keyed by (metric, method)."""
     frame = read_csv(paths_for(source, question.var).outputs / "summary_metrics.csv")
     if frame is None:
         return None
@@ -106,7 +67,6 @@ def _summary_metrics(source: str, question: Question) -> dict[tuple[str, str], f
 
 
 def _distances(source: str, question: Question) -> pd.DataFrame | None:
-    """Return one run's subpopulation distances, with the country broken out."""
     frame = read_csv(paths_for(source, question.var).outputs / "subpopulation_distances.csv")
     if frame is None:
         return None
@@ -116,7 +76,6 @@ def _distances(source: str, question: Question) -> pd.DataFrame | None:
 
 
 def _sources(model: CultureModel, cultures: list[str]) -> list[tuple[str, str]]:
-    """Return every series to summarise, as (label, run source), references first."""
     return [
         *REFERENCES,
         *((culture, f"culture/{model.key}/{culture}") for culture in cultures),
@@ -128,12 +87,6 @@ def distance_table(
     cultures: list[str],
     questions: list[Question],
 ) -> pd.DataFrame:
-    """Tabulate overall distance and dispersion for every series and question.
-
-    ``compression`` is the survey's own median pairwise distance divided by the
-    model's. It is the paper's homogeneity measure: above 1.0 the model's
-    subpopulations sit closer together than the real ones do.
-    """
     rows: list[dict[str, Any]] = []
     for question in questions:
         for label, source in _sources(model, cultures):
@@ -163,48 +116,48 @@ def distance_table(
     return pd.DataFrame(rows)
 
 
+MIXTRAL_REFERENCE = "Mixtral archived"
+BASE_REFERENCE = "base (same model)"
+
+
 def home_advantage_table(
     model: CultureModel,
     cultures: list[str],
     questions: list[Question],
 ) -> pd.DataFrame:
-    """Difference out the reference's head start on a culture's own respondents.
-
-    A finetuned culture MLLM sitting closer to its own countries than to the rest
-    proves nothing on its own: those respondents may simply be easier for every
-    model. So the same gap is measured for the reference, on the *same*
-    subpopulations, and subtracted. Below zero is a real home advantage.
-
-    One row per home slice: the pooled countries, and -- where a culture spans
-    more than one -- each country on its own, so a pooled result cannot hide two
-    country effects pulling in opposite directions.
-    """
     rows: list[dict[str, Any]] = []
     for question in questions:
-        reference = _distances("archived", question)
-        if reference is None:
-            continue
+        references = {
+            MIXTRAL_REFERENCE: _distances("archived", question),
+            BASE_REFERENCE: _distances(f"culture/{model.key}/{BASE_ARM}", question),
+        }
         for culture in cultures:
+            if is_base(culture):
+                continue
             tuned = _distances(f"culture/{model.key}/{culture}", question)
             if tuned is None:
                 continue
-            for label, countries in home_splits(culture):
-                for mode in MODES:
-                    row = _home_advantage_row(tuned, reference, mode, countries)
-                    if row is None:
-                        continue
-                    rows.append(
-                        {
-                            "model_key": model.key,
-                            "model_label": model.label,
-                            "question": question.var,
-                            "question_label": question.label,
-                            "culture": culture,
-                            "home_country": label,
-                            "mode": mode,
-                            **row,
-                        }
-                    )
+            for name, reference in references.items():
+                if reference is None:
+                    continue
+                for label, countries in home_splits(culture):
+                    for mode in MODES:
+                        row = _home_advantage_row(tuned, reference, mode, countries)
+                        if row is None:
+                            continue
+                        rows.append(
+                            {
+                                "model_key": model.key,
+                                "model_label": model.label,
+                                "question": question.var,
+                                "question_label": question.label,
+                                "culture": culture,
+                                "reference": name,
+                                "home_country": label,
+                                "mode": mode,
+                                **row,
+                            }
+                        )
     return pd.DataFrame(rows)
 
 
@@ -214,7 +167,6 @@ def _home_advantage_row(
     mode: str,
     countries: tuple[str, ...],
 ) -> dict[str, Any] | None:
-    """Compute one difference-in-differences cell on identical subpopulations."""
     model_rows = tuned[tuned["method"] == mode]
     shared = reference[
         (reference["method"] == mode) & reference["subpopulation"].isin(model_rows["subpopulation"])
@@ -240,21 +192,113 @@ def _home_advantage_row(
     }
 
 
+ALL_COUNTRIES = "(all)"
+
+
+def _full_coefficients(source: str, question: Question) -> pd.DataFrame | None:
+    frame = read_csv(paths_for(source, question.var).outputs / "full_coefficients.csv")
+    if frame is None:
+        return None
+    return frame[frame["model"] == "full"]
+
+
+def _coefficient(frame: pd.DataFrame | None, mode: str, predictor: str) -> float | None:
+    if frame is None:
+        return None
+    cell = frame[(frame["mode"] == mode.lower()) & (frame["predictor"] == predictor)]
+    return float(cell.iloc[0]["estimate"]) if not cell.empty else None
+
+
+def _paired_means(
+    base: pd.DataFrame,
+    arm: pd.DataFrame,
+    mode: str,
+    country: str | None,
+) -> tuple[int, float, float] | None:
+    base_rows = base[base["method"] == mode]
+    arm_rows = arm[arm["method"] == mode]
+    if country is not None:
+        base_rows = base_rows[base_rows["country"] == country]
+        arm_rows = arm_rows[arm_rows["country"] == country]
+    shared = set(base_rows["subpopulation"]) & set(arm_rows["subpopulation"])
+    if not shared:
+        return None
+    base_mean = float(base_rows[base_rows["subpopulation"].isin(shared)]["nEMD"].mean())
+    arm_mean = float(arm_rows[arm_rows["subpopulation"].isin(shared)]["nEMD"].mean())
+    return len(shared), base_mean, arm_mean
+
+
+def base_delta_table(
+    model: CultureModel,
+    cultures: list[str],
+    questions: list[Question],
+) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    for question in questions:
+        base = _distances(f"culture/{model.key}/{BASE_ARM}", question)
+        if base is None:
+            continue
+        base_fit = _full_coefficients(f"culture/{model.key}/{BASE_ARM}", question)
+        for culture in cultures:
+            if is_base(culture):
+                continue
+            arm = _distances(f"culture/{model.key}/{culture}", question)
+            if arm is None:
+                continue
+            arm_fit = _full_coefficients(f"culture/{model.key}/{culture}", question)
+            for mode in MODES:
+                for country in (ALL_COUNTRIES, *WVS_COUNTRIES):
+                    paired = _paired_means(
+                        base, arm, mode, None if country == ALL_COUNTRIES else country
+                    )
+                    if paired is None:
+                        continue
+                    subpopulations, base_mean, arm_mean = paired
+                    predictor = None if country == ALL_COUNTRIES else f"country{country}"
+                    rows.append(
+                        {
+                            "model_key": model.key,
+                            "model_label": model.label,
+                            "question": question.var,
+                            "question_label": question.label,
+                            "arm": culture,
+                            "mode": mode,
+                            "country": country,
+                            "subpopulations": subpopulations,
+                            "base_mean_nEMD": base_mean,
+                            "arm_mean_nEMD": arm_mean,
+                            "delta_nEMD": arm_mean - base_mean,
+                            **_coefficient_columns(base_fit, arm_fit, mode, predictor),
+                        }
+                    )
+    return pd.DataFrame(rows)
+
+
+def _coefficient_columns(
+    base_fit: pd.DataFrame | None,
+    arm_fit: pd.DataFrame | None,
+    mode: str,
+    predictor: str | None,
+) -> dict[str, float | None]:
+    center_base = _coefficient(base_fit, mode, "nEMD_center")
+    center_arm = _coefficient(arm_fit, mode, "nEMD_center")
+    country_base = _coefficient(base_fit, mode, predictor) if predictor else None
+    country_arm = _coefficient(arm_fit, mode, predictor) if predictor else None
+    return {
+        "nEMD_center_base": center_base,
+        "nEMD_center_arm": center_arm,
+        "nEMD_center_delta": _difference(center_base, center_arm),
+        "beta_country_base": country_base,
+        "beta_country_arm": country_arm,
+        "beta_country_delta": _difference(country_base, country_arm),
+    }
+
+
+def _difference(base: float | None, arm: float | None) -> float | None:
+    return None if base is None or arm is None else arm - base
+
+
 def session_hours(paths: RunPaths) -> tuple[float, int] | None:
-    """Return one run's generation hours and how many sessions produced them.
-
-    Timed from the run's own ``inference_events.jsonl`` rather than from the
-    sweep summary, because the summary is written by the sweep and therefore only
-    knows about runs the sweep itself launched:
-
-    * a run produced by an earlier sweep is recorded as ``skipped`` with no
-      duration at all, and would otherwise vanish from the chart;
-    * a run that was interrupted and resumed is recorded with the *last*
-      invocation's wall clock, understating what it cost.
-
-    Each ``run_id`` in the log is one generation session; the idle time between
-    sessions is not compute and is excluded by spanning each separately.
-    """
     path = paths.logs / EVENT_LOG_NAME
     if not path.is_file():
         return None
@@ -277,13 +321,14 @@ def sweep_cost_table(
     cultures: list[str],
     questions: list[Question],
 ) -> pd.DataFrame:
-    """Tabulate what each finished run cost, timed from its own event log.
-
-    ``sweep_status`` carries what the sweep summary said about the same cell, so
-    a row whose hours came from the log alone is still identifiable as one the
-    sweep never timed.
-    """
-    summary = read_csv_tsv(CULTURE_ROOT / "logs" / "sweep_summary.tsv")
+    # Two files: the culture sweep writes one, the base-model driver another, so
+    # neither truncates the other's record while both can be running.
+    logged = [
+        read_csv_tsv(CULTURE_ROOT / "logs" / name)
+        for name in ("sweep_summary.tsv", "base_summary.tsv")
+    ]
+    present = [frame for frame in logged if frame is not None]
+    summary = pd.concat(present, ignore_index=True) if present else None
     rows: list[dict[str, Any]] = []
     for culture in cultures:
         for question in questions:
@@ -295,7 +340,9 @@ def sweep_cost_table(
             recorded = None
             if summary is not None:
                 cell = summary[
-                    (summary["culture"] == culture) & (summary["question"] == question.var)
+                    (summary["model"] == model.key)
+                    & (summary["culture"] == culture)
+                    & (summary["question"] == question.var)
                 ]
                 recorded = str(cell.iloc[0]["status"]) if not cell.empty else None
             rows.append(
@@ -320,7 +367,6 @@ def _grouped_bars(
     questions: list[Question],
     series_order: list[str],
 ) -> None:
-    """Draw one bar per series within each question, in a stable series order."""
     width = 0.8 / max(len(series_order), 1)
     positions = np.arange(len(questions))
     for index, series in enumerate(series_order):
@@ -351,7 +397,6 @@ def _grouped_bars(
 
 
 def _series_order(frame: pd.DataFrame, cultures: list[str]) -> list[str]:
-    """References first, then the cultures actually present, in the given order."""
     present = set(frame["series"])
     return [label for label, _ in REFERENCES if label in present] + [
         culture for culture in cultures if culture in present
@@ -364,7 +409,6 @@ def overall_figure(
     cultures: list[str],
     destination: Path,
 ) -> list[Path]:
-    """Chart how far each series sits from the survey, next-token probabilities."""
     ntp = frame[frame["mode"] == "NTP"]
     with _styled():
         figure, axis = plt.subplots(figsize=(11, 5.2))
@@ -385,7 +429,6 @@ def compression_figure(
     cultures: list[str],
     destination: Path,
 ) -> list[Path]:
-    """Chart how much each series compresses the spread between subpopulations."""
     ntp = frame[frame["mode"] == "NTP"]
     with _styled():
         figure, axis = plt.subplots(figsize=(11, 5.2))
@@ -411,19 +454,68 @@ def compression_figure(
         return _save(figure, destination / "fig_compression")
 
 
-def home_advantage_figure(
+def base_delta_figure(
     frame: pd.DataFrame,
     questions: list[Question],
     cultures: list[str],
     destination: Path,
 ) -> list[Path]:
-    """Chart the pooled difference-in-differences, with each country marked.
+    ntp = frame[(frame["mode"] == "NTP") & (frame["country"] != ALL_COUNTRIES)]
+    if ntp.empty:
+        return []
+    arms = [culture for culture in cultures if culture in set(ntp["arm"])]
+    countries = [name for name in WVS_COUNTRIES if name in set(ntp["country"])]
+    width = 0.8 / max(len(arms), 1)
+    positions = np.arange(len(countries))
+    span = float(ntp["delta_nEMD"].abs().max()) or 1.0
+    with _styled():
+        figure, axes = plt.subplots(
+            1, len(questions), figsize=(5.0 * len(questions), 5.0), sharey=True, squeeze=False
+        )
+        for axis, question in zip(axes[0], questions, strict=True):
+            rows = ntp[ntp["question"] == question.var]
+            for index, arm in enumerate(arms):
+                offset = (index - (len(arms) - 1) / 2) * width
+                cells = rows[rows["arm"] == arm].set_index("country")["delta_nEMD"]
+                heights = [float(cells[name]) if name in cells.index else 0.0 for name in countries]
+                axis.bar(
+                    positions + offset,
+                    heights,
+                    width,
+                    label=arm if question is questions[0] else None,
+                    color=_series_color(arm),
+                    edgecolor="white",
+                    linewidth=0.6,
+                )
+            axis.axhline(0, color=INK, linewidth=1.2)
+            axis.set_xticks(positions, countries, rotation=30, ha="right")
+            axis.set_ylim(-span * 1.25, span * 1.25)
+            axis.yaxis.grid(True, color=GRID, linewidth=0.8)
+            axis.set_axisbelow(True)
+            axis.set_title(question.label, fontsize=12, loc="left")
+        axes[0][0].set_ylabel("nEMD after finetuning minus before")
+        axes[0][0].legend(frameon=False, ncol=3, fontsize=9, loc="upper left")
+        figure.suptitle(
+            "What the culture finetuning changed, per country  ·  below 0 = moved closer",
+            fontsize=14,
+            x=0.01,
+            ha="left",
+        )
+        figure.tight_layout()
+        return _save(figure, destination / "fig_base_delta")
 
-    The bar is the pooled home slice. Where a culture spans more than one country
-    each country's own value is drawn over the bar as a tick, so a pooled bar that
-    hides a split between its countries cannot be read as a single effect.
-    """
+
+def home_advantage_figure(
+    frame: pd.DataFrame,
+    questions: list[Question],
+    cultures: list[str],
+    destination: Path,
+    stem: str = "fig_home_advantage",
+    reference: str = MIXTRAL_REFERENCE,
+) -> list[Path]:
     ntp = frame[frame["mode"] == "NTP"]
+    if ntp.empty:
+        return []
     present = [culture for culture in cultures if culture in set(ntp["culture"])]
     width = 0.8 / max(len(present), 1)
     positions = np.arange(len(questions))
@@ -474,7 +566,7 @@ def home_advantage_figure(
         axis.set_xticks(positions, [question.label for question in questions])
         axis.set_ylabel("Difference-in-differences (nEMD)")
         axis.set_title(
-            "Is the model closer to its own culture than the reference is?",
+            f"Is the model closer to its own culture than {reference} is?",
             fontsize=14,
             pad=14,
             loc="left",
@@ -491,17 +583,10 @@ def home_advantage_figure(
             color="#1b9e77",
         )
         figure.tight_layout()
-        return _save(figure, destination / "fig_home_advantage")
+        return _save(figure, destination / stem)
 
 
 def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
-    """Chart the wall clock of each run, one bar per culture within each outcome.
-
-    Every bar is drawn the same way. A run that took two sittings is still one
-    run costing the sum of them, so singling it out visually would invite the
-    reader to discount a bar that is exactly as real as its neighbours. The
-    session count stays in ``sweep_cost.csv`` for anyone who needs it.
-    """
     if runs.empty:
         return []
     labels = {question.var: question.label for question in resolve_questions(None)}
@@ -553,7 +638,6 @@ def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
 
 
 def _write(frame: pd.DataFrame, destination: Path) -> Path | None:
-    """Write one table, creating its directory, skipping an empty frame."""
     if frame.empty:
         return None
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -566,11 +650,6 @@ def culture_summary(
     cultures: list[str],
     questions: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Build the cross-question summary figures and their CSVs, per model.
-
-    Reads only what the sweep already wrote, so it is safe to call while a run is
-    still going; a question with no finished run simply contributes no bar.
-    """
     outcomes = resolve_questions(questions)
     produced: list[Path] = []
     written: list[Path] = []
@@ -580,6 +659,7 @@ def culture_summary(
         outputs = CULTURE_ROOT / model.key / "summary"
         distances = distance_table(model, cultures, outcomes)
         advantage = home_advantage_table(model, cultures, outcomes)
+        deltas = base_delta_table(model, cultures, outcomes)
         cost = sweep_cost_table(model, cultures, outcomes)
         drawn = [question for question in outcomes if question.var in set(distances["question"])]
         if distances.empty or not drawn:
@@ -587,16 +667,28 @@ def culture_summary(
         figures.mkdir(parents=True, exist_ok=True)
         produced.extend(overall_figure(distances, drawn, cultures, figures))
         produced.extend(compression_figure(distances, drawn, cultures, figures))
-        if not advantage.empty:
-            shown = [
-                question for question in outcomes if question.var in set(advantage["question"])
-            ]
-            produced.extend(home_advantage_figure(advantage, shown, cultures, figures))
+        for reference, stem in (
+            (MIXTRAL_REFERENCE, "fig_home_advantage"),
+            (BASE_REFERENCE, "fig_home_advantage_base"),
+        ):
+            against = (
+                advantage[advantage["reference"] == reference] if not advantage.empty else advantage
+            )
+            if against.empty:
+                continue
+            shown = [question for question in outcomes if question.var in set(against["question"])]
+            produced.extend(
+                home_advantage_figure(against, shown, cultures, figures, stem, reference)
+            )
+        if not deltas.empty:
+            shown = [question for question in outcomes if question.var in set(deltas["question"])]
+            produced.extend(base_delta_figure(deltas, shown, cultures, figures))
         produced.extend(sweep_cost_figure(cost, figures))
 
         for frame, name in (
             (distances, "culture_summary.csv"),
             (advantage, "culture_home_advantage.csv"),
+            (deltas, "base_deltas.csv"),
             (cost, "sweep_cost.csv"),
         ):
             path = _write(frame, outputs / name)

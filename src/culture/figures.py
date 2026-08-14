@@ -1,13 +1,3 @@
-"""Build every per-question culture comparison figure and table from outputs.
-
-This module only orchestrates. The numbers come from :mod:`culture.tables`, the
-drawing from :mod:`culture.panels`, the palette from :mod:`culture.palette` and
-the shared-space plates from :mod:`culture.mds`.
-
-Artifacts are CSV and figures only. A run's numbers belong in a file that can be
-diffed and re-derived, not in prose generated beside them.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -38,7 +28,6 @@ def _model_figures(
     question: Question,
     destination: Path,
 ) -> tuple[list[Path], pd.DataFrame]:
-    """Draw every panel one model's runs can support, plus its matched subsets."""
     destination.mkdir(parents=True, exist_ok=True)
     figures = list(capacity_figure(frames, destination))
     if any(has_distances(tables) for tables in frames.values()):
@@ -54,7 +43,6 @@ def _model_figures(
 
 
 def _write(frame: pd.DataFrame, destination: Path) -> None:
-    """Write one table, creating its directory, skipping an empty frame."""
     if frame.empty:
         return
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -66,7 +54,6 @@ def compare_cultures(
     cultures: list[str],
     question: str | Question = "d_happy",
 ) -> dict[str, Any]:
-    """Build every comparison figure and table from existing outputs."""
     outcome = resolve_question(question)
     tables: dict[str, pd.DataFrame] = {}
     produced: list[Path] = []

@@ -1,10 +1,3 @@
-"""Load what a culture run wrote, and derive the tables the figures plot.
-
-Everything here is numbers only -- no drawing. Keeping the derivation separate is
-what lets the exported CSV and the plotted figure be the same computation rather
-than two that agree by inspection.
-"""
-
 from __future__ import annotations
 
 import json
@@ -21,21 +14,18 @@ from machine_bias_reproduction.questions import Question
 from . import capacity as capacity_module
 from .matching import MATCHED_CULTURES, countries_for, restrict
 from .palette import MODES
-from .registry import PREFLIGHT_MIN_MASS, CultureModel
+from .registry import PREFLIGHT_MIN_VALID_ANSWER_MASS, CultureModel
 
 
 def read_csv(path: Path) -> pd.DataFrame | None:
-    """Return a CSV as a frame, or ``None`` when the run never wrote it."""
     return pd.read_csv(path) if path.is_file() else None
 
 
 def read_csv_tsv(path: Path) -> pd.DataFrame | None:
-    """Return a tab-separated table as a frame, or ``None`` when absent."""
     return pd.read_csv(path, sep="\t") if path.is_file() else None
 
 
 def read_json(path: Path) -> dict[str, Any]:
-    """Return a JSON object, or an empty one when the run never wrote it."""
     if not path.is_file():
         return {}
     with path.open(encoding="utf-8") as stream:
@@ -44,7 +34,6 @@ def read_json(path: Path) -> dict[str, Any]:
 
 
 def _preflight(path: Path) -> dict[str, Any]:
-    """Return one run's pre-flight probe, defaulting to 'not measured'."""
     probe = read_json(path).get("preflight") or {}
     return {"mean_mass": probe.get("mean_mass"), "informative": probe.get("informative")}
 
@@ -54,12 +43,6 @@ def load_model_frames(
     cultures: list[str],
     question: Question,
 ) -> dict[str, dict[str, Any]]:
-    """Load every started run's tables for one model, keyed by culture.
-
-    A run with no distances is still loaded when it has a capacity table: a
-    finetuned culture MLLM that answered nothing has no nEMD to plot but is
-    exactly the case the capacity panel exists to report.
-    """
     loaded: dict[str, dict[str, Any]] = {}
     for culture in cultures:
         paths = paths_for(f"culture/{model.key}/{culture}", question.var)
@@ -82,7 +65,6 @@ def load_model_frames(
 
 
 def valid_rate(tables: dict[str, Any]) -> float | None:
-    """Return the share of prompts answered in the paper's format, over both modes."""
     capacity = tables.get("capacity")
     if capacity is None or capacity.empty:
         return None
@@ -91,20 +73,17 @@ def valid_rate(tables: dict[str, Any]) -> float | None:
 
 
 def is_flagged(tables: dict[str, Any]) -> bool:
-    """Return whether a run answered too rarely for its nEMD to be a measurement."""
     rate = valid_rate(tables)
     if rate is not None:
-        return rate < PREFLIGHT_MIN_MASS
+        return rate < PREFLIGHT_MIN_VALID_ANSWER_MASS
     return tables.get("preflight", {}).get("informative") is False
 
 
 def has_distances(tables: dict[str, Any]) -> bool:
-    """Return whether a run got far enough to score its subpopulations."""
     return tables.get("distances") is not None
 
 
 def reference_distances(question: Question) -> pd.DataFrame | None:
-    """Return the archived Mixtral subpopulation distances, if analysed."""
     return read_csv(paths_for("archived", question.var).outputs / "subpopulation_distances.csv")
 
 
@@ -113,7 +92,6 @@ def series(
     mode: str,
     column: str = "nEMD",
 ) -> dict[str, Any]:
-    """Return one distance column per culture, for a single generation mode."""
     values: dict[str, Any] = {}
     for culture, tables in frames.items():
         if not has_distances(tables):
@@ -126,11 +104,6 @@ def series(
 
 
 def matched_frames(frames: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    """Restrict each matched culture to the subpopulations of its own countries.
-
-    Only ``english``, ``german`` and ``spanish`` survive: the other six cultures
-    have no WVS respondent block, so there is nothing to restrict them to.
-    """
     matched: dict[str, dict[str, Any]] = {}
     for culture in MATCHED_CULTURES:
         tables = frames.get(culture)
@@ -144,7 +117,6 @@ def matched_frames(frames: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any
 
 
 def matched_table(matched: dict[str, dict[str, Any]], model: CultureModel) -> pd.DataFrame:
-    """Summarise each matched culture's distances, one row per generation mode."""
     rows: list[dict[str, Any]] = []
     for culture, tables in matched.items():
         distances = tables["distances"]
@@ -174,7 +146,6 @@ def matched_table(matched: dict[str, dict[str, Any]], model: CultureModel) -> pd
 
 
 def comparison_table(model: CultureModel, frames: dict[str, dict[str, Any]]) -> pd.DataFrame:
-    """Summarise every culture of one model: distances, capacity and coverage."""
     rows: list[dict[str, Any]] = []
     for culture, tables in frames.items():
         coverage = tables.get("coverage") or {}

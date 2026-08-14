@@ -1,5 +1,3 @@
-"""Which culture models and adapters exist, and where their artifacts live."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -27,26 +25,17 @@ CULTURES: tuple[str, ...] = (
     "turkish",
 )
 
-CONDITION = "cultural"
-"""Sub-directory of a checkpoint tree holding the end-of-training adapter."""
+BASE_ARM = "base"
+
+ARMS: tuple[str, ...] = (BASE_ARM, *CULTURES)
+
+CHECKPOINT_CONDITION_DIRECTORY = "cultural"
 
 PREFLIGHT_PROMPTS = 32
-"""Prompts sampled by the pre-flight probe before a run commits to inference."""
 
-PREFLIGHT_MIN_MASS = 0.10
-"""Minimum mean valid-answer probability mass for a run to be treated as informative.
-
-Below this an adapter puts essentially no probability on any accepted answer, so
-its nEMD is noise rather than a measurement. The run still executes and is still
-reported: the flag says the number is not an alignment result, it does not drop
-the run.
-"""
+PREFLIGHT_MIN_VALID_ANSWER_MASS = 0.10
 
 DEGENERATE_FA_RETRIES = 3
-"""FA retry budget for a run whose probe found no valid-answer mass.
-
-Fifty retries cannot produce an answer the model never had probability on.
-"""
 
 ADAPTERS_ROOT = MODELS_ROOT / "culture"
 ADAPTERS_MANIFEST = ADAPTERS_ROOT / "ADAPTERS.json"
@@ -54,26 +43,10 @@ DEFAULT_CHECKPOINT_ROOT = PROJECT_ROOT.parent / "culture-mllm" / "checkpoints"
 
 CULTURE_ROOT = OUTPUTS_ROOT / "culture"
 CULTURE_FIGURES = FIGURES_ROOT / "culture"
-"""Where every culture table and figure lands, under the repository's own trees.
-
-Named here rather than in a figure module so a table writer and a figure writer
-cannot drift apart on where a run's artifacts belong.
-"""
 
 
 @dataclass(frozen=True, slots=True)
 class CultureModel:
-    """One fine-tuned base model and how inference must load it.
-
-    ``quantization`` and ``dtype`` mirror the training configuration, so the
-    adapter composes onto weights in the numeric format it was fitted against:
-
-    * ``nf4`` — the 31B base is ~62 GB in bfloat16, so training used 4-bit
-      QLoRA to fit a 32 GB card and inference must match.
-    * ``fp8-dequantized`` — the deep-gemm kernel native FP8 needs rejects this
-      GPU's recipe, so weights dequantize to bfloat16 at load. 17.5 GB resident.
-    """
-
     key: str
     base_model_id: str
     label: str
@@ -82,7 +55,8 @@ class CultureModel:
     batch_size: int
 
     def run_label(self, culture: str) -> str:
-        """Return the human-readable model name used in reports."""
+        if is_base(culture):
+            return f"{self.label} (base, not finetuned)"
         return f"{self.label} + {culture} LoRA"
 
 
@@ -107,7 +81,6 @@ CULTURE_MODELS: dict[str, CultureModel] = {
 
 
 def resolve_models(selected: Sequence[str] | None) -> list[CultureModel]:
-    """Resolve model keys to registry entries, defaulting to all of them."""
     keys = list(selected) if selected else list(CULTURE_MODELS)
     unknown = [key for key in keys if key not in CULTURE_MODELS]
     if unknown:
@@ -115,11 +88,26 @@ def resolve_models(selected: Sequence[str] | None) -> list[CultureModel]:
     return [CULTURE_MODELS[key] for key in keys]
 
 
+def is_base(culture: str) -> bool:
+    return culture == BASE_ARM
+
+
 def resolve_cultures(selected: Sequence[str] | None) -> list[str]:
-    """Resolve culture names, defaulting to all nine; ``all`` expands."""
+    cultures = list(selected) if selected else list(ARMS)
+    if cultures == ["all"]:
+        cultures = list(ARMS)
+    unknown = [culture for culture in cultures if culture not in ARMS]
+    if unknown:
+        raise ValueError(f"unknown cultures: {', '.join(unknown)}")
+    return cultures
+
+
+def resolve_finetuned_cultures(selected: Sequence[str] | None) -> list[str]:
     cultures = list(selected) if selected else list(CULTURES)
     if cultures == ["all"]:
         cultures = list(CULTURES)
+    if any(is_base(culture) for culture in cultures):
+        raise ValueError(f"{BASE_ARM!r} is not culture-finetuned; there is nothing to stage")
     unknown = [culture for culture in cultures if culture not in CULTURES]
     if unknown:
         raise ValueError(f"unknown cultures: {', '.join(unknown)}")
@@ -127,17 +115,14 @@ def resolve_cultures(selected: Sequence[str] | None) -> list[str]:
 
 
 def run_slug(model_key: str, culture: str) -> str:
-    """Return the run identifier naming this model/culture pair's artifacts."""
     return f"culture/{model_key}/{culture}"
 
 
 def run_paths(model_key: str, culture: str, question: str | Question) -> RunPaths:
-    """Return the output and figure layout for one model/culture/question run."""
     return paths_for(run_slug(model_key, culture), resolve_question(question).var)
 
 
 def csv_stems(model_key: str, culture: str, question: str | Question) -> tuple[str, str]:
-    """Return the NTP and FA consolidated CSV filenames for one run."""
     var = resolve_question(question).var
     return (
         f"NTP-{model_key}-{culture}-{var}.csv",
