@@ -1,5 +1,3 @@
-"""Paired statistical comparison of archived and fresh experiment results."""
-
 from __future__ import annotations
 
 import argparse
@@ -19,6 +17,7 @@ import pandas as pd
 from scipy import stats
 
 from .config import OUTPUTS_ROOT
+from .figures import _save
 from .questions import DEFAULT_QUESTION, QUESTION_NAMES
 
 matplotlib.use("Agg")
@@ -45,7 +44,6 @@ def _read_csv(path: Path, required: set[str]) -> pd.DataFrame:
 
 
 def country_wave_labels(subpopulations: pd.Series) -> pd.Series:
-    """Extract the country-survey wave shared by related demographic cells."""
     extracted = subpopulations.astype(str).str.extract(r"^(?P<country>.+?) (?P<year>\d{4})(?: |$)")
     missing = extracted.isna().any(axis=1)
     if missing.any():
@@ -55,7 +53,6 @@ def country_wave_labels(subpopulations: pd.Series) -> pd.Series:
 
 
 def holm_adjust(p_values: npt.ArrayLike) -> FloatArray:
-    """Return Holm family-wise-error adjusted p-values in original order."""
     values = np.asarray(p_values, dtype=np.float64)
     if values.ndim != 1 or np.isnan(values).any():
         raise ValueError("p-values must be a one-dimensional array without missing values")
@@ -77,7 +74,6 @@ def _cluster_robust_mean(
     *,
     alpha: float,
 ) -> dict[str, float]:
-    """Estimate the paired mean with an intercept-only CR1 cluster covariance."""
     if len(differences) != len(clusters):
         raise ValueError("differences and clusters must have the same length")
     cluster_count = int(clusters.nunique())
@@ -113,7 +109,6 @@ def _cluster_sign_flip_test(
     permutations: int,
     seed: int,
 ) -> tuple[float, int, str]:
-    """Test a zero paired mean by swapping whole country-wave clusters."""
     frame = pd.DataFrame({"cluster": clusters.to_numpy(), "difference": differences})
     totals = frame.groupby("cluster", sort=True)["difference"].sum().to_numpy(dtype=np.float64)
     cluster_count = len(totals)
@@ -149,7 +144,6 @@ def _tost(
     degrees_freedom: int,
     margin: float,
 ) -> tuple[float, float, float]:
-    """Run two one-sided tests against symmetric practical-equivalence bounds."""
     if standard_error == 0:
         lower_p = 0.0 if mean > -margin else 1.0
         upper_p = 0.0 if mean < margin else 1.0
@@ -200,7 +194,6 @@ def paired_method_inference(
     permutations: int,
     seed: int,
 ) -> dict[str, Any]:
-    """Compare fresh and archived nEMD for one method's matched subpopulations."""
     differences = pairs["nEMD_fresh"].to_numpy(dtype=np.float64) - pairs["nEMD_archived"].to_numpy(
         dtype=np.float64
     )
@@ -536,19 +529,7 @@ def _comparison_figure(
         cluster_axis.legend(loc="best", frameon=False)
         cluster_axis.grid(axis="x", alpha=0.2)
 
-    outputs: list[Path] = []
-    # Suppress matplotlib's default Software tag and creation timestamp: the
-    # manifest records a SHA-256 of each plate, which a stamped date would make
-    # impossible to reproduce.
-    for suffix, dpi, metadata in (
-        (".png", 180, {"Software": None}),
-        (".pdf", 300, {"CreationDate": None}),
-    ):
-        destination = path_stem.with_suffix(suffix)
-        figure.savefig(destination, dpi=dpi, bbox_inches="tight", metadata=metadata)
-        outputs.append(destination)
-    plt.close(figure)
-    return outputs
+    return _save(figure, path_stem, pdf_dpi=300)
 
 
 def _sha256(path: Path) -> str:
@@ -570,7 +551,6 @@ def compare_runs(
     permutations: int = DEFAULT_PERMUTATIONS,
     seed: int = DEFAULT_SEED,
 ) -> dict[str, Any]:
-    """Generate paired statistical comparisons, figure, and manifest."""
     if not 0 < alpha < 0.5:
         raise ValueError("alpha must be between 0 and 0.5")
     if equivalence_margin <= 0:
@@ -739,7 +719,6 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main(arguments: Sequence[str] | None = None) -> None:
-    """CLI entry point."""
     parsed = _parser().parse_args(arguments)
     parsed.archived = parsed.archived or OUTPUTS_ROOT / "archived" / parsed.question
     parsed.fresh = parsed.fresh or OUTPUTS_ROOT / "fresh" / parsed.question

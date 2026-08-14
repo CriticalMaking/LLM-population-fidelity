@@ -1,5 +1,3 @@
-"""Publication figures, drawn as bare plates."""
-
 from __future__ import annotations
 
 import math
@@ -37,7 +35,6 @@ MDS_COLORS = {"WVS": "#fde725", "Model": "#440154"}
 QUALITY_PALETTE = ("#1b9e77", "#66c2a5", "#ffd92f", "#fc8d62", "#d73027")
 
 QUALITY_THRESHOLDS = (0.0, 0.05, 0.10, 0.15, 0.30, 1.0)
-"""Upstream nEMD quality cut points (``6-results.R:412``) plus the closing edge."""
 
 NEMD_BREAKS = (0.01, 0.05, 0.10, 0.15, 0.30, 0.50, 1.00)
 
@@ -68,26 +65,30 @@ PREDICTOR_GROUPS: tuple[tuple[str, str, str], ...] = (
     ("Marstat_Widowed", "Marital status", "Widowed"),
     ("Sex_Female", "Sex", "Female"),
 )
-"""Predictor label and grouping map transcribed from ``6-results.R:776-800``.
-
-Ordered as the paper's Figures 3 and 6 stack their rows.
-"""
 
 CENTER_PREDICTOR = "nEMD_center"
 
 FloatArray = npt.NDArray[np.float64]
 
 
-def _save(figure: Figure, stem: Path) -> list[Path]:
-    paths = [stem.with_suffix(".png"), stem.with_suffix(".pdf")]
-    for path in paths:
-        figure.savefig(path, dpi=180, bbox_inches="tight")
+PLATE_METADATA: tuple[tuple[str, dict[str, None]], ...] = (
+    (".png", {"Software": None}),
+    (".pdf", {"CreationDate": None}),
+)
+
+
+def _save(figure: Figure, stem: Path, *, pdf_dpi: int = 180) -> list[Path]:
+    paths = []
+    for suffix, metadata in PLATE_METADATA:
+        path = stem.with_suffix(suffix)
+        dpi = pdf_dpi if suffix == ".pdf" else 180
+        figure.savefig(path, dpi=dpi, bbox_inches="tight", metadata=metadata)
+        paths.append(path)
     plt.close(figure)
     return paths
 
 
 def _bw_nrd0(sample: FloatArray) -> float:
-    """Return R's ``bw.nrd0`` bandwidth for a sample."""
     deviation = float(np.std(sample, ddof=1))
     low, high = np.percentile(sample, (25, 75))
     spread = min(deviation, float(high - low) / 1.349)
@@ -97,12 +98,6 @@ def _bw_nrd0(sample: FloatArray) -> float:
 
 
 def _log_nemd_density(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
-    """Return a distance density curve as (distance, density) arrays.
-
-    The density is estimated on ``log(100 * value)`` and reported per
-    natural-log unit, matching ``density()`` in the upstream R script. The
-    returned abscissa is back-transformed for a log-scaled x axis.
-    """
     sample = np.asarray(values, dtype=np.float64)
     sample = np.log(100.0 * sample[sample > 0])
     bandwidth = _bw_nrd0(sample)
@@ -113,7 +108,6 @@ def _log_nemd_density(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
 
 
 def _annotate_quality_bands(axis: Axes) -> None:
-    """Draw the paper's nEMD threshold rules and band labels."""
     for threshold in QUALITY_THRESHOLDS[1:-1]:
         axis.axvline(threshold, color="#333333", linestyle=":", linewidth=0.9)
     lower = np.asarray(QUALITY_THRESHOLDS[:-1], dtype=np.float64)
@@ -131,7 +125,6 @@ def _annotate_quality_bands(axis: Axes) -> None:
 
 
 def _pooled_methods(distances: pd.DataFrame) -> pd.DataFrame:
-    """Collapse the 20 random replicates into one ``Random`` series."""
     pooled = distances.copy()
     pooled.loc[pooled["method"].str.startswith("Random_"), "method"] = "Random"
     return pooled
@@ -201,11 +194,6 @@ def _density_quality(
 
 
 def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]:
-    """Draw one density panel per registered distance, methods overlaid.
-
-    Quality bands are drawn only on nEMD: the paper's cut points are defined on
-    that scale and mean nothing on a divergence.
-    """
     plot_data = _pooled_methods(distances)
     names = [name for name in DISTANCES if name in plot_data.columns]
     figure, axes = plt.subplots(1, len(names), figsize=(4.4 * len(names), 4.6))
@@ -236,11 +224,6 @@ def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]
 
 
 def _classical_mds(distance: FloatArray) -> FloatArray:
-    """Embed a distance matrix in two dimensions, rescaled as upstream does.
-
-    The closing rescale follows ``6-results.R:868-869``: scale both axes by the
-    first dimension's range and shift so dimension 1 spans exactly ``[-1, 1]``.
-    """
     count = distance.shape[0]
     centering = np.eye(count) - np.ones((count, count)) / count
     gram = -0.5 * centering @ np.square(distance) @ centering
@@ -259,13 +242,6 @@ def _classical_mds(distance: FloatArray) -> FloatArray:
 
 
 def _mds(paths: RunPaths, data: PreparedData, distances: pd.DataFrame) -> list[Path]:
-    """Draw the WVS-versus-model MDS panels.
-
-    The upstream embedding repeats the WVS block once per model series before
-    computing the distance matrix (``6-results.R:861-863``), mirrored here so
-    the configuration matches the paper's. Equal-aspect panels spanning
-    ``[-1, 1]`` on dimension 1 are roughly 2:1, which sets the canvas size.
-    """
     columns = list(data.question.answer_columns)
     modes = ("NTP", "FA")
     model_props = {"NTP": data.ntp_props, "FA": data.fa_props}
@@ -322,7 +298,6 @@ def _mds(paths: RunPaths, data: PreparedData, distances: pd.DataFrame) -> list[P
 
 
 def _predictor_rows(predictors: set[str]) -> list[tuple[str | None, str]]:
-    """Return grouped (predictor, label) rows with spacers between groups."""
     rows: list[tuple[str | None, str]] = []
     previous_group: str | None = None
     for predictor, group, label in PREDICTOR_GROUPS:
@@ -450,7 +425,6 @@ def generate_figures(
     full_coefficients: pd.DataFrame,
     standardized_coefficients: pd.DataFrame,
 ) -> list[Path]:
-    """Generate every per-run figure as PNG and PDF."""
     paths.figures.mkdir(parents=True, exist_ok=True)
     generated = _density_quality(paths, distances, quality)
     generated.extend(_distance_comparison(paths, distances))
