@@ -1,4 +1,4 @@
-# Machine Bias — reproduction and culture-adapter extension
+# Machine Bias — reproduction and culture-finetuned LLM extension
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
@@ -14,16 +14,17 @@
 ![llama.cpp](https://img.shields.io/badge/llama.cpp-0.3.1-lightgrey)
 ![Ruff](https://img.shields.io/badge/Ruff-passing-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2)
-![tests](https://img.shields.io/badge/tests-112%20passing-4c1)
+![tests](https://img.shields.io/badge/tests-135%20passing-4c1)
 
 Reproduction of *Machine Bias: How Do Generative Language Models Answer Opinion
 Polls?* (Boelaert, Coavoux, Ollion, Petev and Präg, *SMR* 2025), extended to
-culture-finetuned LoRA adapters.
+culture-finetuned LLMs.
 
 ```text
 .
 ├── run_experiment.sh                 experiments 1 and 2
 ├── run_experiment_add_culture.sh     experiment 3
+├── run_experiment_base_models.sh     experiment 3's un-finetuned baseline
 ├── run_reports.sh                    the paper's tables and figures
 │
 ├── src/
@@ -40,11 +41,11 @@ culture-finetuned LoRA adapters.
 │   │   └── provenance.py  io_utils.py  r_rng.py  config.py  cli.py
 │   │
 │   ├── culture/                      experiment 3
-│   │   ├── registry.py               models, cultures, run layout
+│   │   ├── registry.py               models, arms, run layout
 │   │   ├── adapters.py               staging LoRA weights, ADAPTERS.json
 │   │   ├── backend.py                batched transformers NTP and FA
 │   │   ├── runner.py                 one model/culture/question run
-│   │   ├── capacity.py               can the adapter answer the paper's prompt?
+│   │   ├── capacity.py               can this arm answer the paper's prompt?
 │   │   ├── matching.py               which cultures the survey can speak to
 │   │   └── figures.py                cross-culture figures and reports
 │   │
@@ -75,6 +76,7 @@ culture-finetuned LoRA adapters.
   - [3 — Cultural](#3--cultural)
     - [Prompt fidelity](#prompt-fidelity)
     - [Culture-matched subsets](#culture-matched-subsets)
+  - [4 — Base models](#4--base-models)
 - **Reference**
   - [Topics](#topics)
   - [Paper report set](#paper-report-set)
@@ -82,13 +84,14 @@ culture-finetuned LoRA adapters.
   - [Comparison](#comparison)
   - [Citation & Acknowledgments](#citation--acknowledgments)
 
-Three experiments, run in this order:
+Four experiments, run in this order:
 
 | # | Experiment | Command | Needs |
 | --- | --- | --- | --- |
 | 1 | **Archived** — reanalyse the paper's model outputs | `./run_experiment.sh` | nothing |
 | 2 | **Fresh** — regenerate Mixtral's answers | `./run_experiment.sh fresh --model …` | 26.4 GB GGUF |
-| 3 | **Cultural** — nine adapters on two bases | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
+| 3 | **Cultural** — nine culture-finetuned LLMs on two bases | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
+| 4 | **Base models** — the same two bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
 
 **Note**: The cultural I don't push yet in the remote because I running with the adjusted we talk about in the meeting yesterday.
 
@@ -217,7 +220,7 @@ Rebuilds every prompt, re-hashes against the stored record, writes
 
 ## 3 — Cultural
 
-Nine culture LoRA adapters on two multimodal bases, sent the **same prompts** as
+Nine culture-finetuned LLMs on two multimodal bases, sent the **same prompts** as
 experiments 1 and 2.
 
 | Model key | Base model | Loading |
@@ -243,23 +246,23 @@ uv sync --locked --group dev --extra culture
 
 **Start with that sweep**: `english`, `german` and `spanish` are the only cultures
 with a WVS respondent block, so they are the only ones whose distance reads against
-people who share the adapter's language — see
+people who share that culture's language — see
 [Culture-matched subsets](#culture-matched-subsets).
 
-`sweep` drives **one model/culture/question per invocation**, so a failing adapter
+`sweep` drives **one model/culture/question per invocation**, so one failing run
 never takes the grid with it: one log per run, outcome and answered share in
 `sweep_summary.tsv`, completed runs skipped (`--redo` to force), comparison rebuilt
 at the end. Each run is 13,904 NTP + 26,981 FA prompts; interrupting is safe.
 
 ### Prompt fidelity
 
-The adapters get the paper's prompt **verbatim** — the same `prompt_records`
+The culture-finetuned LLMs get the paper's prompt **verbatim** — the same `prompt_records`
 builder experiments 1 and 2 use, not the chat contract they were fine-tuned on.
 That is what makes a culture distance comparable with the paper's own number, and
 it is why capacity is worth measuring.
 
-Whether an adapter *can* answer it is measured every run, not assumed — capacity
-varies by base model and question, and the adapters that fail are exactly the ones
+Whether a model *can* answer it is measured every run, not assumed — capacity
+varies by base model and question, and the runs that fail are exactly the ones
 a distance would misrepresent. Each run classifies every prompt **valid** /
 **invalid** / **failed** in `capacity.csv`, keeps the first 25 rejected generations
 per mode in `capacity_examples.jsonl`, and charts answered share and NTP mass
@@ -281,12 +284,12 @@ view for them under `figures/culture/<model>/<question>/matched/`:
 
 These are the three in the first sweep above. The other six are excluded from the
 matched view rather than shown against a mismatched comparison; Russia has
-respondents but no russian adapter. All-culture figures are kept as the superset,
-and the country heatmap bolds only matched cells and never reorders columns to
-imply a diagonal the data cannot support.
+respondents but no russian culture-finetuned LLM. All-culture figures are kept as
+the superset, and the country heatmap bolds only matched cells and never reorders
+columns to imply a diagonal the data cannot support.
 
 <details>
-<summary><b>Adapter internals and detached sweeps</b></summary>
+<summary><b>Finetuning internals and detached sweeps</b></summary>
 
 LoRA was fitted on the text attention projections (`q/k/v/o_proj`, `r=8`,
 `alpha=16`); `exclude_modules` in `adapter_config.json` names **which modules got
@@ -319,6 +322,64 @@ ls outputs/culture/gemma4_31b/english/d_happy/raw/ntp | wc -l   # of 13,904
 `gemma4_31b` occupies ~18 GB in NF4; nothing else should compete for the card.
 
 </details>
+
+---
+
+## 4 — Base models
+
+The same two bases, un-finetuned, sent the same prompts. Every distance above is
+otherwise read against **Mixtral**, which is a *different* base model, so the
+comparison confounds the culture finetuning with the base model it was fitted on.
+This arm is the same weights before finetuning — the only reference that isolates
+what the finetuning did.
+
+```bash
+uv sync --locked --group dev --extra culture
+
+./run_experiment_base_models.sh run --models all --dry-run   # the 8 runs
+
+# both bases, all four topics, Germany's prompts first inside each
+screen -S base
+./run_experiment_base_models.sh run --models all
+# Ctrl-A then D to detach; screen -r base to return
+
+tail -f outputs/culture/logs/gemma4_31b-base-d_happy.log
+column -t -s $'\t' outputs/culture/logs/base_summary.tsv    # per-run outcomes
+./run_experiment_base_models.sh summary                     # rebuild the tables
+```
+
+The `run` word is required — `./run_experiment_base_models.sh --models all` exits
+2, and a bare call defaults to `gemma4_31b` alone.
+
+`run` drives **one model/question per invocation** — 8 runs, all of one topic
+before the next — so one failure never takes the grid with it: one log per run at
+`outputs/culture/logs/<model>-base-<question>.log`, outcomes in
+`base_summary.tsv`, comparison rebuilt at the end. A run is complete once it has
+written `capacity.csv`, so a base model that could not answer is not retried
+(`--redo` forces it). Each run is 13,904 NTP + 26,981 FA prompts; interrupting is
+safe. The driver refuses to start while another culture run holds the card
+(`--allow-concurrent` overrides).
+
+Results land at `outputs/culture/<model>/base/<question>/`, beside the
+culture-finetuned runs, so `base` becomes another arm in every comparison figure.
+Two artifacts exist only once it has run:
+
+| Artifact | What it carries |
+| --- | --- |
+| `summary/base_deltas.csv` | per country: each arm's mean nEMD minus the base's **on the same subpopulations**, with `nEMD_center` and the country coefficients paired the same way. Negative `delta_nEMD` = the finetuning moved the model closer |
+| `fig_home_advantage_base` | the home-advantage difference-in-differences taken against the model's own base rather than against Mixtral |
+
+Coverage differs between arms — a run drops any subpopulation with fewer than 20
+valid answers — so every delta is averaged over the intersection of what both arms
+scored, and the row records how many that was. The United States is the design's
+omitted reference country, so its `beta_country_*` cells are null, not zero.
+
+Germany's prompts go first by default (`--no-priority` disables,
+`--first-countries` renames) because Germany is `german`'s matched country — see
+[Culture-matched subsets](#culture-matched-subsets) — so base-vs-`german` is the
+country-matched delta this arm exists to supply. That is ordering, not selection:
+nothing lands until the question's run finishes, but a run stopped part-way
+already holds the country the German comparison needs.
 
 ---
 
