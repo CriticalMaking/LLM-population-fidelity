@@ -1,0 +1,69 @@
+{
+  "artifacts": {
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_distance_comparison.pdf": "92e9c69a6af515549c94cd85a3b70e6d96a0deb4504ec2fb2501fa83de6f8186",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_distance_comparison.png": "a6ca739a95854d0605b158658a815a9201ae8d2a6029e90296b3ddf8611bc59f",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_full_coefficients.pdf": "d5f0c1f071d4b1972b0c4be172228efbf6888a1145b56ec154727eb3a2107c41",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_full_coefficients.png": "f5773cf6b72db79de3fa7c43941448ac6efc931caea6d321bf88c94d03ebe1d4",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_full_standardized_coefficients.pdf": "6591165052d0dd7587bb19413bf92d9f416250014be600da2fbdea151dc93393",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_full_standardized_coefficients.png": "bf06084ea26e315d311e022e880aed576e14aa3cdb73c302eb06aecd0b8c9ef7",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_mds.pdf": "c5fea108a0642d5364e9773958000c88a910dcee160ce9e062ebf50b1da590c1",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_mds.png": "dc4646ce627ee3c615a466d05242c1a5d6797d8043186712bced500896e6ffc9",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_nemd_density_quality.pdf": "4e537d7f7d52e8393dcfac0a990215dd69ae15f79e3e2727cddd5d395845e98f",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_nemd_density_quality.png": "8f2bae06e9e4817a17c6de69d73ca8858892d7981ce1db14099839ac7c59bd28",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_social_coefficients.pdf": "eb4f6f26996708c44ede0a896df7abcf6cd4464cdbe735f0729e1b5a0f219d8a",
+    "figures/culture/qwen3_vl_8b/base/d_happy/fig_social_coefficients.png": "7c4acace0b09409311e15f054b2a25a321e465067b6583849da39afffd97a3fe",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/f_tests.csv": "f3af36b668c8644c4ade18d72a3ce21c607d38f4e340e703c31cce4dca036ac9",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/full_coefficients.csv": "ec23e85ab5229be7bc670cc674f436ce93dceee3fa5e69d8653e03245cd2ae6e",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/full_standardized_coefficients.csv": "432611649a0f3f4b6349733d15062aaafdf8ca7e41a99131f05ee980a11dc9ee",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/pairwise_dispersion.csv": "057c553361f490012d2ecd79034841fcfc4b0e0ebabe1c90bf2937e16d420576",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/quality_bands.csv": "1b058b07a75ff8fa7f3b23c68f0ded2de823a5badda80fa706af4d8b7952d4ce",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/regression_fit.csv": "479f144519b297b25a16c186d06950cba226829645884eab371923ec6c7b49c7",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/response_distributions.csv": "71983ef3b6dfcc81e799673f30a909b08a51910fbeaea7bde775f4d373428c92",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/social_coefficients.csv": "0a96eeaf020bcb38c1c8f3d2979ecf0e2379eb7f3584fc11ed4529ad7afcbe83",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/subpopulation_distances.csv": "1296b229d8677cbec51735785ec7acdf08ca23398e1dbdb6b3e37eb932cf5995",
+    "outputs/culture/qwen3_vl_8b/base/d_happy/summary_metrics.csv": "ddd3d0f3deaca707e2db2e9c9bc73ca1f8558c904f7a036a3d54135da3ba0e65"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-14T20:07:31.762735+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Qwen/Qwen3-VL-8B-Thinking-FP8 (not finetuned)",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/qwen3_vl_8b/base"
+}

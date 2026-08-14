@@ -1,0 +1,125 @@
+{
+  "backend": {
+    "accelerate": "1.13.0",
+    "answer_token_ids": {
+      "A": 562,
+      "B": 603
+    },
+    "answer_tokens": {
+      "A": " A",
+      "B": " B"
+    },
+    "base_model_id": "google/gemma-4-31B-it",
+    "base_revision": null,
+    "batch_size": 4,
+    "bitsandbytes": "0.49.2",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "fa_max_new_tokens": 12,
+    "lora_exclude_modules": ".*(vision_tower|audio_tower).*",
+    "lora_target_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "modalities_used": [
+      "text"
+    ],
+    "model_class": "Gemma4ForConditionalGeneration",
+    "multi_token_answers": [],
+    "name": "transformers",
+    "oom_backoffs": 0,
+    "peft": "0.19.1",
+    "prompt_contract": "paper",
+    "quantization": "nf4",
+    "question": "d_trust",
+    "torch": "2.12.0",
+    "version": "5.8.1"
+  },
+  "capacity": {
+    "by_mode": [
+      {
+        "failed": 0,
+        "invalid": 45,
+        "mean_valid_mass": 0.9744357612038489,
+        "median_valid_mass": 0.9936032433761284,
+        "mode": "NTP",
+        "p10_valid_mass": 0.9653622779063881,
+        "prompts": 13904,
+        "valid": 13859,
+        "valid_rate": 0.9967635212888377
+      },
+      {
+        "failed": 1689,
+        "invalid": 0,
+        "mean_valid_mass": NaN,
+        "median_valid_mass": NaN,
+        "mode": "FA",
+        "p10_valid_mass": NaN,
+        "prompts": 26981,
+        "valid": 25292,
+        "valid_rate": 0.937400392869056
+      }
+    ],
+    "failed": 1689,
+    "invalid": 45,
+    "prompts": 40885,
+    "valid": 39151,
+    "valid_rate": 0.9575883575883576
+  },
+  "code_revision": "00922a0-dirty",
+  "counts": {
+    "fa": {
+      "failed": 1689,
+      "generated": 25292,
+      "reused": 0,
+      "reused_untraced": 0
+    },
+    "ntp": {
+      "failed": 0,
+      "generated": 13904,
+      "reused": 0,
+      "reused_untraced": 0
+    }
+  },
+  "event_log": "logs/inference_events.jsonl",
+  "finished_at": "2026-08-12T17:17:46.124717+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "model": {
+    "adapter_path": "/home/neemias/machine-bias-reproduction/models/culture/gemma4_31b/english",
+    "adapter_sha256": "40282b9dda73f09d613a9d3005ad3e7984e6a04e7b317cb55c345cbfb7ed0e52",
+    "base_model_id": "google/gemma-4-31B-it",
+    "base_revision": null,
+    "culture": "english",
+    "model_key": "gemma4_31b",
+    "sha256": "40282b9dda73f09d613a9d3005ad3e7984e6a04e7b317cb55c345cbfb7ed0e52"
+  },
+  "parameters": {
+    "global_seed": 20240110,
+    "legacy_unseeded_fa": false,
+    "limit": null,
+    "modes": [
+      "ntp",
+      "fa"
+    ]
+  },
+  "preflight": {
+    "informative": true,
+    "max_mass": 0.9992246627807617,
+    "mean_mass": 0.954033138230443,
+    "min_mass": 0.5188763737678528,
+    "prompts": 32,
+    "threshold": 0.1
+  },
+  "question": "d_trust",
+  "run_id": "20260811T162549Z-2d1ac438",
+  "schema_version": 2,
+  "started_at": "2026-08-11T16:25:49.236303+00:00"
+}

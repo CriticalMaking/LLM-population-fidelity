@@ -1,0 +1,69 @@
+{
+  "artifacts": {
+    "figures/culture/gemma4_31b/base/d_happy/fig_distance_comparison.pdf": "2238e840273b6952f225b9b51cf1b073fc26449a2cceaa491aea6b5d2bfc7ad8",
+    "figures/culture/gemma4_31b/base/d_happy/fig_distance_comparison.png": "f34478c3ad14ec0fc43ace737a08d3865a8a175f59b8eb8bab08196a78967cae",
+    "figures/culture/gemma4_31b/base/d_happy/fig_full_coefficients.pdf": "32250c8f8836f63ba9380024fa8076326c044a7234daf17677720f8ce27bac2f",
+    "figures/culture/gemma4_31b/base/d_happy/fig_full_coefficients.png": "79aa13a968594dbf11c48ff8f708ec621389bee0a4ab0b6e78eaa33c8f09d7a1",
+    "figures/culture/gemma4_31b/base/d_happy/fig_full_standardized_coefficients.pdf": "f0c9f2c93b2810c6c0036b24875f5d3f4a84cad8381baa6af3a29628f9ab563f",
+    "figures/culture/gemma4_31b/base/d_happy/fig_full_standardized_coefficients.png": "678eccdf12618a77538996fa9d1066248c055316c80a0dce6636368d54c69b3f",
+    "figures/culture/gemma4_31b/base/d_happy/fig_mds.pdf": "5329140dc5cdf78264a57c06760be24cef5a20a8d59ff751878df571a77fb15b",
+    "figures/culture/gemma4_31b/base/d_happy/fig_mds.png": "86686d223367873192a85cd89c363ee2fbf072d7f1eb41c6f5df2eb9edd9e313",
+    "figures/culture/gemma4_31b/base/d_happy/fig_nemd_density_quality.pdf": "e6fb3f0d21df5f4a8a6b09551cbf182e37fa2e59f918ad2ddb408c7c8c24fea6",
+    "figures/culture/gemma4_31b/base/d_happy/fig_nemd_density_quality.png": "372e5614f2da677566d1c97c0ede91baa636d45b8e785d54d3a7c282b86b80c4",
+    "figures/culture/gemma4_31b/base/d_happy/fig_social_coefficients.pdf": "0729cd6a9724b7afc94238823d28ed47dc13a0b5b5f6a6192daa4f3106cd58c9",
+    "figures/culture/gemma4_31b/base/d_happy/fig_social_coefficients.png": "ecbd597943eb4aaf5f7cf2a5b727771cbba0bd8b666da4fa0b6ed817832085cc",
+    "outputs/culture/gemma4_31b/base/d_happy/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/culture/gemma4_31b/base/d_happy/f_tests.csv": "fe967f3b8a3e17255b2f059cc2668e6ff2677a85e3fe4b52c4ffb799fff80f4f",
+    "outputs/culture/gemma4_31b/base/d_happy/full_coefficients.csv": "06833831e1b403def0c55a3d69bc094e838297e2d3f07d156e9787ad903ea846",
+    "outputs/culture/gemma4_31b/base/d_happy/full_standardized_coefficients.csv": "4f9faf4ad81a5da1fd62bab312dd96d127b9118854c015b8b97f45f2a70c91da",
+    "outputs/culture/gemma4_31b/base/d_happy/pairwise_dispersion.csv": "846a64951fa1c8ad462bcd7b719e269d27ff53f51fac5abad896172ca68cb8d6",
+    "outputs/culture/gemma4_31b/base/d_happy/quality_bands.csv": "42a41c1ca3909531b7ec4d63baad8149613329248f51ff45f074196520da68d5",
+    "outputs/culture/gemma4_31b/base/d_happy/regression_fit.csv": "f886e2cd5b0ac8d12cd467669910778a1177e78bf730a3362aeb064d954be48f",
+    "outputs/culture/gemma4_31b/base/d_happy/response_distributions.csv": "1f751a663092e5e66be77887e9915548696fce2813bbb75dc64fbb6ea3147862",
+    "outputs/culture/gemma4_31b/base/d_happy/social_coefficients.csv": "b2b04f123c6fa131f066aebfc5e07d88c624a69286e8fa625b4c6bd8e2ac9bd4",
+    "outputs/culture/gemma4_31b/base/d_happy/subpopulation_distances.csv": "3f38bd9051e54d444cf37322d29a73b4c942ddef765dd17fa2fc77e4a48b83fe",
+    "outputs/culture/gemma4_31b/base/d_happy/summary_metrics.csv": "5116b2a0ef47f11f854dca17643812e63c67e34dadfc07b138b95a3a6870e72b"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-14T19:45:20.575763+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "google/gemma-4-31B-it (not finetuned)",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/gemma4_31b/base"
+}
