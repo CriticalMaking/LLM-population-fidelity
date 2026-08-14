@@ -1,5 +1,3 @@
-"""Small R 4.4-compatible RNG subset used for the paper's center holdouts."""
-
 from __future__ import annotations
 
 import math
@@ -12,10 +10,7 @@ _LOWER_MASK = 0x7FFFFFFF
 
 
 class RMersenneTwister:
-    """Replicate R's Mersenne-Twister initialization and rejection sampling."""
-
     def __init__(self, seed: int) -> None:
-        """Initialize from the integer accepted by R's ``set.seed``."""
         value = seed & 0xFFFFFFFF
         for _ in range(50):
             value = (69069 * value + 1) & 0xFFFFFFFF
@@ -57,7 +52,6 @@ class RMersenneTwister:
         return value & 0xFFFFFFFF
 
     def uniform(self) -> float:
-        """Return one R-compatible uniform draw in [0, 1)."""
         return self._next_uint32() / 4294967296.0
 
     def _index_rejection(self, size: int) -> int:
@@ -69,7 +63,6 @@ class RMersenneTwister:
                 return value
 
     def sample_without_replacement(self, population: int, sample_size: int) -> list[int]:
-        """Match ``sample.int(population, sample_size, replace = FALSE)``."""
         if not 0 <= sample_size <= population:
             raise ValueError("sample size must be between zero and population")
         candidates = list(range(population))
@@ -89,7 +82,6 @@ def center_holdout_indices(
     *,
     seed: int = 20_240_110,
 ) -> list[int]:
-    """Return the paper-order Mixtral/happiness center holdout indices."""
     target_call = {"ntp": 9, "fa": 21}.get(mode)
     if target_call is None:
         raise ValueError(f"unsupported mode: {mode}")

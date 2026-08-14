@@ -1,5 +1,3 @@
-"""The four WVS outcome questions, and how each one is encoded."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -16,54 +14,34 @@ LETTERS = ("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
 
 @dataclass(frozen=True, slots=True)
 class Question:
-    """One outcome question and every encoding the reproduction needs."""
-
     var: str
     label: str
     numerical: bool
     answer_columns: tuple[str, ...]
     ntp_csv_columns: tuple[str, ...]
-    """Answer columns as the archived NTP CSV names them: ``X0``-``X9`` for d_polpos."""
     wvs_labels: tuple[str, ...]
     fa_answers: tuple[str, ...]
     ntp_tokens: tuple[str, ...]
-    """Single tokens NTP scores: space-prefixed letters, or bare digits for d_polpos."""
     full_q: str
     full_q_ntp: str
-    """d_polpos is asked 0-9 for NTP and 1-10 for FA, so its answer is one digit token."""
 
     @property
     def levels(self) -> int:
-        """Return the number of ordered answer categories."""
         return len(self.answer_columns)
 
     @property
     def answer_suffix(self) -> str:
-        """Return what follows ``Answer:``: a space for numerical questions, else nothing."""
         return " " if self.numerical else ""
 
     def question_text(self, mode: PromptMode) -> str:
-        """Return the closing question wording for one generation strategy."""
         return self.full_q_ntp if mode == "ntp" else self.full_q
 
     def normalize(self, values: pd.Series) -> pd.Series:
-        """Map raw answers onto this question's canonical strings.
-
-        ``d_polpos`` is stored as a float in the WVS and an int in the FA
-        outputs, so both become ``"7"``; categorical answers already match.
-        """
         if not self.numerical:
             return values.astype("object")
         return values.map(lambda value: pd.NA if pd.isna(value) else str(int(value)))
 
     def ntp_answers(self, frame: pd.DataFrame) -> pd.DataFrame:
-        """Return an NTP frame's answer block under this question's column names.
-
-        Two layouts appear: the archived CSVs name d_polpos' answers ``X0``-``X9``,
-        while this reproduction's own runs write them as ``answer_columns``. Both
-        are accepted, and renaming the archived block by position is what aligns
-        the NTP 0-9 scale with the WVS 1-10 one.
-        """
         for source in (self.ntp_csv_columns, self.answer_columns):
             if set(source).issubset(frame.columns):
                 block = frame.loc[:, list(source)].copy()
@@ -179,7 +157,6 @@ DEFAULT_QUESTION = "d_happy"
 
 
 def resolve_question(name: str | Question) -> Question:
-    """Resolve a question name to its registry entry."""
     if isinstance(name, Question):
         return name
     try:
@@ -191,7 +168,6 @@ def resolve_question(name: str | Question) -> Question:
 
 
 def resolve_questions(selected: Sequence[str] | None) -> list[Question]:
-    """Resolve question names, defaulting to all four; ``all`` expands to all four."""
     if not selected or list(selected) == ["all"]:
         return [QUESTIONS[name] for name in QUESTION_NAMES]
     return [resolve_question(name) for name in selected]
@@ -202,7 +178,6 @@ def one_hot(
     categories: tuple[str, ...],
     columns: tuple[str, ...],
 ) -> pd.DataFrame:
-    """One-hot encode answers, leaving a missing answer missing rather than zero."""
     categorical = pd.Categorical(values, categories=categories)
     frame = pd.get_dummies(categorical, dtype=np.float64)
     frame.columns = list(columns)

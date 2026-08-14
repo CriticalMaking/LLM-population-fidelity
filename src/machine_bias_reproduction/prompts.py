@@ -1,5 +1,3 @@
-"""The paper's prompts, rebuilt byte-for-byte."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -71,8 +69,6 @@ CONTEXT_ORDER = (
 
 @dataclass(frozen=True, slots=True)
 class PromptRecord:
-    """One inference prompt and its source identity."""
-
     prompt_id: str
     profile: str
     mode: PromptMode
@@ -89,11 +85,6 @@ def _answer(variable: str, value: Any) -> str | None:
 
 
 def build_prompt(row: pd.Series, question: str | Question, mode: PromptMode) -> str:
-    """Build the upstream prompt exactly, including its final newline.
-
-    A question whose answer is missing in the WVS drops its whole Q/A pair, and
-    a numerical outcome closes with ``Answer: `` rather than ``Answer:``.
-    """
     outcome = resolve_question(question)
     lines: list[str] = []
     for variable in CONTEXT_ORDER:
@@ -106,7 +97,6 @@ def build_prompt(row: pd.Series, question: str | Question, mode: PromptMode) -> 
 
 
 def _selection(wvs: pd.DataFrame, mode: PromptMode) -> tuple[pd.DataFrame, str]:
-    """Return the rows and identity column one generation mode scores."""
     if mode == "ntp":
         return wvs.drop_duplicates("profile", keep="first"), "profile"
     return wvs, "id"
@@ -117,7 +107,6 @@ def prompt_records(
     mode: PromptMode,
     question: str | Question,
 ) -> list[PromptRecord]:
-    """Create the NTP unique-profile or FA observation-level prompt collection."""
     outcome = resolve_question(question)
     rows, id_column = _selection(wvs, mode)
     return [

@@ -1,5 +1,3 @@
-"""Resumable Mixtral NTP and full-answer generation."""
-
 from __future__ import annotations
 
 import json
@@ -45,50 +43,32 @@ TRACE_INDEX_COLUMNS = (
 
 
 def strip_trailing_newline(prompt: str) -> str:
-    """Drop the prompt's closing newline, as the upstream generators do."""
     return prompt[:-1] if prompt.endswith("\n") else prompt
 
 
 class InferenceBackend(Protocol):
-    """Minimal backend surface needed by the experiment driver."""
+    def ntp(self, prompt: str) -> dict[str, float]: ...
 
-    def ntp(self, prompt: str) -> dict[str, float]:
-        """Return valid-answer mass and normalized A-D probabilities."""
+    def full_answer(self, prompt: str, *, seed: int | None) -> str: ...
 
-    def full_answer(self, prompt: str, *, seed: int | None) -> str:
-        """Generate one candidate full answer."""
-
-    def describe(self) -> dict[str, Any]:
-        """Return the build and loading parameters stamped onto every record."""
+    def describe(self) -> dict[str, Any]: ...
 
 
 class BatchInferenceBackend(InferenceBackend, Protocol):
-    """A backend that can answer many prompts in one forward pass."""
-
-    def ntp_batch(self, prompts: Sequence[str]) -> list[dict[str, float]]:
-        """Return one NTP result per prompt."""
+    def ntp_batch(self, prompts: Sequence[str]) -> list[dict[str, float]]: ...
 
     def full_answer_batch(
         self,
         prompts: Sequence[str],
         *,
         seeds: Sequence[int | None],
-    ) -> list[str]:
-        """Generate one candidate per prompt, each from its own seed."""
+    ) -> list[str]: ...
 
-    def token_length(self, prompt: str) -> int:
-        """Return the tokenized length of one prompt, for length bucketing."""
+    def token_length(self, prompt: str) -> int: ...
 
 
 @dataclass(frozen=True, slots=True)
 class RunContext:
-    """Identity of one fresh-inference invocation, stamped onto every record.
-
-    Resumed runs reuse per-prompt files written by earlier invocations, so the
-    run-level manifest alone cannot say which model build produced a given
-    answer. Every record therefore carries its own copy of this context.
-    """
-
     run_id: str
     started_at: str
     model: Mapping[str, Any]
@@ -98,12 +78,10 @@ class RunContext:
 
     @staticmethod
     def new_run_id() -> str:
-        """Return a sortable, unique identifier for one invocation."""
         stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         return f"{stamp}-{uuid.uuid4().hex[:8]}"
 
     def stamp(self) -> dict[str, Any]:
-        """Return the per-record trace header."""
         return {
             "run_id": self.run_id,
             "run_started_at": self.started_at,
@@ -114,7 +92,6 @@ class RunContext:
 
 
 def _llama_cpp_version() -> str | None:
-    """Return the installed llama-cpp-python version, if it is discoverable."""
     from importlib.metadata import PackageNotFoundError, version
 
     try:
@@ -124,12 +101,6 @@ def _llama_cpp_version() -> str | None:
 
 
 def _llama_cpp_build_info() -> str | None:
-    """Return the compiled llama.cpp backend feature string.
-
-    This is the only record of whether the wheel in use was actually built with
-    a GPU backend, which a CPU-only build otherwise hides behind identical
-    numbers.
-    """
     try:
         from llama_cpp.llama_cpp import llama_print_system_info
 
@@ -141,8 +112,6 @@ def _llama_cpp_build_info() -> str | None:
 
 
 class LlamaCppBackend:
-    """Paper-compatible llama-cpp-python Mixtral backend."""
-
     def __init__(
         self,
         model_path: Path,
@@ -152,7 +121,6 @@ class LlamaCppBackend:
         gpu_layers: int,
         seed: int = GLOBAL_SEED,
     ) -> None:
-        """Load the Q4_K_M model once for NTP and FA generation."""
         try:
             from llama_cpp import Llama
             from llama_cpp.llama_cpp import llama_supports_gpu_offload
@@ -192,7 +160,6 @@ class LlamaCppBackend:
         }
 
     def describe(self) -> dict[str, Any]:
-        """Return the resolved build and loading parameters of this backend."""
         return dict(self._description)
 
     @staticmethod
@@ -200,7 +167,6 @@ class LlamaCppBackend:
         return strip_trailing_newline(prompt)
 
     def ntp(self, prompt: str) -> dict[str, float]:
-        """Run the paper's one-token log-probability extraction."""
         result: dict[str, Any] = self._model(
             self._without_final_newline(prompt),
             max_tokens=1,
@@ -218,7 +184,6 @@ class LlamaCppBackend:
         return {"mass": mass, **dict(zip(columns, normalized, strict=True))}
 
     def full_answer(self, prompt: str, *, seed: int | None) -> str:
-        """Generate one temperature-0.7 answer candidate."""
         if seed is not None:
             self._model.set_seed(seed)
         prompt_tokens = self._model.tokenize(self._without_final_newline(prompt).encode("utf-8"))
@@ -231,14 +196,6 @@ class LlamaCppBackend:
 
 
 def parse_full_answer(candidate: str, question: str | Question = "d_happy") -> str | None:
-    """Normalize one candidate using the upstream FA acceptance rules.
-
-    Mirrors ``2b-generate-FA-Mixtral-8x7B.py``: keep the first line, strip it,
-    rewrite a leading digit as the matching letter for categorical questions,
-    then require a case-insensitive match against an expected answer. A
-    numerical question skips the digit rewrite, because its answers *are*
-    digits.
-    """
     outcome = resolve_question(question)
     first_line = re.sub(r"\n+.*$", "", candidate, flags=re.DOTALL).strip()
     if not outcome.numerical:
@@ -251,7 +208,6 @@ def parse_full_answer(candidate: str, question: str | Question = "d_happy") -> s
 
 
 def answer_parser(question: str | Question) -> Callable[[str], str | None]:
-    """Return the FA acceptance rule bound to one question."""
     outcome = resolve_question(question)
     return lambda candidate: parse_full_answer(candidate, outcome)
 
@@ -261,7 +217,6 @@ def _result_path(paths: RunPaths, record: PromptRecord) -> Path:
 
 
 def _sampling(mode: str) -> dict[str, Any]:
-    """Return the exact sampling parameters the backend applies for a mode."""
     if mode == "ntp":
         return {"max_tokens": 1, "logprobs": 1000, "temperature": 0.0}
     return {"max_tokens": 12, "temperature": 0.7, "max_retries": MAX_FA_RETRIES}
@@ -274,12 +229,6 @@ def _batched_sampling(
     fa_max_tokens: int,
     max_retries: int = MAX_FA_RETRIES,
 ) -> dict[str, Any]:
-    """Return the sampling parameters of the batched transformers path.
-
-    ``batch_size`` belongs in the trace because batched matmul reductions are
-    not bitwise identical to batch-of-one, so a result is reproducible at the
-    batch size that produced it.
-    """
     if mode == "ntp":
         return {
             "max_tokens": 1,
@@ -300,7 +249,6 @@ def _new_payload(
     trace: RunContext,
     sampling: Mapping[str, Any],
 ) -> dict[str, Any]:
-    """Build the common per-prompt record header."""
     return {
         "schema_version": RECORD_SCHEMA_VERSION,
         "mode": record.mode,
@@ -316,24 +264,12 @@ def _new_payload(
 
 
 def _attempt_seed(prompt_id: str, attempt: int, *, legacy_unseeded_fa: bool) -> int | None:
-    """Derive a distinct, stable seed for one FA attempt.
-
-    Unlike the llama.cpp path, whose retries are unseeded, every batched
-    attempt gets its own derived seed. A prompt that needs three tries is then
-    just as repeatable as one that succeeds immediately.
-    ``--legacy-unseeded-fa`` still opts into the paper's unrepeatable sampling.
-    """
     if legacy_unseeded_fa:
         return None
     return stable_seed(f"{prompt_id}#{attempt}", GLOBAL_SEED)
 
 
 def _log_event(paths: RunPaths, payload: Mapping[str, Any]) -> None:
-    """Append one inference event to the run's append-only log.
-
-    The per-prompt files are keyed by prompt and replaced by ``--force``, so
-    this log is what preserves the history of superseded generations.
-    """
     append_jsonl(paths.logs / EVENT_LOG_NAME, payload)
 
 
@@ -347,7 +283,6 @@ def generate_records(
     force: bool = False,
     parse: Callable[[str], str | None] = parse_full_answer,
 ) -> dict[str, int]:
-    """Generate traced per-prompt atomic results, reusing valid existing files."""
     generated = 0
     reused = 0
     reused_untraced = 0
@@ -437,7 +372,6 @@ def _pending_records(
     *,
     force: bool,
 ) -> tuple[list[PromptRecord], int, int]:
-    """Split records into work to do and already-complete results to reuse."""
     pending: list[PromptRecord] = []
     reused = 0
     reused_untraced = 0
@@ -485,12 +419,6 @@ def _batches(
     backend: BatchInferenceBackend,
     batch_size: int,
 ) -> list[list[PromptRecord]]:
-    """Order pending prompts by length and chunk them.
-
-    Length bucketing keeps padding waste low. It is safe precisely because
-    every result is either deterministic given the prompt (NTP) or drawn from a
-    per-prompt seed (FA), so batch composition cannot change an answer.
-    """
     ordered = sorted(records, key=lambda record: backend.token_length(record.text))
     return [ordered[start : start + batch_size] for start in range(0, len(ordered), batch_size)]
 
@@ -544,12 +472,6 @@ def _generate_fa_batch(
     parse: Callable[[str], str | None],
     max_fa_retries: int,
 ) -> tuple[int, int]:
-    """Generate a batch of full answers, retrying only the rows that failed.
-
-    The retry loop runs at batch level so a handful of stubborn prompts never
-    forces the whole batch through another pass, while each record still
-    accumulates the complete per-attempt audit trail.
-    """
     started = time.monotonic()
     payloads = [_new_payload(record, trace, sampling) for record in batch]
     attempts: list[list[dict[str, Any]]] = [[] for _ in batch]
@@ -626,11 +548,6 @@ def generate_records_batched(
     parse: Callable[[str], str | None] = parse_full_answer,
     max_fa_retries: int = MAX_FA_RETRIES,
 ) -> dict[str, int]:
-    """Generate traced per-prompt results in batches, reusing valid files.
-
-    Writes exactly the records the one-at-a-time path writes: same schema, same
-    trace header, same append-only event log. Only the execution shape differs.
-    """
     modes = {record.mode for record in records}
     if len(modes) > 1:
         raise ValueError(f"batched generation handles one mode at a time, got {sorted(modes)}")
@@ -695,7 +612,6 @@ def _event(
     *,
     status: str,
 ) -> dict[str, Any]:
-    """Summarize one generated or failed record for the append-only log."""
     trace = payload["trace"]
     result = payload.get("result", {})
     event: dict[str, Any] = {
@@ -721,7 +637,6 @@ def _event(
 
 
 def _record_schema_version(path: Path) -> int:
-    """Return a reused record's schema version, treating unreadable files as legacy."""
     try:
         with path.open(encoding="utf-8") as stream:
             payload: dict[str, Any] = json.load(stream)
@@ -748,7 +663,6 @@ def _optional_result(
     *,
     skip_missing: bool,
 ) -> dict[str, Any] | None:
-    """Read one stored result, returning ``None`` for a prompt with no answer."""
     if skip_missing and not _result_path(paths, record).is_file():
         return None
     return _read_result(paths, record)
@@ -762,12 +676,6 @@ def consolidate_ntp(
     *,
     skip_missing: bool = False,
 ) -> int:
-    """Consolidate per-profile NTP JSON into the paper-compatible CSV.
-
-    ``skip_missing`` lets a run that could not answer every prompt still
-    produce a table of what it did answer; the analysis reports the gap as
-    coverage rather than inferring values that were never generated.
-    """
     outcome = resolve_question(question)
     rows: list[dict[str, Any]] = []
     for record in records:
@@ -789,7 +697,6 @@ def consolidate_fa(
     *,
     skip_missing: bool = False,
 ) -> int:
-    """Consolidate per-observation FA JSON into the narrowed canonical CSV."""
     outcome = resolve_question(question)
     rows: list[dict[str, Any]] = []
     for record in records:
@@ -836,13 +743,6 @@ def audit_traces(
     records_by_mode: Mapping[str, Sequence[PromptRecord]],
     paths: RunPaths,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Index every stored inference and verify its trace against the prompts.
-
-    Re-hashing ``record.text`` proves that a stored answer belongs to the prompt
-    the current code builds for that respondent, which is the claim a
-    reproduction actually needs. Records written before the trace schema are
-    reported as untraced rather than treated as failures.
-    """
     rows: list[dict[str, Any]] = []
     problems: list[str] = []
     missing: dict[str, int] = {}

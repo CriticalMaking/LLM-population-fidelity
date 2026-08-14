@@ -1,5 +1,3 @@
-"""Published-checkpoint verification for generated artifacts."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,8 +12,6 @@ from .io_utils import sha256_file
 
 @dataclass(frozen=True, slots=True)
 class Checkpoint:
-    """One numeric result expected from the archived package."""
-
     metric: str
     method: str
     expected: float
@@ -32,11 +28,6 @@ CHECKPOINTS = (
     Checkpoint("median_pairwise_nEMD", "WVS", 0.114638448, 5e-10),
     Checkpoint("median_pairwise_nEMD", "NTP", 0.032728912, 5e-10),
 )
-"""Published values, all for happiness and Mixtral.
-
-The paper prints no equivalent numbers for the other three questions, so
-``verify_results`` only asserts them for ``d_happy``.
-"""
 
 CHECKPOINTED_QUESTION = "d_happy"
 
@@ -44,7 +35,6 @@ CHECKPOINTED_QUESTION = "d_happy"
 def verify_results(
     source: str = "archived", question: str = CHECKPOINTED_QUESTION
 ) -> dict[str, object]:
-    """Validate all core archived checkpoints and artifact hashes."""
     if question != CHECKPOINTED_QUESTION:
         raise ValueError(
             f"the paper publishes checkpoints only for {CHECKPOINTED_QUESTION}, not {question}"

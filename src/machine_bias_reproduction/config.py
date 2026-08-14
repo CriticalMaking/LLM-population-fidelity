@@ -1,5 +1,3 @@
-"""Canonical paths and constants for the reproduction."""
-
 from __future__ import annotations
 
 import re
@@ -35,38 +33,30 @@ GLOBAL_SEED = 20_240_110
 
 @dataclass(frozen=True, slots=True)
 class RunPaths:
-    """Filesystem layout for one run of one question."""
-
     source: str
     question: str
 
     @property
     def slug(self) -> str:
-        """Return the run's path fragment, ``<source>/<question>``."""
         return f"{self.source}/{self.question}"
 
     @property
     def outputs(self) -> Path:
-        """Return the run's output directory."""
         return OUTPUTS_ROOT / self.source / self.question
 
     @property
     def figures(self) -> Path:
-        """Return the run's figure directory."""
         return FIGURES_ROOT / self.source / self.question
 
     @property
     def logs(self) -> Path:
-        """Return the run's log directory."""
         return self.outputs / "logs"
 
     @property
     def raw(self) -> Path:
-        """Return the per-prompt result directory."""
         return self.outputs / "raw"
 
     def ensure(self) -> None:
-        """Create all mutable run directories."""
         self.outputs.mkdir(parents=True, exist_ok=True)
         self.figures.mkdir(parents=True, exist_ok=True)
         self.logs.mkdir(parents=True, exist_ok=True)
@@ -74,17 +64,11 @@ class RunPaths:
 
 
 CULTURE_SOURCE_PATTERN = re.compile(r"^culture/[A-Za-z0-9_]+/[A-Za-z0-9_]+$")
-"""Match a ``culture/<model_key>/<culture>`` run name.
-
-The components are restricted so a run name can never escape ``outputs/`` or
-``figures/``.
-"""
 
 QUESTION_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 
 
 def paths_for(source: str, question: str) -> RunPaths:
-    """Resolve the mutable paths for one question of a named run."""
     if source not in {"archived", "fresh"} and not CULTURE_SOURCE_PATTERN.match(source):
         raise ValueError(f"unknown source: {source}")
     if not QUESTION_PATTERN.match(question):

@@ -1,5 +1,3 @@
-"""Safe filesystem and hashing helpers."""
-
 from __future__ import annotations
 
 import hashlib
@@ -16,7 +14,6 @@ CHUNK_SIZE = 1024 * 1024
 
 
 def sha256_file(path: Path) -> str:
-    """Return the lowercase SHA-256 digest for a file."""
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(CHUNK_SIZE), b""):
@@ -25,19 +22,16 @@ def sha256_file(path: Path) -> str:
 
 
 def sha256_text(text: str) -> str:
-    """Return the lowercase SHA-256 digest for a UTF-8 string."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def stable_seed(identifier: str, global_seed: int) -> int:
-    """Derive a stable nonzero llama.cpp seed from a prompt identifier."""
     payload = f"{global_seed}\0{identifier}".encode()
     value = int.from_bytes(hashlib.sha256(payload).digest()[:4], "big") & 0x7FFFFFFF
     return value or 1
 
 
 def atomic_write_text(path: Path, text: str) -> None:
-    """Atomically replace a UTF-8 text file."""
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{path.name}.",
@@ -57,16 +51,10 @@ def atomic_write_text(path: Path, text: str) -> None:
 
 
 def atomic_write_json(path: Path, payload: Mapping[str, Any]) -> None:
-    """Atomically write a consistently formatted JSON object."""
     atomic_write_text(path, json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
 
 def append_jsonl(path: Path, payload: Mapping[str, Any]) -> None:
-    """Append one durable record to an append-only JSON Lines log.
-
-    Single ``write`` calls of one complete line keep concurrent appends from
-    interleaving, so a crashed or resumed run never truncates earlier events.
-    """
     path.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps(payload, sort_keys=True) + "\n"
     with path.open("a", encoding="utf-8", newline="") as stream:
@@ -76,12 +64,10 @@ def append_jsonl(path: Path, payload: Mapping[str, Any]) -> None:
 
 
 def hash_paths(paths: Iterable[Path], root: Path) -> dict[str, str]:
-    """Hash paths and key them relative to a common root."""
     return {str(path.relative_to(root)): sha256_file(path) for path in paths}
 
 
 def hardware_summary() -> dict[str, Any]:
-    """Return stable, non-sensitive runtime hardware metadata."""
     return {
         "machine": platform.machine(),
         "platform": platform.platform(),
@@ -92,7 +78,6 @@ def hardware_summary() -> dict[str, Any]:
 
 
 def code_revision(root: Path) -> str | None:
-    """Return the short commit of a repository, suffixed when the tree is dirty."""
 
     def git(*arguments: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(

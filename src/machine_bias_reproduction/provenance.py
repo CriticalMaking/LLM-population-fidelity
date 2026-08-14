@@ -1,5 +1,3 @@
-"""Upstream archive inventory and integrity checks."""
-
 from __future__ import annotations
 
 import json
@@ -41,7 +39,6 @@ CONSUMED_PATHS = (
 
 
 def is_substantive(name: str, *, is_directory: bool = False) -> bool:
-    """Return whether a ZIP entry belongs in the working extraction."""
     if is_directory:
         return False
     path = PurePosixPath(name)
@@ -51,12 +48,6 @@ def is_substantive(name: str, *, is_directory: bool = False) -> bool:
 
 
 def extraction_name(name: str) -> str:
-    """Decode UTF-8 member bytes that Python's ZIP reader interpreted as CP437.
-
-    The upstream archive omits the UTF-8 filename flag on part of its payload.
-    Info-ZIP recognizes the Unicode-path metadata during extraction, while
-    :mod:`zipfile` exposes the raw bytes through a CP437 decoding.
-    """
     try:
         return name.encode("cp437").decode("utf-8")
     except (UnicodeEncodeError, UnicodeDecodeError):
@@ -64,7 +55,6 @@ def extraction_name(name: str) -> str:
 
 
 def archive_inventory() -> dict[str, int]:
-    """Summarize complete, payload, and metadata entries from the canonical ZIP."""
     total_entries = 0
     total_files = 0
     total_bytes = 0
@@ -97,7 +87,6 @@ def archive_inventory() -> dict[str, int]:
 
 
 def create_manifest() -> dict[str, Any]:
-    """Create and persist the canonical upstream manifest."""
     missing = [path for path in CONSUMED_PATHS if not path.is_file()]
     if missing:
         joined = "\n".join(str(path) for path in missing)
@@ -129,14 +118,12 @@ def create_manifest() -> dict[str, Any]:
 
 
 def load_manifest() -> dict[str, Any]:
-    """Load the checked-in upstream manifest."""
     with MANIFEST_PATH.open(encoding="utf-8") as stream:
         loaded: dict[str, Any] = json.load(stream)
     return loaded
 
 
 def verify_upstream(*, full: bool = False) -> dict[str, Any]:
-    """Verify source artifacts and optionally every substantive extracted file."""
     errors: list[str] = []
     archive_hash = sha256_file(ARCHIVE_PATH)
     paper_hash = sha256_file(PAPER_PATH)

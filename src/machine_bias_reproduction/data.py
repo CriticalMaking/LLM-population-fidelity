@@ -1,5 +1,3 @@
-"""Loading and reshaping the upstream WVS and model outputs."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,19 +17,11 @@ from .questions import Question, one_hot, resolve_question
 
 FloatArray = npt.NDArray[np.float64]
 
-MIN_VALID_ANSWERS = 20
-"""Valid model answers a subpopulation needs to enter the distance tables.
-
-The same floor ``4-create-subpopulations.R`` used to form the groups. A complete
-run keeps all 687, so this is inert for the archived and fresh reproductions; it
-only bites when a model could not answer, which is the case it exists for.
-"""
+MIN_VALID_ANSWERS_PER_SUBPOPULATION = 20
 
 
 @dataclass(frozen=True, slots=True)
 class Coverage:
-    """How much of a run the model actually answered."""
-
     ntp_expected: int
     ntp_observed: int
     fa_expected: int
@@ -41,12 +31,10 @@ class Coverage:
 
     @property
     def subpopulations_dropped(self) -> int:
-        """Return how many subpopulations fell below the valid-answer floor."""
         return self.subpopulations_total - self.subpopulations_retained
 
     @property
     def complete(self) -> bool:
-        """Return whether every prompt was answered and every subpopulation kept."""
         return (
             self.ntp_observed == self.ntp_expected
             and self.fa_observed == self.fa_expected
@@ -54,7 +42,6 @@ class Coverage:
         )
 
     def as_dict(self) -> dict[str, int | bool]:
-        """Return the manifest representation."""
         return {
             "ntp_expected": self.ntp_expected,
             "ntp_observed": self.ntp_observed,
@@ -69,8 +56,6 @@ class Coverage:
 
 @dataclass(frozen=True, slots=True)
 class PreparedData:
-    """Aligned response distributions and respondent metadata."""
-
     question: Question
     wvs: pd.DataFrame
     subpops: pd.DataFrame
@@ -85,7 +70,6 @@ class PreparedData:
 
 
 def load_wvs() -> pd.DataFrame:
-    """Read and validate the World Values Survey extract."""
     path = UPSTREAM_DATA / "WVS" / "wvs-data.csv"
     frame = pd.read_csv(path)
     if len(frame) != EXPECTED_WVS_ROWS:
@@ -94,12 +78,10 @@ def load_wvs() -> pd.DataFrame:
 
 
 def load_subpops() -> pd.DataFrame:
-    """Read respondent-to-subpopulation assignments."""
     return pd.read_csv(UPSTREAM_DATA / "subpops.csv")
 
 
 def archived_ntp(question: str | Question, model: str = "Mixtral-8x7B") -> pd.DataFrame:
-    """Read one archived NTP output table."""
     outcome = resolve_question(question)
     path = UPSTREAM_DATA / "LLM-outputs" / "csv" / f"NTP-{model}-{outcome.var}.csv"
     frame = pd.read_csv(path)
@@ -109,14 +91,12 @@ def archived_ntp(question: str | Question, model: str = "Mixtral-8x7B") -> pd.Da
 
 
 def archived_fa(question: str | Question, model: str = "Mixtral-8x7B") -> pd.DataFrame:
-    """Read one archived full-answer output table."""
     outcome = resolve_question(question)
     path = UPSTREAM_DATA / "LLM-outputs" / "csv" / f"FA-{model}.csv"
     return pd.read_csv(path)[["id", "profile", outcome.var]]
 
 
 def load_linear_baseline(question: str | Question) -> pd.DataFrame:
-    """Read the supplied leave-one-out linear baseline."""
     outcome = resolve_question(question)
     return pd.read_csv(UPSTREAM_DATA / "Linear" / f"Linear-baseline-{outcome.var}.csv")
 
@@ -129,13 +109,11 @@ def _group_responses(responses: pd.DataFrame, subpopulation: pd.Series) -> pd.Da
 
 
 def _group_counts(responses: pd.DataFrame, subpopulation: pd.Series) -> pd.Series:
-    """Return the number of answered rows per subpopulation."""
     answered = responses.notna().any(axis=1)
     return answered.groupby(subpopulation.to_numpy()).sum()
 
 
 def social_predictors(wvs: pd.DataFrame, subpopulation: pd.Series) -> pd.DataFrame:
-    """Aggregate respondent demographics to subpopulation shares."""
     age_labels = ("<25", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")
     age = pd.cut(
         wvs["i_age"],
@@ -175,15 +153,8 @@ def prepare_data(
     fa: pd.DataFrame,
     question: str | Question,
     *,
-    min_valid: int = MIN_VALID_ANSWERS,
+    min_valid: int = MIN_VALID_ANSWERS_PER_SUBPOPULATION,
 ) -> PreparedData:
-    """Align WVS, NTP, FA, subpopulation, and predictor data for one question.
-
-    A model that failed to answer some prompts is carried rather than rejected:
-    its missing rows stay missing, and a subpopulation is kept only when both
-    modes retained at least ``min_valid`` answers for it. The retained set is
-    the intersection across modes, so every table indexes the same rows.
-    """
     outcome = resolve_question(question)
     wvs = load_wvs()
     subpops = load_subpops()
@@ -253,7 +224,6 @@ def canonical_run_paths(
     question: str | Question,
     stems: tuple[str, str] | None = None,
 ) -> tuple[Path, Path]:
-    """Return the consolidated NTP and FA CSV paths for one run and question."""
     outcome = resolve_question(question)
     ntp_stem, fa_stem = stems or (
         f"NTP-Mixtral-8x7B-{outcome.var}.csv",
