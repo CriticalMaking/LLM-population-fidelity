@@ -14,7 +14,7 @@
 ![llama.cpp](https://img.shields.io/badge/llama.cpp-0.3.1-lightgrey)
 ![Ruff](https://img.shields.io/badge/Ruff-passing-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2)
-![tests](https://img.shields.io/badge/tests-135%20passing-4c1)
+![tests](https://img.shields.io/badge/tests-169%20passing-4c1)
 
 Reproduction of *Machine Bias: How Do Generative Language Models Answer Opinion
 Polls?* (Boelaert, Coavoux, Ollion, Petev and Präg, *SMR* 2025), extended to
@@ -90,10 +90,8 @@ Four experiments, run in this order:
 | --- | --- | --- | --- |
 | 1 | **Archived** — reanalyse the paper's model outputs | `./run_experiment.sh` | nothing |
 | 2 | **Fresh** — regenerate Mixtral's answers | `./run_experiment.sh fresh --model …` | 26.4 GB GGUF |
-| 3 | **Cultural** — nine culture-finetuned LLMs on two bases | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
-| 4 | **Base models** — the same two bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
-
-**Note**: The cultural I don't push yet in the remote because I running with the adjusted we talk about in the meeting yesterday.
+| 3 | **Cultural** — nine culture-finetuned LLMs per base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
+| 4 | **Base models** — the same bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
 
 
 ---
@@ -220,13 +218,19 @@ Rebuilds every prompt, re-hashes against the stored record, writes
 
 ## 3 — Cultural
 
-Nine culture-finetuned LLMs on two multimodal bases, sent the **same prompts** as
+Nine culture-finetuned LLMs on each multimodal base, sent the **same prompts** as
 experiments 1 and 2.
 
 | Model key | Base model | Loading |
 | --- | --- | --- |
 | `gemma4_31b` | `google/gemma-4-31B-it` | 4-bit NF4 (QLoRA, as trained) |
-| `qwen3_vl_8b` | `Qwen/Qwen3-VL-8B-Thinking-FP8` | FP8 dequantized to bf16 |
+| `gemma4_e4b` | `google/gemma-4-E4B-it` | bf16, unquantized (as trained) |
+| `qwen3_vl_8b` | `Qwen/Qwen3-VL-8B-Thinking` | bf16, unquantized |
+
+Every row loads the way its adapters were trained, so no distance is read
+through a forward pass its finetuning never saw. All three are original,
+unquantized releases (gemma4_31b is served NF4 because that is how its QLoRA
+adapters were fitted), so a gap between models is never a quantization artifact.
 
 Cultures: `arabic bengali chinese english german korean portuguese spanish turkish`
 
@@ -234,20 +238,20 @@ Cultures: `arabic bengali chinese english german korean portuguese spanish turki
 uv sync --locked --group dev --extra culture
 
 ./run_experiment_add_culture.sh adapters                       # stage weights
-./run_experiment_add_culture.sh smoke --models gemma4_31b --cultures english
+./run_experiment_add_culture.sh smoke --models gemma4_31b --cultures german
 
-# first comparison — 12 runs: one base, all four topics, the three matched cultures
-./run_experiment_add_culture.sh sweep \
-  --models gemma4_31b --questions all --cultures english german spanish
+# first comparison — 4 runs: the german culture on all four topics
+./run_experiment_add_culture.sh sweep --models gemma4_31b --questions all
 
 ./run_experiment_add_culture.sh sweep --cultures all --questions all   # the rest
 ./run_experiment_add_culture.sh compare                        # figures + reports
 ```
 
-**Start with that sweep**: `english`, `german` and `spanish` are the only cultures
-with a WVS respondent block, so they are the only ones whose distance reads against
-people who share that culture's language — see
-[Culture-matched subsets](#culture-matched-subsets).
+**Start with that sweep**: `german` is the culture this repository's results argue
+from, and one of the three (`english`, `german`, `spanish`) with a WVS respondent
+block, so its distance reads against people who share the culture's language — see
+[Culture-matched subsets](#culture-matched-subsets). The sweep defaults to
+`german`; `--cultures all` reaches the full grid.
 
 `sweep` drives **one model/culture/question per invocation**, so one failing run
 never takes the grid with it: one log per run, outcome and answered share in
