@@ -15,6 +15,16 @@ require_uv() {
 }
 
 run_python() {
+    local extra=()
+    if [[ "${1:-}" == "--extra" ]]; then
+        extra=(--extra "$2")
+        shift 2
+    fi
     require_uv
-    uv run --locked python -m machine_bias_reproduction "$@"
+    uv run --locked "${extra[@]}" python -m machine_bias_reproduction "$@"
+}
+
+run_culture() {
+    export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+    run_python --extra culture culture "$@"
 }

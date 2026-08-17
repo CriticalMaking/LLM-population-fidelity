@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-
-set -euo pipefail
-
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$REPO_ROOT"
+source "$(dirname "${BASH_SOURCE[0]}")/scripts/_common.sh"
 
 usage() {
     cat <<'EOF'
@@ -37,37 +33,29 @@ Cultures:  arabic bengali chinese english german korean portuguese spanish turki
            (sweep default german; --cultures all for the full grid)
 Questions: d_happy d_polpos d_religiousp d_trust (default d_happy)
 
-The finetuned culture MLLMs answer the paper's own prompt, so their distances are
-comparable with the archived Mixtral run. How often each one can honour that
-prompt is measured per run in capacity.csv and charted in fig_culture_capacity.
-
-Every figure that reads per-mode comes in an NTP file and an FA file rather than
-one plate holding both, because the two modes fail independently: a run can
-answer every NTP prompt and none of the FA ones, and a shared plate turns that
-into half a blank figure instead of a result.
+The finetuned culture MLLMs answer the paper's own prompt, so their distances
+are comparable with the archived Mixtral run; how often each arm can honour
+that prompt is measured per run in capacity.csv and fig_culture_capacity.
+Per-mode figures come as separate _ntp and _fa files because the two modes
+fail independently.
 
 Start with `adapters` to stage the LoRA weights under models/culture, then
-`smoke` to measure throughput and the valid-answer probe before committing.
-`adapters` also prints an adapter-health line per staged adapter, and `health`
-reprints them on demand: a diverged checkpoint costs about an hour a question to
-discover through inference and seconds to see in the weights.
+`smoke` for the throughput and valid-answer probe. `adapters` prints a health
+line per staged adapter and `health` reprints them: a diverged checkpoint
+costs an hour a question through inference, seconds through the weights.
 
-`sweep` is the usual way to run the experiment: it drives one pair at a time,
-so a failing adapter never takes the rest of the grid with it, writes a log per
-pair, skips pairs already analysed, and rebuilds the comparison at the end.
+`sweep` drives one model/culture/question at a time — a failing adapter never
+takes the grid with it — with one log per run, finished runs skipped
+(--redo to force), and the comparison rebuilt at the end:
 
   ./run_experiment_add_culture.sh sweep                          # all 18 pairs
   ./run_experiment_add_culture.sh sweep --cultures portuguese    # one culture
   ./run_experiment_add_culture.sh sweep --models gemma4_31b --cultures all
 
-`run` is the single-invocation form for one pair or a small selection. Both are
-resumable: every prompt writes its own atomic result file, so an interrupted
-sweep continues where it stopped rather than starting over. `compare` rebuilds
-the per-question cross-culture figures and tables from whatever has finished,
-two files per figure named _ntp and _fa;
-`mds` draws the shared-space plates beside each run, one per culture and
-question; `summary` builds the three cross-question charts the write-up argues
-from, each with the CSV of its own numbers beside it.
+`run` is the single-invocation form. Both are resumable: every prompt writes
+its own atomic result file. `compare` rebuilds the per-question cross-culture
+figures and tables, `mds` the shared-space plates, and `summary` the three
+cross-question charts, each with the CSV of its numbers beside it.
 EOF
 }
 
@@ -78,13 +66,13 @@ fi
 
 case "$command_name" in
     -h|--help|help) usage ;;
-    adapters) ./scripts/08_culture_adapters.sh "$@" ;;
-    health) ./scripts/16_adapter_health.sh "$@" ;;
-    smoke) ./scripts/07_culture.sh --limit 2 --skip-compare "$@" ;;
-    run) ./scripts/07_culture.sh "$@" ;;
-    sweep) ./scripts/10_culture_sweep.sh "$@" ;;
-    compare) ./scripts/09_culture_compare.sh "$@" ;;
-    mds) ./scripts/13_culture_mds.sh "$@" ;;
-    summary) ./scripts/14_culture_summary.sh "$@" ;;
+    adapters) run_python culture-adapters "$@" ;;
+    health) run_python culture-health "$@" ;;
+    smoke) run_culture --limit 2 --skip-compare "$@" ;;
+    run) run_culture "$@" ;;
+    sweep) ./scripts/sweep.sh "$@" ;;
+    compare) run_python culture-compare "$@" ;;
+    mds) run_python culture-mds "$@" ;;
+    summary) run_python culture-summary "$@" ;;
     *) echo "Unknown command: $command_name" >&2; usage >&2; exit 2 ;;
 esac

@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-
-set -euo pipefail
-
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$REPO_ROOT"
+source "$(dirname "${BASH_SOURCE[0]}")/scripts/_common.sh"
 
 usage() {
     cat <<'EOF'
@@ -24,14 +20,11 @@ Questions: d_happy d_polpos d_religiousp d_trust  (or 'all'; default all here)
 Series:    NTP-GPT-4T NTP-Llama-3-70B NTP-Mixtral-8x7B
            FA-GPT-3   FA-Llama-3-70B   FA-Mixtral-8x7B
 
-Everything reads the archived upstream outputs, so no model is loaded and no
-inference runs. Tables land in outputs/reports as CSV and as \input-able
-booktabs LaTeX under outputs/reports/tex; figures land in figures/reports as
-PNG and PDF, drawn without titles or captions for paper.tex.
-
-The robustness section is the slow one: it reads the per-prompt output files
-under upstream/extracted/.../data/Robustness and fits a random forest and a
-bootstrapped multinomial model.
+Everything reads the archived upstream outputs; no model is loaded. Tables
+land in outputs/reports as CSV and \input-able booktabs under
+outputs/reports/tex; figures in figures/reports as PNG and PDF, untitled for
+the paper. robustness is the slow section: it reads the per-prompt Robustness
+files and fits a random forest and a bootstrapped multinomial model.
 EOF
 }
 
@@ -44,9 +37,9 @@ case "$command_name" in
     -h|--help|help) usage ;;
     all|main|appendix|robustness|tables|figures|smoke)
         if [[ "$*" != *--questions* ]]; then
-            ./scripts/12_reports.sh "$command_name" --questions all "$@"
+            run_python reports "$command_name" --questions all "$@"
         else
-            ./scripts/12_reports.sh "$command_name" "$@"
+            run_python reports "$command_name" "$@"
         fi
         ;;
     *) echo "Unknown command: $command_name" >&2; usage >&2; exit 2 ;;
