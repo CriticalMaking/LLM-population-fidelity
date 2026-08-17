@@ -39,3 +39,23 @@ gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,german,NTP,687,Austr
 gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.18536952391072184
 gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.23703303462356815
 gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.3782585761185641
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,matched,german,NTP,144,Germany,0.29272961948295034
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,matched,Mixtral archived,FA,144,Germany,0.15582120516849216
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,matched,Mixtral fresh,FA,144,Germany,0.1760767501186118
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,matched,german,FA,144,Germany,0.3329993606564485
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,base,NTP,144,Germany,0.18168337333450427
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,Mixtral archived,NTP,144,Germany,0.15547536685430327
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,Mixtral fresh,NTP,144,Germany,0.15550099671651826
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,german,NTP,144,Germany,0.29272961948295034
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,base,FA,144,Germany,0.20923004588220875
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,Mixtral archived,FA,144,Germany,0.15582120516849216
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,Mixtral fresh,FA,144,Germany,0.1760767501186118
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,comparison,german,FA,144,Germany,0.3329993606564485
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.21387971098243827
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.21454801622202782
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,all_countries,german,NTP,687,Australia; Germany; Mexico; Russia; United States,0.25338914529950307
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.18536952391072184
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.23703303462356815
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_religiousp,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.29253239995814306

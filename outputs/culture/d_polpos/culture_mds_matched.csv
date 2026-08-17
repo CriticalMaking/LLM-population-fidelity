@@ -39,3 +39,23 @@ gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,german,NTP,639,Australia
 gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,Mixtral archived,FA,639,Australia; Germany; Mexico; Russia; United States,0.10815112055552699
 gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,Mixtral fresh,FA,639,Australia; Germany; Mexico; Russia; United States,0.10736867086254072
 gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,german,FA,639,Australia; Germany; Mexico; Russia; United States,0.130787335939781
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,matched,Mixtral archived,NTP,144,Germany,0.0985880379075019
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,matched,Mixtral fresh,NTP,144,Germany,0.09892358962767663
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,matched,german,NTP,144,Germany,0.09227323294970285
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,matched,Mixtral archived,FA,144,Germany,0.08509585794297989
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,matched,Mixtral fresh,FA,144,Germany,0.08324143792409637
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,matched,german,FA,144,Germany,0.10601933884688847
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,base,NTP,144,Germany,0.09587582686403746
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,Mixtral archived,NTP,144,Germany,0.0985880379075019
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,Mixtral fresh,NTP,144,Germany,0.09892358962767663
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,german,NTP,144,Germany,0.09227323294970285
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,base,FA,144,Germany,0.08866281737411635
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,Mixtral archived,FA,144,Germany,0.08509585794297989
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,Mixtral fresh,FA,144,Germany,0.08324143792409637
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,comparison,german,FA,144,Germany,0.10601933884688847
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,all_countries,Mixtral archived,NTP,639,Australia; Germany; Mexico; Russia; United States,0.08955286197440716
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,all_countries,Mixtral fresh,NTP,639,Australia; Germany; Mexico; Russia; United States,0.0895921059016076
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,all_countries,german,NTP,639,Australia; Germany; Mexico; Russia; United States,0.12055817309196569
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,all_countries,Mixtral archived,FA,639,Australia; Germany; Mexico; Russia; United States,0.10815112055552699
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,all_countries,Mixtral fresh,FA,639,Australia; Germany; Mexico; Russia; United States,0.10736867086254072
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_polpos,all_countries,german,FA,639,Australia; Germany; Mexico; Russia; United States,0.16520779007593986

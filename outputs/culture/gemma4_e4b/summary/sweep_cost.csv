@@ -1,3 +1,9 @@
 model_key,model_label,culture,question,question_label,hours,sessions,sweep_status
 gemma4_e4b,Gemma-4-E4B-it,base,d_happy,Happiness,0.28759049166666667,1,
+gemma4_e4b,Gemma-4-E4B-it,base,d_polpos,Politics,0.33134439916666664,1,
+gemma4_e4b,Gemma-4-E4B-it,base,d_religiousp,Religion,0.31098397111111115,1,
+gemma4_e4b,Gemma-4-E4B-it,base,d_trust,Trust,0.3442064211111111,1,
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,Happiness,0.35760850361111113,1,
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,Politics,0.5733414130555555,1,
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,Religion,0.36014159472222224,1,
+gemma4_e4b,Gemma-4-E4B-it,german,d_trust,Trust,0.5455504002777778,1,
