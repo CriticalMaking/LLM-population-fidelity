@@ -1,5 +1,3 @@
-"""Loading every archived model series for every question."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,8 +19,6 @@ CSV_ROOT = UPSTREAM_DATA / "LLM-outputs" / "csv"
 
 @dataclass(frozen=True, slots=True)
 class QuestionData:
-    """Aligned WVS and model answer distributions for one question."""
-
     question: Question
     names: pd.Index
     wvs: pd.DataFrame
@@ -34,7 +30,6 @@ class QuestionData:
     ntp_mass: dict[str, float]
 
     def props(self, name: str) -> pd.DataFrame | None:
-        """Return one method's subpopulation distributions."""
         if name == "WVS":
             return self.wvs
         if name == "Linear":
@@ -74,7 +69,6 @@ def _linear(question: Question) -> pd.DataFrame | None:
 
 
 def _random(question: Question, wvs: pd.DataFrame, subpops: pd.Series) -> list[pd.DataFrame]:
-    """Permute the observed answers within the question, as ``6-results.R`` does."""
     answers = question.normalize(wvs[question.var]).to_numpy(copy=True)
     rng = np.random.default_rng(GLOBAL_SEED)
     frames: list[pd.DataFrame] = []
@@ -86,7 +80,6 @@ def _random(question: Question, wvs: pd.DataFrame, subpops: pd.Series) -> list[p
 
 
 def load_question(question: str | Question, series: list[Series]) -> QuestionData:
-    """Load every requested series for one question, on one aligned index."""
     outcome = resolve_question(question)
     columns = outcome.answer_columns
     wvs = load_wvs()
@@ -138,16 +131,10 @@ def load_question(question: str | Question, series: list[Series]) -> QuestionDat
 
 
 def robustness_root() -> Path:
-    """Return the upstream robustness output directory."""
     return UPSTREAM_DATA / "Robustness"
 
 
 def read_robustness(directory: str, question: Question) -> pd.DataFrame | None:
-    """Read one robustness output set as a per-prompt frame.
-
-    Each file is named after the prompt it answers and holds either a single
-    answer (FA) or a one-row probability table (NTP).
-    """
     root = robustness_root() / directory / question.var
     if not root.is_dir():
         return None

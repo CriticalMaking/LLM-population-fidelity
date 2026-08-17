@@ -1,5 +1,3 @@
-"""Table S8: random-forest discriminator between model and WVS answers."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -28,7 +26,6 @@ def _oob_accuracy(left: np.ndarray, right: np.ndarray) -> float:
 
 
 def table_s8(loaded: dict[str, QuestionData]) -> pd.DataFrame:
-    """Return out-of-bag accuracy per question and series, as a percentage."""
     rows: list[dict[str, object]] = []
     for var, data in loaded.items():
         reference = data.wvs.to_numpy(dtype=np.float64)

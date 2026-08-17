@@ -1,27 +1,22 @@
-"""Figure S16: bootstrap comparison of model and WVS answer-model coefficients."""
-
 from __future__ import annotations
 
 import warnings
 from pathlib import Path
 
-import matplotlib
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.config import GLOBAL_SEED
 from machine_bias_reproduction.data import load_subpops, load_wvs, social_predictors
 from machine_bias_reproduction.figures import _save
+from machine_bias_reproduction.plates import GRID, MUTED_INK
 from machine_bias_reproduction.questions import QUESTIONS, Question
 
 from .load import QuestionData
 
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
-
-REPLICATES = 40
-"""Bootstrap replicates. Enough for an interval; the upstream uses more."""
+BOOTSTRAP_REPLICATES = 40
 
 PREDICTORS = (
     "Sex_Female",
@@ -48,13 +43,6 @@ def _design(names: pd.Index) -> pd.DataFrame | None:
 
 
 def _fit(design: pd.DataFrame, props: pd.DataFrame, question: Question) -> pd.Series | None:
-    """Fit a share-weighted multinomial model and return its coefficients.
-
-    ``MNLogit`` needs integer outcomes, so each subpopulation contributes its
-    answer shares as fractional counts scaled to a fixed pseudo-sample. That
-    reproduces the weighted likelihood the R code fits over individuals without
-    needing the individual rows back.
-    """
     scale = 100
     rows: list[np.ndarray] = []
     outcomes: list[int] = []
@@ -97,7 +85,7 @@ def _bootstrap(
     rng: np.random.Generator,
 ) -> pd.DataFrame:
     replicates: list[pd.Series] = []
-    for _ in range(REPLICATES):
+    for _ in range(BOOTSTRAP_REPLICATES):
         sample = rng.choice(len(design), size=len(design), replace=True)
         fitted = _fit(design.iloc[sample], props.iloc[sample], question)
         if fitted is not None:
@@ -108,7 +96,6 @@ def _bootstrap(
 def figure_s16(
     loaded: dict[str, QuestionData], destination: Path
 ) -> tuple[list[Path], pd.DataFrame]:
-    """Draw the ground-truth versus model coefficient plate, one panel per series."""
     rows: list[dict[str, object]] = []
     rng = np.random.default_rng(GLOBAL_SEED)
     for var, data in loaded.items():
@@ -179,11 +166,10 @@ def figure_s16(
                 float(np.nanmin([block["wvs"].min(), block["model"].min()])),
                 float(np.nanmax([block["wvs"].max(), block["model"].max()])),
             ]
-            axis.plot(limits, limits, color="#333333", linewidth=1, linestyle="--")
-            axis.axhline(0, color="#999999", linewidth=0.6)
-            axis.axvline(0, color="#999999", linewidth=0.6)
-            axis.set_title(name, fontsize=9)
-            axis.set_xlabel("Ground-truth coefficient")
+            axis.plot(limits, limits, color=MUTED_INK, linewidth=0.8, linestyle=(0, (4, 2)))
+            axis.axhline(0, color=GRID, linewidth=0.6)
+            axis.axvline(0, color=GRID, linewidth=0.6)
+            axis.set_xlabel(f"Ground-truth coefficient — {name}")
         axes[0][0].set_ylabel("Model coefficient")
         figure.tight_layout()
         produced.extend(_save(figure, destination / f"Figure-S16-cofdif-boot-{strategy}"))

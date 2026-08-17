@@ -1,5 +1,3 @@
-"""The paper's result tables."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -29,11 +27,6 @@ def _methods(data: QuestionData) -> list[str]:
 
 
 def table2(loaded: dict[str, QuestionData]) -> pd.DataFrame:
-    """Table 2 — nEMD between average model and average WVS answers.
-
-    Computed on the marginal distributions, so it is unaffected by which
-    subpopulations are scorable.
-    """
     rows: list[dict[str, object]] = []
     for var, data in loaded.items():
         for name, marginal in data.marginals.items():
@@ -78,7 +71,6 @@ def _distances(data: QuestionData) -> pd.DataFrame:
 
 
 def subpopulation_distances(loaded: dict[str, QuestionData]) -> pd.DataFrame:
-    """Return every method's per-subpopulation nEMD, for every question."""
     frames = []
     for var, data in loaded.items():
         frame = _distances(data)
@@ -90,11 +82,6 @@ def subpopulation_distances(loaded: dict[str, QuestionData]) -> pd.DataFrame:
 
 
 def table3(distances: pd.DataFrame) -> pd.DataFrame:
-    """Table 3 / S5 — share of subpopulations in each prediction-quality band.
-
-    The 20 random replicates are averaged into one ``Random`` row, as
-    ``6-results.R:534`` does.
-    """
     if distances.empty:
         return pd.DataFrame()
     frame = distances.copy()
@@ -119,7 +106,6 @@ def table3(distances: pd.DataFrame) -> pd.DataFrame:
 
 
 def table4(loaded: dict[str, QuestionData]) -> pd.DataFrame:
-    """Table 4 — median pairwise nEMD within each series (answer dispersion)."""
     rows: list[dict[str, object]] = []
     for var, data in loaded.items():
         for name in ["WVS", *_methods(data)]:
@@ -156,11 +142,6 @@ def _fit_all(loaded: dict[str, QuestionData]) -> dict[tuple[str, str], object]:
 def table5_and_6(
     loaded: dict[str, QuestionData],
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Tables 5 and 6 — regression fit and nested-model F-tests.
-
-    Returns the fit table, the F-test table, and the stacked coefficient table
-    that Figures 3 and 6 are drawn from.
-    """
     fit_rows: list[pd.DataFrame] = []
     f_rows: list[pd.DataFrame] = []
     coefficient_rows: list[pd.DataFrame] = []
@@ -192,7 +173,6 @@ def table5_and_6(
 
 
 def table_s1() -> pd.DataFrame:
-    """Table S1 — WVS sample size by country and survey year."""
     wvs = load_wvs()
     return (
         wvs.groupby(["i_country", "i_surveyyear"]).size().rename("respondents").reset_index()
@@ -200,7 +180,6 @@ def table_s1() -> pd.DataFrame:
 
 
 def table_s2() -> pd.DataFrame:
-    """Table S2 — predictor descriptives by country, survey years pooled."""
     wvs = load_wvs()
     age = pd.cut(wvs["i_age"], bins=(10, 25, 35, 45, 55, 65, 75, 999), labels=list(AGE_LABELS))
     frame = pd.DataFrame(
@@ -231,7 +210,6 @@ def table_s2() -> pd.DataFrame:
 
 
 def table_s4(loaded: dict[str, QuestionData]) -> pd.DataFrame:
-    """Table S4 — NTP compliance, the mean probability mass on expected answers."""
     rows: list[dict[str, object]] = []
     for var, data in loaded.items():
         for name, mass in data.ntp_mass.items():
@@ -240,7 +218,6 @@ def table_s4(loaded: dict[str, QuestionData]) -> pd.DataFrame:
 
 
 def response_distributions(loaded: dict[str, QuestionData]) -> pd.DataFrame:
-    """Marginal answer distributions per question and series, WVS included."""
     rows: list[dict[str, object]] = []
     for var, data in loaded.items():
         question: Question = data.question
@@ -285,11 +262,6 @@ def _escape(value: object) -> str:
 
 
 def to_latex(frame: pd.DataFrame, caption: str, label: str) -> str:
-    """Render one table as a booktabs LaTeX fragment.
-
-    Written directly rather than through ``DataFrame.to_latex``, which now
-    routes through the Styler and would pull in jinja2 for a handful of rows.
-    """
     if frame.empty:
         return f"% {label}: no rows\n"
     columns = " & ".join(_escape(column) for column in frame.columns)

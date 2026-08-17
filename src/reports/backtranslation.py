@@ -1,28 +1,23 @@
-"""Table S9 and Figures S17/S18: which real demographic a model answers like."""
-
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
 
-import matplotlib
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.figures import _save
 from machine_bias_reproduction.metrics import nemd
+from machine_bias_reproduction.plates import category_colors
 from machine_bias_reproduction.questions import QUESTIONS
 
 from .load import QuestionData
-
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
 
 NEIGHBOURS = (1, 10)
 
 
 def _distance_matrix(model: np.ndarray, truth: np.ndarray) -> np.ndarray:
-    """Return nEMD from every model row to every WVS row."""
     return np.vstack([nemd(truth, row) for row in model])
 
 
@@ -49,7 +44,6 @@ def _neighbours(data: QuestionData, name: str) -> np.ndarray | None:
 
 
 def table_s9(loaded: dict[str, QuestionData]) -> tuple[pd.DataFrame, dict[str, dict[str, Any]]]:
-    """Return the share of subpopulations whose own group is among the K nearest."""
     rows: list[dict[str, object]] = []
     orders: dict[str, dict[str, Any]] = {}
     for var, data in loaded.items():
@@ -80,7 +74,6 @@ def _flow(
     grouping: pd.Series,
     k: int = 10,
 ) -> pd.DataFrame:
-    """Return the share of nearest neighbours falling in each target group."""
     labels = grouping.to_numpy()
     categories = sorted(set(labels))
     index = {category: position for position, category in enumerate(categories)}
@@ -94,9 +87,8 @@ def _flow(
 
 
 def _sankey(flow: pd.DataFrame, axis: object) -> None:
-    """Draw one source-to-target ribbon plate from a normalized flow matrix."""
     categories = list(flow.index)
-    palette = plt.get_cmap("tab10")(np.linspace(0, 1, max(len(categories), 1)))
+    palette = category_colors(len(categories))
     source_offset = np.zeros(len(categories))
     target_offset = np.zeros(len(categories))
     source_base = np.cumsum([0.0, *[1.1] * (len(categories) - 1)])
@@ -131,7 +123,6 @@ def figures_s17_s18(
     orders: dict[str, dict[str, Any]],
     destination: Path,
 ) -> list[Path]:
-    """Draw the country and decade backtranslation plates, one file per series."""
     produced: list[Path] = []
     for grouping_name, grouping_fn, number in (
         ("country", _country, "S17"),
@@ -148,7 +139,7 @@ def figures_s17_s18(
             for axis, var in zip(axes[0], questions, strict=True):
                 data = loaded[var]
                 _sankey(_flow(data, orders[var][name], grouping_fn(data.names)), axis)
-                axis.set_title(QUESTIONS[var].label, fontsize=9)
+                axis.set_xlabel(QUESTIONS[var].label, fontsize=9)
             figure.tight_layout()
             produced.extend(
                 _save(figure, destination / f"Figure-{number}-backnn-{grouping_name}-{name}")

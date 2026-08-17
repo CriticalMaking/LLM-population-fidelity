@@ -1,31 +1,22 @@
-"""Appendix figures S1, S2, S4, S9, S10 and S15."""
-
 from __future__ import annotations
 
 from pathlib import Path
 
-import matplotlib
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.data import load_wvs
 from machine_bias_reproduction.figures import _save
+from machine_bias_reproduction.plates import GRID, MUTED_INK, magnitude_steps
 from machine_bias_reproduction.questions import QUESTIONS
 
-from .figures_main import SERIES_COLORS, mds_plate
+from .figures_main import SERIES_TONES, mds_plate
 from .load import QuestionData
 from .series import FA_MODELS, NTP_MODELS
 
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
-
 
 def figure_s1(destination: Path) -> list[Path]:
-    """Figure S1 — distribution of the four outcome variables by country and decade.
-
-    Upstream prints this to a device and never saves it (``6-results.R:1238``);
-    it is written here so the appendix set is complete on disk.
-    """
     wvs = load_wvs()
     decade = (wvs["i_surveyyear"] // 10 * 10).astype(int)
     countries = sorted(wvs["i_country"].dropna().unique())
@@ -38,7 +29,7 @@ def figure_s1(destination: Path) -> list[Path]:
         squeeze=False,
         sharey="row",
     )
-    palette = plt.get_cmap("viridis")(np.linspace(0.15, 0.85, len(decades)))
+    palette = magnitude_steps(len(decades))
     for row, var in enumerate(questions):
         question = QUESTIONS[var]
         values = question.normalize(wvs[var])
@@ -65,16 +56,16 @@ def figure_s1(destination: Path) -> list[Path]:
                 )
             axis.set_xticks(positions, list(question.answer_columns), fontsize=7)
             if row == 0:
-                axis.set_title(country, fontsize=9)
+                axis.set_xlabel(country, fontsize=9, labelpad=6)
+                axis.xaxis.set_label_position("top")
             if column == 0:
                 axis.set_ylabel(question.label, fontsize=9)
-    axes[0][0].legend(frameon=False, fontsize=7)
+    axes[0][0].legend(fontsize=7)
     figure.tight_layout()
     return _save(figure, destination / "Figure-S1-outcome-distributions")
 
 
 def figures_s2_s4(loaded: dict[str, QuestionData], destination: Path) -> list[Path]:
-    """Figures S2 and S4 — MDS for every series, with the Linear and Random baselines."""
     produced: list[Path] = []
     ntp = [f"NTP-{model}" for model in NTP_MODELS]
     fa = [f"FA-{model}" for model in FA_MODELS]
@@ -86,7 +77,6 @@ def figures_s2_s4(loaded: dict[str, QuestionData], destination: Path) -> list[Pa
 
 
 def figure_s9(fit: pd.DataFrame, destination: Path) -> list[Path]:
-    """Figure S9 — adjusted R-squared of the social and centre models, all series."""
     if fit.empty:
         return []
     frame = fit[fit["model"].isin(("social", "center"))]
@@ -113,25 +103,19 @@ def figure_s9(fit: pd.DataFrame, destination: Path) -> list[Path]:
         axis.set_yticks(positions, pivot.index)
         axis.set_ylim(len(pivot) - 0.5, -0.5)
         axis.set_xlim(0, 1)
-        axis.grid(axis="x", alpha=0.2)
-        axis.set(xlabel="adjusted $R^2$", title=QUESTIONS[var].label)
-    axes[0][0].legend(frameon=False, fontsize=8)
+        axis.grid(axis="x", color=GRID, linewidth=0.6)
+        axis.set_xlabel(f"adjusted $R^2$ — {QUESTIONS[var].label}")
+    axes[0][0].legend()
     figure.tight_layout()
     return _save(figure, destination / "Figure-S9-R2-soc-all")
 
 
 def figure_s10(loaded: dict[str, QuestionData], destination: Path) -> list[Path]:
-    """Figure S10 — MDS for Llama-3-70B and Mixtral-8x7B under both strategies."""
     series = ["NTP-Llama-3-70B", "FA-Llama-3-70B", "NTP-Mixtral-8x7B", "FA-Mixtral-8x7B"]
     return mds_plate(loaded, series, destination / "Figure-S10-MDS-compare-NTP-FA")
 
 
 def figure_s15(loaded: dict[str, QuestionData], destination: Path) -> list[Path]:
-    """Figure S15 — correlation between model and WVS answer shares, by series.
-
-    One correlation per answer category, taken across subpopulations; the
-    boxplot is over those categories and questions.
-    """
     rows: list[dict[str, object]] = []
     for var, data in loaded.items():
         reference = data.wvs
@@ -170,11 +154,13 @@ def figure_s15(loaded: dict[str, QuestionData], destination: Path) -> list[Path]
             np.full(values.shape, index) + np.random.default_rng(0).normal(0, 0.04, values.size),
             values,
             s=12,
-            alpha=0.5,
-            color=SERIES_COLORS.get(name, "#444444"),
+            alpha=0.6,
+            color=SERIES_TONES[name].fill if name in SERIES_TONES else MUTED_INK,
+            edgecolors=SERIES_TONES[name].ink if name in SERIES_TONES else MUTED_INK,
+            linewidths=0.4,
         )
     axis.set_ylabel("Correlation with WVS answer shares")
     axis.tick_params(axis="x", rotation=30)
-    axis.grid(axis="y", alpha=0.2)
+    axis.grid(axis="y", color=GRID, linewidth=0.6)
     figure.tight_layout()
     return _save(figure, destination / "Figure-S15-correlations")
