@@ -15,11 +15,14 @@ from culture import (
     BASE_ARM,
     DEFAULT_CHECKPOINT_ROOT,
     copy_adapters,
+    health_lines,
+    health_table,
     is_base,
     resolve_cultures,
     resolve_finetuned_cultures,
     resolve_models,
     staged_adapter,
+    write_health,
 )
 from culture.figures import compare_cultures
 from culture.mds import culture_mds
@@ -248,13 +251,40 @@ def command_trace(arguments: argparse.Namespace) -> None:
 
 
 def command_culture_adapters(arguments: argparse.Namespace) -> None:
+    models = resolve_models(arguments.models)
+    cultures = resolve_finetuned_cultures(arguments.cultures)
     manifest = copy_adapters(
         Path(arguments.source),
-        resolve_models(arguments.models),
-        resolve_finetuned_cultures(arguments.cultures),
+        models,
+        cultures,
         force=arguments.force,
     )
+    for line in health_lines(health_table(models, cultures)):
+        print(line, flush=True)
     _json_print({"counts": manifest["counts"], "manifest": str(ADAPTERS_MANIFEST)})
+
+
+def command_culture_health(arguments: argparse.Namespace) -> None:
+    frame = health_table(
+        resolve_models(arguments.models),
+        resolve_finetuned_cultures(arguments.cultures),
+    )
+    for line in health_lines(frame):
+        print(line, flush=True)
+    if frame.empty:
+        _json_print({"adapters": 0, "table": None})
+        return
+    scoped = bool(arguments.models or arguments.cultures)
+    destination = None if scoped else write_health(frame)
+    _json_print(
+        {
+            "adapters": len(frame),
+            "verdicts": {
+                str(name): int(count) for name, count in frame["verdict"].value_counts().items()
+            },
+            "table": None if destination is None else str(destination),
+        }
+    )
 
 
 def _culture_groups(model_key: str, cultures: list[str]) -> list[tuple[list[str], dict[str, Path]]]:
@@ -335,8 +365,6 @@ def command_culture_mds(arguments: argparse.Namespace) -> None:
                 cultures,
                 question,
                 all_countries=arguments.all_countries,
-                # The outcomes row spans questions, so drawing it once per
-                # question would redraw the same figure and inflate the count.
                 outcomes=arguments.outcomes and question is questions[0],
             )
             for question in questions
@@ -460,6 +488,14 @@ def build_parser() -> argparse.ArgumentParser:
     adapters.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
     adapters.add_argument("--force", action="store_true", help="re-copy staged weights")
     adapters.set_defaults(handler=command_culture_adapters)
+
+    culture_health = subparsers.add_parser(
+        "culture-health",
+        help="check staged adapters for divergence before spending GPU time",
+    )
+    culture_health.add_argument("--models", nargs="+", help="model keys (default: all)")
+    culture_health.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
+    culture_health.set_defaults(handler=command_culture_health)
 
     culture = subparsers.add_parser(
         "culture",
