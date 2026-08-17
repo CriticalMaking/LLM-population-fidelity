@@ -31,9 +31,13 @@ ARMS: tuple[str, ...] = (BASE_ARM, *CULTURES)
 
 CHECKPOINT_CONDITION_DIRECTORY = "cultural"
 
+WEIGHTS_FILE = "adapter_model.safetensors"
+
 PREFLIGHT_PROMPTS = 32
 
 PREFLIGHT_MIN_VALID_ANSWER_MASS = 0.10
+
+ADAPTER_MIN_EVAL_TOKEN_ACCURACY = 0.50
 
 DEGENERATE_FA_RETRIES = 3
 
@@ -69,12 +73,20 @@ CULTURE_MODELS: dict[str, CultureModel] = {
         quantization="nf4",
         batch_size=4,
     ),
+    "gemma4_e4b": CultureModel(
+        key="gemma4_e4b",
+        base_model_id="google/gemma-4-E4B-it",
+        label="Gemma-4-E4B-it",
+        dtype="bfloat16",
+        quantization=None,
+        batch_size=16,
+    ),
     "qwen3_vl_8b": CultureModel(
         key="qwen3_vl_8b",
-        base_model_id="Qwen/Qwen3-VL-8B-Thinking-FP8",
-        label="Qwen3-VL-8B-Thinking-FP8",
+        base_model_id="Qwen/Qwen3-VL-8B-Thinking",
+        label="Qwen3-VL-8B-Thinking",
         dtype="bfloat16",
-        quantization="fp8-dequantized",
+        quantization=None,
         batch_size=16,
     ),
 }

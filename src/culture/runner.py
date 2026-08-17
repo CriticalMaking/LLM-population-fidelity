@@ -1,18 +1,19 @@
-"""Driving one culture adapter through inference, capacity and analysis."""
-
 from __future__ import annotations
 
+import argparse
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 import pandas as pd
 
 from machine_bias_reproduction.analysis import run_analysis
-from machine_bias_reproduction.config import PROJECT_ROOT
+from machine_bias_reproduction.config import PROJECT_ROOT, RunPaths
 from machine_bias_reproduction.data import canonical_run_paths
 from machine_bias_reproduction.inference import (
     MAX_FA_RETRIES,
+    BatchInferenceBackend,
     RunContext,
     answer_parser,
     consolidate_fa,
@@ -24,33 +25,44 @@ from machine_bias_reproduction.prompts import PromptMode, PromptRecord, prompt_r
 from machine_bias_reproduction.questions import Question
 
 from . import capacity as capacity_module
-from .adapters import WEIGHTS_FILE, staged_adapter
+from .adapters import staged_adapter
+from .matching import country_of
 from .registry import (
     DEGENERATE_FA_RETRIES,
-    PREFLIGHT_MIN_MASS,
+    PREFLIGHT_MIN_VALID_ANSWER_MASS,
     PREFLIGHT_PROMPTS,
+    WEIGHTS_FILE,
     CultureModel,
     csv_stems,
+    is_base,
     run_paths,
     run_slug,
 )
 
 
+class CultureBackend(BatchInferenceBackend, Protocol):
+    @property
+    def batch_size(self) -> int: ...
+
+    def set_culture(self, culture: str) -> None: ...
+
+    def ntp_mass_probe(self, prompts: Sequence[str]) -> list[float]: ...
+
+
+ManifestWriter = Callable[..., dict[str, Any]]
+TraceWriter = Callable[[Mapping[str, Sequence[PromptRecord]], RunPaths], dict[str, Any]]
+Sha256File = Callable[[Path], str]
+
+
 def run_context(
     model: CultureModel,
     culture: str,
-    adapter: Path,
-    backend: Any,
-    sha256_file: Any,
+    adapter: Path | None,
+    backend: CultureBackend,
+    sha256_file: Sha256File,
 ) -> RunContext:
-    """Build the run identity for one culture adapter.
-
-    With no single model file to hash, identity is the adapter weights plus the
-    resolved base-model snapshot. ``sha256`` carries the adapter digest so the
-    existing trace index stays populated.
-    """
     described = backend.describe()
-    adapter_hash = sha256_file(adapter / WEIGHTS_FILE)
+    adapter_hash = sha256_file(adapter / WEIGHTS_FILE) if adapter is not None else None
     return RunContext(
         run_id=RunContext.new_run_id(),
         started_at=datetime.now(UTC).isoformat(),
@@ -59,9 +71,9 @@ def run_context(
             "culture": culture,
             "base_model_id": model.base_model_id,
             "base_revision": described.get("base_revision"),
-            "adapter_path": str(adapter.resolve()),
+            "adapter_path": str(adapter.resolve()) if adapter is not None else None,
             "adapter_sha256": adapter_hash,
-            "sha256": adapter_hash,
+            "sha256": adapter_hash or described.get("base_revision"),
         },
         backend=described,
         code_revision=code_revision(PROJECT_ROOT),
@@ -69,25 +81,31 @@ def run_context(
     )
 
 
+def phase_records(
+    records: list[PromptRecord],
+    first_countries: Sequence[str] | None,
+) -> list[list[PromptRecord]]:
+    if not first_countries:
+        return [records]
+    wanted = set(first_countries)
+    countries = country_of(pd.Series([record.profile for record in records]))
+    priority = [record for record, name in zip(records, countries, strict=True) if name in wanted]
+    rest = [record for record, name in zip(records, countries, strict=True) if name not in wanted]
+    return [phase for phase in (priority, rest) if phase]
+
+
 def preflight(
     model: CultureModel,
     culture: str,
-    backend: Any,
+    backend: CultureBackend,
     records: list[PromptRecord],
 ) -> dict[str, Any]:
-    """Measure how much probability an adapter puts on any valid answer.
-
-    Under the paper's prompt an instruction-tuned base may spend its whole
-    distribution on other formats. Probing surfaces that in the manifest before
-    hours of inference rather than in a plot afterwards. The run proceeds either
-    way.
-    """
     sample = list(records[:PREFLIGHT_PROMPTS])
     if not sample:
         return {"prompts": 0, "mean_mass": None, "informative": None}
     masses = backend.ntp_mass_probe([record.text for record in sample])
     mean_mass = sum(masses) / len(masses)
-    informative = mean_mass >= PREFLIGHT_MIN_MASS
+    informative = mean_mass >= PREFLIGHT_MIN_VALID_ANSWER_MASS
     print(
         f"[{model.key}/{culture}] preflight: mean valid-answer mass "
         f"{mean_mass:.4f} over {len(sample)} prompts ({'ok' if informative else 'LOW'})",
@@ -95,7 +113,8 @@ def preflight(
     )
     if not informative:
         print(
-            f"[{model.key}/{culture}] WARNING: below {PREFLIGHT_MIN_MASS:.2f}. The run continues "
+            f"[{model.key}/{culture}] WARNING: below "
+            f"{PREFLIGHT_MIN_VALID_ANSWER_MASS:.2f}. The run continues "
             "and is reported in full, but its nEMD should not be read as an alignment result; "
             "capacity.csv is the measurement that matters for it",
             flush=True,
@@ -105,7 +124,7 @@ def preflight(
         "mean_mass": mean_mass,
         "min_mass": min(masses),
         "max_mass": max(masses),
-        "threshold": PREFLIGHT_MIN_MASS,
+        "threshold": PREFLIGHT_MIN_VALID_ANSWER_MASS,
         "informative": informative,
     }
 
@@ -115,12 +134,15 @@ def _capacity_summary(frame: pd.DataFrame) -> dict[str, Any]:
         return {"prompts": 0, "valid": 0, "valid_rate": 0.0}
     prompts = int(frame["prompts"].sum())
     valid = int(frame["valid"].sum())
+    ntp = frame[frame["mode"] == "NTP"]
+    distinct = ntp["distinct_distributions"].iloc[0] if not ntp.empty else None
     return {
         "prompts": prompts,
         "valid": valid,
         "invalid": int(frame["invalid"].sum()),
         "failed": int(frame["failed"].sum()),
         "valid_rate": valid / prompts if prompts else 0.0,
+        "ntp_distinct_distributions": None if pd.isna(distinct) else int(distinct),
         "by_mode": frame.to_dict(orient="records"),
     }
 
@@ -129,27 +151,19 @@ def run_one(
     model: CultureModel,
     culture: str,
     question: Question,
-    backend: Any,
-    arguments: Any,
+    backend: CultureBackend,
+    arguments: argparse.Namespace,
     wvs: pd.DataFrame,
     *,
-    manifest_writer: Any,
-    trace_writer: Any,
-    sha256_file: Any,
+    manifest_writer: ManifestWriter,
+    trace_writer: TraceWriter,
+    sha256_file: Sha256File,
 ) -> dict[str, Any]:
-    """Run inference, capacity measurement and analysis for one pair.
-
-    A pair whose probe finds no valid-answer mass drops to
-    ``DEGENERATE_FA_RETRIES``, which stops a degenerate adapter from spending
-    days on generations known in advance to fail.
-
-    Analysis runs on whatever was answered. Paper checkpoints stay off because
-    the paper's regression targets describe Mixtral, not these models.
-    """
     paths = run_paths(model.key, culture, question)
     paths.ensure()
     backend.set_culture(culture)
-    trace = run_context(model, culture, staged_adapter(model.key, culture), backend, sha256_file)
+    weights = None if is_base(culture) else staged_adapter(model.key, culture)
+    trace = run_context(model, culture, weights, backend, sha256_file)
     print(f"[{model.key}/{culture}] {question.var} run_id: {trace.run_id}", flush=True)
 
     modes: list[PromptMode] = (
@@ -159,6 +173,7 @@ def run_one(
     records_by_mode: dict[str, list[PromptRecord]] = {}
     probe: dict[str, Any] | None = None
     retries = MAX_FA_RETRIES
+    first_countries = getattr(arguments, "first_countries", None) or []
     for mode in modes:
         records = prompt_records(wvs, mode, question)
         if arguments.limit is not None:
@@ -173,18 +188,30 @@ def run_one(
                     "because the probe found no valid-answer mass",
                     flush=True,
                 )
-        counts[mode] = generate_records_batched(
-            records,
-            backend,
-            paths,
-            trace=trace,
-            batch_size=backend.batch_size,
-            fa_max_tokens=arguments.fa_max_tokens,
-            legacy_unseeded_fa=arguments.legacy_unseeded_fa,
-            force=arguments.force,
-            parse=answer_parser(question),
-            max_fa_retries=retries,
-        )
+        phases = phase_records(records, first_countries)
+        if len(phases) > 1:
+            print(
+                f"[{model.key}/{culture}] {mode}: {len(phases[0])} prompts from "
+                f"{', '.join(first_countries)} generated first, then "
+                f"{len(phases[1])} more",
+                flush=True,
+            )
+        counts[mode] = {"generated": 0, "reused": 0, "reused_untraced": 0, "failed": 0}
+        for phase in phases:
+            phase_counts = generate_records_batched(
+                phase,
+                backend,
+                paths,
+                trace=trace,
+                batch_size=backend.batch_size,
+                fa_max_tokens=arguments.fa_max_tokens,
+                legacy_unseeded_fa=arguments.legacy_unseeded_fa,
+                force=arguments.force,
+                parse=answer_parser(question),
+                max_fa_retries=retries,
+            )
+            for key, value in phase_counts.items():
+                counts[mode][key] += value
         if counts[mode]["failed"]:
             print(
                 f"[{model.key}/{culture}] {mode}: {counts[mode]['failed']} prompts produced no "
@@ -209,12 +236,17 @@ def run_one(
         if "fa" in modes:
             consolidate_fa(records_by_mode["fa"], paths, fa_path, question, skip_missing=True)
         if ntp_path.is_file() and fa_path.is_file():
+            described = (
+                f"{model.base_model_id} (not finetuned)"
+                if is_base(culture)
+                else f"{model.base_model_id} + {culture} LoRA"
+            )
             analysis = run_analysis(
                 run_slug(model.key, culture),
                 question,
                 label=model.run_label(culture),
                 short_label=f"{model.label} ({culture})",
-                model_description=f"{model.base_model_id} + {culture} LoRA",
+                model_description=described,
                 csv_stems=stems,
                 paper_checkpoints=False,
             )

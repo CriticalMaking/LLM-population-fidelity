@@ -1,7 +1,6 @@
-"""Batched transformers NTP and full-answer backend for the culture-finetuned adapters."""
-
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -11,7 +10,7 @@ from machine_bias_reproduction.inference import strip_trailing_newline
 from machine_bias_reproduction.questions import Question, resolve_question
 
 from .adapters import read_adapter_config
-from .registry import CultureModel
+from .registry import BASE_ARM, CHECKPOINT_CONDITION_DIRECTORY, CultureModel
 
 FA_MAX_NEW_TOKENS = 12
 
@@ -24,7 +23,6 @@ def _package_version(name: str) -> str | None:
 
 
 def _snapshot_revision(repo_id: str) -> str | None:
-    """Return the cached snapshot commit for a base model, without network use."""
     try:
         from huggingface_hub import snapshot_download
 
@@ -33,20 +31,24 @@ def _snapshot_revision(repo_id: str) -> str | None:
         return None
 
 
-def _seeded_sampler_class() -> Any:
-    """Build the per-row seeded sampler, importing torch lazily.
+def _answer_mass(values: Sequence[float]) -> float:
+    """How much probability the answer letters got, with no answer read as zero.
 
-    A ``LogitsProcessor`` keeps generation inside ``generate()``, which owns
-    cache, left-padding and stopping. It draws the token and returns a one-hot
-    vector, so a draw depends on the prompt's seed, not its batch — which is
-    what lets a resumed run reuse earlier answers unchanged.
+    A row carries no answer two ways: the model spends its mass elsewhere, or
+    the forward pass came back non-finite. A NaN that reaches the caller as a
+    number would be averaged into a preflight and normalised into a
+    distribution. Both cases mean the same thing, so both read as zero and the
+    caller's zero-mass path flags them.
     """
+    mass = math.fsum(values)
+    return mass if math.isfinite(mass) and mass > 0 else 0.0
+
+
+def _seeded_sampler_class() -> Any:
     import torch
     from transformers import LogitsProcessor
 
     class SeededBatchSampler(LogitsProcessor):  # type: ignore[misc]
-        """Force each row to the token drawn from its own seeded generator."""
-
         def __init__(self, generators: Sequence[Any], temperature: float) -> None:
             self._generators = list(generators)
             self._temperature = temperature
@@ -73,12 +75,6 @@ def _seeded_sampler_class() -> Any:
 
 
 class TransformersBackend:
-    """Batched NTP and full-answer generation over one base model.
-
-    The base loads once with every adapter attached, so switching cultures is a
-    ``set_adapter`` call, not a reload — one quantized load instead of nine.
-    """
-
     def __init__(
         self,
         model: CultureModel,
@@ -88,13 +84,6 @@ class TransformersBackend:
         batch_size: int | None = None,
         fa_max_new_tokens: int = FA_MAX_NEW_TOKENS,
     ) -> None:
-        """Load the base model and attach every named culture adapter.
-
-        Prompts are the paper's raw completions: ``writeLines``' trailing
-        newline is trimmed as upstream does, and no chat template is applied.
-        The tokenizer comes from the adapter, which ships the one it was
-        trained with; the base copy need not match.
-        """
         try:
             import torch
             from peft import PeftModel
@@ -103,8 +92,6 @@ class TransformersBackend:
             raise RuntimeError(
                 "culture inference requires: uv sync --locked --extra culture"
             ) from error
-        if not adapters:
-            raise ValueError("at least one adapter is required")
 
         self._torch = torch
         self._model_spec = model
@@ -118,40 +105,36 @@ class TransformersBackend:
         self._sampler_class = _seeded_sampler_class()
 
         names = list(adapters)
-        first = names[0]
-        self._tokenizer = AutoTokenizer.from_pretrained(adapters[first])
+        self._arm = CHECKPOINT_CONDITION_DIRECTORY if names else BASE_ARM
+        first = names[0] if names else BASE_ARM
+        self._tokenizer_source = str(adapters[first]) if names else model.base_model_id
+        self._tokenizer = AutoTokenizer.from_pretrained(self._tokenizer_source)
         self._tokenizer.padding_side = "left"
         if self._tokenizer.pad_token_id is None:
             self._tokenizer.pad_token = self._tokenizer.eos_token
 
         base = self._load_base(model, AutoModelForImageTextToText, torch)
         self._model_class = type(base).__name__
-        peft_model = PeftModel.from_pretrained(base, adapters[first], adapter_name=first)
-        for name in names[1:]:
-            peft_model.load_adapter(adapters[name], adapter_name=name)
-        peft_model.eval()
-        self._model = peft_model
+        self._attn_implementation = getattr(base.config, "_attn_implementation", None)
+        if names:
+            peft_model = PeftModel.from_pretrained(base, adapters[first], adapter_name=first)
+            for name in names[1:]:
+                peft_model.load_adapter(adapters[name], adapter_name=name)
+            self._model = peft_model
+            self._adapter_config = read_adapter_config(adapters[first])
+        else:
+            self._model = base
+            self._adapter_config = {}
+        self._model.eval()
         self._adapters = dict(adapters)
         self._active: str | None = None
         self.set_culture(first)
 
         self._answer_token_ids, self._multi_token_answers = self._resolve_answer_tokens()
         self._answer_index = torch.tensor(self._answer_token_ids, device=self._model.device)
-        self._adapter_config = read_adapter_config(adapters[first])
         self._base_revision = _snapshot_revision(model.base_model_id)
 
     def _load_base(self, model: CultureModel, auto_class: Any, torch: Any) -> Any:
-        """Load the complete multimodal base model in its training format.
-
-        Vision and audio towers keep their pretrained weights; the LoRA composes
-        onto the text projections.
-
-        ``nf4`` mirrors the adapter's QLoRA setup. ``fp8-dequantized`` avoids the
-        deep-gemm kernel this GPU rejects, yielding bfloat16 — more precision
-        than the checkpoint stores. It loads on CPU (an in-place GPU dequantize
-        peaks above 32 GB) and casts explicitly (the dequantizer ignores
-        ``dtype`` for part of the model).
-        """
         if model.quantization == "nf4":
             from transformers import BitsAndBytesConfig
 
@@ -165,16 +148,6 @@ class TransformersBackend:
                 ),
                 device_map=self._device,
             )
-        if model.quantization == "fp8-dequantized":
-            from transformers import FineGrainedFP8Config
-
-            loaded = auto_class.from_pretrained(
-                model.base_model_id,
-                quantization_config=FineGrainedFP8Config(dequantize=True),
-                dtype=torch.bfloat16,
-                device_map="cpu",
-            )
-            return loaded.to(torch.bfloat16).to(self._device)
         return auto_class.from_pretrained(
             model.base_model_id,
             dtype=model.dtype,
@@ -187,13 +160,6 @@ class TransformersBackend:
         run: Any,
         **kwargs: Any,
     ) -> list[Any]:
-        """Run a batch, halving it and retrying when CUDA runs out of memory.
-
-        A batch size safe for most prompts still exhausts the card on the
-        longest profiles, and splitting keeps an unattended sweep alive.
-        Results are unchanged: NTP is deterministic and FA draws from a
-        per-prompt seed, so neither depends on batch composition.
-        """
         torch = self._torch
         try:
             return list(run(prompts, **kwargs))
@@ -213,14 +179,6 @@ class TransformersBackend:
             )
 
     def _resolve_answer_tokens(self) -> tuple[list[int], list[str]]:
-        """Resolve the token id NTP reads for each expected answer.
-
-        The paper scored one token per answer; llama.cpp's Mixtral tokenizer
-        gives one. Others may split ``" A"`` or ``"10"``, so the *first* token
-        is used and splits go to the trace instead of failing the run. Two
-        answers sharing a first token is fatal — their probabilities would be
-        indistinguishable.
-        """
         resolved: list[int] = []
         multi_token: list[str] = []
         for token in self._answer_tokens:
@@ -242,24 +200,25 @@ class TransformersBackend:
         return resolved, multi_token
 
     def _prepare(self, prompt: str) -> str:
-        """Trim the trailing newline, as the upstream generation scripts do."""
         return strip_trailing_newline(prompt)
 
     def set_culture(self, culture: str) -> None:
-        """Activate one attached culture adapter."""
+        if not self._adapters:
+            if culture != BASE_ARM:
+                raise KeyError(f"backend loaded the base model; cannot serve {culture!r}")
+            self._active = culture
+            return
         if culture not in self._adapters:
-            raise KeyError(f"adapter not attached: {culture}")
+            raise KeyError(f"finetuned weights not attached: {culture}")
         if culture != self._active:
             self._model.set_adapter(culture)
             self._active = culture
 
     @property
     def batch_size(self) -> int:
-        """Return the resolved batch size for this backend."""
         return self._batch_size
 
     def token_length(self, prompt: str) -> int:
-        """Return the tokenized length of one prompt, for length bucketing."""
         return len(self._tokenizer.encode(self._prepare(prompt), add_special_tokens=True))
 
     def _encode(self, prompts: Sequence[str]) -> Any:
@@ -271,9 +230,9 @@ class TransformersBackend:
         ).to(self._model.device)
 
     def describe(self) -> dict[str, Any]:
-        """Return the build, load and adapter facts stamped onto every record."""
         return {
             "name": "transformers",
+            "arm": self._arm,
             "model_class": self._model_class,
             "version": _package_version("transformers"),
             "torch": _package_version("torch"),
@@ -283,10 +242,12 @@ class TransformersBackend:
             "device": self._device,
             "dtype": self._model_spec.dtype,
             "quantization": self._model_spec.quantization,
+            "attn_implementation": self._attn_implementation,
             "batch_size": self._batch_size,
             "fa_max_new_tokens": self._fa_max_new_tokens,
             "base_model_id": self._model_spec.base_model_id,
             "base_revision": self._base_revision,
+            "tokenizer_source": self._tokenizer_source,
             "question": self._question.var,
             "prompt_contract": "paper",
             "answer_tokens": dict(zip(self._answer_columns, self._answer_tokens, strict=True)),
@@ -295,17 +256,16 @@ class TransformersBackend:
             ),
             "multi_token_answers": self._multi_token_answers,
             "oom_backoffs": self._oom_backoffs,
-            "lora_target_modules": sorted(self._adapter_config.get("target_modules") or []),
+            "lora_target_modules": (
+                sorted(self._adapter_config.get("target_modules") or [])
+                if self._adapter_config
+                else None
+            ),
             "lora_exclude_modules": self._adapter_config.get("exclude_modules"),
             "modalities_used": ["text"],
         }
 
     def ntp_batch(self, prompts: Sequence[str]) -> list[dict[str, float]]:
-        """Return valid-answer mass and normalized A-D probabilities per prompt.
-
-        The distribution comes from the last logit position, which is every
-        row's final real token because the tokenizer pads on the left.
-        """
         if not prompts:
             return []
         return self._with_oom_backoff(prompts, self._ntp_batch)
@@ -326,12 +286,8 @@ class TransformersBackend:
         results: list[dict[str, float]] = []
         for row in selected:
             values = [float(value) for value in row]
-            mass = float(sum(values))
+            mass = _answer_mass(values)
             if mass <= 0:
-                # Flagged per row, not raised: one prompt the model spends no
-                # probability on should not discard the answers its batch
-                # neighbours gave. Normalizing zero mass would fabricate a
-                # distribution.
                 results.append({"mass": 0.0, "degenerate": True})
                 continue
             results.append(
@@ -349,15 +305,6 @@ class TransformersBackend:
         return results
 
     def ntp_mass_probe(self, prompts: Sequence[str]) -> list[float]:
-        """Return only the valid-answer mass per prompt, without judging it.
-
-        ``ntp_batch`` refuses a zero-mass prompt, since normalizing no
-        probability fabricates a distribution; reporting that zero is how a
-        degenerate adapter gets measured.
-
-        Chunked to the batch size like any other forward pass: sent at once it
-        would be the run's largest batch, and it runs before any work is saved.
-        """
         if not prompts:
             return []
         masses: list[float] = []
@@ -377,10 +324,9 @@ class TransformersBackend:
             )
         probabilities = torch.softmax(output.logits[:, -1, :].float(), dim=-1)
         selected = probabilities.index_select(1, self._answer_index).cpu()
-        return [float(row.sum()) for row in selected]
+        return [_answer_mass([float(value) for value in row]) for row in selected]
 
     def ntp(self, prompt: str) -> dict[str, float]:
-        """Return the NTP result for one prompt."""
         return self.ntp_batch([prompt])[0]
 
     def full_answer_batch(
@@ -389,17 +335,6 @@ class TransformersBackend:
         *,
         seeds: Sequence[int | None],
     ) -> list[str]:
-        """Generate one temperature-0.7 candidate per prompt.
-
-        Each row samples from its own seeded generator, so a candidate does not
-        depend on its batch neighbours; a ``None`` seed reproduces the paper's
-        non-repeatable sampling.
-
-        ``generate()`` gets neutral ``temperature=1.0``, ``top_k=0`` and
-        ``top_p=1.0`` deliberately: temperature applies inside the seeded
-        sampler, and any other value appends a warper that would reshape its
-        one-hot output.
-        """
         if not prompts:
             return []
         if len(prompts) != len(seeds):
@@ -442,5 +377,4 @@ class TransformersBackend:
         ]
 
     def full_answer(self, prompt: str, *, seed: int | None) -> str:
-        """Generate one candidate full answer."""
         return self.full_answer_batch([prompt], seeds=[seed])[0]

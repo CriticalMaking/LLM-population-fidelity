@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from machine_bias_reproduction.config import RunPaths
@@ -19,6 +20,8 @@ REJECTED_EXAMPLES_KEPT_PER_MODE = 25
 CAPACITY_FILE = "capacity.csv"
 EXAMPLES_FILE = "capacity_examples.jsonl"
 
+DEGENERACY_DECIMALS = 6
+
 
 @dataclass(frozen=True, slots=True)
 class ModeCapacity:
@@ -30,6 +33,9 @@ class ModeCapacity:
     mean_valid_mass: float | None
     median_valid_mass: float | None
     p10_valid_mass: float | None
+    distinct_distributions: int | None = None
+    tied_answers: int | None = None
+    response_std: float | None = None
 
     @property
     def valid_rate(self) -> float:
@@ -46,6 +52,9 @@ class ModeCapacity:
             "mean_valid_mass": self.mean_valid_mass,
             "median_valid_mass": self.median_valid_mass,
             "p10_valid_mass": self.p10_valid_mass,
+            "distinct_distributions": self.distinct_distributions,
+            "tied_answers": self.tied_answers,
+            "response_std": self.response_std,
         }
 
 
@@ -72,6 +81,32 @@ def classify(record: dict[str, Any], mode: str) -> str:
     return "valid" if result else "invalid"
 
 
+def answer_values(result: Any) -> tuple[float, ...] | None:
+    if not isinstance(result, dict) or result.get("degenerate"):
+        return None
+    values = tuple(
+        float(value) for key, value in result.items() if key not in ("mass", "degenerate")
+    )
+    return values or None
+
+
+def degeneracy(distributions: Sequence[tuple[float, ...]]) -> dict[str, Any]:
+    empty = {"distinct_distributions": None, "tied_answers": None, "response_std": None}
+    if not distributions:
+        return empty
+    width = len(distributions[0])
+    usable = [row for row in distributions if len(row) == width]
+    if not usable:
+        return empty
+    matrix = np.asarray(usable, dtype=np.float64)
+    ordered = np.sort(matrix, axis=1)
+    return {
+        "distinct_distributions": len(np.unique(np.round(matrix, DEGENERACY_DECIMALS), axis=0)),
+        "tied_answers": int(np.sum(np.any(ordered[:, 1:] == ordered[:, :-1], axis=1))),
+        "response_std": float(np.mean(np.std(matrix, axis=0))),
+    }
+
+
 def _rejected_text(record: dict[str, Any]) -> str | None:
     attempts = record.get("attempts") or []
     for attempt in reversed(attempts):
@@ -87,6 +122,7 @@ def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     for mode in MODES:
         counts = dict.fromkeys(OUTCOMES, 0)
         masses: list[float] = []
+        distributions: list[tuple[float, ...]] = []
         kept = 0
         for record in _records(paths.raw / mode):
             outcome = classify(record, mode)
@@ -94,6 +130,9 @@ def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
             result = record.get("result")
             if mode == "ntp" and isinstance(result, dict) and "mass" in result:
                 masses.append(float(result["mass"]))
+                values = answer_values(result)
+                if values is not None:
+                    distributions.append(values)
             if outcome != "valid" and kept < REJECTED_EXAMPLES_KEPT_PER_MODE:
                 examples.append(
                     {
@@ -119,6 +158,7 @@ def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
                 mean_valid_mass=float(series.mean()) if len(series) else None,
                 median_valid_mass=float(series.median()) if len(series) else None,
                 p10_valid_mass=float(series.quantile(0.10)) if len(series) else None,
+                **degeneracy(distributions),
             ).as_row()
         )
     return pd.DataFrame(rows), examples
