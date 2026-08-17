@@ -1,0 +1,50 @@
+model:
+  id: "google/gemma-4-31B-it"
+  backend: "hf"                  # auto-detects cuda > mps > cpu at runtime
+  dtype: "bfloat16"
+  image_max_pixels: 200704       # 448×448
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+  layers: 8
+  target_modules:
+    - "q_proj"
+    - "v_proj"
+    - "k_proj"
+    - "o_proj"
+
+training:
+  batch_size: 1
+  gradient_accumulation: 16      # effective batch = 16
+  max_epochs: 250
+  learning_rate: 1.0e-4          # lower LR for larger model
+  lr_schedule: "cosine"
+  warmup_steps: 100
+  early_stopping_patience: 15
+  early_stopping_min_epochs: 20
+  max_seq_len: 512
+  logging_steps: 25
+  eval_steps: 100
+  save_steps: 100
+  max_grad_norm: 0.3
+  gradient_checkpointing: true
+  quantization: "4bit"           # QLoRA via bitsandbytes — required for 31B on 32GB VRAM
+
+cultures:
+  - arabic
+  - bengali
+  - chinese
+  - english
+  - german
+  - korean
+  - portuguese
+  - spanish
+  - turkish
+
+n_folds: 5
+
+mlflow:
+  experiment: "culture_mllm_training"
+  tracking_uri: "http://127.0.0.1:5000"

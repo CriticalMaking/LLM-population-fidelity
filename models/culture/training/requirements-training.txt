@@ -1,0 +1,26 @@
+# Upstream snapshot — NOT this repository's dependency set.
+#
+# These are the versions that actually produced the staged adapters, as recorded
+# by TRL in each adapter's own README.md, not the ranges culture-mllm's
+# pyproject.toml declares. Install nothing from this file; it exists so the
+# training stack can be reconstructed exactly. This repository's own
+# dependencies are in ../../../pyproject.toml, where the `culture` extra pins
+# the same stack so inference composes the LoRA onto weights in the numeric
+# format training used.
+#
+# Full resolved environment: culture-mllm @ c449dfc6434a1d06ee0ab55f1a0d2139f26ddc9e,
+# uv.lock. See PROVENANCE.md.
+
+torch==2.12.0
+transformers==5.8.1
+peft==0.19.1
+trl==1.4.0
+datasets==4.8.5
+tokenizers==0.22.2
+
+# Required by the gemma4_31b config's `quantization: "4bit"` QLoRA path.
+bitsandbytes==0.49.2
+accelerate==1.13.0
+
+# Experiment tracking; the per-adapter run ids in PROVENANCE.md are MLflow's.
+mlflow>=2.15.0

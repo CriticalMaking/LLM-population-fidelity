@@ -17,9 +17,14 @@ build/
 # from it, so provenance survives without versioning the payload.
 upstream/
 
-# Large model weights.
+# Large model weights. Per-entry under models/culture/ rather than the
+# directory itself, so the training provenance below can be re-included.
 models/*.gguf
-models/culture/
+models/culture/*
+
+# The adapters were trained in a separate repository: the pin and the configs
+# they were trained from, no weights and no copy of the training source.
+!models/culture/training/
 
 # Everything under outputs/ is tracked -- the summary tables, the manifests and
 # the reports -- and so is all of figures/, the publication plates. Three
