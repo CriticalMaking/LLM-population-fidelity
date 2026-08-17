@@ -1,5 +1,3 @@
-"""Orchestrating the paper's full report set: main, appendix and robustness sections."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -53,7 +51,6 @@ SECTIONS = ("all", "main", "appendix", "robustness", "tables", "figures", "smoke
 
 
 def _write(frame: pd.DataFrame, name: str, caption: str, label: str) -> list[Path]:
-    """Write one table as CSV and as an \\input-able LaTeX fragment."""
     if frame is None or frame.empty:
         return []
     REPORTS_OUTPUTS.mkdir(parents=True, exist_ok=True)
@@ -71,7 +68,6 @@ def build_reports(
     questions: Sequence[str] | None = None,
     series: Sequence[str] | None = None,
 ) -> dict[str, Any]:
-    """Build the requested part of the paper's report set."""
     if section not in SECTIONS:
         raise ValueError(f"unknown section: {section} (known: {', '.join(SECTIONS)})")
     smoke = section == "smoke"
@@ -289,10 +285,7 @@ def _write_report_index(manifest: dict[str, Any]) -> None:
         "",
         "## Tables",
         "",
-        *(
-            f"- `outputs/reports/{name}.csv` / `outputs/reports/tex/{name}.tex`"
-            for name in manifest["produced"]["tables"]
-        ),
+        *(f"- `outputs/reports/{name}.csv`" for name in manifest["produced"]["tables"]),
         "",
         "## Figures",
         "",
@@ -300,11 +293,11 @@ def _write_report_index(manifest: dict[str, Any]) -> None:
         "",
         "## Not reproduced",
         "",
-        *(f"- **{name}** — {reason}" for name, reason in manifest["not_reproduced"].items()),
+        *(f"- **{name}** — {EXCLUSIONS[name]}" for name in EXCLUSIONS),
         "",
         "## Notes",
         "",
-        *(f"- **{name}** — {note}" for name, note in manifest["notes"].items()),
+        *(f"- **{name}** — {NOTES[name]}" for name in NOTES),
         "",
     ]
     (REPORTS_OUTPUTS / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")

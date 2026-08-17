@@ -6,23 +6,23 @@ Series: NTP-GPT-4T, NTP-Llama-3-70B, NTP-Mixtral-8x7B, FA-GPT-3, FA-Llama-3-70B,
 
 ## Tables
 
-- `outputs/reports/table-2-average-nemd.csv` / `outputs/reports/tex/table-2-average-nemd.tex`
-- `outputs/reports/table-3-quality.csv` / `outputs/reports/tex/table-3-quality.tex`
-- `outputs/reports/table-4-pairwise.csv` / `outputs/reports/tex/table-4-pairwise.tex`
-- `outputs/reports/table-5-regression-fit.csv` / `outputs/reports/tex/table-5-regression-fit.tex`
-- `outputs/reports/table-6-f-tests.csv` / `outputs/reports/tex/table-6-f-tests.tex`
-- `outputs/reports/response-distributions.csv` / `outputs/reports/tex/response-distributions.tex`
-- `outputs/reports/subpopulation-distances.csv` / `outputs/reports/tex/subpopulation-distances.tex`
-- `outputs/reports/regression-coefficients.csv` / `outputs/reports/tex/regression-coefficients.tex`
-- `outputs/reports/table-S1-sample-size.csv` / `outputs/reports/tex/table-S1-sample-size.tex`
-- `outputs/reports/table-S2-predictors.csv` / `outputs/reports/tex/table-S2-predictors.tex`
-- `outputs/reports/table-S4-ntp-compliance.csv` / `outputs/reports/tex/table-S4-ntp-compliance.tex`
-- `outputs/reports/table-S6-prompting-strategies.csv` / `outputs/reports/tex/table-S6-prompting-strategies.tex`
-- `outputs/reports/table-S7-quantization.csv` / `outputs/reports/tex/table-S7-quantization.tex`
-- `outputs/reports/table-S8-discriminator.csv` / `outputs/reports/tex/table-S8-discriminator.tex`
-- `outputs/reports/table-S9-backtranslation.csv` / `outputs/reports/tex/table-S9-backtranslation.tex`
-- `outputs/reports/temperature-distances.csv` / `outputs/reports/tex/temperature-distances.tex`
-- `outputs/reports/table-S16-coefficient-comparison.csv` / `outputs/reports/tex/table-S16-coefficient-comparison.tex`
+- `outputs/reports/table-2-average-nemd.csv`
+- `outputs/reports/table-3-quality.csv`
+- `outputs/reports/table-4-pairwise.csv`
+- `outputs/reports/table-5-regression-fit.csv`
+- `outputs/reports/table-6-f-tests.csv`
+- `outputs/reports/response-distributions.csv`
+- `outputs/reports/subpopulation-distances.csv`
+- `outputs/reports/regression-coefficients.csv`
+- `outputs/reports/table-S1-sample-size.csv`
+- `outputs/reports/table-S2-predictors.csv`
+- `outputs/reports/table-S4-ntp-compliance.csv`
+- `outputs/reports/table-S6-prompting-strategies.csv`
+- `outputs/reports/table-S7-quantization.csv`
+- `outputs/reports/table-S8-discriminator.csv`
+- `outputs/reports/table-S9-backtranslation.csv`
+- `outputs/reports/temperature-distances.csv`
+- `outputs/reports/table-S16-coefficient-comparison.csv`
 
 ## Figures
 
