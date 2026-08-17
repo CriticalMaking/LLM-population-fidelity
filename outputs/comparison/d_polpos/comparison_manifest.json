@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "created_at": "2026-08-06T07:10:33.606999+00:00",
+  "created_at": "2026-08-16T18:56:35.154163+00:00",
   "parameters": {
     "methods": [
       "NTP",
@@ -40,7 +40,7 @@
     "response_distribution_changes.csv": "45ad6f80edfdd99a534c122d1fc1eb7bb7f26bbe70ee3f4ea31ae330b7967730",
     "regression_fit_changes.csv": "f698fb2b52a032463f5204107f5205fa9ea21fd15e79dbeb17dee6238371e6b1",
     "coefficient_changes.csv": "c4a6f6bdf72e0c90bcc159deaec63f2c8e036e32a8e0d9b6938aa0a544192316",
-    "fig_archived_vs_fresh.png": "83317191d59a977136d2cfc9055321b3ffadcb7c57715105eef2967b1449d16e",
-    "fig_archived_vs_fresh.pdf": "51e3cd926b8b0f48b4ef21f30f7f286f42aa0b44bd53464c41eec238e086092f"
+    "fig_archived_vs_fresh.png": "e2e71ba50a0349f3186be2bb111a220fa00b2298fce9c8981953e278ac7ddc11",
+    "fig_archived_vs_fresh.pdf": "45f6df8ff202b24179608bef901d9b7ebc9f59f9f9377214c679179ed811e267"
   }
 }
