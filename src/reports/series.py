@@ -13,10 +13,6 @@ class Series:
     model: str
     strategy: str
 
-    @property
-    def label(self) -> str:
-        return self.name
-
 
 SERIES: dict[str, Series] = {
     **{f"NTP-{model}": Series(f"NTP-{model}", model, "NTP") for model in NTP_MODELS},

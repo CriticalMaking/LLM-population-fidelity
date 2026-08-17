@@ -170,3 +170,9 @@ def slot_marker(index: int) -> str:
 
 def slot_linestyle(index: int) -> Any:
     return CATEGORICAL_LINESTYLES[index % len(CATEGORICAL_LINESTYLES)]
+
+
+def bar_layout(count: int) -> tuple[float, np.ndarray]:
+    width = 0.8 / max(count, 1)
+    offsets = (np.arange(count) - (count - 1) / 2) * width
+    return width, offsets

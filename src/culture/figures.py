@@ -5,6 +5,7 @@ from typing import Any
 
 import pandas as pd
 
+from machine_bias_reproduction.io_utils import write_csv
 from machine_bias_reproduction.questions import Question, resolve_question
 
 from .mds import degenerate_ntp_plate
@@ -45,10 +46,8 @@ def _model_figures(
 
 
 def _write(frame: pd.DataFrame, destination: Path) -> None:
-    if frame.empty:
-        return
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(destination, index=False)
+    if not frame.empty:
+        write_csv(frame, destination)
 
 
 def _unplaced_figures(

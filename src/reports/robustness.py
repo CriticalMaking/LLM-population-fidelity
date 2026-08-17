@@ -6,19 +6,20 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from machine_bias_reproduction.data import load_subpops, load_wvs
+from machine_bias_reproduction.data import group_responses, load_subpops, load_wvs
 from machine_bias_reproduction.figures import (
     NEMD_BREAKS,
-    _annotate_quality_bands,
-    _classical_mds,
-    _log_nemd_density,
-    _save,
+    annotate_quality_bands,
+    classical_mds,
+    log_nemd_density,
+    mds_block,
+    save_plate,
 )
 from machine_bias_reproduction.metrics import nemd, pairwise_nemd_matrix
 from machine_bias_reproduction.plates import MODEL_TONE, SURVEY_TONE, magnitude_steps
 from machine_bias_reproduction.questions import QUESTIONS, Question, one_hot
 
-from .load import robustness_root
+from .load import CSV_ROOT, robustness_root
 
 PROMPT_STRATEGIES = {
     "Interview": None,
@@ -32,6 +33,8 @@ TEMPERATURES = {
     "1.2": "FA-Mistral-7B-t12",
     "1.5": "FA-Mistral-7B-t15",
 }
+
+Embeddings = dict[str, tuple[pd.DataFrame, dict[str, pd.DataFrame]]]
 
 
 def _profile_key(stem: str) -> str:
@@ -69,16 +72,8 @@ def _read_fa_directory(directory: Path, question: Question) -> pd.DataFrame | No
     return pd.DataFrame(rows) if rows else None
 
 
-def _subpopulation_props(
-    responses: pd.DataFrame,
-    keys: pd.Series,
-    subpops: pd.Series,
-) -> pd.DataFrame:
-    frame = responses.copy()
-    frame["name"] = subpops.to_numpy()
-    answers = [column for column in frame.columns if column != "name"]
-    grouped = frame.groupby("name", sort=True)[answers].mean()
-    return grouped.dropna()
+def _subpopulation_props(responses: pd.DataFrame, subpops: pd.Series) -> pd.DataFrame:
+    return group_responses(responses, subpops).dropna()
 
 
 def _wvs_props(question: Question, mask: pd.Series | None = None) -> pd.DataFrame:
@@ -90,38 +85,45 @@ def _wvs_props(question: Question, mask: pd.Series | None = None) -> pd.DataFram
     responses = one_hot(
         question.normalize(wvs[question.var]), question.wvs_labels, question.answer_columns
     )
-    return _subpopulation_props(responses, wvs["id"], subpops)
+    return _subpopulation_props(responses, subpops)
+
+
+def _strategy_props(question: Question) -> tuple[pd.DataFrame, dict[str, pd.DataFrame]]:
+    wvs = load_wvs()
+    subpops = load_subpops()["subpop"]
+    frames: dict[str, pd.DataFrame] = {}
+    for label, directory in PROMPT_STRATEGIES.items():
+        if directory is None:
+            path = CSV_ROOT / f"NTP-GPT-4T-{question.var}.csv"
+            frame = pd.read_csv(path) if path.is_file() else None
+            if frame is not None:
+                frame = question.ntp_answers(frame.set_index("profile")).reset_index()
+        else:
+            frame = _read_ntp_directory(robustness_root() / directory, question)
+        if frame is not None and not frame.empty:
+            frames[label] = frame.set_index("profile")
+    if len(frames) < 2:
+        return pd.DataFrame(), {}
+    shared = set.intersection(*(set(frame.index) for frame in frames.values()))
+    if not shared:
+        return pd.DataFrame(), {}
+    mask = wvs["profile"].isin(shared)
+    wvs_props = _wvs_props(question, mask)
+    columns = list(question.answer_columns)
+    resolved: dict[str, pd.DataFrame] = {}
+    for label, frame in frames.items():
+        matched = frame.reindex(wvs.loc[mask, "profile"])[columns].reset_index(drop=True)
+        resolved[label] = (
+            _subpopulation_props(matched, subpops[mask]).reindex(wvs_props.index).dropna()
+        )
+    return wvs_props, resolved
 
 
 def table_s6() -> pd.DataFrame:
-    from .load import CSV_ROOT
-
-    wvs = load_wvs()
-    subpops = load_subpops()["subpop"]
     rows: list[dict[str, object]] = []
     for var, question in QUESTIONS.items():
-        frames: dict[str, pd.DataFrame] = {}
-        for label, directory in PROMPT_STRATEGIES.items():
-            if directory is None:
-                path = CSV_ROOT / f"NTP-GPT-4T-{var}.csv"
-                frame = pd.read_csv(path) if path.is_file() else None
-                if frame is not None:
-                    frame = question.ntp_answers(frame.set_index("profile")).reset_index()
-            else:
-                frame = _read_ntp_directory(robustness_root() / directory, question)
-            if frame is not None and not frame.empty:
-                frames[label] = frame.set_index("profile")
-        if len(frames) < 2:
-            continue
-        shared = set.intersection(*(set(frame.index) for frame in frames.values()))
-        if not shared:
-            continue
-        mask = wvs["profile"].isin(shared)
-        wvs_props = _wvs_props(question, mask)
-        columns = list(question.answer_columns)
-        for label, frame in frames.items():
-            matched = frame.reindex(wvs.loc[mask, "profile"])[columns].reset_index(drop=True)
-            props = _subpopulation_props(matched, wvs.loc[mask, "id"], subpops[mask])
+        wvs_props, resolved = _strategy_props(question)
+        for label, props in resolved.items():
             common = wvs_props.index.intersection(props.index)
             if common.empty:
                 continue
@@ -195,14 +197,84 @@ def _temperature_props(question: Question) -> tuple[pd.DataFrame, dict[str, pd.D
         responses = one_hot(
             question.normalize(matched), question.fa_answers, question.answer_columns
         )
-        grouped = _subpopulation_props(responses, wvs.loc[mask, "id"], subpops[mask])
+        grouped = _subpopulation_props(responses, subpops[mask])
         resolved[label] = grouped.reindex(wvs_props.index).dropna()
     return wvs_props, resolved
 
 
+def _strategy_mds_grid(
+    embeddings: Embeddings,
+    labels: list[str],
+    stem: Path,
+    *,
+    marker_size: int,
+    survey_alpha: float,
+    cell_inches: float,
+    header: str,
+) -> list[Path]:
+    questions = [var for var in QUESTIONS if var in embeddings]
+    figure, axes = plt.subplots(
+        len(questions),
+        len(labels),
+        figsize=(cell_inches * len(labels), cell_inches * len(questions)),
+        squeeze=False,
+    )
+    for row, var in enumerate(questions):
+        wvs_props, props = embeddings[var]
+        present = [label for label in labels if label in props and not props[label].empty]
+        common = wvs_props.index
+        for label in present:
+            common = common.intersection(props[label].index)
+        if common.empty:
+            for axis in axes[row]:
+                axis.set_axis_off()
+            continue
+        blocks = [wvs_props.loc[common].to_numpy(dtype=np.float64)] * len(present)
+        blocks.extend(props[label].loc[common].to_numpy(dtype=np.float64) for label in present)
+        coordinates = classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
+        count = len(common)
+        for column, label in enumerate(labels):
+            axis = axes[row][column]
+            if label not in present:
+                axis.set_axis_off()
+                continue
+            index = present.index(label)
+            survey = mds_block(coordinates, index, count)
+            axis.scatter(
+                survey[:, 0],
+                survey[:, 1],
+                s=marker_size,
+                alpha=survey_alpha,
+                marker="^",
+                color=SURVEY_TONE.fill,
+                edgecolors=SURVEY_TONE.ink,
+                linewidths=0.3,
+            )
+            model = mds_block(coordinates, len(present) + index, count)
+            axis.scatter(
+                model[:, 0],
+                model[:, 1],
+                s=marker_size,
+                alpha=0.6,
+                color=MODEL_TONE.fill,
+                edgecolors=MODEL_TONE.ink,
+                linewidths=0.3,
+            )
+            axis.set_aspect("equal")
+            axis.set_xticks([])
+            axis.set_yticks([])
+            if row == 0:
+                axis.set_xlabel(header.format(label), fontsize=9, labelpad=6)
+                axis.xaxis.set_label_position("top")
+            if column == 0:
+                axis.set_ylabel(QUESTIONS[var].label, fontsize=9)
+    figure.tight_layout()
+    return save_plate(figure, stem)
+
+
 def figures_s13_s14(destination: Path) -> tuple[list[Path], pd.DataFrame]:
     rows: list[dict[str, object]] = []
-    embeddings: dict[str, tuple[pd.DataFrame, dict[str, pd.DataFrame]]] = {}
+    embeddings: Embeddings = {}
     for var, question in QUESTIONS.items():
         wvs_props, props = _temperature_props(question)
         if not props:
@@ -235,173 +307,47 @@ def figures_s13_s14(destination: Path) -> tuple[list[Path], pd.DataFrame]:
             values = subset.loc[subset["temperature"] == label, "nEMD"].to_numpy(dtype=np.float64)
             if not np.any(values > 0):
                 continue
-            grid, density = _log_nemd_density(values)
+            grid, density = log_nemd_density(values)
             axis.plot(grid, density, label=f"T={label}", color=palette[index], linewidth=1.5)
         axis.set_xscale("log")
         axis.set_xlim(0.01, 1.0)
-        axis.set_xticks(NEMD_BREAKS, [f"{break_:.2f}" for break_ in NEMD_BREAKS])
+        axis.set_xticks(NEMD_BREAKS, [f"{threshold:.2f}" for threshold in NEMD_BREAKS])
         axis.set_ylim(bottom=0)
-        _annotate_quality_bands(axis)
+        annotate_quality_bands(axis)
         axis.set_xlabel(f"nEMD (log scale) — {QUESTIONS[var].label}")
     axes[0][0].set_ylabel("Density (per natural-log unit)")
     axes[0][0].legend(loc="upper left")
     figure.tight_layout()
-    produced = _save(figure, destination / "Figure-S13-temperature-nEMD-density")
+    produced = save_plate(figure, destination / "Figure-S13-temperature-nEMD-density")
 
-    labels = list(TEMPERATURES)
-    figure, axes = plt.subplots(
-        len(questions),
-        len(labels),
-        figsize=(2.9 * len(labels), 2.9 * len(questions)),
-        squeeze=False,
+    produced.extend(
+        _strategy_mds_grid(
+            embeddings,
+            list(TEMPERATURES),
+            destination / "Figure-S14-temperature-MDS",
+            marker_size=9,
+            survey_alpha=0.35,
+            cell_inches=2.9,
+            header="T={}",
+        )
     )
-    for row, var in enumerate(questions):
-        wvs_props, props = embeddings[var]
-        present = [label for label in labels if label in props and not props[label].empty]
-        common = wvs_props.index
-        for label in present:
-            common = common.intersection(props[label].index)
-        if common.empty:
-            for axis in axes[row]:
-                axis.set_axis_off()
-            continue
-        blocks = [wvs_props.loc[common].to_numpy(dtype=np.float64)] * len(present)
-        blocks.extend(props[label].loc[common].to_numpy(dtype=np.float64) for label in present)
-        coordinates = _classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
-        count = len(common)
-        for column, label in enumerate(labels):
-            axis = axes[row][column]
-            if label not in present:
-                axis.set_axis_off()
-                continue
-            index = present.index(label)
-            axis.scatter(
-                coordinates[index * count : (index + 1) * count, 0],
-                coordinates[index * count : (index + 1) * count, 1],
-                s=9,
-                alpha=0.35,
-                marker="^",
-                color=SURVEY_TONE.fill,
-                edgecolors=SURVEY_TONE.ink,
-                linewidths=0.3,
-            )
-            model = coordinates[(len(present) + index) * count : (len(present) + index + 1) * count]
-            axis.scatter(
-                model[:, 0],
-                model[:, 1],
-                s=9,
-                alpha=0.6,
-                color=MODEL_TONE.fill,
-                edgecolors=MODEL_TONE.ink,
-                linewidths=0.3,
-            )
-            axis.set_aspect("equal")
-            axis.set_xticks([])
-            axis.set_yticks([])
-            if row == 0:
-                axis.set_xlabel(f"T={label}", fontsize=9, labelpad=6)
-                axis.xaxis.set_label_position("top")
-            if column == 0:
-                axis.set_ylabel(QUESTIONS[var].label, fontsize=9)
-    figure.tight_layout()
-    produced.extend(_save(figure, destination / "Figure-S14-temperature-MDS"))
     return produced, frame
 
 
 def figure_s12(destination: Path) -> list[Path]:
-    from .load import CSV_ROOT
-
-    wvs = load_wvs()
-    subpops = load_subpops()["subpop"]
-    questions: list[str] = []
-    embeddings: dict[str, tuple[pd.DataFrame, dict[str, pd.DataFrame]]] = {}
+    embeddings: Embeddings = {}
     for var, question in QUESTIONS.items():
-        frames: dict[str, pd.DataFrame] = {}
-        for label, directory in PROMPT_STRATEGIES.items():
-            if directory is None:
-                path = CSV_ROOT / f"NTP-GPT-4T-{var}.csv"
-                frame = pd.read_csv(path) if path.is_file() else None
-                if frame is not None:
-                    frame = question.ntp_answers(frame.set_index("profile")).reset_index()
-            else:
-                frame = _read_ntp_directory(robustness_root() / directory, question)
-            if frame is not None and not frame.empty:
-                frames[label] = frame.set_index("profile")
-        if len(frames) < 2:
-            continue
-        shared = set.intersection(*(set(frame.index) for frame in frames.values()))
-        if not shared:
-            continue
-        mask = wvs["profile"].isin(shared)
-        wvs_props = _wvs_props(question, mask)
-        columns = list(question.answer_columns)
-        resolved: dict[str, pd.DataFrame] = {}
-        for label, frame in frames.items():
-            matched = frame.reindex(wvs.loc[mask, "profile"])[columns].reset_index(drop=True)
-            resolved[label] = (
-                _subpopulation_props(matched, wvs.loc[mask, "id"], subpops[mask])
-                .reindex(wvs_props.index)
-                .dropna()
-            )
-        embeddings[var] = (wvs_props, resolved)
-        questions.append(var)
-    if not questions:
+        wvs_props, resolved = _strategy_props(question)
+        if resolved:
+            embeddings[var] = (wvs_props, resolved)
+    if not embeddings:
         return []
-
-    labels = list(PROMPT_STRATEGIES)
-    figure, axes = plt.subplots(
-        len(questions),
-        len(labels),
-        figsize=(3.1 * len(labels), 3.1 * len(questions)),
-        squeeze=False,
+    return _strategy_mds_grid(
+        embeddings,
+        list(PROMPT_STRATEGIES),
+        destination / "Figure-S12-prompting-strategy-MDS",
+        marker_size=10,
+        survey_alpha=0.6,
+        cell_inches=3.1,
+        header="{}",
     )
-    for row, var in enumerate(questions):
-        wvs_props, resolved = embeddings[var]
-        present = [label for label in labels if label in resolved and not resolved[label].empty]
-        common = wvs_props.index
-        for label in present:
-            common = common.intersection(resolved[label].index)
-        if common.empty:
-            for axis in axes[row]:
-                axis.set_axis_off()
-            continue
-        blocks = [wvs_props.loc[common].to_numpy(dtype=np.float64)] * len(present)
-        blocks.extend(resolved[label].loc[common].to_numpy(dtype=np.float64) for label in present)
-        coordinates = _classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
-        count = len(common)
-        for column, label in enumerate(labels):
-            axis = axes[row][column]
-            if label not in present:
-                axis.set_axis_off()
-                continue
-            index = present.index(label)
-            axis.scatter(
-                coordinates[index * count : (index + 1) * count, 0],
-                coordinates[index * count : (index + 1) * count, 1],
-                s=10,
-                alpha=0.6,
-                marker="^",
-                color=SURVEY_TONE.fill,
-                edgecolors=SURVEY_TONE.ink,
-                linewidths=0.3,
-            )
-            model = coordinates[(len(present) + index) * count : (len(present) + index + 1) * count]
-            axis.scatter(
-                model[:, 0],
-                model[:, 1],
-                s=10,
-                alpha=0.6,
-                color=MODEL_TONE.fill,
-                edgecolors=MODEL_TONE.ink,
-                linewidths=0.3,
-            )
-            axis.set_aspect("equal")
-            axis.set_xticks([])
-            axis.set_yticks([])
-            if row == 0:
-                axis.set_xlabel(label, fontsize=9, labelpad=6)
-                axis.xaxis.set_label_position("top")
-            if column == 0:
-                axis.set_ylabel(QUESTIONS[var].label, fontsize=9)
-    figure.tight_layout()
-    return _save(figure, destination / "Figure-S12-prompting-strategy-MDS")

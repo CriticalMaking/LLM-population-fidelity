@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from machine_bias_reproduction.config import RunPaths
+from machine_bias_reproduction.io_utils import write_csv
 
 from .registry import PREFLIGHT_MIN_VALID_ANSWER_MASS
 
@@ -166,8 +167,7 @@ def measure(paths: RunPaths) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
 
 def write(paths: RunPaths) -> pd.DataFrame:
     frame, examples = measure(paths)
-    paths.outputs.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(paths.outputs / CAPACITY_FILE, index=False)
+    write_csv(frame, paths.outputs / CAPACITY_FILE)
     with (paths.outputs / EXAMPLES_FILE).open("w", encoding="utf-8") as stream:
         for example in examples:
             stream.write(json.dumps(example, sort_keys=True) + "\n")
@@ -179,10 +179,3 @@ def read(paths: RunPaths) -> pd.DataFrame | None:
     if not path.is_file():
         return None
     return pd.read_csv(path)
-
-
-def progress_line(
-    model_key: str, culture: str, mode: str, done: int, total: int, valid: int
-) -> str:
-    share = 100.0 * valid / done if done else 0.0
-    return f"[{model_key}/{culture}] {mode}: {done}/{total} prompts, {valid} valid ({share:.1f}%)"

@@ -22,11 +22,12 @@ from .data import (
     archived_fa,
     archived_ntp,
     canonical_run_paths,
+    country_of,
     load_linear_baseline,
     prepare_data,
 )
 from .figures import generate_figures
-from .io_utils import atomic_write_json, hardware_summary, hash_paths
+from .io_utils import atomic_write_json, hardware_summary, hash_paths, write_csv
 from .metrics import (
     DISTANCES,
     KL_ZERO_PROPORTION_SMOOTHING,
@@ -95,7 +96,7 @@ def _distance_rows(
 
 def social_design(names: pd.Index, predictors: pd.DataFrame) -> pd.DataFrame:
     labels = names.to_series(index=names)
-    country = labels.str.replace(r"^(.*?) \d.*$", r"\1", regex=True)
+    country = country_of(labels)
     year = pd.to_numeric(labels.str.replace(r"^.*? (\d+) .*$", r"\1", regex=True))
     decade = year.floordiv(10).mul(10)
 
@@ -309,11 +310,6 @@ def _quality_table(distances: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _write_frame(frame: pd.DataFrame, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(path, index=False)
-
-
 def _paper_regression_checkpoints(
     regression_fit: pd.DataFrame,
     f_tests: pd.DataFrame,
@@ -359,7 +355,7 @@ def _paper_regression_checkpoints(
     return pd.DataFrame(rows)
 
 
-def _load_source(
+def load_source(
     source: str,
     paths: RunPaths,
     question: Question,
@@ -379,8 +375,6 @@ def run_analysis(
     source: str,
     question: str | Question = "d_happy",
     *,
-    label: str = "Mixtral-8x7B",
-    short_label: str = "Mixtral",
     model_description: str = "Mixtral-8x7B-v0.1.Q4_K_M",
     csv_stems: tuple[str, str] | None = None,
     paper_checkpoints: bool = True,
@@ -389,7 +383,7 @@ def run_analysis(
     columns = outcome.answer_columns
     paths = paths_for(source, outcome.var)
     paths.ensure()
-    data = _load_source(source, paths, outcome, csv_stems)
+    data = load_source(source, paths, outcome, csv_stems)
     if not data.names.size:
         return _empty_analysis(source, outcome, paths, data, model_description)
 
@@ -522,7 +516,7 @@ def run_analysis(
     artifact_paths: list[Path] = []
     for filename, frame in artifacts.items():
         destination = paths.outputs / filename
-        _write_frame(frame, destination)
+        write_csv(frame, destination)
         artifact_paths.append(destination)
 
     figure_paths = generate_figures(

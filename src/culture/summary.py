@@ -10,9 +10,9 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.config import RunPaths, paths_for
-from machine_bias_reproduction.figures import _save
+from machine_bias_reproduction.figures import label_fit, save_plate
 from machine_bias_reproduction.inference import EVENT_LOG_NAME
-from machine_bias_reproduction.plates import GRID, INK, MUTED_INK
+from machine_bias_reproduction.plates import GRID, INK, MUTED_INK, bar_layout
 from machine_bias_reproduction.questions import Question, resolve_questions
 
 from .adapters import health_table
@@ -334,17 +334,6 @@ def sweep_cost_table(
     return pd.DataFrame(rows)
 
 
-def _label_panel(axis: Any, text: str) -> None:
-    axis.annotate(
-        text,
-        xy=(0.0, 1.01),
-        xycoords="axes fraction",
-        fontsize=9,
-        color=MUTED_INK,
-        va="bottom",
-    )
-
-
 def _grouped_bars(
     axis: Any,
     frame: pd.DataFrame,
@@ -352,10 +341,10 @@ def _grouped_bars(
     questions: list[Question],
     series_order: list[str],
 ) -> None:
-    width = 0.8 / max(len(series_order), 1)
+    width, offsets = bar_layout(len(series_order))
     positions = np.arange(len(questions))
     for index, series in enumerate(series_order):
-        offset = (index - (len(series_order) - 1) / 2) * width
+        offset = offsets[index]
         heights: list[float] = []
         missing: list[float] = []
         for slot, question in enumerate(questions):
@@ -375,8 +364,8 @@ def _grouped_bars(
             edgecolor=tone.ink,
             linewidth=0.7,
         )
-        for x in missing:
-            axis.text(x, 0.0, "n/a", ha="center", va="bottom", fontsize=8, color=MUTED_INK)
+        for position in missing:
+            axis.text(position, 0.0, "n/a", ha="center", va="bottom", fontsize=8, color=MUTED_INK)
     axis.set_xticks(positions, [question.label for question in questions])
     axis.yaxis.grid(True, color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
@@ -402,7 +391,7 @@ def overall_figure(
     axis.legend(ncol=5, loc="upper left")
     axis.set_ylim(0, max(0.42, float(ntp["overall_nEMD"].max()) * 1.35))
     figure.tight_layout()
-    return _save(figure, destination / "fig_overall_nemd")
+    return save_plate(figure, destination / "fig_overall_nemd")
 
 
 def compression_figure(
@@ -419,7 +408,7 @@ def compression_figure(
     axis.legend(ncol=5, loc="upper left")
     axis.set_ylim(0, max(7.6, float(ntp["compression"].max()) * 1.25))
     figure.tight_layout()
-    return _save(figure, destination / "fig_compression")
+    return save_plate(figure, destination / "fig_compression")
 
 
 def base_delta_figure(
@@ -433,7 +422,7 @@ def base_delta_figure(
         return []
     arms = [culture for culture in cultures if culture in set(ntp["arm"])]
     countries = [name for name in WVS_COUNTRIES if name in set(ntp["country"])]
-    width = 0.8 / max(len(arms), 1)
+    width, offsets = bar_layout(len(arms))
     positions = np.arange(len(countries))
     span = float(ntp["delta_nEMD"].abs().max()) or 1.0
     figure, axes = plt.subplots(
@@ -442,7 +431,7 @@ def base_delta_figure(
     for axis, question in zip(axes[0], questions, strict=True):
         rows = ntp[ntp["question"] == question.var]
         for index, arm in enumerate(arms):
-            offset = (index - (len(arms) - 1) / 2) * width
+            offset = offsets[index]
             cells = rows[rows["arm"] == arm].set_index("country")["delta_nEMD"]
             heights = [float(cells[name]) if name in cells.index else 0.0 for name in countries]
             tone = arm_tone(arm)
@@ -460,11 +449,11 @@ def base_delta_figure(
         axis.set_ylim(-span * 1.25, span * 1.25)
         axis.yaxis.grid(True, color=GRID, linewidth=0.6)
         axis.set_axisbelow(True)
-        _label_panel(axis, question.label)
+        label_fit(axis, question.label)
     axes[0][0].set_ylabel("nEMD after finetuning minus before")
     axes[0][0].legend(ncol=3, loc="upper left")
     figure.tight_layout()
-    return _save(figure, destination / "fig_base_delta")
+    return save_plate(figure, destination / "fig_base_delta")
 
 
 def home_advantage_figure(
@@ -478,13 +467,13 @@ def home_advantage_figure(
     if ntp.empty:
         return []
     present = [culture for culture in cultures if culture in set(ntp["culture"])]
-    width = 0.8 / max(len(present), 1)
+    width, offsets = bar_layout(len(present))
     positions = np.arange(len(questions))
     span = ntp["difference_in_differences"]
     figure, axis = plt.subplots(figsize=(11, 5.0))
     axis.set_ylim(float(span.min()) * 1.30, float(span.max()) * 1.30)
     for index, culture in enumerate(present):
-        offset = (index - (len(present) - 1) / 2) * width
+        offset = offsets[index]
         rows = ntp[ntp["culture"] == culture]
         tone = arm_tone(culture)
         for slot, question in enumerate(questions):
@@ -528,7 +517,7 @@ def home_advantage_figure(
     axis.set_axisbelow(True)
     axis.legend(ncol=3, loc="upper left")
     figure.tight_layout()
-    return _save(figure, destination / stem)
+    return save_plate(figure, destination / stem)
 
 
 def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
@@ -537,12 +526,12 @@ def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
     labels = {question.var: question.label for question in resolve_questions(None)}
     order = [var for var in labels if var in set(runs["question"])]
     cultures = sorted(set(runs["culture"]))
-    width = 0.8 / max(len(cultures), 1)
+    width, offsets = bar_layout(len(cultures))
     positions = np.arange(len(order))
     ceiling = float(runs["hours"].max())
     figure, axis = plt.subplots(figsize=(11, 4.6))
     for index, culture in enumerate(cultures):
-        offset = (index - (len(cultures) - 1) / 2) * width
+        offset = offsets[index]
         rows = runs[runs["culture"] == culture].set_index("question")
         tone = arm_tone(culture)
         for slot, var in enumerate(order):
@@ -573,7 +562,7 @@ def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
     axis.set_axisbelow(True)
     axis.legend(ncol=3, loc="upper left")
     figure.tight_layout()
-    return _save(figure, destination / "fig_sweep_cost")
+    return save_plate(figure, destination / "fig_sweep_cost")
 
 
 def adapter_health_figure(frame: pd.DataFrame, destination: Path) -> list[Path]:
@@ -582,13 +571,13 @@ def adapter_health_figure(frame: pd.DataFrame, destination: Path) -> list[Path]:
     cultures = sorted(set(frame["culture"]))
     models = list(dict.fromkeys(frame["model_key"]))
     positions = np.arange(len(cultures))
-    height = 0.8 / max(len(models), 1)
+    height, offsets = bar_layout(len(models))
     figure, axes = plt.subplots(1, 2, figsize=(13, 5.4), sharey=True)
     for index, model_key in enumerate(models):
         rows = frame[frame["model_key"] == model_key].set_index("culture")
         label = str(rows["model_label"].iloc[0])
         tone = model_tone(model_key, index)
-        offset = (index - (len(models) - 1) / 2) * height
+        offset = offsets[index]
         present = [culture for culture in cultures if culture in rows.index]
         slots = [positions[cultures.index(culture)] + offset for culture in present]
         axes[0].scatter(
@@ -632,7 +621,7 @@ def adapter_health_figure(frame: pd.DataFrame, destination: Path) -> list[Path]:
     handles, labels = axes[1].get_legend_handles_labels()
     figure.legend(handles, labels, ncol=len(labels), loc="lower center")
     figure.tight_layout(rect=(0, 0.06, 1, 1))
-    return _save(figure, destination / "fig_adapter_health")
+    return save_plate(figure, destination / "fig_adapter_health")
 
 
 def _has_own_series(distances: pd.DataFrame) -> bool:

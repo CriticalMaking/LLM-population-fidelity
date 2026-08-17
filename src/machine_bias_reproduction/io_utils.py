@@ -10,7 +10,14 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
+
 CHUNK_SIZE = 1024 * 1024
+
+
+def write_csv(frame: pd.DataFrame, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(path, index=False)
 
 
 def sha256_file(path: Path) -> str:

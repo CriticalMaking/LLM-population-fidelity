@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, cast
 
 import numpy as np
 import pandas as pd
@@ -171,6 +171,14 @@ def resolve_questions(selected: Sequence[str] | None) -> list[Question]:
     if not selected or list(selected) == ["all"]:
         return [QUESTIONS[name] for name in QUESTION_NAMES]
     return [resolve_question(name) for name in selected]
+
+
+def resolve_modes(mode: str) -> list[PromptMode]:
+    if mode == "all":
+        return ["ntp", "fa"]
+    if mode not in ("ntp", "fa"):
+        raise ValueError(f"unknown mode: {mode!r} (known: ntp, fa, all)")
+    return [cast(PromptMode, mode)]
 
 
 def one_hot(

@@ -1,11 +1,9 @@
 """Whether a staged adapter is worth spending GPU time on.
 
-Two independent signals, because they answer different questions. The trainer's
-own end-of-training numbers say whether the finetuning learned anything; the
-norm of the weight update it produced says how it failed when it did not. A
-first loss above the uniform-random ceiling separates the two cases that look
-alike from the outside: a base model that was already broken when training
-started, and a finetuning run that diverged from a working one.
+Two independent signals: the trainer's end-of-training numbers say whether the
+finetuning learned anything; the norm of the weight update says how it failed
+when it did not. A first loss above the uniform-random ceiling separates a
+broken base from a run that diverged from a working one.
 """
 
 from __future__ import annotations
@@ -36,11 +34,8 @@ _NUMPY_DTYPES = {"F64": np.float64, "F32": np.float32, "F16": np.float16}
 
 
 def trainer_state_path(directory: Path) -> Path | None:
-    """The end-of-training trainer state, staged copy first.
-
-    Training writes it per checkpoint rather than beside the selected adapter,
-    so an unstaged source directory is read through its last checkpoint.
-    """
+    """The end-of-training trainer state: the staged copy, or — since training
+    writes it per checkpoint — an unstaged source's last checkpoint."""
     staged = directory / TRAINER_STATE_FILE
     if staged.is_file():
         return staged
@@ -67,7 +62,9 @@ def read_trainer_state(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as stream:
         state: dict[str, Any] = json.load(stream)
     history = [entry for entry in state.get("log_history") or [] if isinstance(entry, dict)]
-    first_loss = next((float(e["loss"]) for e in history if e.get("loss") is not None), None)
+    first_loss = next(
+        (float(entry["loss"]) for entry in history if entry.get("loss") is not None), None
+    )
     return {
         "first_loss": first_loss,
         "final_loss": _last(history, "loss"),
@@ -92,11 +89,8 @@ def vocab_size(directory: Path) -> int | None:
 
 
 def read_tensors(path: Path) -> dict[str, np.ndarray]:
-    """Tensors from a safetensors file, without importing torch.
-
-    The health check is a CPU-only sanity pass, so it must stay runnable
-    without the `culture` extra installed.
-    """
+    """Tensors from a safetensors file, without importing torch: the health
+    check must stay runnable without the `culture` extra installed."""
     size = path.stat().st_size
     with path.open("rb") as stream:
         (header_length,) = struct.unpack("<Q", stream.read(8))
@@ -124,12 +118,8 @@ def read_tensors(path: Path) -> dict[str, np.ndarray]:
 
 
 def _frobenius_of_product(factor_a: np.ndarray, factor_b: np.ndarray) -> float:
-    """‖B @ A‖_F without forming B @ A.
-
-    ‖BA‖² = tr(AAᵀ · BᵀB), and both Gram matrices are rank-by-rank, so this
-    stays small where the product would be thousands by thousands. Both are
-    symmetric, so the trace of their product is their elementwise sum.
-    """
+    """‖B @ A‖_F without forming B @ A: ‖BA‖² = tr(AAᵀ · BᵀB), both Gram
+    matrices are rank-by-rank, and the trace is their elementwise sum."""
     gram_a = factor_a @ factor_a.T
     gram_b = factor_b.T @ factor_b
     return float(np.sqrt(max(float(np.sum(gram_a * gram_b)), 0.0)))
@@ -148,13 +138,10 @@ _NO_UPDATE: dict[str, Any] = {
 def update_norms(weights: Path, *, lora_alpha: float, rank: int) -> dict[str, Any]:
     """Size of the weight update the adapter applies, per targeted module.
 
-    This is the quantity that actually reaches the base model: peft adds
-    (alpha / r) * B @ A, so the scaling belongs in the measurement.
-
-    A file this cannot parse reports no modules rather than raising. Staging
-    re-copies a truncated adapter by comparing hashes, and it can only get that
-    far if measuring one does not abort the run; the resulting record is
-    unknown, which is never treated as a pass.
+    peft adds (alpha / r) * B @ A, so the scaling belongs in the measurement.
+    An unparseable file reports no modules rather than raising — staging must
+    survive a truncated adapter to re-copy it — and the resulting unknown
+    verdict is never a pass.
     """
     try:
         tensors = read_tensors(weights)
@@ -199,10 +186,7 @@ def verdict(
     guess_loss: float | None,
 ) -> str:
     """Healthy, diverged, or diverged from a base that was already broken.
-
-    A missing trainer state is reported as unknown rather than passed: an
-    adapter nobody measured is not an adapter known to be sound.
-    """
+    A missing trainer state is unknown, not a pass."""
     if eval_token_accuracy is None:
         return VERDICT_UNKNOWN
     if eval_token_accuracy >= ADAPTER_MIN_EVAL_TOKEN_ACCURACY:

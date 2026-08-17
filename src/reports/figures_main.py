@@ -9,13 +9,14 @@ from matplotlib import pyplot as plt
 from machine_bias_reproduction.figures import (
     NEMD_BREAKS,
     PREDICTOR_GROUPS,
-    _annotate_quality_bands,
-    _classical_mds,
-    _draw_coefficients,
-    _label_fit,
-    _log_nemd_density,
-    _predictor_rows,
-    _save,
+    annotate_quality_bands,
+    classical_mds,
+    draw_coefficients,
+    label_fit,
+    log_nemd_density,
+    mds_block,
+    predictor_rows,
+    save_plate,
 )
 from machine_bias_reproduction.metrics import pairwise_nemd_matrix
 from machine_bias_reproduction.plates import (
@@ -66,7 +67,7 @@ def figure2(distances: pd.DataFrame, destination: Path) -> list[Path]:
             values = subset.loc[subset["series"] == name, "nEMD"].to_numpy(dtype=np.float64)
             if not np.any(values > 0):
                 continue
-            grid, density = _log_nemd_density(values)
+            grid, density = log_nemd_density(values)
             axis.plot(
                 grid,
                 density,
@@ -77,14 +78,14 @@ def figure2(distances: pd.DataFrame, destination: Path) -> list[Path]:
             )
         axis.set_xscale("log")
         axis.set_xlim(0.01, 1.0)
-        axis.set_xticks(NEMD_BREAKS, [f"{break_:.2f}" for break_ in NEMD_BREAKS])
+        axis.set_xticks(NEMD_BREAKS, [f"{threshold:.2f}" for threshold in NEMD_BREAKS])
         axis.set_ylim(bottom=0)
-        _annotate_quality_bands(axis)
+        annotate_quality_bands(axis)
         axis.set_xlabel(f"nEMD (log scale) — {QUESTIONS[var].label}")
     axes[0][0].set_ylabel("Density (per natural-log unit)")
     axes[0][0].legend(loc="upper left")
     figure.tight_layout()
-    return _save(figure, destination / "Figure-2-nEMD-density")
+    return save_plate(figure, destination / "Figure-2-nEMD-density")
 
 
 def _coefficient_plate(
@@ -103,7 +104,7 @@ def _coefficient_plate(
     if frame.empty:
         return []
     questions = [var for var in QUESTIONS if var in set(frame["question"])]
-    rows = _predictor_rows({name for name, _, _ in PREDICTOR_GROUPS})
+    rows = predictor_rows({name for name, _, _ in PREDICTOR_GROUPS})
     r_squared = (
         fit[(fit["series"] == series) & (fit["model"] == model.replace("_standardized", ""))]
         .set_index("question")["adjusted_r_squared"]
@@ -115,15 +116,15 @@ def _coefficient_plate(
     )
     ink = SERIES_TONES[series].ink if series in SERIES_TONES else MUTED_INK
     for axis, var in zip(axes[0], questions, strict=True):
-        _draw_coefficients(axis, frame[frame["question"] == var], rows, ink)
+        draw_coefficients(axis, frame[frame["question"] == var], rows, ink)
         adjusted = r_squared.get(var)
         suffix = f" · adj. $R^2$ = {adjusted:.3f}" if adjusted is not None else ""
-        _label_fit(axis, f"{QUESTIONS[var].label}{suffix}")
+        label_fit(axis, f"{QUESTIONS[var].label}{suffix}")
         axis.set_xlabel(xlabel)
     for axis in axes[0][1:]:
         axis.tick_params(labelleft=False)
     figure.tight_layout()
-    return _save(figure, stem)
+    return save_plate(figure, stem)
 
 
 def figure3(
@@ -186,7 +187,7 @@ def mds_plate(
                 axis.set_axis_off()
             continue
         stacked = np.vstack([wvs] * len(blocks) + blocks)
-        coordinates = _classical_mds(pairwise_nemd_matrix(stacked))
+        coordinates = classical_mds(pairwise_nemd_matrix(stacked))
         count = len(data.names)
         for column, name in enumerate(columns):
             axis = axes[row][column]
@@ -194,10 +195,8 @@ def mds_plate(
                 axis.set_axis_off()
                 continue
             index = available.index(name)
-            wvs_points = coordinates[index * count : (index + 1) * count]
-            model_points = coordinates[
-                (len(available) + index) * count : (len(available) + index + 1) * count
-            ]
+            wvs_points = mds_block(coordinates, index, count)
+            model_points = mds_block(coordinates, len(available) + index, count)
             axis.scatter(
                 wvs_points[:, 0],
                 wvs_points[:, 1],
@@ -230,7 +229,7 @@ def mds_plate(
                 axis.set_ylabel(QUESTIONS[var].label, fontsize=9)
     axes[0][0].legend(loc="upper left", fontsize=7, markerscale=1.6)
     figure.tight_layout()
-    return _save(figure, stem)
+    return save_plate(figure, stem)
 
 
 def figure4(loaded: dict[str, QuestionData], series: list[str], destination: Path) -> list[Path]:

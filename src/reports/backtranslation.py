@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from machine_bias_reproduction.figures import _save
+from machine_bias_reproduction.data import country_of
+from machine_bias_reproduction.figures import save_plate
 from machine_bias_reproduction.metrics import nemd
 from machine_bias_reproduction.plates import category_colors
 from machine_bias_reproduction.questions import QUESTIONS
@@ -22,7 +23,7 @@ def _distance_matrix(model: np.ndarray, truth: np.ndarray) -> np.ndarray:
 
 
 def _country(names: pd.Index) -> pd.Series:
-    return names.to_series(index=names).str.replace(r"^(.*?) \d.*$", r"\1", regex=True)
+    return country_of(names.to_series(index=names))
 
 
 def _decade(names: pd.Index) -> pd.Series:
@@ -54,13 +55,13 @@ def table_s9(loaded: dict[str, QuestionData]) -> tuple[pd.DataFrame, dict[str, d
                 continue
             orders[var][name] = order
             own = np.arange(len(data.names))
-            for k in NEIGHBOURS:
-                reached = np.any(order[:, :k] == own[:, None], axis=1)
+            for neighbour_count in NEIGHBOURS:
+                reached = np.any(order[:, :neighbour_count] == own[:, None], axis=1)
                 rows.append(
                     {
                         "question": var,
                         "series": name,
-                        "k": k,
+                        "k": neighbour_count,
                         "subpopulations": len(own),
                         "reached_percent": 100.0 * float(reached.mean()),
                     }
@@ -69,17 +70,16 @@ def table_s9(loaded: dict[str, QuestionData]) -> tuple[pd.DataFrame, dict[str, d
 
 
 def _flow(
-    data: QuestionData,
     order: np.ndarray,
     grouping: pd.Series,
-    k: int = 10,
+    neighbours: int = 10,
 ) -> pd.DataFrame:
     labels = grouping.to_numpy()
     categories = sorted(set(labels))
     index = {category: position for position, category in enumerate(categories)}
     matrix = np.zeros((len(categories), len(categories)), dtype=np.float64)
     for row, source in enumerate(labels):
-        for neighbour in order[row, :k]:
+        for neighbour in order[row, :neighbours]:
             matrix[index[source], index[labels[neighbour]]] += 1.0
     totals = matrix.sum(axis=1, keepdims=True)
     shares = np.divide(matrix, totals, out=np.zeros_like(matrix), where=totals > 0)
@@ -138,10 +138,10 @@ def figures_s17_s18(
             )
             for axis, var in zip(axes[0], questions, strict=True):
                 data = loaded[var]
-                _sankey(_flow(data, orders[var][name], grouping_fn(data.names)), axis)
+                _sankey(_flow(orders[var][name], grouping_fn(data.names)), axis)
                 axis.set_xlabel(QUESTIONS[var].label, fontsize=9)
             figure.tight_layout()
             produced.extend(
-                _save(figure, destination / f"Figure-{number}-backnn-{grouping_name}-{name}")
+                save_plate(figure, destination / f"Figure-{number}-backnn-{grouping_name}-{name}")
             )
     return produced

@@ -10,9 +10,9 @@ from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.figures import (
     NEMD_BREAKS,
-    _annotate_quality_bands,
-    _log_nemd_density,
-    _save,
+    annotate_quality_bands,
+    log_nemd_density,
+    save_plate,
 )
 from machine_bias_reproduction.metrics import DISTANCES, QUALITY_LABELS
 from machine_bias_reproduction.plates import (
@@ -21,6 +21,7 @@ from machine_bias_reproduction.plates import (
     QUALITY_RAMP,
     SEPARATOR,
     STATUS_TONES,
+    bar_layout,
     magnitude_colormap,
 )
 from machine_bias_reproduction.questions import Question
@@ -94,7 +95,7 @@ def _per_mode(
     produced: list[Path] = []
     for mode, (figure, _) in built.items():
         figure.tight_layout()
-        produced.extend(_save(figure, destination / f"{stem}_{mode.lower()}"))
+        produced.extend(save_plate(figure, destination / f"{stem}_{mode.lower()}"))
     return produced
 
 
@@ -109,7 +110,7 @@ def _draw_culture_densities(
     for culture, values in values_by_culture.items():
         if not np.any(values > 0):
             continue
-        grid, density = _log_nemd_density(values)
+        grid, density = log_nemd_density(values)
         flagged = is_flagged(frames[culture])
         axis.plot(
             grid,
@@ -121,7 +122,7 @@ def _draw_culture_densities(
             alpha=0.45 if flagged else 1.0,
         )
     if reference is not None and reference.size:
-        grid, density = _log_nemd_density(reference)
+        grid, density = log_nemd_density(reference)
         axis.plot(
             grid,
             density,
@@ -134,8 +135,8 @@ def _draw_culture_densities(
     axis.set_ylim(bottom=0)
     if column == "nEMD":
         axis.set_xlim(0.01, 1.0)
-        axis.set_xticks(NEMD_BREAKS, [f"{break_:.2f}" for break_ in NEMD_BREAKS])
-        _annotate_quality_bands(axis)
+        axis.set_xticks(NEMD_BREAKS, [f"{threshold:.2f}" for threshold in NEMD_BREAKS])
+        annotate_quality_bands(axis)
 
 
 def density_figure(
@@ -267,7 +268,7 @@ def capacity_figure(
         axes[1].legend(loc="lower right")
 
     figure.tight_layout()
-    return _save(figure, destination / "fig_culture_capacity")
+    return save_plate(figure, destination / "fig_culture_capacity")
 
 
 def run_capacity_figure(
@@ -324,7 +325,7 @@ def run_capacity_figure(
         va="bottom",
     )
     figure.tight_layout()
-    return _save(figure, destination / "fig_run_capacity")
+    return save_plate(figure, destination / "fig_run_capacity")
 
 
 def quality_figure(
@@ -416,10 +417,10 @@ def ranking_figure(
             _empty_panel(axis, f"no {mode} distances")
             return figure, [axis]
         tone = MODE_TONES[mode]
-        y = [positions[culture] for culture in subset["culture"]]
+        slots = [positions[culture] for culture in subset["culture"]]
         axis.scatter(
             subset["mean"],
-            y,
+            slots,
             label=f"{mode} mean",
             marker=MODE_MARKERS[mode],
             color=tone.fill,
@@ -427,7 +428,9 @@ def ranking_figure(
             linewidths=0.8,
             s=46,
         )
-        axis.scatter(subset["median"], y, label=f"{mode} median", marker="|", color=tone.ink, s=140)
+        axis.scatter(
+            subset["median"], slots, label=f"{mode} median", marker="|", color=tone.ink, s=140
+        )
         if reference is not None:
             baseline = reference.loc[reference["method"] == mode, "nEMD"]
             if not baseline.empty:
@@ -521,7 +524,7 @@ def response_shift(
         culture for culture, tables in frames.items() if tables["responses"] is not None
     )
     positions = np.arange(len(columns))
-    width = 0.8 / max(len(cultures), 1)
+    width, offsets = bar_layout(len(cultures))
 
     def build(mode: str) -> ModeFigure:
         figure, axis = plt.subplots(figsize=(9, 5.5))
@@ -534,7 +537,7 @@ def response_shift(
                 continue
             drawn = True
             axis.bar(
-                positions + index * width - 0.4 + width / 2,
+                positions + offsets[index],
                 selected.iloc[0][columns].to_numpy(dtype=np.float64),
                 width=width,
                 label=culture,
@@ -669,4 +672,5 @@ __all__ = [
     "quality_figure",
     "ranking_figure",
     "response_shift",
+    "run_capacity_figure",
 ]

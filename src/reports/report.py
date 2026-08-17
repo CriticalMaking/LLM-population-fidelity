@@ -62,6 +62,18 @@ def _write(frame: pd.DataFrame, name: str, caption: str, label: str) -> list[Pat
     return [csv_path, tex_path]
 
 
+def _write_all(
+    entries: tuple[tuple[pd.DataFrame, str, str, str], ...],
+    written: list[Path],
+    produced: dict[str, list[str]],
+    skipped: list[str],
+) -> None:
+    for frame, name, caption, label in entries:
+        paths = _write(frame, name, caption, label)
+        written.extend(paths)
+        (produced["tables"] if paths else skipped).append(name)
+
+
 def build_reports(
     section: str = "all",
     *,
@@ -101,74 +113,83 @@ def build_reports(
     )
 
     if wants_tables and wants_main:
-        for frame, name, caption, label in (
+        _write_all(
             (
-                tables_module.table2(loaded),
-                "table-2-average-nemd",
-                "nEMD between average model predictions and average WVS answers.",
-                "tab:average-nemd",
+                (
+                    tables_module.table2(loaded),
+                    "table-2-average-nemd",
+                    "nEMD between average model predictions and average WVS answers.",
+                    "tab:average-nemd",
+                ),
+                (
+                    tables_module.table3(distances),
+                    "table-3-quality",
+                    "Share of subpopulations in each prediction-quality band.",
+                    "tab:quality",
+                ),
+                (
+                    tables_module.table4(loaded),
+                    "table-4-pairwise",
+                    "Median pairwise nEMD within each series.",
+                    "tab:pairwise",
+                ),
+                (
+                    fit,
+                    "table-5-regression-fit",
+                    "Regression goodness-of-fit.",
+                    "tab:regression-fit",
+                ),
+                (f_tests, "table-6-f-tests", "F-tests of nested models.", "tab:f-tests"),
+                (
+                    tables_module.response_distributions(loaded),
+                    "response-distributions",
+                    "Marginal answer distributions by question and series.",
+                    "tab:response-distributions",
+                ),
+                (
+                    distances,
+                    "subpopulation-distances",
+                    "Per-subpopulation nEMD for every method.",
+                    "tab:subpopulation-distances",
+                ),
+                (
+                    coefficients,
+                    "regression-coefficients",
+                    "Regression coefficients behind Figures 3 and 6.",
+                    "tab:coefficients",
+                ),
             ),
-            (
-                tables_module.table3(distances),
-                "table-3-quality",
-                "Share of subpopulations in each prediction-quality band.",
-                "tab:quality",
-            ),
-            (
-                tables_module.table4(loaded),
-                "table-4-pairwise",
-                "Median pairwise nEMD within each series.",
-                "tab:pairwise",
-            ),
-            (fit, "table-5-regression-fit", "Regression goodness-of-fit.", "tab:regression-fit"),
-            (f_tests, "table-6-f-tests", "F-tests of nested models.", "tab:f-tests"),
-            (
-                tables_module.response_distributions(loaded),
-                "response-distributions",
-                "Marginal answer distributions by question and series.",
-                "tab:response-distributions",
-            ),
-            (
-                distances,
-                "subpopulation-distances",
-                "Per-subpopulation nEMD for every method.",
-                "tab:subpopulation-distances",
-            ),
-            (
-                coefficients,
-                "regression-coefficients",
-                "Regression coefficients behind Figures 3 and 6.",
-                "tab:coefficients",
-            ),
-        ):
-            paths = _write(frame, name, caption, label)
-            written.extend(paths)
-            (produced["tables"] if paths else skipped).append(name)
+            written,
+            produced,
+            skipped,
+        )
 
     if wants_tables and wants_appendix:
-        for frame, name, caption, label in (
+        _write_all(
             (
-                tables_module.table_s1(),
-                "table-S1-sample-size",
-                "WVS sample size by country and survey year.",
-                "tab:sample-size",
+                (
+                    tables_module.table_s1(),
+                    "table-S1-sample-size",
+                    "WVS sample size by country and survey year.",
+                    "tab:sample-size",
+                ),
+                (
+                    tables_module.table_s2(),
+                    "table-S2-predictors",
+                    "Descriptive statistics of predictor variables by country.",
+                    "tab:predictors",
+                ),
+                (
+                    tables_module.table_s4(loaded),
+                    "table-S4-ntp-compliance",
+                    "NTP compliance: mean probability mass on expected answers.",
+                    "tab:ntp-compliance",
+                ),
             ),
-            (
-                tables_module.table_s2(),
-                "table-S2-predictors",
-                "Descriptive statistics of predictor variables by country.",
-                "tab:predictors",
-            ),
-            (
-                tables_module.table_s4(loaded),
-                "table-S4-ntp-compliance",
-                "NTP compliance: mean probability mass on expected answers.",
-                "tab:ntp-compliance",
-            ),
-        ):
-            paths = _write(frame, name, caption, label)
-            written.extend(paths)
-            (produced["tables"] if paths else skipped).append(name)
+            written,
+            produced,
+            skipped,
+        )
 
     if wants_figures and wants_main and not distances.empty:
         figures = figures_main.figure2(distances, REPORTS_FIGURES)
@@ -194,55 +215,57 @@ def build_reports(
         figure_paths.extend(figures)
 
     if wants_robustness:
-        s9, orders = backtranslation.table_s9(loaded)
+        backtranslation_frame, neighbour_orders = backtranslation.table_s9(loaded)
         temperature_figures, temperature_frame = robustness.figures_s13_s14(REPORTS_FIGURES)
-        s16_figures, s16_frame = bootstrap.figure_s16(loaded, REPORTS_FIGURES)
-        for frame, name, caption, label in (
+        bootstrap_figures, bootstrap_frame = bootstrap.figure_s16(loaded, REPORTS_FIGURES)
+        _write_all(
             (
-                robustness.table_s6(),
-                "table-S6-prompting-strategies",
-                "Median nEMD across GPT-4T prompting strategies.",
-                "tab:prompting-strategies",
+                (
+                    robustness.table_s6(),
+                    "table-S6-prompting-strategies",
+                    "Median nEMD across GPT-4T prompting strategies.",
+                    "tab:prompting-strategies",
+                ),
+                (
+                    robustness.table_s7(),
+                    "table-S7-quantization",
+                    "nEMD between quantized and unquantized Mistral-7B.",
+                    "tab:quantization",
+                ),
+                (
+                    discriminator.table_s8(loaded),
+                    "table-S8-discriminator",
+                    "Out-of-bag accuracy of a random-forest discriminator.",
+                    "tab:discriminator",
+                ),
+                (
+                    backtranslation_frame,
+                    "table-S9-backtranslation",
+                    "Share of subpopulations reached by nearest-neighbour backtranslation.",
+                    "tab:backtranslation",
+                ),
+                (
+                    temperature_frame,
+                    "temperature-distances",
+                    "Per-subpopulation nEMD by full-answer sampling temperature.",
+                    "tab:temperature",
+                ),
+                (
+                    bootstrap_frame,
+                    "table-S16-coefficient-comparison",
+                    "Ground-truth versus model answer-model coefficients.",
+                    "tab:coefficient-comparison",
+                ),
             ),
-            (
-                robustness.table_s7(),
-                "table-S7-quantization",
-                "nEMD between quantized and unquantized Mistral-7B.",
-                "tab:quantization",
-            ),
-            (
-                discriminator.table_s8(loaded),
-                "table-S8-discriminator",
-                "Out-of-bag accuracy of a random-forest discriminator.",
-                "tab:discriminator",
-            ),
-            (
-                s9,
-                "table-S9-backtranslation",
-                "Share of subpopulations reached by nearest-neighbour backtranslation.",
-                "tab:backtranslation",
-            ),
-            (
-                temperature_frame,
-                "temperature-distances",
-                "Per-subpopulation nEMD by full-answer sampling temperature.",
-                "tab:temperature",
-            ),
-            (
-                s16_frame,
-                "table-S16-coefficient-comparison",
-                "Ground-truth versus model answer-model coefficients.",
-                "tab:coefficient-comparison",
-            ),
-        ):
-            paths = _write(frame, name, caption, label)
-            written.extend(paths)
-            (produced["tables"] if paths else skipped).append(name)
+            written,
+            produced,
+            skipped,
+        )
 
         figures = robustness.figure_s12(REPORTS_FIGURES)
         figures.extend(temperature_figures)
-        figures.extend(s16_figures)
-        figures.extend(backtranslation.figures_s17_s18(loaded, orders, REPORTS_FIGURES))
+        figures.extend(bootstrap_figures)
+        figures.extend(backtranslation.figures_s17_s18(loaded, neighbour_orders, REPORTS_FIGURES))
         figure_paths.extend(figures)
 
     written.extend(figure_paths)

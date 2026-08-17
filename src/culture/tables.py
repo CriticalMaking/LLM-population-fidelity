@@ -12,7 +12,7 @@ from machine_bias_reproduction.metrics import DISTANCES
 from machine_bias_reproduction.questions import Question
 
 from . import capacity as capacity_module
-from .matching import MATCHED_CULTURES, countries_for, restrict
+from .matching import MATCHED_CULTURES, countries_for, restrict_to
 from .palette import MODES
 from .registry import PREFLIGHT_MIN_VALID_ANSWER_MASS, CultureModel
 
@@ -109,7 +109,7 @@ def matched_frames(frames: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any
         tables = frames.get(culture)
         if tables is None or not has_distances(tables):
             continue
-        restricted = restrict(tables["distances"], culture)
+        restricted = restrict_to(tables["distances"], countries_for(culture))
         if restricted.empty:
             continue
         matched[culture] = {**tables, "distances": restricted}

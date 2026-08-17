@@ -10,9 +10,9 @@ from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.config import GLOBAL_SEED
 from machine_bias_reproduction.data import load_subpops, load_wvs, social_predictors
-from machine_bias_reproduction.figures import _save
+from machine_bias_reproduction.figures import save_plate
 from machine_bias_reproduction.plates import GRID, MUTED_INK
-from machine_bias_reproduction.questions import QUESTIONS, Question
+from machine_bias_reproduction.questions import Question
 
 from .load import QuestionData
 
@@ -172,8 +172,5 @@ def figure_s16(
             axis.set_xlabel(f"Ground-truth coefficient — {name}")
         axes[0][0].set_ylabel("Model coefficient")
         figure.tight_layout()
-        produced.extend(_save(figure, destination / f"Figure-S16-cofdif-boot-{strategy}"))
+        produced.extend(save_plate(figure, destination / f"Figure-S16-cofdif-boot-{strategy}"))
     return produced, frame
-
-
-__all__ = ["QUESTIONS", "figure_s16"]

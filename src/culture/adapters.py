@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 
 from machine_bias_reproduction.config import PROJECT_ROOT
-from machine_bias_reproduction.io_utils import atomic_write_json, sha256_file
+from machine_bias_reproduction.io_utils import atomic_write_json, sha256_file, write_csv
 
 from . import adapter_health
 from .registry import (
@@ -234,8 +234,7 @@ def health_table(models: Sequence[CultureModel], cultures: Sequence[str]) -> pd.
 
 def write_health(frame: pd.DataFrame) -> Path:
     destination = CULTURE_ROOT / HEALTH_TABLE
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(destination, index=False)
+    write_csv(frame, destination)
     return destination
 
 

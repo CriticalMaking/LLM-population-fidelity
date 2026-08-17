@@ -101,7 +101,11 @@ def load_linear_baseline(question: str | Question) -> pd.DataFrame:
     return pd.read_csv(UPSTREAM_DATA / "Linear" / f"Linear-baseline-{outcome.var}.csv")
 
 
-def _group_responses(responses: pd.DataFrame, subpopulation: pd.Series) -> pd.DataFrame:
+def country_of(subpopulation: pd.Series) -> pd.Series:
+    return subpopulation.str.replace(r"^(.*?) \d.*$", r"\1", regex=True)
+
+
+def group_responses(responses: pd.DataFrame, subpopulation: pd.Series) -> pd.DataFrame:
     frame = responses.copy()
     frame["name"] = subpopulation.to_numpy()
     answers = [column for column in frame.columns if column != "name"]
@@ -163,16 +167,16 @@ def prepare_data(
 
     columns = outcome.answer_columns
     wvs_responses = one_hot(outcome.normalize(wvs[outcome.var]), outcome.wvs_labels, columns)
-    wvs_props = _group_responses(wvs_responses, subpops["subpop"])
+    wvs_props = group_responses(wvs_responses, subpops["subpop"])
 
     ntp_by_profile = outcome.ntp_answers(ntp.set_index("profile"))
     matched_ntp = ntp_by_profile.reindex(wvs["profile"]).reset_index(drop=True)
-    ntp_props = _group_responses(matched_ntp, subpops["subpop"])
+    ntp_props = group_responses(matched_ntp, subpops["subpop"])
     ntp_counts = _group_counts(matched_ntp, subpops["subpop"])
 
     matched_fa = fa.set_index("id").reindex(wvs["id"]).reset_index(drop=True)
     fa_responses = one_hot(outcome.normalize(matched_fa[outcome.var]), outcome.fa_answers, columns)
-    fa_props = _group_responses(fa_responses, subpops["subpop"])
+    fa_props = group_responses(fa_responses, subpops["subpop"])
     fa_counts = _group_counts(fa_responses, subpops["subpop"])
 
     total = len(wvs_props.index)

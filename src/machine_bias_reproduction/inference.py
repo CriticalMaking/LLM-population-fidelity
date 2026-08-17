@@ -162,13 +162,9 @@ class LlamaCppBackend:
     def describe(self) -> dict[str, Any]:
         return dict(self._description)
 
-    @staticmethod
-    def _without_final_newline(prompt: str) -> str:
-        return strip_trailing_newline(prompt)
-
     def ntp(self, prompt: str) -> dict[str, float]:
         result: dict[str, Any] = self._model(
-            self._without_final_newline(prompt),
+            strip_trailing_newline(prompt),
             max_tokens=1,
             logprobs=1000,
         )
@@ -186,7 +182,7 @@ class LlamaCppBackend:
     def full_answer(self, prompt: str, *, seed: int | None) -> str:
         if seed is not None:
             self._model.set_seed(seed)
-        prompt_tokens = self._model.tokenize(self._without_final_newline(prompt).encode("utf-8"))
+        prompt_tokens = self._model.tokenize(strip_trailing_newline(prompt).encode("utf-8"))
         result: dict[str, Any] = self._model.create_completion(
             prompt_tokens,
             max_tokens=12,
@@ -283,31 +279,13 @@ def generate_records(
     force: bool = False,
     parse: Callable[[str], str | None] = parse_full_answer,
 ) -> dict[str, int]:
+    pending, reused, reused_untraced = _pending_records(records, paths, force=force)
     generated = 0
-    reused = 0
-    reused_untraced = 0
     failed = 0
-    for record in records:
+    for record in pending:
         destination = _result_path(paths, record)
-        if destination.exists() and not force:
-            reused += 1
-            if _record_schema_version(destination) < RECORD_SCHEMA_VERSION:
-                reused_untraced += 1
-            continue
-        prompt_sha256 = sha256_text(record.text)
         started = time.monotonic()
-        payload: dict[str, Any] = {
-            "schema_version": RECORD_SCHEMA_VERSION,
-            "mode": record.mode,
-            "prompt_id": record.prompt_id,
-            "profile": record.profile,
-            "prompt": {"text": record.text, "sha256": prompt_sha256},
-            "trace": {
-                **trace.stamp(),
-                "created_at": datetime.now(UTC).isoformat(),
-                "sampling": _sampling(record.mode),
-            },
-        }
+        payload = _new_payload(record, trace, _sampling(record.mode))
         try:
             if record.mode == "ntp":
                 result = backend.ntp(record.text)

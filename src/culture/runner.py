@@ -4,7 +4,7 @@ import argparse
 from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Protocol, cast
+from typing import Any, Protocol
 
 import pandas as pd
 
@@ -22,7 +22,7 @@ from machine_bias_reproduction.inference import (
 )
 from machine_bias_reproduction.io_utils import atomic_write_json, code_revision, hardware_summary
 from machine_bias_reproduction.prompts import PromptMode, PromptRecord, prompt_records
-from machine_bias_reproduction.questions import Question
+from machine_bias_reproduction.questions import Question, resolve_modes
 
 from . import capacity as capacity_module
 from .adapters import staged_adapter
@@ -166,9 +166,7 @@ def run_one(
     trace = run_context(model, culture, weights, backend, sha256_file)
     print(f"[{model.key}/{culture}] {question.var} run_id: {trace.run_id}", flush=True)
 
-    modes: list[PromptMode] = (
-        ["ntp", "fa"] if arguments.mode == "all" else [cast(PromptMode, arguments.mode)]
-    )
+    modes: list[PromptMode] = resolve_modes(arguments.mode)
     counts: dict[str, dict[str, int]] = {}
     records_by_mode: dict[str, list[PromptRecord]] = {}
     probe: dict[str, Any] | None = None
@@ -244,8 +242,6 @@ def run_one(
             analysis = run_analysis(
                 run_slug(model.key, culture),
                 question,
-                label=model.run_label(culture),
-                short_label=f"{model.label} ({culture})",
                 model_description=described,
                 csv_stems=stems,
                 paper_checkpoints=False,

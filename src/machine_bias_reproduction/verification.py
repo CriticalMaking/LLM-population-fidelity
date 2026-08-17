@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from .config import paths_for
+from .config import PROJECT_ROOT, paths_for
 from .io_utils import sha256_file
 
 
@@ -92,15 +93,11 @@ def verify_results(
         if not failed.empty:
             errors.append("paper regression checkpoints failed:\n" + failed.to_string(index=False))
 
-    import json
-
     with manifest_path.open(encoding="utf-8") as stream:
         manifest = json.load(stream)
     for relative, expected_hash in manifest["artifacts"].items():
         artifact = Path(relative)
         if not artifact.is_absolute():
-            from .config import PROJECT_ROOT
-
             artifact = PROJECT_ROOT / artifact
         if not artifact.is_file():
             errors.append(f"missing artifact: {relative}")

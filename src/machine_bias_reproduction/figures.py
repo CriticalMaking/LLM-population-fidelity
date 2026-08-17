@@ -70,7 +70,7 @@ PLATE_METADATA: tuple[tuple[str, dict[str, None]], ...] = (
 )
 
 
-def _save(figure: Figure, stem: Path, *, pdf_dpi: int = 180) -> list[Path]:
+def save_plate(figure: Figure, stem: Path, *, pdf_dpi: int = 180) -> list[Path]:
     paths = []
     for suffix, metadata in PLATE_METADATA:
         path = stem.with_suffix(suffix)
@@ -90,7 +90,7 @@ def _bw_nrd0(sample: FloatArray) -> float:
     return float(0.9 * spread * sample.size ** (-0.2))
 
 
-def _log_nemd_density(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
+def log_nemd_density(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
     sample = np.asarray(values, dtype=np.float64)
     sample = np.log(100.0 * sample[sample > 0])
     bandwidth = _bw_nrd0(sample)
@@ -100,7 +100,7 @@ def _log_nemd_density(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
     return np.exp(grid) / 100.0, np.asarray(density, dtype=np.float64)
 
 
-def _annotate_quality_bands(axis: Axes) -> None:
+def annotate_quality_bands(axis: Axes) -> None:
     for threshold in QUALITY_THRESHOLDS[1:-1]:
         axis.axvline(threshold, color=GRID, linestyle=(0, (2, 2)), linewidth=0.7)
     lower = np.asarray(QUALITY_THRESHOLDS[:-1], dtype=np.float64)
@@ -133,7 +133,7 @@ def _density_quality(
 
     for method in METHOD_ORDER:
         values = plot_data.loc[plot_data["method"] == method, "nEMD"].to_numpy(dtype=np.float64)
-        grid, density = _log_nemd_density(values)
+        grid, density = log_nemd_density(values)
         axes[0].plot(
             grid,
             density,
@@ -144,9 +144,9 @@ def _density_quality(
         )
     axes[0].set_xscale("log")
     axes[0].set_xlim(0.01, 1.0)
-    axes[0].set_xticks(NEMD_BREAKS, [f"{break_:.2f}" for break_ in NEMD_BREAKS])
+    axes[0].set_xticks(NEMD_BREAKS, [f"{threshold:.2f}" for threshold in NEMD_BREAKS])
     axes[0].set_ylim(bottom=0)
-    _annotate_quality_bands(axes[0])
+    annotate_quality_bands(axes[0])
     axes[0].set(xlabel="nEMD (log scale)", ylabel="Density (per natural-log unit)")
     axes[0].legend(loc="upper left")
 
@@ -183,7 +183,7 @@ def _density_quality(
     axes[1].legend(title="", bbox_to_anchor=(1.02, 1), loc="upper left")
 
     figure.tight_layout()
-    return _save(figure, paths.figures / "fig_nemd_density_quality")
+    return save_plate(figure, paths.figures / "fig_nemd_density_quality")
 
 
 def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]:
@@ -195,7 +195,7 @@ def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]
             values = plot_data.loc[plot_data["method"] == method, name].to_numpy(dtype=np.float64)
             if not np.any(values > 0):
                 continue
-            grid, density = _log_nemd_density(values)
+            grid, density = log_nemd_density(values)
             axis.plot(
                 grid,
                 density,
@@ -209,14 +209,18 @@ def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]
         axis.set_xlabel(f"{name} (log scale)")
         if name == "nEMD":
             axis.set_xlim(0.01, 1.0)
-            _annotate_quality_bands(axis)
+            annotate_quality_bands(axis)
     np.atleast_1d(axes)[0].set_ylabel("Density (per natural-log unit)")
     np.atleast_1d(axes)[0].legend(loc="upper left")
     figure.tight_layout()
-    return _save(figure, paths.figures / "fig_distance_comparison")
+    return save_plate(figure, paths.figures / "fig_distance_comparison")
 
 
-def _classical_mds(distance: FloatArray) -> FloatArray:
+def mds_block(coordinates: FloatArray, index: int, count: int) -> FloatArray:
+    return coordinates[index * count : (index + 1) * count]
+
+
+def classical_mds(distance: FloatArray) -> FloatArray:
     count = distance.shape[0]
     centering = np.eye(count) - np.ones((count, count)) / count
     gram = -0.5 * centering @ np.square(distance) @ centering
@@ -241,13 +245,12 @@ def _mds(paths: RunPaths, data: PreparedData, distances: pd.DataFrame) -> list[P
     wvs = data.wvs_props.loc[:, columns].to_numpy(dtype=np.float64)
     blocks = [wvs] * len(modes)
     blocks.extend(model_props[mode].loc[:, columns].to_numpy(dtype=np.float64) for mode in modes)
-    coordinates = _classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
+    coordinates = classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
 
     count = len(data.names)
     wvs_coordinates = coordinates[:count]
     model_coordinates = {
-        mode: coordinates[(len(modes) + index) * count : (len(modes) + index + 1) * count]
-        for index, mode in enumerate(modes)
+        mode: mds_block(coordinates, len(modes) + index, count) for index, mode in enumerate(modes)
     }
     errors = distances.groupby("method")["nEMD"].mean()
 
@@ -299,11 +302,11 @@ def _mds(paths: RunPaths, data: PreparedData, distances: pd.DataFrame) -> list[P
     produced: list[Path] = []
     for figure, _, mode in built:
         figure.tight_layout()
-        produced.extend(_save(figure, paths.figures / f"fig_mds_{mode.lower()}"))
+        produced.extend(save_plate(figure, paths.figures / f"fig_mds_{mode.lower()}"))
     return produced
 
 
-def _predictor_rows(predictors: set[str]) -> list[tuple[str | None, str]]:
+def predictor_rows(predictors: set[str]) -> list[tuple[str | None, str]]:
     rows: list[tuple[str | None, str]] = []
     previous_group: str | None = None
     for predictor, group, label in PREDICTOR_GROUPS:
@@ -317,7 +320,7 @@ def _predictor_rows(predictors: set[str]) -> list[tuple[str | None, str]]:
     return rows
 
 
-def _draw_coefficients(
+def draw_coefficients(
     axis: Axes,
     frame: pd.DataFrame,
     rows: list[tuple[str | None, str]],
@@ -351,7 +354,7 @@ def _draw_coefficients(
     axis.grid(axis="x", color=GRID, linewidth=0.6)
 
 
-def _label_fit(axis: Axes, text: str) -> None:
+def label_fit(axis: Axes, text: str) -> None:
     axis.annotate(
         text,
         xy=(0.0, 1.01),
@@ -373,7 +376,7 @@ def _coefficient_figure(
 ) -> list[Path]:
     frame = coefficients[coefficients["predictor"] != "const"].copy()
     modes = ("ntp", "fa")
-    social_rows = _predictor_rows(set(frame["predictor"]))
+    social_rows = predictor_rows(set(frame["predictor"]))
     has_center = CENTER_PREDICTOR in set(frame["predictor"])
     r_squared = fit[fit["model"] == fit_model].set_index("mode")["adjusted_r_squared"]
 
@@ -403,13 +406,13 @@ def _coefficient_figure(
                 sharex=center_axes[0] if center_axes else None,
                 sharey=center_axes[0] if center_axes else None,
             )
-            _draw_coefficients(
+            draw_coefficients(
                 center_axis,
                 subset,
                 [(CENTER_PREDICTOR, r"$\bf{nEMD\ center}$")],
                 color,
             )
-            _label_fit(center_axis, fitted)
+            label_fit(center_axis, fitted)
             center_axes.append(center_axis)
 
         social_axis = figure.add_subplot(
@@ -417,10 +420,10 @@ def _coefficient_figure(
             sharex=social_axes[0] if social_axes else None,
             sharey=social_axes[0] if social_axes else None,
         )
-        _draw_coefficients(social_axis, subset, social_rows, color)
+        draw_coefficients(social_axis, subset, social_rows, color)
         social_axis.set_xlabel(xlabel)
         if not has_center:
-            _label_fit(social_axis, fitted)
+            label_fit(social_axis, fitted)
         social_axes.append(social_axis)
 
     for axis in center_axes[1:] + social_axes[1:]:
@@ -430,7 +433,7 @@ def _coefficient_figure(
             axis.tick_params(labelbottom=True)
             axis.set_xlabel(xlabel)
 
-    return _save(figure, paths.figures / stem)
+    return save_plate(figure, paths.figures / stem)
 
 
 def generate_figures(

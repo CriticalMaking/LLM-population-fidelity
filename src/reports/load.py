@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from machine_bias_reproduction.config import GLOBAL_SEED, UPSTREAM_DATA
-from machine_bias_reproduction.data import load_subpops, load_wvs
+from machine_bias_reproduction.data import group_responses, load_subpops, load_wvs
 from machine_bias_reproduction.questions import Question, one_hot, resolve_question
 
 from .series import Series
@@ -35,13 +35,6 @@ class QuestionData:
         if name == "Linear":
             return self.linear
         return self.series.get(name)
-
-
-def _group(responses: pd.DataFrame, subpops: pd.Series) -> pd.DataFrame:
-    frame = responses.copy()
-    frame["name"] = subpops.to_numpy()
-    answers = [column for column in frame.columns if column != "name"]
-    return frame.groupby("name", sort=True)[answers].mean()
 
 
 def _marginal(values: pd.Series, categories: tuple[str, ...]) -> np.ndarray:
@@ -75,7 +68,7 @@ def _random(question: Question, wvs: pd.DataFrame, subpops: pd.Series) -> list[p
     for _ in range(RANDOM_REPLICATES):
         shuffled = pd.Series(rng.permutation(answers))
         responses = one_hot(shuffled, question.wvs_labels, question.answer_columns)
-        frames.append(_group(responses, subpops))
+        frames.append(group_responses(responses, subpops))
     return frames
 
 
@@ -86,7 +79,7 @@ def load_question(question: str | Question, series: list[Series]) -> QuestionDat
     subpops = load_subpops()["subpop"]
 
     wvs_responses = one_hot(outcome.normalize(wvs[outcome.var]), outcome.wvs_labels, columns)
-    wvs_props = _group(wvs_responses, subpops)
+    wvs_props = group_responses(wvs_responses, subpops)
     defined = wvs_props.notna().all(axis=1)
     names = wvs_props.index[defined.to_numpy()]
 
@@ -100,7 +93,7 @@ def load_question(question: str | Question, series: list[Series]) -> QuestionDat
                 continue
             answers = outcome.ntp_answers(frame.set_index("profile"))
             matched = answers.reindex(wvs["profile"]).reset_index(drop=True)
-            loaded[entry.name] = _group(matched, subpops).reindex(names)
+            loaded[entry.name] = group_responses(matched, subpops).reindex(names)
             marginals[entry.name] = np.asarray(
                 answers.mean().to_numpy(dtype=np.float64), dtype=np.float64
             )
@@ -111,7 +104,7 @@ def load_question(question: str | Question, series: list[Series]) -> QuestionDat
                 continue
             matched = frame.set_index("id").reindex(wvs["id"]).reset_index(drop=True)
             values = outcome.normalize(matched[outcome.var])
-            loaded[entry.name] = _group(
+            loaded[entry.name] = group_responses(
                 one_hot(values, outcome.fa_answers, columns), subpops
             ).reindex(names)
             marginals[entry.name] = _marginal(values, outcome.fa_answers)
@@ -132,14 +125,3 @@ def load_question(question: str | Question, series: list[Series]) -> QuestionDat
 
 def robustness_root() -> Path:
     return UPSTREAM_DATA / "Robustness"
-
-
-def read_robustness(directory: str, question: Question) -> pd.DataFrame | None:
-    root = robustness_root() / directory / question.var
-    if not root.is_dir():
-        return None
-    rows: list[dict[str, object]] = []
-    for path in sorted(root.glob("*.txt")) + sorted(root.glob("*.csv")):
-        text = path.read_text(encoding="utf-8", errors="replace").strip()
-        rows.append({"key": path.stem, "payload": text})
-    return pd.DataFrame(rows) if rows else None

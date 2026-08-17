@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import itertools
 import json
 import math
@@ -17,7 +16,8 @@ import pandas as pd
 from scipy import stats
 
 from .config import OUTPUTS_ROOT
-from .figures import _save
+from .figures import save_plate
+from .io_utils import sha256_file, write_csv
 from .plates import GRID, INK, MUTED_INK, slot_tone
 from .questions import DEFAULT_QUESTION, QUESTION_NAMES
 
@@ -335,8 +335,8 @@ def _summary_metric_changes(archived_dir: Path, fresh_dir: Path) -> pd.DataFrame
 def _response_distribution_changes(archived_dir: Path, fresh_dir: Path) -> pd.DataFrame:
     archived_frame = _read_csv(archived_dir / "response_distributions.csv", {"method"})
     fresh_frame = _read_csv(fresh_dir / "response_distributions.csv", {"method"})
-    answer_columns = sorted(c for c in archived_frame.columns if c != "method")
-    fresh_answer_columns = sorted(c for c in fresh_frame.columns if c != "method")
+    answer_columns = sorted(column for column in archived_frame.columns if column != "method")
+    fresh_answer_columns = sorted(column for column in fresh_frame.columns if column != "method")
     if answer_columns != fresh_answer_columns:
         raise ValueError(
             "archived and fresh response_distributions.csv have different answer "
@@ -424,11 +424,6 @@ def _coefficient_changes(archived_dir: Path, fresh_dir: Path) -> pd.DataFrame:
         )
         frames.append(merged)
     return pd.concat(frames, ignore_index=True)
-
-
-def _write_csv(frame: pd.DataFrame, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(path, index=False)
 
 
 def _format_p(value: float) -> str:
@@ -536,15 +531,7 @@ def _comparison_figure(
         cluster_axis.legend(loc="best")
         cluster_axis.grid(axis="x", color=GRID, linewidth=0.6)
 
-    return _save(figure, path_stem, pdf_dpi=300)
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+    return save_plate(figure, path_stem, pdf_dpi=300)
 
 
 def compare_runs(
@@ -614,7 +601,7 @@ def compare_runs(
     artifact_paths: list[Path] = []
     for filename, frame in artifacts.items():
         destination = output_dir / filename
-        _write_csv(frame, destination)
+        write_csv(frame, destination)
         artifact_paths.append(destination)
 
     artifact_paths.extend(
@@ -649,10 +636,10 @@ def compare_runs(
         "inputs": {
             "archived_directory": str(archived_dir),
             "fresh_directory": str(fresh_dir),
-            "sha256": {f"archived/{name}": _sha256(archived_dir / name) for name in input_names}
-            | {f"fresh/{name}": _sha256(fresh_dir / name) for name in input_names},
+            "sha256": {f"archived/{name}": sha256_file(archived_dir / name) for name in input_names}
+            | {f"fresh/{name}": sha256_file(fresh_dir / name) for name in input_names},
         },
-        "artifacts": {path.name: _sha256(path) for path in artifact_paths},
+        "artifacts": {path.name: sha256_file(path) for path in artifact_paths},
     }
     manifest_path = output_dir / "comparison_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

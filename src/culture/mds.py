@@ -9,10 +9,11 @@ import numpy.typing as npt
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from machine_bias_reproduction.analysis import _load_source
+from machine_bias_reproduction.analysis import load_source
 from machine_bias_reproduction.config import paths_for
-from machine_bias_reproduction.data import PreparedData, _group_responses
-from machine_bias_reproduction.figures import _classical_mds, _save
+from machine_bias_reproduction.data import PreparedData, group_responses
+from machine_bias_reproduction.figures import classical_mds, mds_block, save_plate
+from machine_bias_reproduction.io_utils import write_csv
 from machine_bias_reproduction.metrics import nemd, pairwise_nemd_matrix
 from machine_bias_reproduction.plates import MUTED_INK, SEPARATOR, SURVEY_TONE
 from machine_bias_reproduction.questions import Question, resolve_question
@@ -22,7 +23,7 @@ from .matching import (
     WVS_COUNTRIES,
     countries_for,
     country_of,
-    restrict,
+    restrict_to,
 )
 from .palette import (
     MDS_REFERENCES,
@@ -55,7 +56,7 @@ def _series(
     loaded: dict[str, PreparedData] = {}
     for label, source, stems in wanted:
         try:
-            loaded[label] = _load_source(source, paths_for(source, question.var), question, stems)
+            loaded[label] = load_source(source, paths_for(source, question.var), question, stems)
         except (FileNotFoundError, ValueError):
             continue
     return loaded
@@ -80,12 +81,11 @@ def _embed(
 
     blocks = [wvs] * len(order)
     blocks.extend(props[key].to_numpy(dtype=np.float64) for key in order)
-    coordinates = _classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
+    coordinates = classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
 
     count = len(names)
     model_coordinates = {
-        key: coordinates[(len(order) + index) * count : (len(order) + index + 1) * count]
-        for index, key in enumerate(order)
+        key: mds_block(coordinates, len(order) + index, count) for index, key in enumerate(order)
     }
     return names, coordinates[:count], model_coordinates
 
@@ -106,7 +106,8 @@ def _matched_mds_embedding(
     if shared is None:
         return None
     frame = pd.DataFrame({"subpopulation": shared})
-    return _embed(series, pd.Index(restrict(frame, culture)["subpopulation"]), question)
+    matched = restrict_to(frame, countries_for(culture))
+    return _embed(series, pd.Index(matched["subpopulation"]), question)
 
 
 def _all_countries_mds_embedding(
@@ -212,7 +213,7 @@ def _ntp_props_over_every_subpopulation(
 ) -> pd.DataFrame:
     by_profile = question.ntp_answers(prepared.ntp_raw.set_index("profile"))
     matched = by_profile.reindex(prepared.wvs["profile"]).reset_index(drop=True)
-    return _group_responses(matched, prepared.subpops["subpop"])
+    return group_responses(matched, prepared.subpops["subpop"])
 
 
 def _ntp_only_series(
@@ -248,12 +249,11 @@ def _embed_ntp_only(
 
     blocks = [wvs] * len(order)
     blocks.extend(props[label].loc[:, columns].to_numpy(dtype=np.float64) for label, _ in order)
-    coordinates = _classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
+    coordinates = classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
 
     count = len(wvs_props.index)
     model_coordinates = {
-        key: coordinates[(len(order) + index) * count : (len(order) + index + 1) * count]
-        for index, key in enumerate(order)
+        key: mds_block(coordinates, len(order) + index, count) for index, key in enumerate(order)
     }
     return wvs_props.index, coordinates[:count], model_coordinates
 
@@ -303,18 +303,37 @@ def _plate_series(model: CultureModel, culture: str, question: Question) -> dict
     return series if culture in series and len(series) >= 2 else {}
 
 
-def _matched_plate(
+def _sample_plate(
     model: CultureModel,
     culture: str,
     question: Question,
+    *,
+    all_countries: bool,
 ) -> tuple[list[Path], pd.DataFrame]:
     series = _plate_series(model, culture, question)
     if not series:
         return [], pd.DataFrame()
-    embedded = _matched_mds_embedding(series, culture, question)
+    embedded = (
+        _all_countries_mds_embedding(series, question)
+        if all_countries
+        else _matched_mds_embedding(series, culture, question)
+    )
     if embedded is None:
         return [], pd.DataFrame()
     names, wvs_coordinates, model_coordinates = embedded
+    countries: tuple[str, ...]
+    if all_countries:
+        home = _home_mask(names, culture)
+        sample_label = f"all {len(WVS_COUNTRIES)} WVS countries"
+        sample = "all_countries"
+        countries = WVS_COUNTRIES
+        stem = "fig_culture_mds_all_countries"
+    else:
+        home = None
+        sample_label = home_countries(culture)
+        sample = "matched"
+        countries = countries_for(culture)
+        stem = "fig_culture_mds_matched"
 
     destination = CULTURE_FIGURES / model.key / culture / question.var
     destination.mkdir(parents=True, exist_ok=True)
@@ -330,56 +349,7 @@ def _matched_plate(
             names,
             question,
             wvs_coordinates,
-            sample=home_countries(culture),
-        )
-        rows.extend(
-            _rows(
-                errors,
-                culture=culture,
-                question=question,
-                mode=mode,
-                sample="matched",
-                countries="; ".join(countries_for(culture)),
-                subpopulations=len(names),
-            )
-        )
-
-    _share_scale(axes, wvs_coordinates, model_coordinates)
-    axes[0].set_ylabel("Classical MDS dimension 2")
-    axes[0].legend(loc="upper left", markerscale=1.6)
-    figure.tight_layout()
-    return _save(figure, destination / "fig_culture_mds_matched"), pd.DataFrame(rows)
-
-
-def _all_countries_plate(
-    model: CultureModel,
-    culture: str,
-    question: Question,
-) -> tuple[list[Path], pd.DataFrame]:
-    series = _plate_series(model, culture, question)
-    if not series:
-        return [], pd.DataFrame()
-    embedded = _all_countries_mds_embedding(series, question)
-    if embedded is None:
-        return [], pd.DataFrame()
-    names, wvs_coordinates, model_coordinates = embedded
-    home = _home_mask(names, culture)
-
-    destination = CULTURE_FIGURES / model.key / culture / question.var
-    destination.mkdir(parents=True, exist_ok=True)
-    rows: list[dict[str, Any]] = []
-
-    figure, axes = plt.subplots(1, len(MODES), figsize=(13, 5.4))
-    for axis, mode in zip(axes, MODES, strict=True):
-        errors = _draw_panel(
-            axis,
-            series,
-            model_coordinates,
-            mode,
-            names,
-            question,
-            wvs_coordinates,
-            sample=f"all {len(WVS_COUNTRIES)} WVS countries",
+            sample=sample_label,
             home=home,
             home_countries=home_countries(culture),
         )
@@ -389,8 +359,8 @@ def _all_countries_plate(
                 culture=culture,
                 question=question,
                 mode=mode,
-                sample="all_countries",
-                countries="; ".join(WVS_COUNTRIES),
+                sample=sample,
+                countries="; ".join(countries),
                 subpopulations=len(names),
             )
         )
@@ -399,7 +369,7 @@ def _all_countries_plate(
     axes[0].set_ylabel("Classical MDS dimension 2")
     axes[0].legend(loc="upper left", markerscale=1.6)
     figure.tight_layout()
-    return _save(figure, destination / "fig_culture_mds_all_countries"), pd.DataFrame(rows)
+    return save_plate(figure, destination / stem), pd.DataFrame(rows)
 
 
 def _comparison_series(
@@ -412,7 +382,7 @@ def _comparison_series(
         return {}
     source = f"culture/{model.key}/{BASE_ARM}"
     try:
-        base = _load_source(
+        base = load_source(
             source,
             paths_for(source, question.var),
             question,
@@ -482,7 +452,7 @@ def _comparison_plate(
                 subpopulations=len(names),
             )
         )
-    return _save(figure, destination / "fig_culture_mds_comparison"), pd.DataFrame(rows)
+    return save_plate(figure, destination / "fig_culture_mds_comparison"), pd.DataFrame(rows)
 
 
 def _outcomes_row(
@@ -533,7 +503,7 @@ def _outcomes_row(
     axes[0][0].set_ylabel("Classical MDS dimension 2")
     axes[0][0].legend(loc="upper left", markerscale=1.6)
     figure.tight_layout()
-    return _save(figure, destination / "fig_culture_mds_outcomes"), pd.DataFrame(rows)
+    return save_plate(figure, destination / "fig_culture_mds_outcomes"), pd.DataFrame(rows)
 
 
 def degenerate_ntp_plate(
@@ -606,14 +576,13 @@ def degenerate_ntp_plate(
         va="bottom",
     )
     figure.tight_layout()
-    return _save(figure, destination / "fig_culture_mds_ntp_degenerate")
+    return save_plate(figure, destination / "fig_culture_mds_ntp_degenerate")
 
 
 def _export(tables: list[pd.DataFrame], destination: Path) -> Path | None:
     if not tables:
         return None
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    pd.concat(tables, ignore_index=True).to_csv(destination, index=False)
+    write_csv(pd.concat(tables, ignore_index=True), destination)
     return destination
 
 
@@ -644,10 +613,14 @@ def culture_mds(
 
     for model in models:
         for culture in cultures:
-            collect(per_question, _matched_plate(model, culture, outcome), model)
+            collect(
+                per_question, _sample_plate(model, culture, outcome, all_countries=False), model
+            )
             collect(per_question, _comparison_plate(model, culture, outcome), model)
             if all_countries:
-                collect(per_question, _all_countries_plate(model, culture, outcome), model)
+                collect(
+                    per_question, _sample_plate(model, culture, outcome, all_countries=True), model
+                )
             if outcomes:
                 collect(per_culture, _outcomes_row(model, culture), model)
 

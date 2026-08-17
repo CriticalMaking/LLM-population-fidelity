@@ -53,9 +53,9 @@ def kl_divergence(
     epsilon: float = KL_ZERO_PROPORTION_SMOOTHING,
 ) -> FloatArray:
     left_array, right_array = _pair(left, right)
-    p = _smoothed(left_array, epsilon)
-    q = _smoothed(right_array, epsilon)
-    values = (p * np.log2(p / q)).sum(axis=-1)
+    left_smoothed = _smoothed(left_array, epsilon)
+    right_smoothed = _smoothed(right_array, epsilon)
+    values = (left_smoothed * np.log2(left_smoothed / right_smoothed)).sum(axis=-1)
     return np.asarray(np.squeeze(values), dtype=np.float64)
 
 
@@ -95,12 +95,6 @@ DISTANCES: dict[str, DistanceFn] = {
     "JS": js_divergence,
     "MMD": mmd,
 }
-
-PRIMARY_DISTANCE = "nEMD"
-
-
-def distance_frame(left: npt.ArrayLike, right: npt.ArrayLike) -> dict[str, FloatArray]:
-    return {name: np.atleast_1d(function(left, right)) for name, function in DISTANCES.items()}
 
 
 def pairwise_nemd(distributions: npt.ArrayLike) -> FloatArray:

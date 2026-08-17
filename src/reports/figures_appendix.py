@@ -7,8 +7,8 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.data import load_wvs
-from machine_bias_reproduction.figures import _save
-from machine_bias_reproduction.plates import GRID, MUTED_INK, magnitude_steps
+from machine_bias_reproduction.figures import save_plate
+from machine_bias_reproduction.plates import GRID, MUTED_INK, bar_layout, magnitude_steps
 from machine_bias_reproduction.questions import QUESTIONS
 
 from .figures_main import SERIES_TONES, mds_plate
@@ -36,7 +36,7 @@ def figure_s1(destination: Path) -> list[Path]:
         for column, country in enumerate(countries):
             axis = axes[row][column]
             mask = wvs["i_country"] == country
-            width = 0.8 / len(decades)
+            width, offsets = bar_layout(len(decades))
             positions = np.arange(question.levels)
             for index, decade_value in enumerate(decades):
                 block = values[mask & (decade == decade_value)]
@@ -48,7 +48,7 @@ def figure_s1(destination: Path) -> list[Path]:
                     .to_numpy(dtype=np.float64)
                 )
                 axis.bar(
-                    positions + index * width - 0.4 + width / 2,
+                    positions + offsets[index],
                     shares,
                     width=width,
                     color=palette[index],
@@ -62,7 +62,7 @@ def figure_s1(destination: Path) -> list[Path]:
                 axis.set_ylabel(question.label, fontsize=9)
     axes[0][0].legend(fontsize=7)
     figure.tight_layout()
-    return _save(figure, destination / "Figure-S1-outcome-distributions")
+    return save_plate(figure, destination / "Figure-S1-outcome-distributions")
 
 
 def figures_s2_s4(loaded: dict[str, QuestionData], destination: Path) -> list[Path]:
@@ -107,7 +107,7 @@ def figure_s9(fit: pd.DataFrame, destination: Path) -> list[Path]:
         axis.set_xlabel(f"adjusted $R^2$ — {QUESTIONS[var].label}")
     axes[0][0].legend()
     figure.tight_layout()
-    return _save(figure, destination / "Figure-S9-R2-soc-all")
+    return save_plate(figure, destination / "Figure-S9-R2-soc-all")
 
 
 def figure_s10(loaded: dict[str, QuestionData], destination: Path) -> list[Path]:
@@ -163,4 +163,4 @@ def figure_s15(loaded: dict[str, QuestionData], destination: Path) -> list[Path]
     axis.tick_params(axis="x", rotation=30)
     axis.grid(axis="y", color=GRID, linewidth=0.6)
     figure.tight_layout()
-    return _save(figure, destination / "Figure-S15-correlations")
+    return save_plate(figure, destination / "Figure-S15-correlations")

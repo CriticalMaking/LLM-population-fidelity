@@ -34,11 +34,8 @@ def _snapshot_revision(repo_id: str) -> str | None:
 def _answer_mass(values: Sequence[float]) -> float:
     """How much probability the answer letters got, with no answer read as zero.
 
-    A row carries no answer two ways: the model spends its mass elsewhere, or
-    the forward pass came back non-finite. A NaN that reaches the caller as a
-    number would be averaged into a preflight and normalised into a
-    distribution. Both cases mean the same thing, so both read as zero and the
-    caller's zero-mass path flags them.
+    A non-finite sum also reads as zero: a NaN reaching the caller as a number
+    would be averaged into a preflight, and both cases mean "no answer".
     """
     mass = math.fsum(values)
     return mass if math.isfinite(mass) and mass > 0 else 0.0

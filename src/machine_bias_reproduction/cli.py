@@ -58,7 +58,13 @@ from .io_utils import (
 )
 from .prompts import PromptMode, PromptRecord, prompt_records
 from .provenance import MANIFEST_PATH, create_manifest, verify_upstream
-from .questions import DEFAULT_QUESTION, QUESTION_NAMES, resolve_question, resolve_questions
+from .questions import (
+    DEFAULT_QUESTION,
+    QUESTION_NAMES,
+    resolve_modes,
+    resolve_question,
+    resolve_questions,
+)
 from .verification import verify_results
 
 
@@ -161,9 +167,7 @@ def command_fresh(arguments: argparse.Namespace) -> None:
     question = resolve_question(arguments.question)
     paths = paths_for("fresh", question.var)
     paths.ensure()
-    modes: list[PromptMode] = (
-        ["ntp", "fa"] if arguments.mode == "all" else [cast(PromptMode, arguments.mode)]
-    )
+    modes: list[PromptMode] = resolve_modes(arguments.mode)
     threads = arguments.threads or max(1, (os.cpu_count() or 2) - 1)
     backend = LlamaCppBackend(
         model_path,
@@ -238,9 +242,7 @@ def command_trace(arguments: argparse.Namespace) -> None:
     paths = paths_for("fresh", question.var)
     paths.ensure()
     wvs = load_wvs()
-    modes: list[PromptMode] = (
-        ["ntp", "fa"] if arguments.mode == "all" else [cast(PromptMode, arguments.mode)]
-    )
+    modes: list[PromptMode] = resolve_modes(arguments.mode)
     records_by_mode: dict[str, Sequence[PromptRecord]] = {
         mode: prompt_records(wvs, mode, question) for mode in modes
     }
@@ -291,7 +293,8 @@ def _culture_groups(model_key: str, cultures: list[str]) -> list[tuple[list[str]
     finetuned = [culture for culture in cultures if not is_base(culture)]
     groups: list[tuple[list[str], dict[str, Path]]] = []
     if finetuned:
-        groups.append((finetuned, {c: staged_adapter(model_key, c) for c in finetuned}))
+        adapters = {culture: staged_adapter(model_key, culture) for culture in finetuned}
+        groups.append((finetuned, adapters))
     if any(is_base(culture) for culture in cultures):
         groups.append(([BASE_ARM], {}))
     return groups
@@ -446,6 +449,11 @@ def _add_question_argument(parser: argparse.ArgumentParser, *, plural: bool) -> 
         )
 
 
+def _add_selection_arguments(parser: argparse.ArgumentParser, *, cultures_help: str) -> None:
+    parser.add_argument("--models", nargs="+", help="model keys (default: all)")
+    parser.add_argument("--cultures", nargs="+", help=cultures_help)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="machine-bias-reproduction",
@@ -484,8 +492,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=str(DEFAULT_CHECKPOINT_ROOT),
         help="checkpoint root holding <culture>/<model>/cultural directories",
     )
-    adapters.add_argument("--models", nargs="+", help="model keys (default: all)")
-    adapters.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
+    _add_selection_arguments(adapters, cultures_help="cultures (default: all nine)")
     adapters.add_argument("--force", action="store_true", help="re-copy staged weights")
     adapters.set_defaults(handler=command_culture_adapters)
 
@@ -493,19 +500,16 @@ def build_parser() -> argparse.ArgumentParser:
         "culture-health",
         help="check staged adapters for divergence before spending GPU time",
     )
-    culture_health.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture_health.add_argument("--cultures", nargs="+", help="cultures (default: all nine)")
+    _add_selection_arguments(culture_health, cultures_help="cultures (default: all nine)")
     culture_health.set_defaults(handler=command_culture_health)
 
     culture = subparsers.add_parser(
         "culture",
         help="run culture-finetuned LLM inference and analysis",
     )
-    culture.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture.add_argument(
-        "--cultures",
-        nargs="+",
-        help="arms: the nine cultures and 'base' (default: base and all nine)",
+    _add_selection_arguments(
+        culture,
+        cultures_help="arms: the nine cultures and 'base' (default: base and all nine)",
     )
     culture.add_argument(
         "--first-countries",
@@ -534,8 +538,7 @@ def build_parser() -> argparse.ArgumentParser:
         "culture-compare",
         help="build cross-culture figures and reports from existing outputs",
     )
-    culture_compare.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture_compare.add_argument("--cultures", nargs="+", help="arms (default: base and all nine)")
+    _add_selection_arguments(culture_compare, cultures_help="arms (default: base and all nine)")
     _add_question_argument(culture_compare, plural=True)
     culture_compare.set_defaults(handler=command_culture_compare)
 
@@ -543,9 +546,9 @@ def build_parser() -> argparse.ArgumentParser:
         "culture-mds",
         help="build the culture MDS plates from existing outputs",
     )
-    culture_mds_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture_mds_parser.add_argument(
-        "--cultures", nargs="+", help="arms (default: all; only matched cultures are drawn)"
+    _add_selection_arguments(
+        culture_mds_parser,
+        cultures_help="arms (default: all; only matched cultures are drawn)",
     )
     culture_mds_parser.add_argument(
         "--all-countries",
@@ -564,9 +567,8 @@ def build_parser() -> argparse.ArgumentParser:
         "culture-summary",
         help="build the cross-question summary figures and tables",
     )
-    culture_summary_parser.add_argument("--models", nargs="+", help="model keys (default: all)")
-    culture_summary_parser.add_argument(
-        "--cultures", nargs="+", help="arms (default: base and all nine)"
+    _add_selection_arguments(
+        culture_summary_parser, cultures_help="arms (default: base and all nine)"
     )
     _add_question_argument(culture_summary_parser, plural=True)
     culture_summary_parser.set_defaults(handler=command_culture_summary)

@@ -18,12 +18,6 @@ MODELS_ROOT = PROJECT_ROOT / "models"
 ARCHIVE_SHA256 = "679f0726dcd8cd6ec0fdd6d3bd727e4c6b72b4224785cdd9eabd12bc564aa5e2"
 PAPER_SHA256 = "123585b09c98ec6546a8508b6d4bbf7032cd8b6f032cc560d88c5b8c9b724261"
 MODEL_SHA256 = "5e066c60d89d904db46c3bf577661040578a223a5a39ba3fd23ff091549767f0"
-MODEL_FILENAME = "mixtral-8x7b-v0.1.Q4_K_M.gguf"
-MODEL_URL = (
-    "https://huggingface.co/TheBloke/Mixtral-8x7B-v0.1-GGUF/resolve/"
-    "89d949782453e711318567af765d39e77c57afb0/"
-    "mixtral-8x7b-v0.1.Q4_K_M.gguf"
-)
 
 EXPECTED_WVS_ROWS = 26_981
 EXPECTED_NTP_PROFILES = 13_904
@@ -35,10 +29,6 @@ GLOBAL_SEED = 20_240_110
 class RunPaths:
     source: str
     question: str
-
-    @property
-    def slug(self) -> str:
-        return f"{self.source}/{self.question}"
 
     @property
     def outputs(self) -> Path:
