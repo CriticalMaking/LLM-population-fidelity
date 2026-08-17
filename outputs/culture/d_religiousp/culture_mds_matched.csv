@@ -1,37 +1,41 @@
 model_key,model_label,culture,question,sample,series,mode,subpopulations,countries,mean_nEMD
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,matched,Mixtral archived,NTP,276,Australia; United States,0.19442524037454534
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,matched,Mixtral fresh,NTP,276,Australia; United States,0.1948178653198928
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,matched,english,NTP,276,Australia; United States,0.3627067290814065
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,matched,Mixtral archived,FA,276,Australia; United States,0.15413209741594777
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,matched,Mixtral fresh,FA,276,Australia; United States,0.22223181843540354
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,matched,english,FA,276,Australia; United States,0.38232467831418315
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.21387971098243827
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.21454801622202782
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,all_countries,english,NTP,687,Australia; Germany; Mexico; Russia; United States,0.28725733744946835
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.18536952391072184
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.23703303462356815
-gemma4_31b,Gemma-4-31B-it,english,d_religiousp,all_countries,english,FA,687,Australia; Germany; Mexico; Russia; United States,0.30626911526107053
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,matched,Mixtral archived,NTP,141,Germany,0.15530953522501906
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,matched,Mixtral fresh,NTP,141,Germany,0.15540021944245558
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,matched,german,NTP,141,Germany,0.37772560340425915
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,matched,Mixtral archived,FA,141,Germany,0.1562038197659427
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,matched,Mixtral fresh,FA,141,Germany,0.17522347225026716
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,matched,german,FA,141,Germany,0.39114161007290665
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,base,NTP,141,Germany,0.2493746372622736
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,Mixtral archived,NTP,141,Germany,0.15530953522501906
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,Mixtral fresh,NTP,141,Germany,0.15540021944245558
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,german,NTP,141,Germany,0.37772560340425915
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,base,FA,141,Germany,0.2645032255375266
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,Mixtral archived,FA,141,Germany,0.1562038197659427
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,Mixtral fresh,FA,141,Germany,0.17522347225026716
+gemma4_31b,Gemma-4-31B-it,german,d_religiousp,comparison,german,FA,141,Germany,0.39114161007290665
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,all_countries,Mixtral archived,NTP,677,Australia; Germany; Mexico; Russia; United States,0.21346085207778928
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,all_countries,Mixtral fresh,NTP,677,Australia; Germany; Mexico; Russia; United States,0.21415186457881052
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,all_countries,german,NTP,677,Australia; Germany; Mexico; Russia; United States,0.3956040352500018
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,all_countries,Mixtral archived,FA,677,Australia; Germany; Mexico; Russia; United States,0.18531345413684425
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,all_countries,Mixtral fresh,FA,677,Australia; Germany; Mexico; Russia; United States,0.23645645543607385
 gemma4_31b,Gemma-4-31B-it,german,d_religiousp,all_countries,german,FA,677,Australia; Germany; Mexico; Russia; United States,0.405421706520616
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,matched,Mixtral archived,NTP,128,Mexico,0.4031646574637626
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,matched,Mixtral fresh,NTP,128,Mexico,0.40491451250299054
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,matched,spanish,NTP,128,Mexico,0.30588687466673414
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,matched,Mixtral archived,FA,128,Mexico,0.31006038457465535
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,matched,Mixtral fresh,FA,128,Mexico,0.4259091303313246
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,matched,spanish,FA,128,Mexico,0.31509870941874163
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,all_countries,Mixtral archived,NTP,644,Australia; Germany; Mexico; Russia; United States,0.2140836831781056
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,all_countries,Mixtral fresh,NTP,644,Australia; Germany; Mexico; Russia; United States,0.2147487866171688
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,all_countries,spanish,NTP,644,Australia; Germany; Mexico; Russia; United States,0.38787494981371107
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,all_countries,Mixtral archived,FA,644,Australia; Germany; Mexico; Russia; United States,0.1851206905246886
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,all_countries,Mixtral fresh,FA,644,Australia; Germany; Mexico; Russia; United States,0.2374886828527865
-gemma4_31b,Gemma-4-31B-it,spanish,d_religiousp,all_countries,spanish,FA,644,Australia; Germany; Mexico; Russia; United States,0.40098353657087027
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,german,NTP,144,Germany,0.36904629394251
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,Mixtral archived,FA,144,Germany,0.15582120516849216
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,Mixtral fresh,FA,144,Germany,0.1760767501186118
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,german,FA,144,Germany,0.3980249915056899
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,base,NTP,144,Germany,0.4005470208906679
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,Mixtral archived,NTP,144,Germany,0.15547536685430327
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,Mixtral fresh,NTP,144,Germany,0.15550099671651826
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,german,NTP,144,Germany,0.36904629394251
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,base,FA,144,Germany,0.4297645500209064
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,Mixtral archived,FA,144,Germany,0.15582120516849216
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,Mixtral fresh,FA,144,Germany,0.1760767501186118
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,comparison,german,FA,144,Germany,0.3980249915056899
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.21387971098243827
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.21454801622202782
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,german,NTP,687,Australia; Germany; Mexico; Russia; United States,0.34575485278907253
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.18536952391072184
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.23703303462356815
+gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.3782585761185641

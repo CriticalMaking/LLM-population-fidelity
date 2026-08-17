@@ -1,37 +1,41 @@
 model_key,model_label,culture,question,sample,series,mode,subpopulations,countries,mean_nEMD
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,matched,Mixtral archived,NTP,270,Australia; United States,0.07551676286587482
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,matched,Mixtral fresh,NTP,270,Australia; United States,0.0753756375463136
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,matched,english,NTP,270,Australia; United States,0.12751418625243327
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,matched,Mixtral archived,FA,270,Australia; United States,0.10157664626494525
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,matched,Mixtral fresh,FA,270,Australia; United States,0.09571315856407468
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,matched,english,FA,270,Australia; United States,0.13447160412404188
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,all_countries,Mixtral archived,NTP,630,Australia; Germany; Mexico; Russia; United States,0.08905805468218422
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,all_countries,Mixtral fresh,NTP,630,Australia; Germany; Mexico; Russia; United States,0.0891002056896117
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,all_countries,english,NTP,630,Australia; Germany; Mexico; Russia; United States,0.134665335537848
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,all_countries,Mixtral archived,FA,630,Australia; Germany; Mexico; Russia; United States,0.10760599164436102
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,all_countries,Mixtral fresh,FA,630,Australia; Germany; Mexico; Russia; United States,0.10709800641005135
-gemma4_31b,Gemma-4-31B-it,english,d_polpos,all_countries,english,FA,630,Australia; Germany; Mexico; Russia; United States,0.14004370980874617
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,matched,Mixtral archived,NTP,139,Germany,0.09764949795059889
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,matched,Mixtral fresh,NTP,139,Germany,0.09793779387976341
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,matched,german,NTP,139,Germany,0.11423866639500903
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,matched,Mixtral archived,FA,139,Germany,0.08443748152722357
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,matched,Mixtral fresh,FA,139,Germany,0.08225484484517445
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,matched,german,FA,139,Germany,0.12221173419887664
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,base,NTP,139,Germany,0.09153597239381682
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,Mixtral archived,NTP,139,Germany,0.09764949795059889
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,Mixtral fresh,NTP,139,Germany,0.09793779387976341
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,german,NTP,139,Germany,0.11423866639500903
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,base,FA,139,Germany,0.13814609185639604
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,Mixtral archived,FA,139,Germany,0.08443748152722357
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,Mixtral fresh,FA,139,Germany,0.08225484484517445
+gemma4_31b,Gemma-4-31B-it,german,d_polpos,comparison,german,FA,139,Germany,0.12221173419887664
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,all_countries,Mixtral archived,NTP,626,Australia; Germany; Mexico; Russia; United States,0.0888156897722242
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,all_countries,Mixtral fresh,NTP,626,Australia; Germany; Mexico; Russia; United States,0.08884434413111979
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,all_countries,german,NTP,626,Australia; Germany; Mexico; Russia; United States,0.15183051807023198
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,all_countries,Mixtral archived,FA,626,Australia; Germany; Mexico; Russia; United States,0.10779287973835772
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,all_countries,Mixtral fresh,FA,626,Australia; Germany; Mexico; Russia; United States,0.10679685946613648
 gemma4_31b,Gemma-4-31B-it,german,d_polpos,all_countries,german,FA,626,Australia; Germany; Mexico; Russia; United States,0.14427657620065704
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,matched,Mixtral archived,NTP,128,Mexico,0.09766976988223017
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,matched,Mixtral fresh,NTP,128,Mexico,0.09792858991157377
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,matched,spanish,NTP,128,Mexico,0.18502414835955422
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,matched,Mixtral archived,FA,128,Mexico,0.13147976442916307
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,matched,Mixtral fresh,FA,128,Mexico,0.14696992795461733
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,matched,spanish,FA,128,Mexico,0.21672878945336851
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,all_countries,Mixtral archived,NTP,615,Australia; Germany; Mexico; Russia; United States,0.08898033261462156
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,all_countries,Mixtral fresh,NTP,615,Australia; Germany; Mexico; Russia; United States,0.08900966727989804
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,all_countries,spanish,NTP,615,Australia; Germany; Mexico; Russia; United States,0.13359664354622913
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,all_countries,Mixtral archived,FA,615,Australia; Germany; Mexico; Russia; United States,0.10785638351800117
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,all_countries,Mixtral fresh,FA,615,Australia; Germany; Mexico; Russia; United States,0.10672007269879394
-gemma4_31b,Gemma-4-31B-it,spanish,d_polpos,all_countries,spanish,FA,615,Australia; Germany; Mexico; Russia; United States,0.15873110442061025
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,Mixtral archived,NTP,144,Germany,0.0985880379075019
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,Mixtral fresh,NTP,144,Germany,0.09892358962767663
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,german,NTP,144,Germany,0.09184247289571096
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,Mixtral archived,FA,144,Germany,0.08509585794297989
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,Mixtral fresh,FA,144,Germany,0.08324143792409637
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,german,FA,144,Germany,0.1102259937671708
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,base,NTP,144,Germany,0.1339277076369752
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,Mixtral archived,NTP,144,Germany,0.0985880379075019
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,Mixtral fresh,NTP,144,Germany,0.09892358962767663
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,german,NTP,144,Germany,0.09184247289571096
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,base,FA,144,Germany,0.13715229570086673
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,Mixtral archived,FA,144,Germany,0.08509585794297989
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,Mixtral fresh,FA,144,Germany,0.08324143792409637
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,comparison,german,FA,144,Germany,0.1102259937671708
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,Mixtral archived,NTP,639,Australia; Germany; Mexico; Russia; United States,0.08955286197440716
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,Mixtral fresh,NTP,639,Australia; Germany; Mexico; Russia; United States,0.0895921059016076
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,german,NTP,639,Australia; Germany; Mexico; Russia; United States,0.11514359892148077
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,Mixtral archived,FA,639,Australia; Germany; Mexico; Russia; United States,0.10815112055552699
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,Mixtral fresh,FA,639,Australia; Germany; Mexico; Russia; United States,0.10736867086254072
+gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,all_countries,german,FA,639,Australia; Germany; Mexico; Russia; United States,0.130787335939781

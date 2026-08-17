@@ -1,0 +1,7 @@
+model_key,model_label,question,question_label,series,mode,overall_nEMD,survey_median_pairwise_nEMD,model_median_pairwise_nEMD,compression
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,d_happy,Happiness,Mixtral archived,NTP,0.03077057395501,0.1146384479717813,0.0327289121563633,3.502666004421194
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,d_happy,Happiness,Mixtral archived,FA,0.0354232895033925,0.1146384479717813,0.056471105251593,2.0300372635003003
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,d_happy,Happiness,Mixtral fresh,NTP,0.0298899241915598,0.1146384479717813,0.032715006440181,3.504154834308113
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,d_happy,Happiness,Mixtral fresh,FA,0.0406892117768514,0.1146384479717813,0.0536616161616161,2.136321195144727
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,d_happy,Happiness,base,NTP,0.037812722144031,0.1146384479717813,0.0764007319538544,1.5004888701985508
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,d_happy,Happiness,base,FA,0.0743766270372126,0.1146384479717813,0.0965633565254058,1.1871837526859368

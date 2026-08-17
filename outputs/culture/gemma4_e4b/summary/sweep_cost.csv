@@ -1,0 +1,3 @@
+model_key,model_label,culture,question,question_label,hours,sessions,sweep_status
+gemma4_e4b,Gemma-4-E4B-it,base,d_happy,Happiness,0.28759049166666667,1,
+gemma4_e4b,Gemma-4-E4B-it,german,d_happy,Happiness,0.35760850361111113,1,

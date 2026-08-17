@@ -1,0 +1,2 @@
+model_key,model_label,culture,question,question_label,hours,sessions,sweep_status
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,d_happy,Happiness,0.3595102277777778,1,ok
