@@ -402,68 +402,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b5/14/85052d76d7f92ed97de7a7bc54f6b6cc04c2c25f6d8775cfe37d976e1842/llama_cpp_python-0.3.1.tar.gz", hash = "sha256:75ec8374960b6353c254e55a48e7c7783abf6bcb9178ba0f655490738e5a9004", size = 63903646, upload-time = "2024-09-29T19:29:30.813Z" }
 
 [[package]]
-name = "machine-bias-reproduction"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "scikit-learn" },
-    { name = "scipy" },
-    { name = "seaborn" },
-    { name = "statsmodels" },
-]
-
-[package.optional-dependencies]
-culture = [
-    { name = "accelerate" },
-    { name = "bitsandbytes" },
-    { name = "huggingface-hub" },
-    { name = "peft" },
-    { name = "torch" },
-    { name = "transformers" },
-]
-inference = [
-    { name = "llama-cpp-python" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "pandas-stubs" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "accelerate", marker = "extra == 'culture'", specifier = "==1.13.0" },
-    { name = "bitsandbytes", marker = "extra == 'culture'", specifier = "==0.49.2" },
-    { name = "huggingface-hub", marker = "extra == 'culture'", specifier = ">=0.30" },
-    { name = "llama-cpp-python", marker = "extra == 'inference'", specifier = "==0.3.1" },
-    { name = "matplotlib", specifier = ">=3.8,<4" },
-    { name = "numpy", specifier = ">=1.26,<3" },
-    { name = "pandas", specifier = ">=2.2,<3" },
-    { name = "peft", marker = "extra == 'culture'", specifier = "==0.19.1" },
-    { name = "scikit-learn", specifier = ">=1.5,<2" },
-    { name = "scipy", specifier = ">=1.12,<2" },
-    { name = "seaborn", specifier = ">=0.13,<1" },
-    { name = "statsmodels", specifier = ">=0.14,<1" },
-    { name = "torch", marker = "extra == 'culture'", specifier = "==2.12.0" },
-    { name = "transformers", marker = "extra == 'culture'", specifier = "==5.8.1" },
-]
-provides-extras = ["inference", "culture"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "mypy", specifier = ">=1.15,<2" },
-    { name = "pandas-stubs", specifier = ">=2.2" },
-    { name = "pytest", specifier = ">=8,<10" },
-    { name = "ruff", specifier = ">=0.9,<1" },
-]
-
-[[package]]
 name = "markdown-it-py"
 version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1234,6 +1172,68 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/12/9c/dda0dbd547dc549839824135f223792fd0e725f28ed0715dda366b7acaa2/torch-2.12.0-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:c12592630aef72feaf18bd3f197ef587bbfa21131b31c38b23ab2e55fce92e36", size = 426362932, upload-time = "2026-05-13T14:54:15.295Z" },
     { url = "https://files.pythonhosted.org/packages/e2/d2/a7dd5a3f9bdaa7842124e8e2359202b317c48d47d2fc5816fafdf2049adb/torch-2.12.0-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:415c1b8d0412f67551c8e89a2daca0fb3e56694af0281ba155eaa9da481f58b4", size = 532170085, upload-time = "2026-05-13T14:55:20.788Z" },
     { url = "https://files.pythonhosted.org/packages/12/1b/a61ce2004f9ab0ea8964a6e6168133a127795667639e2ff4f8f2bdb16a65/torch-2.12.0-cp311-cp311-win_amd64.whl", hash = "sha256:dd37188ea325042cb1f6cafa56822b11ada2520c04791a52629b0af25bdfbfd9", size = 122953128, upload-time = "2026-05-13T14:54:52.744Z" },
+]
+
+[[package]]
+name = "towards-socially-grounded-ai-safety"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+    { name = "seaborn" },
+    { name = "statsmodels" },
+]
+
+[package.optional-dependencies]
+culture = [
+    { name = "accelerate" },
+    { name = "bitsandbytes" },
+    { name = "huggingface-hub" },
+    { name = "peft" },
+    { name = "torch" },
+    { name = "transformers" },
+]
+inference = [
+    { name = "llama-cpp-python" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "pandas-stubs" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "accelerate", marker = "extra == 'culture'", specifier = "==1.13.0" },
+    { name = "bitsandbytes", marker = "extra == 'culture'", specifier = "==0.49.2" },
+    { name = "huggingface-hub", marker = "extra == 'culture'", specifier = ">=0.30" },
+    { name = "llama-cpp-python", marker = "extra == 'inference'", specifier = "==0.3.1" },
+    { name = "matplotlib", specifier = ">=3.8,<4" },
+    { name = "numpy", specifier = ">=1.26,<3" },
+    { name = "pandas", specifier = ">=2.2,<3" },
+    { name = "peft", marker = "extra == 'culture'", specifier = "==0.19.1" },
+    { name = "scikit-learn", specifier = ">=1.5,<2" },
+    { name = "scipy", specifier = ">=1.12,<2" },
+    { name = "seaborn", specifier = ">=0.13,<1" },
+    { name = "statsmodels", specifier = ">=0.14,<1" },
+    { name = "torch", marker = "extra == 'culture'", specifier = "==2.12.0" },
+    { name = "transformers", marker = "extra == 'culture'", specifier = "==5.8.1" },
+]
+provides-extras = ["inference", "culture"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.15,<2" },
+    { name = "pandas-stubs", specifier = ">=2.2" },
+    { name = "pytest", specifier = ">=8,<10" },
+    { name = "ruff", specifier = ">=0.9,<1" },
 ]
 
 [[package]]

@@ -1,7 +1,7 @@
 [project]
-name = "machine-bias-reproduction"
+name = "towards-socially-grounded-ai-safety"
 version = "0.1.0"
-description = "Reproducible Mixtral happiness slice of the Machine Bias opinion-poll study"
+description = "Reproduction of the Machine Bias opinion-poll study, extended to culture-finetuned LLMs"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
@@ -18,8 +18,8 @@ dependencies = [
 inference = [
     "llama-cpp-python==0.3.1",
 ]
-# Pinned to the stack the culture adapters were trained with, so inference
-# composes the LoRA onto weights in the same numeric format as training.
+# The training stack, pinned so inference composes the LoRA onto weights in
+# the numeric format it was trained against.
 culture = [
     "torch==2.12.0",
     "transformers==5.8.1",
@@ -56,7 +56,7 @@ markers = [
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-src = ["src", "tests", "scripts"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = [
@@ -74,17 +74,15 @@ known-first-party = ["machine_bias_reproduction", "culture", "reports"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["src", "tests", "scripts"]
+files = ["src", "tests"]
 strict = true
 warn_unused_ignores = true
 warn_unreachable = true
 show_error_codes = true
 pretty = true
 
-# transformers is typed only when the culture extra is installed, which flips
-# which ignores in this module are "unused". The module must type-check in both
-# states, so it opts out of that particular warning rather than tracking the
-# environment.
+# transformers is typed only with the culture extra installed, which flips
+# which ignores here are "unused"; the module must type-check in both states.
 [[tool.mypy.overrides]]
 module = ["culture.backend"]
 warn_unused_ignores = false

@@ -1,4 +1,4 @@
-# Machine Bias — reproduction and culture-finetuned LLM extension
+# Towards Socially Grounded AI Safety
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
@@ -58,7 +58,7 @@ culture-finetuned LLMs.
 │       ├── bootstrap.py              Figure S16
 │       └── backtranslation.py        Table S9; Figures S17, S18
 │
-├── scripts/                          one numbered script per workflow step
+├── scripts/                          shared shell helpers, the sweep driver, the model download
 ├── tests/                            unit, integration, golden
 │
 ├── outputs/    <source>/<question>/ + reports/ (raw/, logs/, reports/tex/ ignored)
