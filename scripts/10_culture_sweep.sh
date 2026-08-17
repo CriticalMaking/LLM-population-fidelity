@@ -16,9 +16,11 @@ whole grid, so a pair that fails or is interrupted never takes the rest of the
 sweep with it. Each pair writes its own log, already-complete pairs are skipped
 unless --redo is given, and the cross-culture comparison is rebuilt at the end.
 
+Cultures default to german; pass --cultures all for the full nine-culture grid.
+
 Examples:
-  ./scripts/10_culture_sweep.sh                                   # every pair
-  ./scripts/10_culture_sweep.sh --cultures portuguese             # one culture, both models
+  ./scripts/10_culture_sweep.sh                                   # every model, german
+  ./scripts/10_culture_sweep.sh --cultures portuguese             # one culture, every model
   ./scripts/10_culture_sweep.sh --models gemma4_31b --cultures all
   ./scripts/10_culture_sweep.sh --cultures english german --mode ntp
   ./scripts/10_culture_sweep.sh --questions all --models gemma4_31b
@@ -29,9 +31,10 @@ all work here too.
 EOF
 }
 
-ALL_MODELS=(gemma4_31b qwen3_vl_8b)
+ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b)
 ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish turkish)
 ALL_QUESTIONS=(d_happy d_polpos d_religiousp d_trust)
+DEFAULT_CULTURES=(german)
 
 models=()
 cultures=()
@@ -66,7 +69,9 @@ done
 if [[ ${#models[@]} -eq 0 || "${models[0]}" == "all" ]]; then
     models=("${ALL_MODELS[@]}")
 fi
-if [[ ${#cultures[@]} -eq 0 || "${cultures[0]}" == "all" ]]; then
+if [[ ${#cultures[@]} -eq 0 ]]; then
+    cultures=("${DEFAULT_CULTURES[@]}")
+elif [[ "${cultures[0]}" == "all" ]]; then
     cultures=("${ALL_CULTURES[@]}")
 fi
 if [[ ${#questions[@]} -eq 0 ]]; then
@@ -128,9 +133,6 @@ for question in "${questions[@]}"; do
         outputs="$REPO_ROOT/outputs/culture/$model/$culture/$question"
         log="$LOG_DIR/$model-$culture-$question.log"
 
-        # capacity.csv, not summary_metrics.csv: a run whose finetuned culture
-        # MLLM could not answer the paper's prompt writes no distances but is
-        # still complete.
         if [[ $skip_completed -eq 1 && -f "$outputs/capacity.csv" ]]; then
             echo "[$index/$total] $pair — already run, skipping (--redo to rerun)"
             printf '%s\t%s\t%s\tskipped\t0\t\t\t\t\n' "$model" "$culture" "$question" >> "$SUMMARY"
