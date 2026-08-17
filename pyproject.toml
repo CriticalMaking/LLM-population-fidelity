@@ -27,11 +27,6 @@ culture = [
     "accelerate==1.13.0",
     "bitsandbytes==0.49.2",
     "huggingface-hub>=0.30",
-    # Qwen3-VL-8B-Thinking-FP8 dispatches its fine-grained FP8 matmuls through
-    # a Hub kernel; without this the first forward pass raises ImportError.
-    # The range is transformers 5.8.1's own: 0.13+ made LayerRepository's
-    # revision/version mandatory, which its _KERNEL_MAPPING does not pass.
-    "kernels>=0.12,<0.13",
 ]
 
 [dependency-groups]
