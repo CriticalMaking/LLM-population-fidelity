@@ -1,0 +1,28 @@
+{"mass": 0.07590789347887039, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72006\u00a767\u00a7Female\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08557184040546417, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72006\u00a745\u00a7Female\u00a7Middle\u00a7NA\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09106813604012132, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a72017\u00a780\u00a7Male\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09817239083349705, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a71995\u00a771\u00a7Female\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.04603426717221737, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a756\u00a7Male\u00a7High\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09731072327122092, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a768\u00a7Female\u00a7High\u00a7Homemaker\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.07869646651670337, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a772\u00a7Male\u00a7High\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.07748317182995379, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a742\u00a7Female\u00a7High\u00a7Homemaker\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.05681667244061828, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a769\u00a7Male\u00a7High\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08920512534677982, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a72017\u00a785\u00a7Male\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.06810678425244987, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a737\u00a7Female\u00a7High\u00a7Homemaker\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09679845976643264, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a72017\u00a750\u00a7Male\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09209306258708239, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a72017\u00a759\u00a7Female\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09264772944152355, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a742\u00a7Female\u00a7High\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.06776229664683342, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a754\u00a7Male\u00a7High\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09549970179796219, "mode": "ntp", "outcome": "invalid", "prompt_id": "Germany\u00a72006\u00a772\u00a7Female\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08141247276216745, "mode": "ntp", "outcome": "invalid", "prompt_id": "United_States\u00a72017\u00a771\u00a7Female\u00a7Middle\u00a7Retired\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201800405", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Unite201701990", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr200500272", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201800620", "raw_text": " C. Divorced or separated (Error in provided answers"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Unite201700803", "raw_text": " C. Divorced or separated\nQuestion: How old"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201800784", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Unite199501180", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr200500431", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Unite201701351", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa200601462", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Germa200601350", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}

@@ -1,0 +1,17 @@
+{"mass": 0.07972832024097443, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a746\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.07397675700485706, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a763\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.06589529290795326, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a756\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08130509778857231, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a755\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08520160615444183, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a768\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08299809321761131, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a749\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.09307893738150597, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a760\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.06585425324738026, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a754\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.07745537161827087, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a758\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08316255919635296, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a764\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.08316325955092907, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a762\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.0968207698315382, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72005\u00a744\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": 0.06799280270934105, "mode": "ntp", "outcome": "invalid", "prompt_id": "Australia\u00a72018\u00a757\u00a7Male\u00a7Middle\u00a7Working\u00a7Divorced_or_separated", "raw_text": null}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr199500804", "raw_text": " C. Divorced or separated\nQuestion: What is"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201801218", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201800071", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}
+{"mass": null, "mode": "fa", "outcome": "failed", "prompt_id": "Austr201800840", "raw_text": " C. Divorced or separated\nQuestion: Generally speaking"}

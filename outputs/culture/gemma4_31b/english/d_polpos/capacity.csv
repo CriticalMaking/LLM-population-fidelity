@@ -1,3 +1,0 @@
-mode,prompts,valid,invalid,failed,valid_rate,mean_valid_mass,median_valid_mass,p10_valid_mass
-NTP,13904,13904,0,0,1.0,0.9739543903181334,0.9937151570238711,0.9222898663574597
-FA,26981,26493,0,488,0.9819131981764946,,,

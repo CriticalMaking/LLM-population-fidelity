@@ -1,0 +1,41 @@
+{
+  "code_revisions": [
+    "da05dc1-dirty"
+  ],
+  "failed_records": [
+    "raw/fa/881e2fc668018c0c8b6f987c.failed.json",
+    "raw/fa/4ff874a91527a42faef53eb8.failed.json",
+    "raw/fa/4817600c3a7a45609dd8452f.failed.json",
+    "raw/fa/42a5c1af8bda8bf29efcfa3b.failed.json",
+    "raw/fa/2a3c94bb2fa4cc1892943859.failed.json",
+    "raw/fa/1b3f5eeaa76598ba4b2e30b6.failed.json",
+    "raw/fa/0d37499ba50949d65466d695.failed.json",
+    "raw/fa/d7092c5a39542b554bd6701b.failed.json",
+    "raw/fa/a1b87668946bc8f65e5e72bf.failed.json",
+    "raw/fa/48615b293ac62a56f19a13f6.failed.json",
+    "raw/fa/ae1ccf5b42354c70cab5ac84.failed.json",
+    "raw/fa/33f630f625df38dc85a3e15b.failed.json",
+    "raw/fa/dc60aa31de8c3c49d178e192.failed.json",
+    "raw/fa/489c3e4ee5e2485b545c0721.failed.json",
+    "raw/fa/3431ac8f0c43439be62cadb9.failed.json",
+    "raw/fa/aa77ef72365e95cf587a62fc.failed.json",
+    "raw/fa/1682a574250eced84dbb1f33.failed.json",
+    "raw/fa/4df092bbca6f75c0b2e6040f.failed.json",
+    "raw/fa/10af10beb621fa2a09af1afd.failed.json",
+    "raw/fa/e2d34ea1ecab8976e4a18d13.failed.json",
+    "raw/fa/730fbddf9a58dbba92f39ad8.failed.json"
+  ],
+  "indexed": 40864,
+  "missing": {
+    "fa": 21,
+    "ntp": 0
+  },
+  "model_sha256": [],
+  "ok": false,
+  "problems": [],
+  "run_ids": [
+    "20260815T040528Z-2e5b73fd"
+  ],
+  "traced": 40864,
+  "untraced": 0
+}

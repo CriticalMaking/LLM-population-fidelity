@@ -14,13 +14,15 @@
       "D": " D"
     },
     "arm": "base",
-    "base_model_id": "Qwen/Qwen3-VL-8B-Thinking-FP8",
-    "base_revision": "a6638e84662f85a17bb8688224541e153d4f6c71",
+    "attn_implementation": "sdpa",
+    "base_model_id": "Qwen/Qwen3-VL-8B-Thinking",
+    "base_revision": "92f3c4b4feadd3a016ef468d103bb5f58b2a2c6b",
     "batch_size": 16,
     "bitsandbytes": "0.49.2",
     "device": "cuda",
     "dtype": "bfloat16",
     "fa_max_new_tokens": 12,
+    "fp8_matmul_kernel": null,
     "lora_exclude_modules": null,
     "lora_target_modules": null,
     "modalities_used": [
@@ -32,26 +34,30 @@
     "oom_backoffs": 0,
     "peft": "0.19.1",
     "prompt_contract": "paper",
-    "quantization": "fp8-dequantized",
+    "quantization": null,
     "question": "d_happy",
-    "tokenizer_source": "Qwen/Qwen3-VL-8B-Thinking-FP8",
+    "tokenizer_source": "Qwen/Qwen3-VL-8B-Thinking",
     "torch": "2.12.0",
     "version": "5.8.1"
   },
   "capacity": {
     "by_mode": [
       {
+        "distinct_distributions": 2743.0,
         "failed": 0,
         "invalid": 0,
-        "mean_valid_mass": 0.9983664291085571,
-        "median_valid_mass": 0.9986231713555753,
+        "mean_valid_mass": 0.9981813926211864,
+        "median_valid_mass": 0.9984203330241144,
         "mode": "NTP",
-        "p10_valid_mass": 0.9972320115659385,
+        "p10_valid_mass": 0.9970409958157689,
         "prompts": 13904,
+        "response_std": 0.098733634626405,
+        "tied_answers": 1057.0,
         "valid": 13904,
         "valid_rate": 1.0
       },
       {
+        "distinct_distributions": NaN,
         "failed": 0,
         "invalid": 0,
         "mean_valid_mass": NaN,
@@ -59,17 +65,20 @@
         "mode": "FA",
         "p10_valid_mass": NaN,
         "prompts": 26981,
+        "response_std": NaN,
+        "tied_answers": NaN,
         "valid": 26981,
         "valid_rate": 1.0
       }
     ],
     "failed": 0,
     "invalid": 0,
+    "ntp_distinct_distributions": 2743,
     "prompts": 40885,
     "valid": 40885,
     "valid_rate": 1.0
   },
-  "code_revision": "09ea71d-dirty",
+  "code_revision": "da05dc1-dirty",
   "counts": {
     "fa": {
       "failed": 0,
@@ -85,7 +94,7 @@
     }
   },
   "event_log": "logs/inference_events.jsonl",
-  "finished_at": "2026-08-14T20:07:31.766296+00:00",
+  "finished_at": "2026-08-16T21:05:47.335843+00:00",
   "hardware": {
     "cpu_count": 32,
     "machine": "x86_64",
@@ -96,11 +105,11 @@
   "model": {
     "adapter_path": null,
     "adapter_sha256": null,
-    "base_model_id": "Qwen/Qwen3-VL-8B-Thinking-FP8",
-    "base_revision": "a6638e84662f85a17bb8688224541e153d4f6c71",
+    "base_model_id": "Qwen/Qwen3-VL-8B-Thinking",
+    "base_revision": "92f3c4b4feadd3a016ef468d103bb5f58b2a2c6b",
     "culture": "base",
     "model_key": "qwen3_vl_8b",
-    "sha256": "a6638e84662f85a17bb8688224541e153d4f6c71"
+    "sha256": "92f3c4b4feadd3a016ef468d103bb5f58b2a2c6b"
   },
   "parameters": {
     "global_seed": 20240110,
@@ -113,14 +122,14 @@
   },
   "preflight": {
     "informative": true,
-    "max_mass": 0.9991850852966309,
-    "mean_mass": 0.9987392704933882,
-    "min_mass": 0.9969473481178284,
+    "max_mass": 0.9991149865090847,
+    "mean_mass": 0.9986343612108612,
+    "min_mass": 0.9970163870602846,
     "prompts": 32,
     "threshold": 0.1
   },
   "question": "d_happy",
-  "run_id": "20260814T194549Z-825759c6",
+  "run_id": "20260816T204359Z-94fe59cf",
   "schema_version": 2,
-  "started_at": "2026-08-14T19:45:49.170679+00:00"
+  "started_at": "2026-08-16T20:43:59.849549+00:00"
 }

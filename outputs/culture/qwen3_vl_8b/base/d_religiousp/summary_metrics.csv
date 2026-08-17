@@ -1,0 +1,11 @@
+metric,method,value
+wvs_rows,WVS,26981.0
+ntp_profiles,NTP,13904.0
+subpopulations,WVS,687.0
+valid_token_mass_mean,NTP,0.9918691111530014
+subpopulations_dropped,WVS,0.0
+overall_nEMD,NTP,0.028010352050529087
+overall_nEMD,FA,0.043229307060731546
+median_pairwise_nEMD,WVS,0.173656798245614
+median_pairwise_nEMD,NTP,0.1206321443846377
+median_pairwise_nEMD,FA,0.18043478260869564

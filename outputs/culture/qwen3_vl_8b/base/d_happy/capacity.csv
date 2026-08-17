@@ -1,3 +1,3 @@
-mode,prompts,valid,invalid,failed,valid_rate,mean_valid_mass,median_valid_mass,p10_valid_mass
-NTP,13904,13904,0,0,1.0,0.9983664291085571,0.9986231713555753,0.9972320115659385
-FA,26981,26981,0,0,1.0,,,
+mode,prompts,valid,invalid,failed,valid_rate,mean_valid_mass,median_valid_mass,p10_valid_mass,distinct_distributions,tied_answers,response_std
+NTP,13904,13904,0,0,1.0,0.9981813926211864,0.9984203330241144,0.9970409958157689,2743.0,1057.0,0.098733634626405
+FA,26981,26981,0,0,1.0,,,,,,
