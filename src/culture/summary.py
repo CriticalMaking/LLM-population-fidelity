@@ -1,57 +1,33 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterator
-from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
-import matplotlib
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.config import RunPaths, paths_for
 from machine_bias_reproduction.figures import _save
 from machine_bias_reproduction.inference import EVENT_LOG_NAME
+from machine_bias_reproduction.plates import GRID, INK, MUTED_INK
 from machine_bias_reproduction.questions import Question, resolve_questions
 
+from .adapters import health_table
 from .matching import WVS_COUNTRIES, country_of, home_splits
-from .palette import MODES, mds_color
-from .registry import BASE_ARM, CULTURE_FIGURES, CULTURE_ROOT, CultureModel, is_base
-from .tables import read_csv, read_csv_tsv
-
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
-
-REFERENCES: tuple[tuple[str, str], ...] = (
-    ("Mixtral archived", "archived"),
-    ("Mixtral fresh", "fresh"),
+from .palette import MDS_REFERENCES as REFERENCES
+from .palette import MODES, arm_tone, model_tone
+from .registry import (
+    ADAPTER_MIN_EVAL_TOKEN_ACCURACY,
+    BASE_ARM,
+    CULTURE_FIGURES,
+    CULTURE_ROOT,
+    CultureModel,
+    is_base,
 )
-
-GRID = "#d8d8d8"
-INK = "#1a1a1a"
-
-RC = {
-    "font.size": 12,
-    "axes.edgecolor": "#888888",
-    "axes.labelcolor": INK,
-    "text.color": INK,
-    "xtick.color": INK,
-    "ytick.color": INK,
-    "axes.spines.top": False,
-    "axes.spines.right": False,
-}
-
-
-@contextmanager
-def _styled() -> Iterator[None]:
-    with plt.rc_context(cast(Any, RC)):
-        yield
-
-
-def _series_color(series: str) -> str:
-    return mds_color(series)
+from .tables import read_csv, read_csv_tsv
 
 
 def _summary_metrics(source: str, question: Question) -> dict[tuple[str, str], float] | None:
@@ -321,8 +297,6 @@ def sweep_cost_table(
     cultures: list[str],
     questions: list[Question],
 ) -> pd.DataFrame:
-    # Two files: the culture sweep writes one, the base-model driver another, so
-    # neither truncates the other's record while both can be running.
     logged = [
         read_csv_tsv(CULTURE_ROOT / "logs" / name)
         for name in ("sweep_summary.tsv", "base_summary.tsv")
@@ -360,6 +334,17 @@ def sweep_cost_table(
     return pd.DataFrame(rows)
 
 
+def _label_panel(axis: Any, text: str) -> None:
+    axis.annotate(
+        text,
+        xy=(0.0, 1.01),
+        xycoords="axes fraction",
+        fontsize=9,
+        color=MUTED_INK,
+        va="bottom",
+    )
+
+
 def _grouped_bars(
     axis: Any,
     frame: pd.DataFrame,
@@ -380,19 +365,20 @@ def _grouped_bars(
                 missing.append(positions[slot] + offset)
             else:
                 heights.append(float(cell.iloc[0][value]))
+        tone = arm_tone(series)
         axis.bar(
             positions + offset,
             heights,
             width,
             label=series,
-            color=_series_color(series),
-            edgecolor="white",
-            linewidth=0.6,
+            color=tone.fill,
+            edgecolor=tone.ink,
+            linewidth=0.7,
         )
         for x in missing:
-            axis.text(x, 0.0, "n/a", ha="center", va="bottom", fontsize=8, color="#888888")
+            axis.text(x, 0.0, "n/a", ha="center", va="bottom", fontsize=8, color=MUTED_INK)
     axis.set_xticks(positions, [question.label for question in questions])
-    axis.yaxis.grid(True, color=GRID, linewidth=0.8)
+    axis.yaxis.grid(True, color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
 
 
@@ -410,17 +396,13 @@ def overall_figure(
     destination: Path,
 ) -> list[Path]:
     ntp = frame[frame["mode"] == "NTP"]
-    with _styled():
-        figure, axis = plt.subplots(figsize=(11, 5.2))
-        _grouped_bars(axis, ntp, "overall_nEMD", questions, _series_order(ntp, cultures))
-        axis.set_ylabel("Overall nEMD (lower = closer)")
-        axis.set_title(
-            "Distance from the survey's answer distribution", fontsize=14, pad=14, loc="left"
-        )
-        axis.legend(frameon=False, ncol=5, fontsize=10, loc="upper left")
-        axis.set_ylim(0, max(0.42, float(ntp["overall_nEMD"].max()) * 1.35))
-        figure.tight_layout()
-        return _save(figure, destination / "fig_overall_nemd")
+    figure, axis = plt.subplots(figsize=(11, 5.0))
+    _grouped_bars(axis, ntp, "overall_nEMD", questions, _series_order(ntp, cultures))
+    axis.set_ylabel("Overall nEMD (lower is closer to the WVS)")
+    axis.legend(ncol=5, loc="upper left")
+    axis.set_ylim(0, max(0.42, float(ntp["overall_nEMD"].max()) * 1.35))
+    figure.tight_layout()
+    return _save(figure, destination / "fig_overall_nemd")
 
 
 def compression_figure(
@@ -430,28 +412,14 @@ def compression_figure(
     destination: Path,
 ) -> list[Path]:
     ntp = frame[frame["mode"] == "NTP"]
-    with _styled():
-        figure, axis = plt.subplots(figsize=(11, 5.2))
-        _grouped_bars(axis, ntp, "compression", questions, _series_order(ntp, cultures))
-        axis.axhline(1.0, color="#d73027", linestyle="--", linewidth=1.4, zorder=0)
-        axis.set_ylabel("Compression ratio (survey spread / model spread)")
-        axis.set_title(
-            "How much the model flattens the differences between groups",
-            fontsize=14,
-            pad=14,
-            loc="left",
-        )
-        axis.legend(frameon=False, ncol=5, fontsize=10, loc="upper left")
-        axis.set_ylim(0, max(7.6, float(ntp["compression"].max()) * 1.25))
-        axis.annotate(
-            "above 1.0 = model makes groups\nmore alike than they really are",
-            xy=(len(questions) - 0.68, 1.05),
-            fontsize=9,
-            color="#d73027",
-            ha="right",
-        )
-        figure.tight_layout()
-        return _save(figure, destination / "fig_compression")
+    figure, axis = plt.subplots(figsize=(11, 5.0))
+    _grouped_bars(axis, ntp, "compression", questions, _series_order(ntp, cultures))
+    axis.axhline(1.0, color=INK, linestyle=(0, (4, 2)), linewidth=1.0, zorder=0)
+    axis.set_ylabel("Compression ratio (survey spread / model spread)")
+    axis.legend(ncol=5, loc="upper left")
+    axis.set_ylim(0, max(7.6, float(ntp["compression"].max()) * 1.25))
+    figure.tight_layout()
+    return _save(figure, destination / "fig_compression")
 
 
 def base_delta_figure(
@@ -468,41 +436,35 @@ def base_delta_figure(
     width = 0.8 / max(len(arms), 1)
     positions = np.arange(len(countries))
     span = float(ntp["delta_nEMD"].abs().max()) or 1.0
-    with _styled():
-        figure, axes = plt.subplots(
-            1, len(questions), figsize=(5.0 * len(questions), 5.0), sharey=True, squeeze=False
-        )
-        for axis, question in zip(axes[0], questions, strict=True):
-            rows = ntp[ntp["question"] == question.var]
-            for index, arm in enumerate(arms):
-                offset = (index - (len(arms) - 1) / 2) * width
-                cells = rows[rows["arm"] == arm].set_index("country")["delta_nEMD"]
-                heights = [float(cells[name]) if name in cells.index else 0.0 for name in countries]
-                axis.bar(
-                    positions + offset,
-                    heights,
-                    width,
-                    label=arm if question is questions[0] else None,
-                    color=_series_color(arm),
-                    edgecolor="white",
-                    linewidth=0.6,
-                )
-            axis.axhline(0, color=INK, linewidth=1.2)
-            axis.set_xticks(positions, countries, rotation=30, ha="right")
-            axis.set_ylim(-span * 1.25, span * 1.25)
-            axis.yaxis.grid(True, color=GRID, linewidth=0.8)
-            axis.set_axisbelow(True)
-            axis.set_title(question.label, fontsize=12, loc="left")
-        axes[0][0].set_ylabel("nEMD after finetuning minus before")
-        axes[0][0].legend(frameon=False, ncol=3, fontsize=9, loc="upper left")
-        figure.suptitle(
-            "What the culture finetuning changed, per country  ·  below 0 = moved closer",
-            fontsize=14,
-            x=0.01,
-            ha="left",
-        )
-        figure.tight_layout()
-        return _save(figure, destination / "fig_base_delta")
+    figure, axes = plt.subplots(
+        1, len(questions), figsize=(5.0 * len(questions), 5.0), sharey=True, squeeze=False
+    )
+    for axis, question in zip(axes[0], questions, strict=True):
+        rows = ntp[ntp["question"] == question.var]
+        for index, arm in enumerate(arms):
+            offset = (index - (len(arms) - 1) / 2) * width
+            cells = rows[rows["arm"] == arm].set_index("country")["delta_nEMD"]
+            heights = [float(cells[name]) if name in cells.index else 0.0 for name in countries]
+            tone = arm_tone(arm)
+            axis.bar(
+                positions + offset,
+                heights,
+                width,
+                label=arm if question is questions[0] else None,
+                color=tone.fill,
+                edgecolor=tone.ink,
+                linewidth=0.7,
+            )
+        axis.axhline(0, color=INK, linewidth=1.0)
+        axis.set_xticks(positions, countries, rotation=30, ha="right")
+        axis.set_ylim(-span * 1.25, span * 1.25)
+        axis.yaxis.grid(True, color=GRID, linewidth=0.6)
+        axis.set_axisbelow(True)
+        _label_panel(axis, question.label)
+    axes[0][0].set_ylabel("nEMD after finetuning minus before")
+    axes[0][0].legend(ncol=3, loc="upper left")
+    figure.tight_layout()
+    return _save(figure, destination / "fig_base_delta")
 
 
 def home_advantage_figure(
@@ -511,7 +473,6 @@ def home_advantage_figure(
     cultures: list[str],
     destination: Path,
     stem: str = "fig_home_advantage",
-    reference: str = MIXTRAL_REFERENCE,
 ) -> list[Path]:
     ntp = frame[frame["mode"] == "NTP"]
     if ntp.empty:
@@ -519,71 +480,55 @@ def home_advantage_figure(
     present = [culture for culture in cultures if culture in set(ntp["culture"])]
     width = 0.8 / max(len(present), 1)
     positions = np.arange(len(questions))
-    # Headroom for the per-country ticks, which can sit well outside the pooled
-    # bars they annotate -- English religion is +0.43 over a +0.16 bar.
     span = ntp["difference_in_differences"]
-    with _styled():
-        figure, axis = plt.subplots(figsize=(11, 5.2))
-        axis.set_ylim(float(span.min()) * 1.30, float(span.max()) * 1.30)
-        for index, culture in enumerate(present):
-            offset = (index - (len(present) - 1) / 2) * width
-            rows = ntp[ntp["culture"] == culture]
-            for slot, question in enumerate(questions):
-                cell = rows[rows["question"] == question.var]
-                if cell.empty:
-                    axis.text(
-                        positions[slot] + offset,
-                        0.004,
-                        "n/a",
-                        ha="center",
-                        fontsize=8,
-                        color="#888888",
-                    )
-                    continue
-                splits = cell.set_index("home_country")["difference_in_differences"]
-                combined = [name for name in splits.index if "; " in name] or list(splits.index)
-                axis.bar(
+    figure, axis = plt.subplots(figsize=(11, 5.0))
+    axis.set_ylim(float(span.min()) * 1.30, float(span.max()) * 1.30)
+    for index, culture in enumerate(present):
+        offset = (index - (len(present) - 1) / 2) * width
+        rows = ntp[ntp["culture"] == culture]
+        tone = arm_tone(culture)
+        for slot, question in enumerate(questions):
+            cell = rows[rows["question"] == question.var]
+            if cell.empty:
+                axis.text(
                     positions[slot] + offset,
-                    float(splits[combined[0]]),
-                    width,
-                    label=culture if slot == 0 else None,
-                    color=_series_color(culture),
-                    edgecolor="white",
-                    linewidth=0.6,
+                    0.004,
+                    "n/a",
+                    ha="center",
+                    fontsize=8,
+                    color=MUTED_INK,
                 )
-                for name, value in splits.items():
-                    if name in combined:
-                        continue
-                    axis.hlines(
-                        float(value),
-                        positions[slot] + offset - width / 2,
-                        positions[slot] + offset + width / 2,
-                        color=INK,
-                        linewidth=1.4,
-                        zorder=3,
-                    )
-        axis.axhline(0, color=INK, linewidth=1.2)
-        axis.set_xticks(positions, [question.label for question in questions])
-        axis.set_ylabel("Difference-in-differences (nEMD)")
-        axis.set_title(
-            f"Is the model closer to its own culture than {reference} is?",
-            fontsize=14,
-            pad=14,
-            loc="left",
-        )
-        axis.yaxis.grid(True, color=GRID, linewidth=0.8)
-        axis.set_axisbelow(True)
-        axis.legend(frameon=False, ncol=3, fontsize=10, loc="upper left")
-        axis.annotate(
-            "below 0 = really is closer to its own culture  ·  "
-            "black ticks = one country on its own",
-            xy=(0.01, 0.03),
-            xycoords="axes fraction",
-            fontsize=9,
-            color="#1b9e77",
-        )
-        figure.tight_layout()
-        return _save(figure, destination / stem)
+                continue
+            splits = cell.set_index("home_country")["difference_in_differences"]
+            combined = [name for name in splits.index if "; " in name] or list(splits.index)
+            axis.bar(
+                positions[slot] + offset,
+                float(splits[combined[0]]),
+                width,
+                label=culture if slot == 0 else None,
+                color=tone.fill,
+                edgecolor=tone.ink,
+                linewidth=0.7,
+            )
+            for name, value in splits.items():
+                if name in combined:
+                    continue
+                axis.hlines(
+                    float(value),
+                    positions[slot] + offset - width / 2,
+                    positions[slot] + offset + width / 2,
+                    color=INK,
+                    linewidth=1.2,
+                    zorder=3,
+                )
+    axis.axhline(0, color=INK, linewidth=1.0)
+    axis.set_xticks(positions, [question.label for question in questions])
+    axis.set_ylabel("Difference-in-differences (nEMD)")
+    axis.yaxis.grid(True, color=GRID, linewidth=0.6)
+    axis.set_axisbelow(True)
+    axis.legend(ncol=3, loc="upper left")
+    figure.tight_layout()
+    return _save(figure, destination / stem)
 
 
 def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
@@ -595,46 +540,105 @@ def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
     width = 0.8 / max(len(cultures), 1)
     positions = np.arange(len(order))
     ceiling = float(runs["hours"].max())
-    with _styled():
-        figure, axis = plt.subplots(figsize=(11, 4.8))
-        for index, culture in enumerate(cultures):
-            offset = (index - (len(cultures) - 1) / 2) * width
-            rows = runs[runs["culture"] == culture].set_index("question")
-            for slot, var in enumerate(order):
-                if var not in rows.index:
-                    continue
-                height = float(rows.loc[var, "hours"])
-                axis.bar(
-                    positions[slot] + offset,
-                    height,
-                    width,
-                    label=culture if slot == 0 else None,
-                    color=_series_color(culture),
-                    edgecolor="white",
-                    linewidth=0.6,
-                )
-                axis.text(
-                    positions[slot] + offset,
-                    height + ceiling * 0.025,
-                    f"{height:.0f}h",
-                    ha="center",
-                    fontsize=10,
-                    color="#333333",
-                )
-        axis.set_xticks(positions, [labels[var] for var in order])
-        axis.set_ylabel("GPU hours per run")
-        axis.set_ylim(0, ceiling * 1.18)
-        axis.yaxis.grid(True, color=GRID, linewidth=0.8)
-        axis.set_axisbelow(True)
-        axis.legend(frameon=False, ncol=3, fontsize=11, loc="upper left")
-        axis.set_title(
-            "Inference cost per run, one card, identical prompt counts",
-            fontsize=13,
-            loc="left",
-            pad=12,
+    figure, axis = plt.subplots(figsize=(11, 4.6))
+    for index, culture in enumerate(cultures):
+        offset = (index - (len(cultures) - 1) / 2) * width
+        rows = runs[runs["culture"] == culture].set_index("question")
+        tone = arm_tone(culture)
+        for slot, var in enumerate(order):
+            if var not in rows.index:
+                continue
+            height = float(rows.loc[var, "hours"])
+            axis.bar(
+                positions[slot] + offset,
+                height,
+                width,
+                label=culture if slot == 0 else None,
+                color=tone.fill,
+                edgecolor=tone.ink,
+                linewidth=0.7,
+            )
+            axis.text(
+                positions[slot] + offset,
+                height + ceiling * 0.025,
+                f"{height:.0f}h",
+                ha="center",
+                fontsize=8.5,
+                color=MUTED_INK,
+            )
+    axis.set_xticks(positions, [labels[var] for var in order])
+    axis.set_ylabel("GPU hours per run")
+    axis.set_ylim(0, ceiling * 1.18)
+    axis.yaxis.grid(True, color=GRID, linewidth=0.6)
+    axis.set_axisbelow(True)
+    axis.legend(ncol=3, loc="upper left")
+    figure.tight_layout()
+    return _save(figure, destination / "fig_sweep_cost")
+
+
+def adapter_health_figure(frame: pd.DataFrame, destination: Path) -> list[Path]:
+    if frame.empty:
+        return []
+    cultures = sorted(set(frame["culture"]))
+    models = list(dict.fromkeys(frame["model_key"]))
+    positions = np.arange(len(cultures))
+    height = 0.8 / max(len(models), 1)
+    figure, axes = plt.subplots(1, 2, figsize=(13, 5.4), sharey=True)
+    for index, model_key in enumerate(models):
+        rows = frame[frame["model_key"] == model_key].set_index("culture")
+        label = str(rows["model_label"].iloc[0])
+        tone = model_tone(model_key, index)
+        offset = (index - (len(models) - 1) / 2) * height
+        present = [culture for culture in cultures if culture in rows.index]
+        slots = [positions[cultures.index(culture)] + offset for culture in present]
+        axes[0].scatter(
+            [float(rows.loc[culture, "update_norm_mean"]) for culture in present],
+            slots,
+            label=label,
+            color=tone.fill,
+            edgecolors=tone.ink,
+            linewidths=0.8,
+            s=64,
+            zorder=3,
         )
-        figure.tight_layout()
-        return _save(figure, destination / "fig_sweep_cost")
+        axes[1].barh(
+            slots,
+            [float(rows.loc[culture, "eval_token_accuracy"]) for culture in present],
+            height,
+            label=label,
+            color=tone.fill,
+            edgecolor=tone.ink,
+            linewidth=0.7,
+        )
+    axes[0].set_xscale("log")
+    axes[0].set_xlabel("Mean ‖ΔW‖ added to each attention projection")
+    axes[0].xaxis.grid(True, color=GRID, linewidth=0.6)
+
+    axes[1].axvline(
+        ADAPTER_MIN_EVAL_TOKEN_ACCURACY,
+        color=INK,
+        linestyle=(0, (4, 2)),
+        linewidth=1.0,
+        label=f"usable threshold ({ADAPTER_MIN_EVAL_TOKEN_ACCURACY:.0%})",
+    )
+    axes[1].set_xlim(0, 1)
+    axes[1].set_xlabel("Token accuracy on held-out training data")
+    axes[1].xaxis.grid(True, color=GRID, linewidth=0.6)
+
+    for axis in axes:
+        axis.set_yticks(positions, cultures)
+        axis.set_ylim(len(cultures) - 0.5, -0.5)
+        axis.set_axisbelow(True)
+    handles, labels = axes[1].get_legend_handles_labels()
+    figure.legend(handles, labels, ncol=len(labels), loc="lower center")
+    figure.tight_layout(rect=(0, 0.06, 1, 1))
+    return _save(figure, destination / "fig_adapter_health")
+
+
+def _has_own_series(distances: pd.DataFrame) -> bool:
+    if distances.empty:
+        return False
+    return bool(set(distances["series"]) - {label for label, _ in REFERENCES})
 
 
 def _write(frame: pd.DataFrame, destination: Path) -> Path | None:
@@ -661,8 +665,10 @@ def culture_summary(
         advantage = home_advantage_table(model, cultures, outcomes)
         deltas = base_delta_table(model, cultures, outcomes)
         cost = sweep_cost_table(model, cultures, outcomes)
+        if not _has_own_series(distances):
+            continue
         drawn = [question for question in outcomes if question.var in set(distances["question"])]
-        if distances.empty or not drawn:
+        if not drawn:
             continue
         figures.mkdir(parents=True, exist_ok=True)
         produced.extend(overall_figure(distances, drawn, cultures, figures))
@@ -677,9 +683,7 @@ def culture_summary(
             if against.empty:
                 continue
             shown = [question for question in outcomes if question.var in set(against["question"])]
-            produced.extend(
-                home_advantage_figure(against, shown, cultures, figures, stem, reference)
-            )
+            produced.extend(home_advantage_figure(against, shown, cultures, figures, stem))
         if not deltas.empty:
             shown = [question for question in outcomes if question.var in set(deltas["question"])]
             produced.extend(base_delta_figure(deltas, shown, cultures, figures))
@@ -694,6 +698,15 @@ def culture_summary(
             path = _write(frame, outputs / name)
             if path is not None:
                 written.append(path)
+
+    health = health_table(models, [culture for culture in cultures if not is_base(culture)])
+    if not health.empty:
+        shared = CULTURE_FIGURES / "summary"
+        shared.mkdir(parents=True, exist_ok=True)
+        produced.extend(adapter_health_figure(health, shared))
+        path = _write(health, CULTURE_ROOT / "adapter_health.csv")
+        if path is not None:
+            written.append(path)
 
     return {
         "questions": [question.var for question in outcomes],

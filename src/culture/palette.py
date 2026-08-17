@@ -1,49 +1,90 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from typing import Any
 
-from .registry import BASE_ARM
+from machine_bias_reproduction.plates import (
+    METHOD_MARKERS,
+    METHOD_TONES,
+    MODEL_TONE,
+    REFERENCE_TONE,
+    RERUN_TONE,
+    UNTUNED_TONE,
+    Tone,
+    slot_linestyle,
+    slot_marker,
+    slot_tone,
+    tone,
+)
+
+from .registry import BASE_ARM, CULTURES
 
 MODES: tuple[str, str] = ("NTP", "FA")
 
-MODE_TITLES = {"NTP": "Next-token probabilities", "FA": "Full answer"}
+MODE_TONES = {mode: METHOD_TONES[mode] for mode in MODES}
+MODE_MARKERS = dict(METHOD_MARKERS)
 
-CULTURE_COLORS = {
-    "arabic": "#1b9e77",
-    "bengali": "#d95f02",
-    "chinese": "#7570b3",
-    "english": "#e7298a",
-    "german": "#66a61e",
-    "korean": "#e6ab02",
-    "portuguese": "#a6761d",
-    "spanish": "#666666",
-    "turkish": "#1f78b4",
-}
+CULTURE_SLOTS = {culture: index for index, culture in enumerate(CULTURES)}
 
-BASE_COLOR = "#111111"
-
-DEFAULT_ARM_COLOR = "#e7298a"
-
-REFERENCE_COLOR = "#000000"
-
-QUALITY_PALETTE = ("#1b9e77", "#66c2a5", "#ffd92f", "#fc8d62", "#d73027")
-OUTCOME_PALETTE = {"valid": "#1b9e77", "invalid": "#fc8d62", "failed": "#d73027"}
+MIXTRAL_ARCHIVED = "Mixtral archived"
+MIXTRAL_FRESH = "Mixtral fresh"
 
 MDS_REFERENCES: tuple[tuple[str, str], ...] = (
-    ("Mixtral archived", "archived"),
-    ("Mixtral fresh", "fresh"),
+    (MIXTRAL_ARCHIVED, "archived"),
+    (MIXTRAL_FRESH, "fresh"),
 )
 
-MDS_SERIES_COLORS = {"Mixtral archived": REFERENCE_COLOR, "Mixtral fresh": "#c8c8c8"}
-MDS_SERIES_MARKERS = {"Mixtral archived": "o", "Mixtral fresh": "s"}
+REFERENCE_TONES: dict[str, Tone] = {
+    MIXTRAL_ARCHIVED: REFERENCE_TONE,
+    MIXTRAL_FRESH: RERUN_TONE,
+    BASE_ARM: UNTUNED_TONE,
+}
 
-MDS_CULTURE_COLORS = {"spanish": "#1f78b4"}
+REFERENCE_MARKERS: dict[str, str] = {
+    MIXTRAL_ARCHIVED: "o",
+    MIXTRAL_FRESH: "s",
+    BASE_ARM: "D",
+}
+
+REFERENCE_LINESTYLES: dict[str, Any] = {
+    MIXTRAL_ARCHIVED: (0, (6, 3)),
+    MIXTRAL_FRESH: (0, (2, 1.4)),
+    BASE_ARM: (0, (7, 2, 1, 2)),
+}
+
+MODEL_SLOTS = {"gemma4_31b": 0, "gemma4_e4b": 1, "qwen3_vl_8b": 6}
+
+MDS_ARM_TONES: dict[str, Tone] = {"spanish": tone("#1f78b4"), BASE_ARM: MODEL_TONE}
 
 
-def culture_color(arm: str) -> str:
-    if arm == BASE_ARM:
-        return BASE_COLOR
-    return CULTURE_COLORS.get(arm, DEFAULT_ARM_COLOR)
+def arm_tone(arm: str) -> Tone:
+    if arm in REFERENCE_TONES:
+        return REFERENCE_TONES[arm]
+    return slot_tone(CULTURE_SLOTS.get(arm, len(CULTURE_SLOTS)))
+
+
+def mds_arm_tone(arm: str) -> Tone:
+    return MDS_ARM_TONES.get(arm) or arm_tone(arm)
+
+
+def arm_marker(arm: str) -> str:
+    if arm in REFERENCE_MARKERS:
+        return REFERENCE_MARKERS[arm]
+    return slot_marker(CULTURE_SLOTS.get(arm, len(CULTURE_SLOTS)))
+
+
+def arm_linestyle(arm: str) -> Any:
+    if arm in REFERENCE_LINESTYLES:
+        return REFERENCE_LINESTYLES[arm]
+    return slot_linestyle(CULTURE_SLOTS.get(arm, len(CULTURE_SLOTS)))
+
+
+def model_tone(model_key: str, index: int = 0) -> Tone:
+    return slot_tone(MODEL_SLOTS.get(model_key, 2 + index))
+
+
+def model_marker(model_key: str, index: int = 0) -> str:
+    return slot_marker(MODEL_SLOTS.get(model_key, 2 + index))
 
 
 def arm_order(arms: Iterable[str]) -> list[str]:
@@ -52,8 +93,4 @@ def arm_order(arms: Iterable[str]) -> list[str]:
 
 
 def is_reference(label: str) -> bool:
-    return label in MDS_SERIES_COLORS
-
-
-def mds_color(label: str) -> str:
-    return MDS_SERIES_COLORS.get(label, MDS_CULTURE_COLORS.get(label, culture_color(label)))
+    return label in (MIXTRAL_ARCHIVED, MIXTRAL_FRESH, BASE_ARM)

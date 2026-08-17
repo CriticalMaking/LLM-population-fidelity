@@ -1,18 +1,20 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-import matplotlib
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+from matplotlib import pyplot as plt
 
 from machine_bias_reproduction.analysis import _load_source
 from machine_bias_reproduction.config import paths_for
-from machine_bias_reproduction.data import PreparedData
-from machine_bias_reproduction.figures import MDS_COLORS, _classical_mds, _save
+from machine_bias_reproduction.data import PreparedData, _group_responses
+from machine_bias_reproduction.figures import _classical_mds, _save
 from machine_bias_reproduction.metrics import nemd, pairwise_nemd_matrix
+from machine_bias_reproduction.plates import MUTED_INK, SEPARATOR, SURVEY_TONE
 from machine_bias_reproduction.questions import Question, resolve_question
 
 from .matching import (
@@ -24,16 +26,12 @@ from .matching import (
 )
 from .palette import (
     MDS_REFERENCES,
-    MDS_SERIES_MARKERS,
-    MODE_TITLES,
     MODES,
+    arm_marker,
     is_reference,
-    mds_color,
+    mds_arm_tone,
 )
-from .registry import CULTURE_FIGURES, CULTURE_ROOT, CultureModel, csv_stems
-
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
+from .registry import BASE_ARM, CULTURE_FIGURES, CULTURE_ROOT, CultureModel, csv_stems
 
 FloatArray = npt.NDArray[np.float64]
 BoolArray = npt.NDArray[np.bool_]
@@ -141,6 +139,7 @@ def _draw_panel(
     sample: str,
     home: BoolArray | None = None,
     home_countries: str = "",
+    only: Sequence[str] | None = None,
 ) -> list[tuple[str, float]]:
     columns = list(question.answer_columns)
     wvs_props = next(iter(series.values())).wvs_props.loc[names, columns]
@@ -148,15 +147,17 @@ def _draw_panel(
         wvs_coordinates[:, 0],
         wvs_coordinates[:, 1],
         s=22,
-        alpha=0.35,
+        alpha=0.6,
         marker="^",
-        label=f"WVS respondents — {sample}",
-        color=MDS_COLORS["WVS"],
-        edgecolors="#8a8a2a",
+        label=f"WVS — {sample}",
+        color=SURVEY_TONE.fill,
+        edgecolors=SURVEY_TONE.ink,
         linewidths=0.3,
     )
     errors: list[tuple[str, float]] = []
     for label in series:
+        if only is not None and label not in only:
+            continue
         coordinates = model_coordinates.get((label, mode))
         if coordinates is None:
             continue
@@ -165,49 +166,96 @@ def _draw_panel(
         ]
         error = float(np.mean(nemd(wvs_props.to_numpy(), model_props.to_numpy())))
         tuned = not is_reference(label)
+        tone = mds_arm_tone(label)
         axis.scatter(
             coordinates[:, 0],
             coordinates[:, 1],
             s=28 if tuned else 22,
-            alpha=0.6 if tuned else 0.42,
-            marker=MDS_SERIES_MARKERS.get(label, "o"),
-            # "spanish-language", not "spanish": the fine-tune is on a language,
-            # while the respondents it is scored against are a country. Naming
-            # the language is what stops the pairing reading as "Spain".
-            label=f"{label}-language finetuned culture MLLM" if tuned else label,
-            color=mds_color(label),
-            edgecolors="white" if tuned else "none",
-            linewidths=0.4 if tuned else 0.0,
+            alpha=0.75 if tuned else 0.5,
+            marker=arm_marker(label),
+            label=label,
+            color=tone.fill if tuned else tone.ink,
+            edgecolors=tone.ink if tuned else SEPARATOR,
+            linewidths=0.5 if tuned else 0.0,
             zorder=3 if tuned else 2,
         )
         if tuned and home is not None and home.any():
-            # The home subset is the matched plate's entire sample. Ringing it
-            # here is what lets the two figures be read against each other.
             axis.scatter(
                 coordinates[home, 0],
                 coordinates[home, 1],
                 s=58,
                 facecolors="none",
                 marker="o",
-                edgecolors=mds_color(label),
+                edgecolors=tone.ink,
                 linewidths=1.1,
                 zorder=4,
-                label=f"its own countries: {home_countries}",
+                label=f"own countries — {home_countries}",
             )
         errors.append((label, error))
     axis.set_aspect("equal")
     axis.set_xlabel("Classical MDS dimension 1")
-    # Say the sample out loud: these means are over the panel's own
-    # subpopulations and are not the run's overall nEMD.
     axis.annotate(
-        f"Mean nEMD over these {len(names)} subpopulations\n"
-        + "  ·  ".join(f"{label} {error:.3f}" for label, error in errors),
-        xy=(0.03, 0.03),
+        f"{mode} · {len(names)} subpopulations · mean nEMD "
+        + ", ".join(f"{label} {error:.3f}" for label, error in errors),
+        xy=(0.0, 1.01),
         xycoords="axes fraction",
-        fontsize=9,
-        bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#666666"},
+        fontsize=8.5,
+        color=MUTED_INK,
+        va="bottom",
     )
     return errors
+
+
+def _ntp_props_over_every_subpopulation(
+    prepared: PreparedData,
+    question: Question,
+) -> pd.DataFrame:
+    by_profile = question.ntp_answers(prepared.ntp_raw.set_index("profile"))
+    matched = by_profile.reindex(prepared.wvs["profile"]).reset_index(drop=True)
+    return _group_responses(matched, prepared.subpops["subpop"])
+
+
+def _ntp_only_series(
+    series: dict[str, PreparedData],
+    question: Question,
+) -> tuple[dict[str, pd.DataFrame], pd.DataFrame] | None:
+    props = {
+        label: _ntp_props_over_every_subpopulation(prepared, question)
+        for label, prepared in series.items()
+    }
+    shared: pd.Index | None = None
+    for frame in props.values():
+        usable = frame.index[frame.notna().all(axis=1).to_numpy()]
+        shared = usable if shared is None else shared.intersection(usable)
+    if shared is None or shared.empty:
+        return None
+    reference = max(series.values(), key=lambda prepared: prepared.names.size)
+    wvs = reference.wvs_props.reindex(shared)
+    shared = shared[wvs.notna().all(axis=1).to_numpy()]
+    if shared.empty:
+        return None
+    return {label: frame.loc[shared] for label, frame in props.items()}, wvs.loc[shared]
+
+
+def _embed_ntp_only(
+    props: dict[str, pd.DataFrame],
+    wvs_props: pd.DataFrame,
+    question: Question,
+) -> Embedding:
+    columns = list(question.answer_columns)
+    order = [(label, "NTP") for label in props]
+    wvs = wvs_props.loc[:, columns].to_numpy(dtype=np.float64)
+
+    blocks = [wvs] * len(order)
+    blocks.extend(props[label].loc[:, columns].to_numpy(dtype=np.float64) for label, _ in order)
+    coordinates = _classical_mds(pairwise_nemd_matrix(np.vstack(blocks)))
+
+    count = len(wvs_props.index)
+    model_coordinates = {
+        key: coordinates[(len(order) + index) * count : (len(order) + index + 1) * count]
+        for index, key in enumerate(order)
+    }
+    return wvs_props.index, coordinates[:count], model_coordinates
 
 
 def _share_scale(
@@ -284,7 +332,6 @@ def _matched_plate(
             wvs_coordinates,
             sample=home_countries(culture),
         )
-        axis.set_title(MODE_TITLES[mode], fontsize=12)
         rows.extend(
             _rows(
                 errors,
@@ -299,10 +346,7 @@ def _matched_plate(
 
     _share_scale(axes, wvs_coordinates, model_coordinates)
     axes[0].set_ylabel("Classical MDS dimension 2")
-    axes[0].legend(frameon=False, loc="upper left", fontsize=9, markerscale=1.6)
-    # Bare plate: no figure title. Which culture and which question this is
-    # belongs to the caption; which respondents it covers is in the legend,
-    # because that is the thing a reader assumes wrongly.
+    axes[0].legend(loc="upper left", markerscale=1.6)
     figure.tight_layout()
     return _save(figure, destination / "fig_culture_mds_matched"), pd.DataFrame(rows)
 
@@ -339,7 +383,6 @@ def _all_countries_plate(
             home=home,
             home_countries=home_countries(culture),
         )
-        axis.set_title(MODE_TITLES[mode], fontsize=12)
         rows.extend(
             _rows(
                 errors,
@@ -354,9 +397,92 @@ def _all_countries_plate(
 
     _share_scale(axes, wvs_coordinates, model_coordinates)
     axes[0].set_ylabel("Classical MDS dimension 2")
-    axes[0].legend(frameon=False, loc="upper left", fontsize=9, markerscale=1.6)
+    axes[0].legend(loc="upper left", markerscale=1.6)
     figure.tight_layout()
     return _save(figure, destination / "fig_culture_mds_all_countries"), pd.DataFrame(rows)
+
+
+def _comparison_series(
+    model: CultureModel,
+    culture: str,
+    question: Question,
+) -> dict[str, PreparedData]:
+    series = _plate_series(model, culture, question)
+    if not series or BASE_ARM in series:
+        return {}
+    source = f"culture/{model.key}/{BASE_ARM}"
+    try:
+        base = _load_source(
+            source,
+            paths_for(source, question.var),
+            question,
+            csv_stems(model.key, BASE_ARM, question),
+        )
+    except (FileNotFoundError, ValueError):
+        return {}
+    return {BASE_ARM: base, **series}
+
+
+def _comparison_plate(
+    model: CultureModel,
+    culture: str,
+    question: Question,
+) -> tuple[list[Path], pd.DataFrame]:
+    series = _comparison_series(model, culture, question)
+    if not series:
+        return [], pd.DataFrame()
+    embedded = _matched_mds_embedding(series, culture, question)
+    if embedded is None:
+        return [], pd.DataFrame()
+    names, wvs_coordinates, model_coordinates = embedded
+
+    arms = [BASE_ARM, culture]
+    references = [label for label, _ in MDS_REFERENCES]
+    destination = CULTURE_FIGURES / model.key / culture / question.var
+    destination.mkdir(parents=True, exist_ok=True)
+
+    measured: dict[tuple[str, str], float] = {}
+    figure, axes = plt.subplots(
+        len(MODES),
+        len(arms),
+        figsize=(6.5 * len(arms), 5.4 * len(MODES)),
+        squeeze=False,
+    )
+    for row, mode in zip(axes, MODES, strict=True):
+        for axis, arm in zip(row, arms, strict=True):
+            errors = _draw_panel(
+                axis,
+                series,
+                model_coordinates,
+                mode,
+                names,
+                question,
+                wvs_coordinates,
+                sample=home_countries(culture),
+                only=[*references, arm],
+            )
+            measured.update({(mode, label): error for label, error in errors})
+        row[0].set_ylabel("Classical MDS dimension 2")
+
+    _share_scale([axis for row in axes for axis in row], wvs_coordinates, model_coordinates)
+    for axis in axes[0]:
+        axis.legend(loc="upper left", markerscale=1.6)
+    figure.tight_layout()
+
+    rows: list[dict[str, Any]] = []
+    for mode in MODES:
+        rows.extend(
+            _rows(
+                [(label, error) for (drawn, label), error in measured.items() if drawn == mode],
+                culture=culture,
+                question=question,
+                mode=mode,
+                sample="comparison",
+                countries="; ".join(countries_for(culture)),
+                subpopulations=len(names),
+            )
+        )
+    return _save(figure, destination / "fig_culture_mds_comparison"), pd.DataFrame(rows)
 
 
 def _outcomes_row(
@@ -392,9 +518,6 @@ def _outcomes_row(
             wvs_coordinates,
             sample=home_countries(culture),
         )
-        axis.set_title(question.label, fontsize=13)
-        # Each panel is its own embedding, so each gets its own scale. Sharing
-        # one here would imply a distance between outcomes that does not exist.
         _share_scale([axis], wvs_coordinates, model_coordinates)
         rows.extend(
             _rows(
@@ -408,9 +531,82 @@ def _outcomes_row(
             )
         )
     axes[0][0].set_ylabel("Classical MDS dimension 2")
-    axes[0][0].legend(frameon=False, loc="upper left", fontsize=9, markerscale=1.6)
+    axes[0][0].legend(loc="upper left", markerscale=1.6)
     figure.tight_layout()
     return _save(figure, destination / "fig_culture_mds_outcomes"), pd.DataFrame(rows)
+
+
+def degenerate_ntp_plate(
+    model: CultureModel,
+    culture: str,
+    question: str | Question,
+    *,
+    valid_answer_mass: float | None = None,
+    distinct_answers: int | None = None,
+) -> list[Path]:
+    outcome = resolve_question(question)
+    series = _series(model, culture, outcome)
+    if culture not in series:
+        return []
+    prepared = _ntp_only_series(series, outcome)
+    if prepared is None:
+        return []
+    props, wvs_props = prepared
+    placed, wvs_coordinates, model_coordinates = _embed_ntp_only(props, wvs_props, outcome)
+
+    destination = CULTURE_FIGURES / model.key / culture / outcome.var
+    destination.mkdir(parents=True, exist_ok=True)
+
+    figure, axis = plt.subplots(figsize=(7.5, 6))
+    axis.scatter(
+        wvs_coordinates[:, 0],
+        wvs_coordinates[:, 1],
+        s=22,
+        alpha=0.6,
+        marker="^",
+        label="WVS",
+        color=SURVEY_TONE.fill,
+        edgecolors=SURVEY_TONE.ink,
+        linewidths=0.3,
+    )
+    for label in series:
+        coordinates = model_coordinates.get((label, "NTP"))
+        if coordinates is None:
+            continue
+        degenerate = label == culture
+        tone = mds_arm_tone(label)
+        axis.scatter(
+            coordinates[:, 0],
+            coordinates[:, 1],
+            s=34 if degenerate else 22,
+            alpha=0.75 if degenerate else 0.5,
+            marker=arm_marker(label),
+            label=f"{label} (no valid answers)" if degenerate else label,
+            facecolors="none" if degenerate else tone.fill,
+            edgecolors=tone.ink,
+            linewidths=1.0 if degenerate else 0.4,
+            zorder=3 if degenerate else 2,
+        )
+    axis.set_aspect("equal")
+    axis.set_xlabel("Classical MDS dimension 1")
+    axis.set_ylabel("Classical MDS dimension 2")
+    axis.legend(loc="upper left", markerscale=1.4)
+
+    measured = [f"NTP only · {len(placed)} subpopulations"]
+    if valid_answer_mass is not None:
+        measured.append(f"valid-answer mass {valid_answer_mass:.3g}")
+    if distinct_answers is not None:
+        measured.append(f"{distinct_answers} distinct answers")
+    axis.annotate(
+        "  ·  ".join(measured),
+        xy=(0.0, 1.01),
+        xycoords="axes fraction",
+        fontsize=8.5,
+        color=MUTED_INK,
+        va="bottom",
+    )
+    figure.tight_layout()
+    return _save(figure, destination / "fig_culture_mds_ntp_degenerate")
 
 
 def _export(tables: list[pd.DataFrame], destination: Path) -> Path | None:
@@ -431,9 +627,6 @@ def culture_mds(
 ) -> dict[str, Any]:
     outcome = resolve_question(question)
     produced: list[Path] = []
-    # Two exports, because the outcomes row spans questions: filing its panels
-    # under the question this call was for would put politics and religion rows
-    # inside the happiness table.
     per_question: list[pd.DataFrame] = []
     per_culture: list[pd.DataFrame] = []
 
@@ -452,6 +645,7 @@ def culture_mds(
     for model in models:
         for culture in cultures:
             collect(per_question, _matched_plate(model, culture, outcome), model)
+            collect(per_question, _comparison_plate(model, culture, outcome), model)
             if all_countries:
                 collect(per_question, _all_countries_plate(model, culture, outcome), model)
             if outcomes:
