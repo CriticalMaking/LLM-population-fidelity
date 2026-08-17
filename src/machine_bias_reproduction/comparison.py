@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
@@ -18,10 +18,12 @@ from scipy import stats
 
 from .config import OUTPUTS_ROOT
 from .figures import _save
+from .plates import GRID, INK, MUTED_INK, slot_tone
 from .questions import DEFAULT_QUESTION, QUESTION_NAMES
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+AGREEMENT_TONE = slot_tone(3)
+DIVERGENCE_TONE = slot_tone(0)
+POOLED_TONE = slot_tone(4)
 
 FloatArray = npt.NDArray[np.float64]
 
@@ -256,8 +258,6 @@ def _align_subpopulation_distances(
     fresh_dir: Path,
     methods: Sequence[str],
 ) -> pd.DataFrame:
-    # Ordered, not a set: this list fixes the column order of every table derived
-    # from it, and the manifest hashes those tables.
     columns = ["method", "subpopulation", "nEMD"]
     required = set(columns)
     archived = _read_csv(archived_dir / "subpopulation_distances.csv", required)
@@ -459,9 +459,10 @@ def _comparison_figure(
             method_pairs["nEMD_archived"],
             method_pairs["nEMD_fresh"],
             s=18,
-            alpha=0.45,
-            color="#2C7FB8",
-            edgecolors="none",
+            alpha=0.7,
+            color=AGREEMENT_TONE.fill,
+            edgecolors=AGREEMENT_TONE.ink,
+            linewidths=0.4,
         )
         limits = (
             float(
@@ -479,55 +480,61 @@ def _comparison_figure(
         )
         padding = max(0.005, (limits[1] - limits[0]) * 0.04)
         lower, upper = limits[0] - padding, limits[1] + padding
-        scatter.plot([lower, upper], [lower, upper], "--", color="#444444", linewidth=1)
+        scatter.plot(
+            [lower, upper], [lower, upper], color=MUTED_INK, linestyle=(0, (4, 2)), linewidth=0.8
+        )
         scatter.set(xlim=(lower, upper), ylim=(lower, upper))
         scatter.set_aspect("equal", adjustable="box")
         scatter.set_xlabel("Archived subpopulation nEMD")
         scatter.set_ylabel("Fresh subpopulation nEMD")
-        scatter.set_title(f"{method}: archived versus fresh")
         scatter.text(
             0.03,
             0.97,
+            f"{method}\n"
             f"Pearson r = {result['archived_fresh_pearson_r']:.4f}\n"
             f"Spearman $\\rho$ = {result['archived_fresh_spearman_rho']:.4f}\n"
             f"mean $\\Delta$ = {result['mean_change_fresh_minus_archived']:.6f}\n"
             f"Holm p = {_format_p(result['holm_adjusted_p_value'])}",
             transform=scatter.transAxes,
             va="top",
-            bbox={"boxstyle": "round", "facecolor": "white", "alpha": 0.85},
+            fontsize=8.5,
+            color=MUTED_INK,
         )
 
         cluster_axis = axes[row_index, 1]
-        colors = np.where(method_clusters["mean_change"] < 0, "#2C7FB8", "#D95F0E")
+        improved = method_clusters["mean_change"] < 0
+        fills = np.where(improved, AGREEMENT_TONE.fill, DIVERGENCE_TONE.fill)
+        inks = np.where(improved, AGREEMENT_TONE.ink, DIVERGENCE_TONE.ink)
         y_positions = np.arange(len(method_clusters))
         cluster_axis.scatter(
             method_clusters["mean_change"],
             y_positions,
             s=42,
-            c=colors,
+            c=fills,
+            edgecolors=inks,
+            linewidths=0.7,
             zorder=3,
         )
         cluster_axis.hlines(
             y_positions,
             0,
             method_clusters["mean_change"],
-            colors=colors,
+            colors=inks,
             alpha=0.55,
-            linewidth=1.5,
+            linewidth=1.2,
         )
-        cluster_axis.axvline(0, color="#333333", linewidth=1)
+        cluster_axis.axvline(0, color=INK, linewidth=0.8)
         cluster_axis.axvline(
             result["mean_change_fresh_minus_archived"],
-            color="#6A3D9A",
-            linestyle="--",
-            linewidth=1.5,
-            label="all-subpopulation mean",
+            color=POOLED_TONE.ink,
+            linestyle=(0, (4, 2)),
+            linewidth=1.2,
+            label=f"{method} all-subpopulation mean",
         )
         cluster_axis.set_yticks(y_positions, method_clusters["country_wave"])
         cluster_axis.set_xlabel("Mean change (fresh - archived nEMD)")
-        cluster_axis.set_title(f"{method}: change by country-survey wave")
-        cluster_axis.legend(loc="best", frameon=False)
-        cluster_axis.grid(axis="x", alpha=0.2)
+        cluster_axis.legend(loc="best")
+        cluster_axis.grid(axis="x", color=GRID, linewidth=0.6)
 
     return _save(figure, path_stem, pdf_dpi=300)
 

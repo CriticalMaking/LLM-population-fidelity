@@ -3,11 +3,11 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-import matplotlib
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
 import scipy.linalg
+from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec
@@ -15,24 +15,17 @@ from matplotlib.gridspec import GridSpec
 from .config import RunPaths
 from .data import PreparedData
 from .metrics import DISTANCES, QUALITY_LABELS, pairwise_nemd_matrix
-
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
-
-COLORS = {
-    "Linear": "#000000",
-    "Random": "#808080",
-    "NTP": "#d95f02",
-    "FA": "#7570b3",
-}
-LINESTYLES = {
-    "Linear": "solid",
-    "Random": "solid",
-    "NTP": (0, (6, 3)),
-    "FA": (0, (7, 2, 1, 2)),
-}
-MDS_COLORS = {"WVS": "#fde725", "Model": "#440154"}
-QUALITY_PALETTE = ("#1b9e77", "#66c2a5", "#ffd92f", "#fc8d62", "#d73027")
+from .plates import (
+    GRID,
+    INK,
+    METHOD_LINESTYLES,
+    METHOD_TONES,
+    MODEL_TONE,
+    MUTED_INK,
+    QUALITY_RAMP,
+    SEPARATOR,
+    SURVEY_TONE,
+)
 
 QUALITY_THRESHOLDS = (0.0, 0.05, 0.10, 0.15, 0.30, 1.0)
 
@@ -109,7 +102,7 @@ def _log_nemd_density(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
 
 def _annotate_quality_bands(axis: Axes) -> None:
     for threshold in QUALITY_THRESHOLDS[1:-1]:
-        axis.axvline(threshold, color="#333333", linestyle=":", linewidth=0.9)
+        axis.axvline(threshold, color=GRID, linestyle=(0, (2, 2)), linewidth=0.7)
     lower = np.asarray(QUALITY_THRESHOLDS[:-1], dtype=np.float64)
     upper = np.minimum(np.asarray(QUALITY_THRESHOLDS[1:], dtype=np.float64), 0.45)
     for label, left, right in zip(QUALITY_LABELS, lower, upper, strict=True):
@@ -119,8 +112,8 @@ def _annotate_quality_bands(axis: Axes) -> None:
             xycoords=("data", "axes fraction"),
             ha="center",
             va="bottom",
-            fontsize=8,
-            bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#666666"},
+            fontsize=7.5,
+            color=MUTED_INK,
         )
 
 
@@ -145,27 +138,31 @@ def _density_quality(
             grid,
             density,
             label=method,
-            color=COLORS[method],
-            linestyle=LINESTYLES[method],
-            linewidth=1.6,
+            color=METHOD_TONES[method].ink,
+            linestyle=METHOD_LINESTYLES[method],
+            linewidth=1.5,
         )
     axes[0].set_xscale("log")
     axes[0].set_xlim(0.01, 1.0)
     axes[0].set_xticks(NEMD_BREAKS, [f"{break_:.2f}" for break_ in NEMD_BREAKS])
     axes[0].set_ylim(bottom=0)
     _annotate_quality_bands(axes[0])
-    axes[0].set(
-        xlabel="nEMD (log scale)",
-        ylabel="Density (per natural-log unit)",
-        title="A. Density of nEMD",
-    )
-    axes[0].legend(frameon=False, loc="upper left")
+    axes[0].set(xlabel="nEMD (log scale)", ylabel="Density (per natural-log unit)")
+    axes[0].legend(loc="upper left")
 
     pivot = quality.pivot(index="method", columns="quality", values="percent").reindex(
         list(METHOD_ORDER)
     )
     pivot = pivot.loc[:, list(QUALITY_LABELS)]
-    pivot.plot(kind="bar", stacked=True, ax=axes[1], color=list(QUALITY_PALETTE), width=0.75)
+    pivot.plot(
+        kind="bar",
+        stacked=True,
+        ax=axes[1],
+        color=list(QUALITY_RAMP),
+        width=0.72,
+        edgecolor=SEPARATOR,
+        linewidth=0.8,
+    )
     bottoms = np.zeros(len(pivot))
     for quality_label in QUALITY_LABELS:
         values = pivot[quality_label].to_numpy(dtype=np.float64)
@@ -178,16 +175,12 @@ def _density_quality(
                     ha="center",
                     va="center",
                     fontsize=8,
+                    color=INK,
                 )
         bottoms = bottoms + values
-    axes[1].set(
-        xlabel="",
-        ylabel="Subpopulations (%)",
-        title="B. Prediction-quality bands",
-        ylim=(0, 100),
-    )
+    axes[1].set(xlabel="", ylabel="Subpopulations (%)", ylim=(0, 100))
     axes[1].tick_params(axis="x", rotation=0)
-    axes[1].legend(title="", frameon=False, bbox_to_anchor=(1.02, 1), loc="upper left")
+    axes[1].legend(title="", bbox_to_anchor=(1.02, 1), loc="upper left")
 
     figure.tight_layout()
     return _save(figure, paths.figures / "fig_nemd_density_quality")
@@ -207,18 +200,18 @@ def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]
                 grid,
                 density,
                 label=method,
-                color=COLORS[method],
-                linestyle=LINESTYLES[method],
-                linewidth=1.5,
+                color=METHOD_TONES[method].ink,
+                linestyle=METHOD_LINESTYLES[method],
+                linewidth=1.4,
             )
         axis.set_xscale("log")
         axis.set_ylim(bottom=0)
-        axis.set(xlabel=f"{name} (log scale)", title=name)
+        axis.set_xlabel(f"{name} (log scale)")
         if name == "nEMD":
             axis.set_xlim(0.01, 1.0)
             _annotate_quality_bands(axis)
     np.atleast_1d(axes)[0].set_ylabel("Density (per natural-log unit)")
-    np.atleast_1d(axes)[0].legend(frameon=False, loc="upper left", fontsize=8)
+    np.atleast_1d(axes)[0].legend(loc="upper left")
     figure.tight_layout()
     return _save(figure, paths.figures / "fig_distance_comparison")
 
@@ -258,43 +251,56 @@ def _mds(paths: RunPaths, data: PreparedData, distances: pd.DataFrame) -> list[P
     }
     errors = distances.groupby("method")["nEMD"].mean()
 
-    figure, axes = plt.subplots(1, 2, figsize=(13, 4.6), sharex=True, sharey=True)
-    for axis, mode in zip(axes, modes, strict=True):
+    built = []
+    for mode in modes:
+        figure, axis = plt.subplots(figsize=(6.5, 5.2))
         axis.scatter(
             wvs_coordinates[:, 0],
             wvs_coordinates[:, 1],
-            s=16,
-            alpha=0.35,
+            s=18,
+            alpha=0.55,
             marker="^",
             label="WVS",
-            color=MDS_COLORS["WVS"],
-            edgecolors="#8a8a2a",
+            color=SURVEY_TONE.fill,
+            edgecolors=SURVEY_TONE.ink,
             linewidths=0.3,
         )
         axis.scatter(
             model_coordinates[mode][:, 0],
             model_coordinates[mode][:, 1],
-            s=16,
-            alpha=0.35,
+            s=18,
+            alpha=0.55,
             marker="o",
             label="Model",
-            color=MDS_COLORS["Model"],
-            edgecolors="none",
+            color=MODEL_TONE.fill,
+            edgecolors=MODEL_TONE.ink,
+            linewidths=0.3,
         )
         axis.set_aspect("equal")
-        axis.set_title(mode)
         axis.set_xlabel("Classical MDS dimension 1")
+        axis.set_ylabel("Classical MDS dimension 2")
         axis.annotate(
-            f"Err= {errors[mode]:.3f}",
+            f"{mode} · mean nEMD {errors[mode]:.3f}",
             xy=(0.03, 0.03),
             xycoords="axes fraction",
-            fontsize=10,
-            bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#666666"},
+            fontsize=9,
+            color=MUTED_INK,
         )
-    axes[0].set_ylabel("Classical MDS dimension 2")
-    axes[0].legend(frameon=False, loc="upper left", markerscale=1.8)
-    figure.tight_layout()
-    return _save(figure, paths.figures / "fig_mds")
+        axis.legend(loc="upper left", markerscale=1.8)
+        built.append((figure, axis, mode))
+
+    for getter, setter in (("get_xlim", "set_xlim"), ("get_ylim", "set_ylim")):
+        limits = [getattr(axis, getter)() for _, axis, _ in built]
+        low = min(limit[0] for limit in limits)
+        high = max(limit[1] for limit in limits)
+        for _, axis, _ in built:
+            getattr(axis, setter)(low, high)
+
+    produced: list[Path] = []
+    for figure, _, mode in built:
+        figure.tight_layout()
+        produced.extend(_save(figure, paths.figures / f"fig_mds_{mode.lower()}"))
+    return produced
 
 
 def _predictor_rows(predictors: set[str]) -> list[tuple[str | None, str]]:
@@ -337,12 +343,23 @@ def _draw_coefficients(
         color=color,
         ecolor=color,
         capsize=2,
-        linewidth=1.2,
+        linewidth=1.1,
     )
-    axis.axvline(0, color="#333333", linewidth=1)
+    axis.axvline(0, color=MUTED_INK, linewidth=0.8)
     axis.set_yticks(range(len(rows)), [label for _, label in rows])
     axis.set_ylim(len(rows) - 0.5, -0.5)
-    axis.grid(axis="x", alpha=0.2)
+    axis.grid(axis="x", color=GRID, linewidth=0.6)
+
+
+def _label_fit(axis: Axes, text: str) -> None:
+    axis.annotate(
+        text,
+        xy=(0.0, 1.01),
+        xycoords="axes fraction",
+        fontsize=9,
+        color=MUTED_INK,
+        va="bottom",
+    )
 
 
 def _coefficient_figure(
@@ -378,7 +395,8 @@ def _coefficient_figure(
     social_axes: list[Axes] = []
     for column, mode in enumerate(modes):
         subset = frame[frame["mode"] == mode]
-        color = COLORS[mode.upper()]
+        color = METHOD_TONES[mode.upper()].ink
+        fitted = f"{mode.upper()} · adj. $R^2$ = {r_squared[mode]:.3f}"
         if has_center:
             center_axis = figure.add_subplot(
                 grid[0, column],
@@ -391,7 +409,7 @@ def _coefficient_figure(
                 [(CENTER_PREDICTOR, r"$\bf{nEMD\ center}$")],
                 color,
             )
-            center_axis.set_title(f"{mode.upper()}  (adj. $R^2$ = {r_squared[mode]:.3f})")
+            _label_fit(center_axis, fitted)
             center_axes.append(center_axis)
 
         social_axis = figure.add_subplot(
@@ -402,7 +420,7 @@ def _coefficient_figure(
         _draw_coefficients(social_axis, subset, social_rows, color)
         social_axis.set_xlabel(xlabel)
         if not has_center:
-            social_axis.set_title(f"{mode.upper()}  (adj. $R^2$ = {r_squared[mode]:.3f})")
+            _label_fit(social_axis, fitted)
         social_axes.append(social_axis)
 
     for axis in center_axes[1:] + social_axes[1:]:
