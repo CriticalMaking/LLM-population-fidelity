@@ -17,8 +17,9 @@ Usage:
 
 One invocation per model, culture and question, so a failed or interrupted run
 never takes the rest of the sweep with it: one log per run, finished runs
-skipped unless --redo, and the comparison rebuilt at the end from whatever
-finished.
+skipped unless --redo, cells without a staged adapter skipped and recorded
+(muse_glimmer_30b has german only), and the comparison rebuilt at the end from
+whatever finished.
 
 Without --base: every model, german, d_happy (--cultures all for the full
 grid). With --base: gemma4_31b on all four questions, cultures frozen to the
@@ -36,7 +37,7 @@ Unrecognised options pass through to the underlying run: --mode, --batch-size,
 EOF
 }
 
-ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b)
+ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b muse_glimmer_30b)
 ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish turkish)
 ALL_QUESTIONS=(d_happy d_polpos d_religiousp d_trust)
 
@@ -170,6 +171,10 @@ if [[ $dry_run -eq 1 ]]; then
     for question in "${questions[@]}"; do
         for model in "${models[@]}"; do
             for culture in "${cultures[@]}"; do
+                if [[ $base -eq 0 && ! -d "$REPO_ROOT/models/culture/$model/$culture" ]]; then
+                    echo "would skip: --models $model --cultures $culture (no adapter staged)"
+                    continue
+                fi
                 arguments=(--models "$model" --cultures "$culture" --questions "$question"
                            "${priority_options[@]}" "${passthrough[@]}")
                 echo "would run: ${arguments[*]}"
@@ -194,6 +199,13 @@ for question in "${questions[@]}"; do
         run_id="$model/$culture/$question"
         run_outputs="$REPO_ROOT/outputs/culture/$run_id"
         log="$log_dir/$model-$culture-$question.log"
+
+        if [[ $base -eq 0 && ! -d "$REPO_ROOT/models/culture/$model/$culture" ]]; then
+            echo "[$index/$total] $run_id — no $culture adapter staged for $model, skipping"
+            printf '%s\t%s\t%s\tno-adapter\t0\t\t\t\t\n' "$model" "$culture" "$question" >> "$summary"
+            skipped=$((skipped + 1))
+            continue
+        fi
 
         if [[ $skip_completed -eq 1 && -f "$run_outputs/capacity.csv" ]]; then
             echo "[$index/$total] $run_id — already run, skipping (--redo to rerun)"

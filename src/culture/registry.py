@@ -89,6 +89,14 @@ CULTURE_MODELS: dict[str, CultureModel] = {
         quantization=None,
         batch_size=16,
     ),
+    "muse_glimmer_30b": CultureModel(
+        key="muse_glimmer_30b",
+        base_model_id="meta-models/Muse-Glimmer-30B",
+        label="Muse-Glimmer-30B",
+        dtype="bfloat16",
+        quantization="nf4",
+        batch_size=4,
+    ),
 }
 
 

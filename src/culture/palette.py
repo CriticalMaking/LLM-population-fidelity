@@ -52,7 +52,7 @@ REFERENCE_LINESTYLES: dict[str, Any] = {
     BASE_ARM: (0, (7, 2, 1, 2)),
 }
 
-MODEL_SLOTS = {"gemma4_31b": 0, "gemma4_e4b": 1, "qwen3_vl_8b": 6}
+MODEL_SLOTS = {"gemma4_31b": 0, "gemma4_e4b": 1, "qwen3_vl_8b": 6, "muse_glimmer_30b": 3}
 
 MDS_ARM_TONES: dict[str, Tone] = {"spanish": tone("#1f78b4"), BASE_ARM: MODEL_TONE}
 

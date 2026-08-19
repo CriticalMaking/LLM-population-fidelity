@@ -15,8 +15,9 @@ Usage:
   ./run_experiment_base_models.sh compare [--models KEY...] [--questions Q...]
   ./run_experiment_base_models.sh summary [--models KEY...] [--questions Q...]
 
-Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b
-           (default gemma4_31b; --models all for every one)
+Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, muse_glimmer_30b
+           (default gemma4_31b; --models all for every one; muse_glimmer_30b
+           runs alone under the muse extra, selected automatically)
 Questions: d_happy d_polpos d_religiousp d_trust (default: all four)
 
 The base arm is the same weights the culture-finetuned LLMs were fitted from,

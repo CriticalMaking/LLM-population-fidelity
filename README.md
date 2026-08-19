@@ -92,7 +92,7 @@ Four experiments, run in this order:
 | --- | --- | --- | --- |
 | 1 | **Archived** — reanalyse the paper's model outputs | `./run_experiment.sh` | nothing |
 | 2 | **Fresh** — regenerate Mixtral's answers | `./run_experiment.sh fresh --model …` | 26.4 GB GGUF |
-| 3 | **Cultural** — nine culture-finetuned LLMs per base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
+| 3 | **Cultural** — up to nine culture-finetuned LLMs per base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
 | 4 | **Base models** — the same bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
 
 
@@ -220,7 +220,8 @@ Rebuilds every prompt, re-hashes against the stored record, writes
 
 ## 3 — Cultural
 
-Nine culture-finetuned LLMs on each multimodal base, sent the **same prompts** as
+Culture-finetuned LLMs on each multimodal base — nine cultures for the first
+three, german only for muse_glimmer_30b — sent the **same prompts** as
 experiments 1 and 2.
 
 | Model key | Base model | Loading |
@@ -228,11 +229,19 @@ experiments 1 and 2.
 | `gemma4_31b` | `google/gemma-4-31B-it` | 4-bit NF4 (QLoRA, as trained) |
 | `gemma4_e4b` | `google/gemma-4-E4B-it` | bf16, unquantized (as trained) |
 | `qwen3_vl_8b` | `Qwen/Qwen3-VL-8B-Thinking` | bf16, unquantized |
+| `muse_glimmer_30b` | `meta-models/Muse-Glimmer-30B` | 4-bit NF4 (QLoRA, as trained) |
 
 Every row loads the way its adapters were trained, so no distance is read
-through a forward pass its finetuning never saw. All three are original,
-unquantized releases (gemma4_31b is served NF4 because that is how its QLoRA
-adapters were fitted), so a gap between models is never a quantization artifact.
+through a forward pass its finetuning never saw. All four are original,
+unquantized releases (gemma4_31b and muse_glimmer_30b are served NF4 because
+that is how their QLoRA adapters were fitted), so a gap between models is never
+a quantization artifact.
+
+`muse_glimmer_30b` has adapters for `german` only, and its architecture needs a
+newer Transformers than the other three trained against, so it runs alone: the
+drivers select the `muse` extra (Transformers 5.15.0) for it and the `culture`
+extra (5.8.1) for everything else automatically. `sweep --models all` still
+works — each run is its own invocation.
 
 Cultures: `arabic bengali chinese english german korean portuguese spanish turkish`
 
@@ -311,7 +320,8 @@ re-hashes what is staged, so a truncated copy is replaced rather than trusted.
 
 Each base loads once per invocation and every adapter attaches to it, so
 switching culture is a `set_adapter` call. Generation is batched
-(`--batch-size`, default 4 Gemma / 16 Qwen, halved on CUDA OOM).
+(`--batch-size`, default 4 for the NF4 pair gemma4_31b and muse_glimmer_30b,
+16 for gemma4_e4b and qwen3_vl_8b, halved on CUDA OOM).
 
 The first sweep is 12 runs of ~41,000 prompts, so detach it:
 
@@ -333,7 +343,7 @@ ls outputs/culture/gemma4_31b/english/d_happy/raw/ntp | wc -l   # of 13,904
 
 ## 4 — Base models
 
-The same two bases, un-finetuned, sent the same prompts. Every distance above is
+The same bases, un-finetuned, sent the same prompts. Every distance above is
 otherwise read against **Mixtral**, which is a *different* base model, so the
 comparison confounds the culture finetuning with the base model it was fitted on.
 This arm is the same weights before finetuning — the only reference that isolates
@@ -342,9 +352,9 @@ what the finetuning did.
 ```bash
 uv sync --locked --group dev --extra culture
 
-./run_experiment_base_models.sh run --models all --dry-run   # the 8 runs
+./run_experiment_base_models.sh run --models all --dry-run   # the 16 runs
 
-# both bases, all four topics, Germany's prompts first inside each
+# every base, all four topics, Germany's prompts first inside each
 screen -S base
 ./run_experiment_base_models.sh run --models all
 # Ctrl-A then D to detach; screen -r base to return
@@ -357,7 +367,7 @@ column -t -s $'\t' outputs/culture/logs/base_summary.tsv    # per-run outcomes
 The `run` word is required — `./run_experiment_base_models.sh --models all` exits
 2, and a bare call defaults to `gemma4_31b` alone.
 
-`run` drives **one model/question per invocation** — 8 runs, all of one topic
+`run` drives **one model/question per invocation** — 16 runs, all of one topic
 before the next — so one failure never takes the grid with it: one log per run at
 `outputs/culture/logs/<model>-base-<question>.log`, outcomes in
 `base_summary.tsv`, comparison rebuilt at the end. A run is complete once it has

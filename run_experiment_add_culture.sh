@@ -10,8 +10,8 @@ Usage:
   ./run_experiment_add_culture.sh adapters [--source DIR] [--models KEY...]
                                            [--cultures NAME...] [--force]
   ./run_experiment_add_culture.sh health [--models KEY...] [--cultures NAME...]
-  ./run_experiment_add_culture.sh smoke [--models KEY...] [--cultures NAME...]
-  ./run_experiment_add_culture.sh run [--models KEY...] [--cultures NAME...]
+  ./run_experiment_add_culture.sh smoke --models KEY... [--cultures NAME...]
+  ./run_experiment_add_culture.sh run --models KEY... [--cultures NAME...]
                                       [--questions Q...] [--mode ntp|fa|all]
                                       [--batch-size N] [--fa-max-tokens N]
                                       [--force] [--legacy-unseeded-fa]
@@ -28,7 +28,10 @@ Usage:
   ./run_experiment_add_culture.sh summary [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
 
-Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b
+Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, muse_glimmer_30b
+           (muse_glimmer_30b runs alone — its transformers pin lives in the
+           muse extra, selected automatically; german is its only adapter.
+           run and smoke need --models named: the default set spans both pins)
 Cultures:  arabic bengali chinese english german korean portuguese spanish turkish
            (sweep default german; --cultures all for the full grid)
 Questions: d_happy d_polpos d_religiousp d_trust (default d_happy)
@@ -48,7 +51,7 @@ costs an hour a question through inference, seconds through the weights.
 takes the grid with it — with one log per run, finished runs skipped
 (--redo to force), and the comparison rebuilt at the end:
 
-  ./run_experiment_add_culture.sh sweep                          # all 18 pairs
+  ./run_experiment_add_culture.sh sweep                # every model, german, d_happy
   ./run_experiment_add_culture.sh sweep --cultures portuguese    # one culture
   ./run_experiment_add_culture.sh sweep --models gemma4_31b --cultures all
 
