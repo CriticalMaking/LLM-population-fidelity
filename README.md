@@ -47,6 +47,8 @@ culture-finetuned LLMs.
 │   │   ├── runner.py                 one model/culture/question run
 │   │   ├── capacity.py               can this arm answer the paper's prompt?
 │   │   ├── matching.py               which cultures the survey can speak to
+│   │   ├── plate.py                  shared scaffolding for the culture plates
+│   │   ├── *_panels.py               capacity, density, ranking, country, response
 │   │   └── figures.py                cross-culture figures and reports
 │   │
 │   └── reports/                      the paper's published report set

@@ -64,11 +64,17 @@ PLATE_RC: dict[str, Any] = {
 matplotlib.rcParams.update(cast(Any, PLATE_RC))
 
 PASTEL_TINT = 0.62
+REFERENCE_SHADE = 0.45
 
 
 def tinted(ink: str, amount: float = PASTEL_TINT) -> str:
     channels = (int(ink[position : position + 2], 16) for position in (1, 3, 5))
     return "#" + "".join(f"{round(value + (255 - value) * amount):02x}" for value in channels)
+
+
+def shaded(ink: str, amount: float = REFERENCE_SHADE) -> str:
+    channels = (int(ink[position : position + 2], 16) for position in (1, 3, 5))
+    return "#" + "".join(f"{round(value * (1 - amount)):02x}" for value in channels)
 
 
 class Tone(NamedTuple):

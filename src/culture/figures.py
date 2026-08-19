@@ -8,20 +8,13 @@ import pandas as pd
 from machine_bias_reproduction.io_utils import write_csv
 from machine_bias_reproduction.questions import Question, resolve_question
 
+from .capacity_panels import capacity_figure, run_capacity_figure
+from .country_panels import country_heatmap, matched_figures
+from .density_panels import density_figure, distance_density_figure
 from .mds import degenerate_ntp_plate
-from .panels import (
-    capacity_figure,
-    country_heatmap,
-    cross_model_figure,
-    density_figure,
-    distance_density_figure,
-    matched_figures,
-    quality_figure,
-    ranking_figure,
-    response_shift,
-    run_capacity_figure,
-)
+from .ranking_panels import cross_model_figure, quality_figure, ranking_figure
 from .registry import CULTURE_FIGURES, CULTURE_ROOT, CultureModel, run_paths
+from .response_panels import response_shift
 from .tables import comparison_table, has_distances, load_model_frames
 
 
