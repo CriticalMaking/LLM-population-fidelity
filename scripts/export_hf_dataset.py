@@ -296,6 +296,7 @@ marital status, answering four opinion questions.
 | `culture/gemma4_31b` | google/gemma-4-31B-it | `base`, `german` (QLoRA) |
 | `culture/gemma4_e4b` | google/gemma-4-e4b-it | `base`, `german` (QLoRA) |
 | `culture/qwen3_vl_8b` | Qwen/Qwen3-VL-8B-Thinking | `base`, `german` (QLoRA) |
+| `culture/muse_glimmer_30b` | meta-models/Muse-Glimmer-30B | `base`, `german` (QLoRA) |
 | `archived` | upstream Mixtral outputs, reanalysed | derived tables only (no raw records) |
 
 Questions: `d_happy` (happiness), `d_polpos` (political position, 10-point),
