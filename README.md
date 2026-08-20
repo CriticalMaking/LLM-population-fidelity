@@ -92,7 +92,7 @@ Four experiments, run in this order:
 | --- | --- | --- | --- |
 | 1 | **Archived** — reanalyse the paper's model outputs | `./run_experiment.sh` | nothing |
 | 2 | **Fresh** — regenerate Mixtral's answers | `./run_experiment.sh fresh --model …` | 26.4 GB GGUF |
-| 3 | **Cultural** — up to nine culture-finetuned LLMs per base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
+| 3 | **Cultural** — german-finetuned LLMs on each base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
 | 4 | **Base models** — the same bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
 
 
@@ -220,9 +220,13 @@ Rebuilds every prompt, re-hashes against the stored record, writes
 
 ## 3 — Cultural
 
-Culture-finetuned LLMs on each multimodal base — nine cultures for the first
-three, german only for muse_glimmer_30b — sent the **same prompts** as
-experiments 1 and 2.
+Culture-finetuned LLMs on each multimodal base — `german` on all four — sent
+the **same prompts** as experiments 1 and 2. The other culture-MLLM
+finetunings are out of scope for now: their finetuning datasets sample a
+different population than the WVS respondents a distance is read against, so
+the comparison would not be robust. `german` is the culture whose training
+data and survey block draw on the same country's samples — Germany — so model
+and survey describe the same people.
 
 | Model key | Base model | Loading |
 | --- | --- | --- |
@@ -231,19 +235,17 @@ experiments 1 and 2.
 | `qwen3_vl_8b` | `Qwen/Qwen3-VL-8B-Thinking` | bf16, unquantized |
 | `muse_glimmer_30b` | `meta-models/Muse-Glimmer-30B` | 4-bit NF4 (QLoRA, as trained) |
 
-Every row loads the way its adapters were trained, so no distance is read
+Every row loads the way it was finetuned, so no distance is read
 through a forward pass its finetuning never saw. All four are original,
 unquantized releases (gemma4_31b and muse_glimmer_30b are served NF4 because
-that is how their QLoRA adapters were fitted), so a gap between models is never
+that is how their QLoRA finetuning was fitted), so a gap between models is never
 a quantization artifact.
 
-`muse_glimmer_30b` has adapters for `german` only, and its architecture needs a
+`muse_glimmer_30b` is finetuned for `german` only, and its architecture needs a
 newer Transformers than the other three trained against, so it runs alone: the
 drivers select the `muse` extra (Transformers 5.15.0) for it and the `culture`
 extra (5.8.1) for everything else automatically. `sweep --models all` still
 works — each run is its own invocation.
-
-Cultures: `arabic bengali chinese english german korean portuguese spanish turkish`
 
 ```bash
 uv sync --locked --group dev --extra culture
@@ -254,15 +256,15 @@ uv sync --locked --group dev --extra culture
 # first comparison — 4 runs: the german culture on all four topics
 ./run_experiment_add_culture.sh sweep --models gemma4_31b --questions all
 
-./run_experiment_add_culture.sh sweep --cultures all --questions all   # the rest
+./run_experiment_add_culture.sh sweep --models all --questions all     # the rest
 ./run_experiment_add_culture.sh compare                        # figures + reports
 ```
 
 **Start with that sweep**: `german` is the culture this repository's results argue
-from, and one of the three (`english`, `german`, `spanish`) with a WVS respondent
-block, so its distance reads against people who share the culture's language — see
+from, and it has a WVS respondent block, so its distance reads against people who
+share the culture's language — see
 [Culture-matched subsets](#culture-matched-subsets). The sweep defaults to
-`german`; `--cultures all` reaches the full grid.
+`german`.
 
 `sweep` drives **one model/culture/question per invocation**, so one failing run
 never takes the grid with it: one log per run, outcome and answered share in
@@ -288,20 +290,13 @@ that cannot answer is a result, not an error.
 
 ### Culture-matched subsets
 
-Three of the nine cultures have a WVS respondent block. `compare` emits a matched
-view for them under `figures/culture/<model>/<question>/matched/`:
-
-| Culture | Matched countries |
-| --- | --- |
-| `english` | Australia, United States |
-| `german` | Germany |
-| `spanish` | Mexico |
-
-These are the three in the first sweep above. The other six are excluded from the
-matched view rather than shown against a mismatched comparison; Russia has
-respondents but no russian culture-finetuned LLM. All-culture figures are kept as
-the superset, and the country heatmap bolds only matched cells and never reorders
-columns to imply a diagonal the data cannot support.
+`compare` emits a matched view under `figures/culture/<model>/<question>/matched/`
+when the culture has a WVS respondent block: for `german`, Germany's respondents,
+so the matched distance reads against people who share the culture's language. A
+culture without a block is excluded from the matched view rather than shown
+against a mismatched comparison. All-culture figures are kept as the superset,
+and the country heatmap bolds only matched cells and never reorders columns to
+imply a diagonal the data cannot support.
 
 <details>
 <summary><b>Finetuning internals and detached sweeps</b></summary>
@@ -313,26 +308,25 @@ checkpoint via `AutoModelForImageTextToText` and composes the adapted text layer
 on top; these prompts carry no image, so the vision tower is present but not
 invoked.
 
-`adapters` copies only the end-of-training adapter, excluding per-step
+`adapters` copies only the end-of-training finetuned weights, excluding per-step
 `checkpoint-N` optimizer state (1.4 GB staged instead of 92 GB).
 `ADAPTERS.json` records each SHA-256, declared base and LoRA config; a repeat run
 re-hashes what is staged, so a truncated copy is replaced rather than trusted.
 
-Each base loads once per invocation and every adapter attaches to it, so
-switching culture is a `set_adapter` call. Generation is batched
+Each base loads once per invocation and every culture finetuning attaches to
+it, so switching culture is a `set_adapter` call. Generation is batched
 (`--batch-size`, default 4 for the NF4 pair gemma4_31b and muse_glimmer_30b,
 16 for gemma4_e4b and qwen3_vl_8b, halved on CUDA OOM).
 
-The first sweep is 12 runs of ~41,000 prompts, so detach it:
+A sweep is 4 runs of ~41,000 prompts per model, so detach it:
 
 ```bash
 screen -S culture
-./run_experiment_add_culture.sh sweep \
-  --models gemma4_31b --questions all --cultures english german spanish
+./run_experiment_add_culture.sh sweep --models gemma4_31b --questions all
 # Ctrl-A then D to detach; screen -r culture to return
 
-tail -f outputs/culture/logs/gemma4_31b-english-d_happy.log
-ls outputs/culture/gemma4_31b/english/d_happy/raw/ntp | wc -l   # of 13,904
+tail -f outputs/culture/logs/gemma4_31b-german-d_happy.log
+ls outputs/culture/gemma4_31b/german/d_happy/raw/ntp | wc -l   # of 13,904
 ```
 
 `gemma4_31b` occupies ~18 GB in NF4; nothing else should compete for the card.
