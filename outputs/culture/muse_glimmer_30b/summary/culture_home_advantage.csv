@@ -1,0 +1,5 @@
+model_key,model_label,question,question_label,culture,reference,home_country,mode,subpopulations_home,subpopulations_away,tuned_home_nEMD,tuned_away_nEMD,reference_home_nEMD,reference_away_nEMD,difference_in_differences
+muse_glimmer_30b,Muse-Glimmer-30B,d_happy,Happiness,german,Mixtral archived,Germany,NTP,144,543,0.1297204941135018,0.10724909556565877,0.061981049913407076,0.09586998417766125,0.056360332812097215
+muse_glimmer_30b,Muse-Glimmer-30B,d_happy,Happiness,german,Mixtral archived,Germany,FA,144,543,0.13221269468336636,0.11492725554130463,0.09246420568454149,0.10108967465589332,0.025910908113413553
+muse_glimmer_30b,Muse-Glimmer-30B,d_happy,Happiness,german,base (same model),Germany,NTP,144,543,0.1297204941135018,0.10724909556565877,0.09892660787441465,0.09062922801261251,0.014174018686040901
+muse_glimmer_30b,Muse-Glimmer-30B,d_happy,Happiness,german,base (same model),Germany,FA,144,543,0.13221269468336636,0.11492725554130463,0.10512023160943629,0.10317910773900046,0.0153443152716259
