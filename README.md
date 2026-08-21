@@ -79,14 +79,16 @@ culture-finetuned LLMs.
     - [Prompt fidelity](#prompt-fidelity)
     - [Culture-matched subsets](#culture-matched-subsets)
   - [4 — Base models](#4--base-models)
+  - [5 — Served models](#5--served-models)
 - **Reference**
   - [Topics](#topics)
+  - [Population plates](#population-plates)
   - [Paper report set](#paper-report-set)
   - [Distances](#distances)
   - [Comparison](#comparison)
   - [Citation & Acknowledgments](#citation--acknowledgments)
 
-Four experiments, run in this order:
+Five experiments, run in this order:
 
 | # | Experiment | Command | Needs |
 | --- | --- | --- | --- |
@@ -94,6 +96,7 @@ Four experiments, run in this order:
 | 2 | **Fresh** — regenerate Mixtral's answers | `./run_experiment.sh fresh --model …` | 26.4 GB GGUF |
 | 3 | **Cultural** — german-finetuned LLMs on each base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
 | 4 | **Base models** — the same bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
+| 5 | **Served** — three proprietary models through the OpenAI API | `./run_experiment_add_culture.sh served-smoke` | API key |
 
 
 ---
@@ -220,7 +223,7 @@ Rebuilds every prompt, re-hashes against the stored record, writes
 
 ## 3 — Cultural
 
-Culture-finetuned LLMs on each multimodal base — `german` on all four — sent
+Culture-finetuned LLMs on each base below — `german` on all six — sent
 the **same prompts** as experiments 1 and 2. The other culture-MLLM
 finetunings are out of scope for now: their finetuning datasets sample a
 different population than the WVS respondents a distance is read against, so
@@ -233,19 +236,27 @@ and survey describe the same people.
 | `gemma4_31b` | `google/gemma-4-31B-it` | 4-bit NF4 (QLoRA, as trained) |
 | `gemma4_e4b` | `google/gemma-4-E4B-it` | bf16, unquantized (as trained) |
 | `qwen3_vl_8b` | `Qwen/Qwen3-VL-8B-Thinking` | bf16, unquantized |
+| `qwen3_vl_2b` | `Qwen/Qwen3-VL-2B-Thinking` | bf16, unquantized |
+| `llama3_2_3b` | `meta-llama/Llama-3.2-3B` | bf16, unquantized |
 | `muse_glimmer_30b` | `meta-models/Muse-Glimmer-30B` | 4-bit NF4 (QLoRA, as trained) |
 
 Every row loads the way it was finetuned, so no distance is read
-through a forward pass its finetuning never saw. All four are original,
+through a forward pass its finetuning never saw. All six are original,
 unquantized releases (gemma4_31b and muse_glimmer_30b are served NF4 because
 that is how their QLoRA finetuning was fitted), so a gap between models is never
 a quantization artifact.
 
+`qwen3_vl_2b` is the same architecture as `qwen3_vl_8b` at a quarter the size,
+so the pair separates what the finetuning does from what capacity does.
+`llama3_2_3b` is the one text-only base: it has no vision tower, so it loads
+through `AutoModelForCausalLM` rather than the image-text class the others use.
+Every question here is text, so nothing else about the run changes.
+
 `muse_glimmer_30b` is finetuned for `german` only, and its architecture needs a
-newer Transformers than the other three trained against, so it runs alone: the
-drivers select the `muse` extra (Transformers 5.15.0) for it and the `culture`
-extra (5.8.1) for everything else automatically. `sweep --models all` still
-works — each run is its own invocation.
+newer Transformers than the rest load under, so it runs alone: the drivers
+select the `muse` extra (Transformers 5.15.0) for it and the `culture` extra
+(5.8.1) for everything else automatically. `sweep --models all` still works —
+each run is its own invocation.
 
 ```bash
 uv sync --locked --group dev --extra culture
@@ -316,7 +327,8 @@ re-hashes what is staged, so a truncated copy is replaced rather than trusted.
 Each base loads once per invocation and every culture finetuning attaches to
 it, so switching culture is a `set_adapter` call. Generation is batched
 (`--batch-size`, default 4 for the NF4 pair gemma4_31b and muse_glimmer_30b,
-16 for gemma4_e4b and qwen3_vl_8b, halved on CUDA OOM).
+16 for gemma4_e4b and qwen3_vl_8b, 32 for the small pair qwen3_vl_2b and
+llama3_2_3b, halved on CUDA OOM).
 
 A sweep is 4 runs of ~41,000 prompts per model, so detach it:
 
@@ -393,6 +405,140 @@ already holds the country the German comparison needs.
 
 ---
 
+## 5 — Served models
+
+`luna`, `terra` and `sol` are proprietary models reached through the OpenAI API
+rather than loaded from local weights. They are three variants of the same
+served family — all reasoning models, all 1.05M context and 128K max output —
+and they exist for one comparison: what a frontier served model does on the same
+prompts the open bases answer. There is no culture-MLLM finetuning for them, so
+they run the **base variant only**, and they never join `--models all` — naming
+one explicitly is what starts a billable run.
+
+Put the key and one id per model in `.env` at the repository root (git-ignored,
+never committed; `.env.example` is the template):
+
+```
+OPENAI_API_KEY=sk-...
+
+LUNA_MODEL_ID=the-id-luna-is-served-under
+TERRA_MODEL_ID=the-id-terra-is-served-under
+SOL_MODEL_ID=the-id-sol-is-served-under
+```
+
+Each model reads its own `<KEY>_MODEL_ID`, and a missing one fails immediately
+with the variable named rather than sending a bad id to the endpoint.
+
+```bash
+uv sync --locked --group dev --extra api
+
+./run_experiment_add_culture.sh served-smoke          # all three, 5 prompts each
+
+./scripts/sweep.sh --base --models luna --questions all --dry-run
+./scripts/sweep.sh --base --models luna --questions all
+```
+
+### Read `served-smoke` before paying for a run
+
+A served model is a chat model answering a prompt written for a completion
+model: the paper's prompt is a transcript ending in `Answer:`, and the paper's
+parser accepts only the bare option text (`B. Quite happy`) on the first line.
+A chat model can answer correctly and still be scored as a failure — `Answer:
+B. Quite happy` carries the answer but not the format — and it can also decline
+the persona outright. Those are different problems with different fixes, so
+`served-smoke` puts every served model over the same prompts and splits what
+comes back four ways:
+
+| verdict | what it means |
+| --- | --- |
+| `answered` | the paper's exact format; a real run scores this |
+| `wrapped` | a real answer the paper's parser rejects for its wrapping |
+| `deflected` | the question handed back — "please choose one: A…D" |
+| `refused` | declines to answer from the profile — "cannot be determined" |
+
+It also carries `reasoning_effort` and `mean_reasoning_tokens` per model, so a
+difference between two variants can be read against how hard each one thought.
+
+`strict_rate` is what a run would score; `tolerant_rate` adds the wrapped ones.
+A gap between the two is a parser problem, and a low `tolerant_rate` across all
+three sizes is a prompt-contract problem, not a size problem. The run also
+reports mean NTP answer mass and whether the endpoint returned logprobs at all,
+so an empty probe can be told apart from an endpoint that never offered the
+numbers. A model that only serves its default sampling — several reasoning
+endpoints refuse `temperature` outright — is called without it from the first
+refusal on, and `fa_temperature` comes back empty to say the run's 0.7 never
+took. Everything lands in `outputs/culture/served_smoke/<question>/` —
+`served_smoke.csv` for the table, `raw/<model>_attempts.csv` for every reply
+verbatim, git-ignored like every other per-prompt dump — and never inside a run
+directory, so it cannot make a sweep think a cell is finished.
+
+```bash
+./run_experiment_add_culture.sh served-smoke --prompts 50 --questions all
+./run_experiment_add_culture.sh served-smoke --models luna --prompts 100
+./run_experiment_add_culture.sh served-smoke --reasoning-effort low
+```
+
+### Reasoning is a run parameter, not a default
+
+All three are reasoning models, and they spend part of the answer budget on
+hidden reasoning tokens before any visible text. Two settings follow from that,
+and both are recorded rather than left to the endpoint:
+
+`--reasoning-effort` (default `medium`) is sent on **every** request, full
+answers and probability probe alike, and it is held equal across whichever
+models are compared. Left unset, each variant would run at whatever the endpoint
+defaults to, and a difference between two variants could be a difference in
+effort rather than in the model — which is exactly the question `served-smoke`
+exists to answer. A model that refuses the parameter is called without it and
+`describe()` records that, so the effort in the manifest is the one the request
+actually carried. Every reply's `reasoning_tokens` is read back from the
+response and carried per attempt in the smoke's `raw/` trail, with the mean in
+`served_smoke.csv`, so how much each variant thinks before answering is measured
+rather than assumed.
+
+`--fa-max-tokens` is raised to 300 automatically for a served model, because
+`max_completion_tokens` counts reasoning tokens: the paper-methodology default
+of 12, used for every local model, would be spent on reasoning with nothing left
+for the visible answer. Pass `--fa-max-tokens` yourself to override.
+
+One consequence worth knowing before reading a served run: the probability probe
+asks for a **single** token, so at any effort above `none` the budget is spent
+reasoning and no visible token — and therefore no logprob — comes back. A served
+run at `medium` will report empty answer mass and fall through to full answers
+alone. That is the wiring, not a finding about the model's answer distribution,
+and `logprobs_supported` in the manifest is what tells the two apart.
+
+The `api` extra carries no PyTorch, so the served models run apart from the
+local ones — the drivers refuse to mix them and select the extra automatically.
+Several served models in one invocation is fine; they share the extra and the
+GPU stays free. Because syncing to it swaps the environment, rebuild the CUDA
+`llama-cpp-python` wheel (see [Install](#install)) before the next `fresh` run,
+and re-sync `--extra culture` or `--extra muse` before the next local model.
+
+**Next-token probability is decided by the run, not assumed.** The chat
+completions endpoint returns at most the top 20 next-token candidates, and
+every question here has at most 10 answers, so NTP is computable in principle:
+each answer letter's probability is read from those candidates and renormalized
+exactly as the local backends do, with an answer that never appears reading as
+zero. Whether the served model actually gives usable answer mass is measured by
+the preflight probe that already gates every run — 32 prompts, mean valid-answer
+mass against a 0.10 floor. If the probe comes back empty the run drops NTP and
+proceeds on full answers alone, recording the decision in
+`inference_manifest.json` under `modes_run`; the analysis, tables and plates all
+score whichever modes the run produced. An FA-only model is still directly
+comparable to the open bases on every FA row.
+
+Four honesty notes for a served model: its answers are sampled behind an API
+whose `seed` is best-effort, so run-to-run reproducibility is weaker than the
+local backends' seeded sampling; the prompt reaches it as a single user message
+rather than a raw completion; a model that refuses the sampling temperature is
+called without it, at whatever the endpoint defaults to; and the same goes for
+the reasoning effort. All four are recorded in the manifest (`seed_semantics`,
+`prompt_contract`, `fa_temperature`, `reasoning_effort` beside
+`reasoning_effort_requested`).
+
+---
+
 ## Topics
 
 | Variable | Topic | Answers |
@@ -419,6 +565,55 @@ pinned byte-for-byte by `tests/unit/test_prompts.py`.
 
 Politics also has 48 subpopulations where nobody answered. Their target is
 undefined, so they are dropped and counted in `coverage`, not silently averaged.
+
+## Population plates
+
+Three plate families that two notebooks draw straight from the run
+distributions, rather than the pipeline drawing them from the derived CSVs.
+They score **every retained subpopulation of a run** — all five countries, 687
+cells where a run is complete, 639 on politics — and compare each base model
+against its own untuned variant.
+
+| Family | x | y |
+| --- | --- | --- |
+| `fig_population_adaptability_<view>_<mode>` | mean nEMD to the survey cells | model dispersion over survey dispersion |
+| `fig_population_center_<view>_<mode>` | distance to the pooled German cells | distance to every cell pooled |
+| `fig_population_structure_<view>_<mode>` | model dispersion over survey dispersion | survey-to-model correlation of pairwise distances |
+
+Every quantity is carried twice: the markers are the population value, and each
+run also carries a tick at the same quantity recomputed on the 144 German cells
+alone, joined to its marker by a dotted rule. The tick is not a second run, so
+an untuned variant's tick read against its finetuned variant's tick is what the
+culture-MLLM finetuning bought on the cells it was fitted for — and a marker
+that moved one way while its tick moved the other bought Germany at the rest of
+the world's expense. The centers family draws no tick because its x axis is
+already the German reference. Both CSVs keep both scopes, the German one in the
+`_german` columns.
+
+Every dashed rule is a **fixed reference, never a fit** — dispersion parity,
+the identity diagonal, zero correlation — which is why none of them ever tilts.
+
+Each family is drawn in five views: `all` (one panel per topic) and one per
+topic — `happiness`, `politics`, `religious`, `trust`. Distances scale with a
+topic's answer count, so panels share a y axis but never an x scale.
+
+```bash
+uv run --no-sync --with nbclient --with ipykernel python - <<'PY'
+import nbformat
+from nbclient import NotebookClient
+
+for path in ("notebooks/population_adaptability.ipynb",
+             "notebooks/population_structure.ipynb"):
+    nb = nbformat.read(path, as_version=4)
+    NotebookClient(nb, timeout=3600, kernel_name="python3").execute()
+    nbformat.write(nb, path)
+PY
+```
+
+`--no-sync` matters: a bare `uv run` re-syncs the environment and destroys the
+hand-built CUDA `llama-cpp-python` wheel. The adaptability notebook must run
+first — the structure notebook joins its table. Both write to
+`outputs/culture/population_*.csv` and the top level of `figures/`.
 
 ## Paper report set
 
