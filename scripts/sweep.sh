@@ -18,8 +18,9 @@ Usage:
 One invocation per model, culture and question, so a failed or interrupted run
 never takes the rest of the sweep with it: one log per run, finished runs
 skipped unless --redo, cells without a staged adapter skipped and recorded
-(muse_glimmer_30b has german only), and the comparison rebuilt at the end from
-whatever finished.
+(muse_glimmer_30b has german only), and the comparison rebuilt at the end over
+the models swept plus every other model already holding results for these
+questions, so a one-model sweep still lands in the cross-model plates.
 
 Without --base: every model, german, d_happy (--cultures all for the full
 grid). With --base: gemma4_31b on all four questions, cultures frozen to the
@@ -31,6 +32,8 @@ luna, terra and sol are served through the OpenAI API and never join the default
 set: name them with --models, on the base variant only, and expect API charges.
 They need OPENAI_API_KEY and one <MODEL>_MODEL_ID per model in .env, and they
 leave the GPU alone. Probe them with `served-smoke` before paying for a run.
+An API model answers in FA only — the served endpoint gives no next-token
+probabilities, so its NTP probe is empty and it appears in the FA plates alone.
 
 Examples:
   ./scripts/sweep.sh                                   # every model, german, d_happy
