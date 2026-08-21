@@ -27,6 +27,8 @@ CULTURES: tuple[str, ...] = (
 
 BASE_ARM = "base"
 
+SERVED_BACKEND = "openai"
+
 ARMS: tuple[str, ...] = (BASE_ARM, *CULTURES)
 
 CHECKPOINT_CONDITION_DIRECTORY = "cultural"
@@ -49,6 +51,11 @@ CULTURE_ROOT = OUTPUTS_ROOT / "culture"
 CULTURE_FIGURES = FIGURES_ROOT / "culture"
 
 
+VISION_TEXT_MODALITY = "vision_text"
+
+TEXT_MODALITY = "text"
+
+
 @dataclass(frozen=True, slots=True)
 class CultureModel:
     key: str
@@ -57,6 +64,8 @@ class CultureModel:
     dtype: str
     quantization: str | None
     batch_size: int
+    backend: str = "transformers"
+    modality: str = VISION_TEXT_MODALITY
 
     def run_label(self, culture: str) -> str:
         if is_base(culture):
@@ -89,6 +98,23 @@ CULTURE_MODELS: dict[str, CultureModel] = {
         quantization=None,
         batch_size=16,
     ),
+    "qwen3_vl_2b": CultureModel(
+        key="qwen3_vl_2b",
+        base_model_id="Qwen/Qwen3-VL-2B-Thinking",
+        label="Qwen3-VL-2B-Thinking",
+        dtype="bfloat16",
+        quantization=None,
+        batch_size=32,
+    ),
+    "llama3_2_3b": CultureModel(
+        key="llama3_2_3b",
+        base_model_id="meta-llama/Llama-3.2-3B",
+        label="Llama-3.2-3B",
+        dtype="bfloat16",
+        quantization=None,
+        batch_size=32,
+        modality=TEXT_MODALITY,
+    ),
     "muse_glimmer_30b": CultureModel(
         key="muse_glimmer_30b",
         base_model_id="meta-models/Muse-Glimmer-30B",
@@ -97,7 +123,47 @@ CULTURE_MODELS: dict[str, CultureModel] = {
         quantization="nf4",
         batch_size=4,
     ),
+    "luna": CultureModel(
+        key="luna",
+        base_model_id="luna",
+        label="Luna",
+        dtype="api",
+        quantization=None,
+        batch_size=4,
+        backend="openai",
+    ),
+    "terra": CultureModel(
+        key="terra",
+        base_model_id="terra",
+        label="Terra",
+        dtype="api",
+        quantization=None,
+        batch_size=4,
+        backend="openai",
+    ),
+    "sol": CultureModel(
+        key="sol",
+        base_model_id="sol",
+        label="Sol",
+        dtype="api",
+        quantization=None,
+        batch_size=4,
+        backend="openai",
+    ),
 }
+
+
+def served_models() -> list[CultureModel]:
+    return [model for model in CULTURE_MODELS.values() if model.backend == SERVED_BACKEND]
+
+
+def served_keys() -> tuple[str, ...]:
+    return tuple(model.key for model in served_models())
+
+
+def is_served(model_key: str) -> bool:
+    model = CULTURE_MODELS.get(model_key)
+    return model is not None and model.backend == SERVED_BACKEND
 
 
 def resolve_models(selected: Sequence[str] | None) -> list[CultureModel]:

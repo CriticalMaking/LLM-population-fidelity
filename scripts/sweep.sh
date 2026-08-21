@@ -27,6 +27,11 @@ base arm, Germany's prompts first (ordering, not selection; --no-priority for
 the plain order), the cross-question summary rebuilt too, and a refusal to
 start while other work holds the GPU unless --allow-concurrent.
 
+luna, terra and sol are served through the OpenAI API and never join the default
+set: name them with --models, on the base variant only, and expect API charges.
+They need OPENAI_API_KEY and one <MODEL>_MODEL_ID per model in .env, and they
+leave the GPU alone. Probe them with `served-smoke` before paying for a run.
+
 Examples:
   ./scripts/sweep.sh                                   # every model, german, d_happy
   ./scripts/sweep.sh --models gemma4_31b --cultures all
@@ -37,7 +42,8 @@ Unrecognised options pass through to the underlying run: --mode, --batch-size,
 EOF
 }
 
-ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b muse_glimmer_30b)
+ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b muse_glimmer_30b)
+API_MODELS=(luna terra sol)
 ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish turkish)
 ALL_QUESTIONS=(d_happy d_polpos d_religiousp d_trust)
 
@@ -109,8 +115,8 @@ elif [[ $base -eq 1 && ${#first_countries[@]} -eq 0 ]]; then
 fi
 
 for model in "${models[@]}"; do
-    printf '%s\n' "${ALL_MODELS[@]}" | grep -qx -- "$model" ||
-        die "unknown model: $model (known: ${ALL_MODELS[*]})"
+    printf '%s\n' "${ALL_MODELS[@]}" "${API_MODELS[@]}" | grep -qx -- "$model" ||
+        die "unknown model: $model (known: ${ALL_MODELS[*]} ${API_MODELS[*]})"
 done
 if [[ $base -eq 0 ]]; then
     for culture in "${cultures[@]}"; do
@@ -123,7 +129,15 @@ for question in "${questions[@]}"; do
         die "unknown question: $question (known: ${ALL_QUESTIONS[*]})"
 done
 
-if [[ $base -eq 1 && $dry_run -eq 0 && $allow_concurrent -eq 0 ]]; then
+needs_gpu=1
+if [[ ${#models[@]} -gt 0 ]]; then
+    needs_gpu=0
+    for model in "${models[@]}"; do
+        printf '%s\n' "${API_MODELS[@]}" | grep -qx -- "$model" || needs_gpu=1
+    done
+fi
+
+if [[ $base -eq 1 && $dry_run -eq 0 && $allow_concurrent -eq 0 && $needs_gpu -eq 1 ]]; then
     running="$(pgrep -af 'python -m machine_bias_reproduction culture($| )' | head -1 || true)"
     if [[ -z "$running" ]]; then
         running="$(nvidia-smi --query-compute-apps=pid,process_name --format=csv,noheader 2>/dev/null | head -1 || true)"
@@ -247,16 +261,28 @@ for question in "${questions[@]}"; do
   done
 done
 
+compare_models=("${models[@]}")
+for candidate in "${ALL_MODELS[@]}" "${API_MODELS[@]}"; do
+    printf '%s\n' "${models[@]}" | grep -qx -- "$candidate" && continue
+    for question in "${questions[@]}"; do
+        compgen -G "$REPO_ROOT/outputs/culture/$candidate/*/$question/subpopulation_distances.csv" \
+            > /dev/null || continue
+        compare_models+=("$candidate")
+        break
+    done
+done
+
 echo
 if [[ $run_compare -eq 1 && $completed -gt 0 ]]; then
     if [[ $base -eq 1 ]]; then
-        echo "Rebuilding cross-culture comparison and summary..."
+        echo "Rebuilding cross-culture comparison and summary over ${compare_models[*]}..."
     else
-        echo "Rebuilding cross-culture comparison..."
+        echo "Rebuilding cross-culture comparison over ${compare_models[*]}..."
     fi
-    run_python culture-compare --models "${models[@]}" --questions "${questions[@]}" || true
+    run_python culture-compare --models "${compare_models[@]}" --questions "${questions[@]}" || true
     if [[ $base -eq 1 ]]; then
-        run_python culture-summary --models "${models[@]}" --questions "${questions[@]}" || true
+        run_python culture-summary --models "${compare_models[@]}" \
+            --questions "${questions[@]}" || true
     fi
     echo
 fi

@@ -36,6 +36,12 @@ muse = [
     "bitsandbytes==0.49.2",
     "huggingface-hub>=0.30",
 ]
+# Served models need no local weights, so this extra carries no torch stack and
+# conflicts with neither culture nor muse.
+api = [
+    "openai>=2,<3",
+    "python-dotenv>=1,<2",
+]
 
 [tool.uv]
 conflicts = [[{ extra = "culture" }, { extra = "muse" }]]
@@ -95,7 +101,7 @@ pretty = true
 # transformers is typed only with the culture extra installed, which flips
 # which ignores here are "unused"; the module must type-check in both states.
 [[tool.mypy.overrides]]
-module = ["culture.backend"]
+module = ["culture.backend", "culture.api_backend"]
 warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
@@ -111,5 +117,7 @@ module = [
     "bitsandbytes.*",
     "huggingface_hub.*",
     "sklearn.*",
+    "openai.*",
+    "dotenv.*",
 ]
 ignore_missing_imports = true

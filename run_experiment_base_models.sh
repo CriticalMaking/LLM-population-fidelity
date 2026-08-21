@@ -15,9 +15,12 @@ Usage:
   ./run_experiment_base_models.sh compare [--models KEY...] [--questions Q...]
   ./run_experiment_base_models.sh summary [--models KEY...] [--questions Q...]
 
-Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, muse_glimmer_30b
+Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, qwen3_vl_2b, llama3_2_3b,
+           muse_glimmer_30b, luna, terra, sol
            (default gemma4_31b; --models all for every one; muse_glimmer_30b
-           runs alone under the muse extra, selected automatically)
+           runs alone under the muse extra, selected automatically; luna, terra
+           and sol are served through the OpenAI API, stay out of --models all,
+           run apart from the local models under the api extra, and need .env)
 Questions: d_happy d_polpos d_religiousp d_trust (default: all four)
 
 The base arm is the same weights the culture-finetuned LLMs were fitted from,
