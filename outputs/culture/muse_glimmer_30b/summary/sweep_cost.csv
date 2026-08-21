@@ -1,7 +1,9 @@
 model_key,model_label,culture,question,question_label,hours,sessions,sweep_status
-muse_glimmer_30b,Muse-Glimmer-30B,base,d_happy,Happiness,5.398154445277778,1,ok
-muse_glimmer_30b,Muse-Glimmer-30B,base,d_polpos,Politics,5.970143475555555,1,ok
-muse_glimmer_30b,Muse-Glimmer-30B,base,d_religiousp,Religion,3.890350156111111,1,ok
-muse_glimmer_30b,Muse-Glimmer-30B,base,d_trust,Trust,2.7347500633333333,1,ok
+muse_glimmer_30b,Muse-Glimmer-30B,base,d_happy,Happiness,5.398154445277778,1,
+muse_glimmer_30b,Muse-Glimmer-30B,base,d_polpos,Politics,5.970143475555555,1,
+muse_glimmer_30b,Muse-Glimmer-30B,base,d_religiousp,Religion,3.890350156111111,1,
+muse_glimmer_30b,Muse-Glimmer-30B,base,d_trust,Trust,2.7347500633333333,1,
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,Happiness,2.9684393641666666,1,ok
-muse_glimmer_30b,Muse-Glimmer-30B,german,d_polpos,Politics,2.3601064427777776,2,
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_polpos,Politics,3.594437783888889,2,ok
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_religiousp,Religion,3.0867676269444444,1,ok
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_trust,Trust,2.974703607222222,1,ok
