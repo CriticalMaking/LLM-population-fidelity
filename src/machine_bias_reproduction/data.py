@@ -59,14 +59,24 @@ class PreparedData:
     question: Question
     wvs: pd.DataFrame
     subpops: pd.DataFrame
-    ntp_raw: pd.DataFrame
-    fa_raw: pd.DataFrame
+    ntp_raw: pd.DataFrame | None
+    fa_raw: pd.DataFrame | None
     names: pd.Index
     wvs_props: pd.DataFrame
-    ntp_props: pd.DataFrame
-    fa_props: pd.DataFrame
+    ntp_props: pd.DataFrame | None
+    fa_props: pd.DataFrame | None
     social_predictors: pd.DataFrame
     coverage: Coverage
+
+    def modes(self) -> tuple[str, ...]:
+        available = (("ntp", self.ntp_props), ("fa", self.fa_props))
+        return tuple(mode for mode, props in available if props is not None)
+
+    def props(self, mode: str) -> pd.DataFrame:
+        selected = self.ntp_props if mode == "ntp" else self.fa_props
+        if selected is None:
+            raise ValueError(f"no {mode} data in this run")
+        return selected
 
 
 def load_wvs() -> pd.DataFrame:
@@ -153,12 +163,14 @@ def social_predictors(wvs: pd.DataFrame, subpopulation: pd.Series) -> pd.DataFra
 
 
 def prepare_data(
-    ntp: pd.DataFrame,
-    fa: pd.DataFrame,
+    ntp: pd.DataFrame | None,
+    fa: pd.DataFrame | None,
     question: str | Question,
     *,
     min_valid: int = MIN_VALID_ANSWERS_PER_SUBPOPULATION,
 ) -> PreparedData:
+    if ntp is None and fa is None:
+        raise ValueError("at least one of the NTP and FA frames is required")
     outcome = resolve_question(question)
     wvs = load_wvs()
     subpops = load_subpops()
@@ -169,37 +181,58 @@ def prepare_data(
     wvs_responses = one_hot(outcome.normalize(wvs[outcome.var]), outcome.wvs_labels, columns)
     wvs_props = group_responses(wvs_responses, subpops["subpop"])
 
-    ntp_by_profile = outcome.ntp_answers(ntp.set_index("profile"))
-    matched_ntp = ntp_by_profile.reindex(wvs["profile"]).reset_index(drop=True)
-    ntp_props = group_responses(matched_ntp, subpops["subpop"])
-    ntp_counts = _group_counts(matched_ntp, subpops["subpop"])
-
-    matched_fa = fa.set_index("id").reindex(wvs["id"]).reset_index(drop=True)
-    fa_responses = one_hot(outcome.normalize(matched_fa[outcome.var]), outcome.fa_answers, columns)
-    fa_props = group_responses(fa_responses, subpops["subpop"])
-    fa_counts = _group_counts(fa_responses, subpops["subpop"])
-
     total = len(wvs_props.index)
     if total != EXPECTED_SUBPOPULATIONS:
         raise ValueError(f"expected {EXPECTED_SUBPOPULATIONS} subpopulations, found {total}")
-    if not wvs_props.index.equals(ntp_props.index) or not wvs_props.index.equals(fa_props.index):
-        raise ValueError("WVS, NTP, and FA subpopulation rows are not aligned")
 
-    keep = (
-        (ntp_counts.reindex(wvs_props.index, fill_value=0) >= min_valid)
-        & (fa_counts.reindex(wvs_props.index, fill_value=0) >= min_valid)
-        & wvs_props.notna().all(axis=1)
-        & ntp_props.notna().all(axis=1)
-        & fa_props.notna().all(axis=1)
-    )
+    keep = wvs_props.notna().all(axis=1)
+
+    ntp_by_profile = None
+    ntp_props = None
+    if ntp is not None:
+        ntp_by_profile = outcome.ntp_answers(ntp.set_index("profile"))
+        matched_ntp = ntp_by_profile.reindex(wvs["profile"]).reset_index(drop=True)
+        ntp_props = group_responses(matched_ntp, subpops["subpop"])
+        ntp_counts = _group_counts(matched_ntp, subpops["subpop"])
+        if not wvs_props.index.equals(ntp_props.index):
+            raise ValueError("WVS and NTP subpopulation rows are not aligned")
+        keep = (
+            keep
+            & (ntp_counts.reindex(wvs_props.index, fill_value=0) >= min_valid)
+            & ntp_props.notna().all(axis=1)
+        )
+
+    fa_responses = None
+    fa_props = None
+    if fa is not None:
+        matched_fa = fa.set_index("id").reindex(wvs["id"]).reset_index(drop=True)
+        fa_responses = one_hot(
+            outcome.normalize(matched_fa[outcome.var]), outcome.fa_answers, columns
+        )
+        fa_props = group_responses(fa_responses, subpops["subpop"])
+        fa_counts = _group_counts(fa_responses, subpops["subpop"])
+        if not wvs_props.index.equals(fa_props.index):
+            raise ValueError("WVS and FA subpopulation rows are not aligned")
+        keep = (
+            keep
+            & (fa_counts.reindex(wvs_props.index, fill_value=0) >= min_valid)
+            & fa_props.notna().all(axis=1)
+        )
+
     names = wvs_props.index[keep.to_numpy()]
 
     unique_profiles = wvs["profile"].drop_duplicates()
     coverage = Coverage(
-        ntp_expected=len(unique_profiles),
-        ntp_observed=int(unique_profiles.isin(ntp_by_profile.index).sum()),
-        fa_expected=len(wvs),
-        fa_observed=int(fa_responses.notna().any(axis=1).sum()),
+        ntp_expected=len(unique_profiles) if ntp_by_profile is not None else 0,
+        ntp_observed=(
+            int(unique_profiles.isin(ntp_by_profile.index).sum())
+            if ntp_by_profile is not None
+            else 0
+        ),
+        fa_expected=len(wvs) if fa_responses is not None else 0,
+        fa_observed=(
+            int(fa_responses.notna().any(axis=1).sum()) if fa_responses is not None else 0
+        ),
         subpopulations_total=total,
         subpopulations_retained=len(names),
     )
@@ -216,8 +249,8 @@ def prepare_data(
         fa_raw=fa,
         names=names,
         wvs_props=wvs_props.loc[names],
-        ntp_props=ntp_props.loc[names],
-        fa_props=fa_props.loc[names],
+        ntp_props=ntp_props.loc[names] if ntp_props is not None else None,
+        fa_props=fa_props.loc[names] if fa_props is not None else None,
         social_predictors=predictors,
         coverage=coverage,
     )

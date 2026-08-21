@@ -72,9 +72,7 @@ def _embed(
     columns = list(question.answer_columns)
     order = [(label, mode) for label in series for mode in MODES]
     props = {
-        (label, mode): (series[label].ntp_props if mode == "NTP" else series[label].fa_props).loc[
-            names, columns
-        ]
+        (label, mode): series[label].props(mode.lower()).loc[names, columns]
         for label, mode in order
     }
     wvs = next(iter(series.values())).wvs_props.loc[names, columns].to_numpy(dtype=np.float64)
@@ -162,9 +160,7 @@ def _draw_panel(
         coordinates = model_coordinates.get((label, mode))
         if coordinates is None:
             continue
-        model_props = (series[label].ntp_props if mode == "NTP" else series[label].fa_props).loc[
-            names, columns
-        ]
+        model_props = series[label].props(mode.lower()).loc[names, columns]
         error = float(np.mean(nemd(wvs_props.to_numpy(), model_props.to_numpy())))
         tuned = not is_reference(label)
         tone = mds_arm_tone(label)
@@ -211,7 +207,10 @@ def _ntp_props_over_every_subpopulation(
     prepared: PreparedData,
     question: Question,
 ) -> pd.DataFrame:
-    by_profile = question.ntp_answers(prepared.ntp_raw.set_index("profile"))
+    ntp_raw = prepared.ntp_raw
+    if ntp_raw is None:
+        raise ValueError("no ntp data in this run")
+    by_profile = question.ntp_answers(ntp_raw.set_index("profile"))
     matched = by_profile.reindex(prepared.wvs["profile"]).reset_index(drop=True)
     return group_responses(matched, prepared.subpops["subpop"])
 
