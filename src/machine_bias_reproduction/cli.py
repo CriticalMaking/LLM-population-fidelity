@@ -14,6 +14,7 @@ from culture import (
     ADAPTERS_MANIFEST,
     BASE_ARM,
     DEFAULT_CHECKPOINT_ROOT,
+    SERVED_BACKEND,
     copy_adapters,
     health_lines,
     health_table,
@@ -21,12 +22,16 @@ from culture import (
     resolve_cultures,
     resolve_finetuned_cultures,
     resolve_models,
+    served_keys,
+    served_models,
     staged_adapter,
     write_health,
 )
+from culture.api_backend import REASONING_EFFORT, REASONING_EFFORTS
 from culture.figures import compare_cultures
 from culture.mds import culture_mds
 from culture.runner import run_one
+from culture.served_smoke import SMOKE_ATTEMPTS, SMOKE_FA_MAX_TOKENS, SMOKE_PROMPTS
 from culture.summary import culture_summary
 
 from .analysis import run_analysis
@@ -305,6 +310,15 @@ def command_culture(arguments: argparse.Namespace) -> None:
 
     verify_upstream(full=False)
     models = resolve_models(arguments.models)
+    if arguments.models is None:
+        served = [model for model in models if model.backend != "transformers"]
+        if served:
+            print(
+                f"skipping {', '.join(model.key for model in served)}: "
+                "an api model runs only when named with --models",
+                flush=True,
+            )
+        models = [model for model in models if model.backend == "transformers"]
     cultures = resolve_cultures(arguments.cultures)
     questions = resolve_questions(arguments.questions)
     wvs = load_wvs()
@@ -312,18 +326,39 @@ def command_culture(arguments: argparse.Namespace) -> None:
     for question in questions:
         for model in models:
             for group, adapters in _culture_groups(model.key, cultures):
-                print(
-                    f"loading {model.base_model_id} ({model.quantization or 'unquantized'}) "
-                    f"for {question.var} — {', '.join(group)}",
-                    flush=True,
-                )
-                backend = TransformersBackend(
-                    model,
-                    adapters,
-                    question,
-                    batch_size=arguments.batch_size,
-                    fa_max_new_tokens=arguments.fa_max_tokens,
-                )
+                backend: Any
+                if model.backend == "openai":
+                    from culture.api_backend import OpenAIBackend
+
+                    if adapters:
+                        raise ValueError(
+                            f"{model.key} has no culture-MLLM finetuning; run --cultures base"
+                        )
+                    print(
+                        f"calling {model.label} through the api "
+                        f"for {question.var} — {', '.join(group)}",
+                        flush=True,
+                    )
+                    backend = OpenAIBackend(
+                        model,
+                        question,
+                        batch_size=arguments.batch_size,
+                        fa_max_new_tokens=arguments.fa_max_tokens,
+                        reasoning_effort=arguments.reasoning_effort,
+                    )
+                else:
+                    print(
+                        f"loading {model.base_model_id} ({model.quantization or 'unquantized'}) "
+                        f"for {question.var} — {', '.join(group)}",
+                        flush=True,
+                    )
+                    backend = TransformersBackend(
+                        model,
+                        adapters,
+                        question,
+                        batch_size=arguments.batch_size,
+                        fa_max_new_tokens=arguments.fa_max_tokens,
+                    )
                 for culture in group:
                     results.append(
                         run_one(
@@ -344,6 +379,33 @@ def command_culture(arguments: argparse.Namespace) -> None:
     if not arguments.skip_compare and arguments.limit is None:
         comparison = [compare_cultures(models, cultures, question) for question in questions]
     _json_print({"runs": results, "comparison": comparison})
+
+
+def command_culture_served_smoke(arguments: argparse.Namespace) -> None:
+    from culture.served_smoke import run_smoke
+
+    models = resolve_models(arguments.models) if arguments.models else served_models()
+    local = [model for model in models if model.backend != SERVED_BACKEND]
+    if local:
+        raise ValueError(
+            f"{', '.join(model.key for model in local)} is not served through the api; "
+            f"this smoke compares {', '.join(served_keys())}"
+        )
+    wvs = load_wvs()
+    results = [
+        run_smoke(
+            models,
+            question,
+            wvs,
+            prompts=arguments.prompts,
+            attempts=arguments.attempts,
+            fa_max_tokens=arguments.fa_max_tokens,
+            batch_size=arguments.batch_size,
+            reasoning_effort=arguments.reasoning_effort,
+        )
+        for question in resolve_questions(arguments.questions)
+    ]
+    _json_print(results)
 
 
 def command_culture_compare(arguments: argparse.Namespace) -> None:
@@ -520,6 +582,13 @@ def build_parser() -> argparse.ArgumentParser:
     culture.add_argument("--limit", type=int, help="smoke-test only the first N prompts")
     culture.add_argument("--batch-size", type=int, help="override the model's default batch size")
     culture.add_argument("--fa-max-tokens", type=int, default=12, help="FA generation budget")
+    culture.add_argument(
+        "--reasoning-effort",
+        choices=REASONING_EFFORTS,
+        default=REASONING_EFFORT,
+        help=f"reasoning budget for a served model; ignored by the local ones "
+        f"(default: {REASONING_EFFORT})",
+    )
     culture.add_argument("--force", action="store_true", help="overwrite completed prompt results")
     culture.add_argument(
         "--legacy-unseeded-fa",
@@ -533,6 +602,49 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_question_argument(culture, plural=True)
     culture.set_defaults(handler=command_culture)
+
+    culture_served_smoke = subparsers.add_parser(
+        "culture-served-smoke",
+        help="compare the served models on the same prompts before paying for a run",
+    )
+    culture_served_smoke.add_argument(
+        "--models",
+        nargs="+",
+        help=f"served model keys (default: {', '.join(served_keys())})",
+    )
+    culture_served_smoke.add_argument(
+        "--prompts",
+        type=int,
+        default=SMOKE_PROMPTS,
+        help=f"prompts per model (default: {SMOKE_PROMPTS})",
+    )
+    culture_served_smoke.add_argument(
+        "--attempts",
+        type=int,
+        default=SMOKE_ATTEMPTS,
+        help=f"attempts per prompt (default: {SMOKE_ATTEMPTS}, the run's own cap)",
+    )
+    culture_served_smoke.add_argument(
+        "--fa-max-tokens",
+        type=int,
+        default=SMOKE_FA_MAX_TOKENS,
+        help=f"FA generation budget (default: {SMOKE_FA_MAX_TOKENS})",
+    )
+    culture_served_smoke.add_argument(
+        "--batch-size",
+        type=int,
+        help="override the model's default concurrency",
+    )
+    culture_served_smoke.add_argument(
+        "--reasoning-effort",
+        choices=REASONING_EFFORTS,
+        default=REASONING_EFFORT,
+        help=(
+            f"reasoning budget, held equal across the models compared (default: {REASONING_EFFORT})"
+        ),
+    )
+    _add_question_argument(culture_served_smoke, plural=True)
+    culture_served_smoke.set_defaults(handler=command_culture_served_smoke)
 
     culture_compare = subparsers.add_parser(
         "culture-compare",
