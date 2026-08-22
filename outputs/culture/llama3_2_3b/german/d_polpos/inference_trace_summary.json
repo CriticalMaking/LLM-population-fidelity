@@ -1,0 +1,32 @@
+{
+  "code_revisions": [
+    "81b18ff-dirty"
+  ],
+  "failed_records": [
+    "raw/fa/0a3e308530c1cc3260d477a9.failed.json",
+    "raw/fa/f8b2631f360835d902273f52.failed.json",
+    "raw/fa/24fe4a76b3c7eedaa8fc8f79.failed.json",
+    "raw/fa/3f80833edca0101e81f743ef.failed.json",
+    "raw/fa/c55513920546d9d2d5992800.failed.json",
+    "raw/fa/55cb8e7379e0284971eeffe6.failed.json",
+    "raw/fa/701d9e3d3a0ee8673de79942.failed.json",
+    "raw/fa/697cdf06bc92e5713e69eaa2.failed.json",
+    "raw/fa/c28cd12eaa49dd25fa5d52fb.failed.json",
+    "raw/fa/584b568482ebd1d8a7a76a99.failed.json"
+  ],
+  "indexed": 40875,
+  "missing": {
+    "fa": 10,
+    "ntp": 0
+  },
+  "model_sha256": [
+    "b2744d9a22440c75f836272228306ced04f40760cf7ead386468fb44b0e4bde3"
+  ],
+  "ok": false,
+  "problems": [],
+  "run_ids": [
+    "20260821T223347Z-010970ff"
+  ],
+  "traced": 40875,
+  "untraced": 0
+}
