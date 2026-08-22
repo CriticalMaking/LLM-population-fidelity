@@ -435,6 +435,41 @@ hand-built CUDA `llama-cpp-python` wheel. The adaptability notebook must run
 first — the structure notebook joins its table. Both write to
 `outputs/culture/population_*.csv` and the top level of `figures/`.
 
+## Grouped MDS plates
+
+A sweep rebuilds each model's own MDS plates at the end of its run.
+`notebooks/mds_model_comparison.ipynb` does that too, and then draws the three
+families that need more than one model in the same picture — each one shared
+embedding on one shared scale, so every panel of a plate is comparable.
+
+| Plate | Panels | Sample |
+| --- | --- | --- |
+| `fig_culture_mds_tier_{small,mid,big}` | one model per column, NTP and FA rows, both variants per panel | the German cells |
+| `fig_culture_mds_base_families` | the untuned variant of every model, open first then served | the cells every drawn run shares, all five countries |
+| `fig_culture_mds_finetuned` | the six `german` variants side by side | the German cells |
+
+Size tiers are declared in `culture.registry.SIZE_TIERS`, so a new base model
+picks up a column by being added there. The served models have no published size
+and are in no tier — the base-families plate is the only geometry they appear in,
+and it is full answers throughout because those endpoints return no next-token
+probabilities. A run that never happened contributes no panel and no row. Every
+panel's mean nEMD lands in `outputs/culture/culture_mds_groups.csv`.
+
+```bash
+uv run --no-sync --with nbclient --with ipykernel python - <<'PY'
+import nbformat
+from nbclient import NotebookClient
+
+path = "notebooks/mds_model_comparison.ipynb"
+nb = nbformat.read(path, as_version=4)
+NotebookClient(nb, timeout=14400, kernel_name="python3").execute()
+nbformat.write(nb, path)
+PY
+```
+
+A full four-question pass is tens of minutes; every driver in the notebook takes
+a question list, so `tier_plates(["d_happy"])` is the quick look.
+
 ## Paper report set
 
 ```bash

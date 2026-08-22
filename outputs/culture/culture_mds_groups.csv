@@ -1,0 +1,242 @@
+plate,question,model_key,model_label,series,mode,sample,countries,subpopulations,mean_nEMD
+tier_small,d_happy,,,Mixtral archived,NTP,german_matched,Germany,144,0.061981049913407124
+tier_small,d_happy,,,Mixtral fresh,NTP,german_matched,Germany,144,0.0625264609833189
+tier_small,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,NTP,german_matched,Germany,144,0.08557117210588039
+tier_small,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,144,0.11919426961357488
+tier_small,d_happy,llama3_2_3b,Llama-3.2-3B,base,NTP,german_matched,Germany,144,0.14123880324838411
+tier_small,d_happy,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,144,0.2785569641241327
+tier_small,d_happy,gemma4_e4b,Gemma-4-E4B-it,base,NTP,german_matched,Germany,144,0.11490619178618688
+tier_small,d_happy,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,144,0.1072967725901502
+tier_small,d_happy,,,Mixtral archived,FA,german_matched,Germany,144,0.09246420568454153
+tier_small,d_happy,,,Mixtral fresh,FA,german_matched,Germany,144,0.07362755388452312
+tier_small,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,german_matched,Germany,144,0.09083188328223356
+tier_small,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,144,0.12982190996360163
+tier_small,d_happy,llama3_2_3b,Llama-3.2-3B,base,FA,german_matched,Germany,144,0.15101463697336528
+tier_small,d_happy,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,144,0.2949859006073869
+tier_small,d_happy,gemma4_e4b,Gemma-4-E4B-it,base,FA,german_matched,Germany,144,0.1269042467755913
+tier_small,d_happy,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,144,0.11594909970427802
+tier_mid,d_happy,,,Mixtral archived,NTP,german_matched,Germany,144,0.061981049913407124
+tier_mid,d_happy,,,Mixtral fresh,NTP,german_matched,Germany,144,0.0625264609833189
+tier_mid,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,NTP,german_matched,Germany,144,0.099643182582621
+tier_mid,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,144,0.23496140360720513
+tier_mid,d_happy,,,Mixtral archived,FA,german_matched,Germany,144,0.09246420568454153
+tier_mid,d_happy,,,Mixtral fresh,FA,german_matched,Germany,144,0.07362755388452312
+tier_mid,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,german_matched,Germany,144,0.1164068239765099
+tier_mid,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,144,0.2678706295453922
+tier_big,d_happy,,,Mixtral archived,NTP,german_matched,Germany,141,0.061031171112713646
+tier_big,d_happy,,,Mixtral fresh,NTP,german_matched,Germany,141,0.061617506369118884
+tier_big,d_happy,gemma4_31b,Gemma-4-31B-it,base,NTP,german_matched,Germany,141,0.13345143134630494
+tier_big,d_happy,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,141,0.18218130726700563
+tier_big,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,base,NTP,german_matched,Germany,141,0.09836259937761292
+tier_big,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,141,0.1291110709040956
+tier_big,d_happy,,,Mixtral archived,FA,german_matched,Germany,141,0.09154073247796235
+tier_big,d_happy,,,Mixtral fresh,FA,german_matched,Germany,141,0.07289846488542562
+tier_big,d_happy,gemma4_31b,Gemma-4-31B-it,base,FA,german_matched,Germany,141,0.1347138784954695
+tier_big,d_happy,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,141,0.18517230436666246
+tier_big,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,german_matched,Germany,141,0.10350352288555502
+tier_big,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,141,0.1309360147246515
+tier_small,d_polpos,,,Mixtral archived,NTP,german_matched,Germany,144,0.0985880379075019
+tier_small,d_polpos,,,Mixtral fresh,NTP,german_matched,Germany,144,0.09892358962767663
+tier_small,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,NTP,german_matched,Germany,144,0.09634150683756396
+tier_small,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,144,0.12496286813071296
+tier_small,d_polpos,llama3_2_3b,Llama-3.2-3B,base,NTP,german_matched,Germany,144,0.10581234282869355
+tier_small,d_polpos,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,144,0.0582106229780297
+tier_small,d_polpos,gemma4_e4b,Gemma-4-E4B-it,base,NTP,german_matched,Germany,144,0.1339277076369752
+tier_small,d_polpos,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,144,0.09184247289571096
+tier_small,d_polpos,,,Mixtral archived,FA,german_matched,Germany,144,0.08509585794297989
+tier_small,d_polpos,,,Mixtral fresh,FA,german_matched,Germany,144,0.08324143792409637
+tier_small,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,german_matched,Germany,144,0.11730258172927731
+tier_small,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,144,0.16945474238114905
+tier_small,d_polpos,llama3_2_3b,Llama-3.2-3B,base,FA,german_matched,Germany,144,0.09922804438591076
+tier_small,d_polpos,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,144,0.08844411113943268
+tier_small,d_polpos,gemma4_e4b,Gemma-4-E4B-it,base,FA,german_matched,Germany,144,0.13715229570086673
+tier_small,d_polpos,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,144,0.1102259937671708
+tier_mid,d_polpos,,,Mixtral archived,NTP,german_matched,Germany,144,0.0985880379075019
+tier_mid,d_polpos,,,Mixtral fresh,NTP,german_matched,Germany,144,0.09892358962767663
+tier_mid,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,NTP,german_matched,Germany,144,0.09587582686403746
+tier_mid,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,144,0.09227323294970285
+tier_mid,d_polpos,,,Mixtral archived,FA,german_matched,Germany,144,0.08509585794297989
+tier_mid,d_polpos,,,Mixtral fresh,FA,german_matched,Germany,144,0.08324143792409637
+tier_mid,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,german_matched,Germany,144,0.08866281737411635
+tier_mid,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,144,0.10601933884688847
+tier_big,d_polpos,,,Mixtral archived,NTP,german_matched,Germany,139,0.09764949795059889
+tier_big,d_polpos,,,Mixtral fresh,NTP,german_matched,Germany,139,0.09793779387976341
+tier_big,d_polpos,gemma4_31b,Gemma-4-31B-it,base,NTP,german_matched,Germany,139,0.09153597239381682
+tier_big,d_polpos,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,139,0.11423866639500903
+tier_big,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,base,NTP,german_matched,Germany,139,0.12691902160948695
+tier_big,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,139,0.09252820620188962
+tier_big,d_polpos,,,Mixtral archived,FA,german_matched,Germany,139,0.08443748152722357
+tier_big,d_polpos,,,Mixtral fresh,FA,german_matched,Germany,139,0.08225484484517445
+tier_big,d_polpos,gemma4_31b,Gemma-4-31B-it,base,FA,german_matched,Germany,139,0.13814609185639604
+tier_big,d_polpos,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,139,0.12221173419887664
+tier_big,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,german_matched,Germany,139,0.08540618499674162
+tier_big,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,139,0.07415949091162194
+tier_small,d_religiousp,,,Mixtral archived,NTP,german_matched,Germany,144,0.15547536685430327
+tier_small,d_religiousp,,,Mixtral fresh,NTP,german_matched,Germany,144,0.15550099671651826
+tier_small,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,NTP,german_matched,Germany,144,0.17071103263249132
+tier_small,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,144,0.194835102343272
+tier_small,d_religiousp,llama3_2_3b,Llama-3.2-3B,base,NTP,german_matched,Germany,144,0.34783251562772816
+tier_small,d_religiousp,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,144,0.5805313615030829
+tier_small,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,base,NTP,german_matched,Germany,144,0.4005470208906679
+tier_small,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,144,0.36904629394251
+tier_small,d_religiousp,,,Mixtral archived,FA,german_matched,Germany,144,0.15582120516849216
+tier_small,d_religiousp,,,Mixtral fresh,FA,german_matched,Germany,144,0.1760767501186118
+tier_small,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,german_matched,Germany,144,0.2409844792467356
+tier_small,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,144,0.22461397157379637
+tier_small,d_religiousp,llama3_2_3b,Llama-3.2-3B,base,FA,german_matched,Germany,144,0.4028526507858118
+tier_small,d_religiousp,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,144,0.6164311407655245
+tier_small,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,base,FA,german_matched,Germany,144,0.4297645500209064
+tier_small,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,144,0.3980249915056899
+tier_mid,d_religiousp,,,Mixtral archived,NTP,german_matched,Germany,144,0.15547536685430327
+tier_mid,d_religiousp,,,Mixtral fresh,NTP,german_matched,Germany,144,0.15550099671651826
+tier_mid,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,NTP,german_matched,Germany,144,0.18168337333450427
+tier_mid,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,144,0.29272961948295034
+tier_mid,d_religiousp,,,Mixtral archived,FA,german_matched,Germany,144,0.15582120516849216
+tier_mid,d_religiousp,,,Mixtral fresh,FA,german_matched,Germany,144,0.1760767501186118
+tier_mid,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,german_matched,Germany,144,0.20923004588220875
+tier_mid,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,144,0.3329993606564485
+tier_big,d_religiousp,,,Mixtral archived,NTP,german_matched,Germany,141,0.15530953522501906
+tier_big,d_religiousp,,,Mixtral fresh,NTP,german_matched,Germany,141,0.15540021944245558
+tier_big,d_religiousp,gemma4_31b,Gemma-4-31B-it,base,NTP,german_matched,Germany,141,0.2493746372622736
+tier_big,d_religiousp,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,141,0.37772560340425915
+tier_big,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,base,NTP,german_matched,Germany,141,0.13652884464392584
+tier_big,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,141,0.14610495688176522
+tier_big,d_religiousp,,,Mixtral archived,FA,german_matched,Germany,141,0.1562038197659427
+tier_big,d_religiousp,,,Mixtral fresh,FA,german_matched,Germany,141,0.17522347225026716
+tier_big,d_religiousp,gemma4_31b,Gemma-4-31B-it,base,FA,german_matched,Germany,141,0.2645032255375266
+tier_big,d_religiousp,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,141,0.39114161007290665
+tier_big,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,german_matched,Germany,141,0.19024819721120687
+tier_big,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,141,0.21538218017464314
+tier_small,d_trust,,,Mixtral archived,NTP,german_matched,Germany,143,0.11892712500684875
+tier_small,d_trust,,,Mixtral fresh,NTP,german_matched,Germany,143,0.11984446175493105
+tier_small,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,NTP,german_matched,Germany,143,0.30788668188130563
+tier_small,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,143,0.5909836623325329
+tier_small,d_trust,llama3_2_3b,Llama-3.2-3B,base,NTP,german_matched,Germany,143,0.25637095836498447
+tier_small,d_trust,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,143,0.5472068357699574
+tier_small,d_trust,gemma4_e4b,Gemma-4-E4B-it,base,NTP,german_matched,Germany,143,0.5436462372163742
+tier_small,d_trust,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,143,0.5261387627601858
+tier_small,d_trust,,,Mixtral archived,FA,german_matched,Germany,143,0.2712461338281256
+tier_small,d_trust,,,Mixtral fresh,FA,german_matched,Germany,143,0.14718315170543322
+tier_small,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,german_matched,Germany,143,0.3501286637903133
+tier_small,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,143,0.5992182149304116
+tier_small,d_trust,llama3_2_3b,Llama-3.2-3B,base,FA,german_matched,Germany,143,0.3003943727884414
+tier_small,d_trust,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,143,0.57954735551901
+tier_small,d_trust,gemma4_e4b,Gemma-4-E4B-it,base,FA,german_matched,Germany,143,0.5595739544150602
+tier_small,d_trust,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,143,0.5444547508755236
+tier_mid,d_trust,,,Mixtral archived,NTP,german_matched,Germany,144,0.11889627498195532
+tier_mid,d_trust,,,Mixtral fresh,NTP,german_matched,Germany,144,0.1198890449648392
+tier_mid,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,NTP,german_matched,Germany,144,0.11542001412789277
+tier_mid,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,144,0.5758601980231565
+tier_mid,d_trust,,,Mixtral archived,FA,german_matched,Germany,144,0.27283470234320806
+tier_mid,d_trust,,,Mixtral fresh,FA,german_matched,Germany,144,0.1461610464852566
+tier_mid,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,german_matched,Germany,144,0.15676769317187267
+tier_mid,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,144,0.6080455291420483
+tier_big,d_trust,,,Mixtral archived,NTP,german_matched,Germany,132,0.12180170118415061
+tier_big,d_trust,,,Mixtral fresh,NTP,german_matched,Germany,132,0.1228240205413218
+tier_big,d_trust,gemma4_31b,Gemma-4-31B-it,base,NTP,german_matched,Germany,132,0.29458622525647576
+tier_big,d_trust,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,132,0.3351860243920909
+tier_big,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,base,NTP,german_matched,Germany,132,0.2581260495375823
+tier_big,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,132,0.29428315972994123
+tier_big,d_trust,,,Mixtral archived,FA,german_matched,Germany,132,0.2751421007150991
+tier_big,d_trust,,,Mixtral fresh,FA,german_matched,Germany,132,0.1464820926815729
+tier_big,d_trust,gemma4_31b,Gemma-4-31B-it,base,FA,german_matched,Germany,132,0.30437764160011443
+tier_big,d_trust,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,132,0.3554390310399471
+tier_big,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,german_matched,Germany,132,0.3030935714994445
+tier_big,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,132,0.35278359076354787
+base_families,d_happy,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.09928171609421263
+base_families,d_happy,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.09440570064288493
+base_families,d_happy,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.153813046702241
+base_families,d_happy,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.15008196308078842
+base_families,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.11879121701539078
+base_families,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.10842250260872721
+base_families,d_happy,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.13997472845240336
+base_families,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.10358598086468136
+base_families,d_happy,terra,Terra,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.13673804544336954
+base_families,d_polpos,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.10815112055552699
+base_families,d_polpos,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.10736867086254072
+base_families,d_polpos,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.14187281134231314
+base_families,d_polpos,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.1725443679701826
+base_families,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.10293005751221923
+base_families,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.11676426300305685
+base_families,d_polpos,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.09956390248448742
+base_families,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.12532318422258457
+base_families,d_religiousp,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.18536952391072184
+base_families,d_religiousp,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.23703303462356815
+base_families,d_religiousp,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.33070154562937065
+base_families,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.4011424079458023
+base_families,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.20690731673492715
+base_families,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.31018518919112664
+base_families,d_religiousp,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.3431994431563568
+base_families,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.20961988298919362
+base_families,d_trust,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.30749834639315476
+base_families,d_trust,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.1722208235102528
+base_families,d_trust,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.2957364956507601
+base_families,d_trust,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.5544869007363644
+base_families,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.1444486649787123
+base_families,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.4153576984336809
+base_families,d_trust,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.34425629367621724
+base_families,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.31504892893460507
+finetuned,d_happy,,,Mixtral archived,NTP,german_matched,Germany,141,0.061031171112713646
+finetuned,d_happy,,,Mixtral fresh,NTP,german_matched,Germany,141,0.061617506369118884
+finetuned,d_happy,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,141,0.18218130726700563
+finetuned,d_happy,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,141,0.10744189204630576
+finetuned,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,141,0.23400376921482965
+finetuned,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,141,0.11876302466471514
+finetuned,d_happy,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,141,0.2769587181383519
+finetuned,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,141,0.1291110709040956
+finetuned,d_happy,,,Mixtral archived,FA,german_matched,Germany,141,0.09154073247796235
+finetuned,d_happy,,,Mixtral fresh,FA,german_matched,Germany,141,0.07289846488542562
+finetuned,d_happy,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,141,0.18517230436666246
+finetuned,d_happy,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,141,0.11587843377845908
+finetuned,d_happy,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,141,0.26671658267109943
+finetuned,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,141,0.1295792257037753
+finetuned,d_happy,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,141,0.29345751918741336
+finetuned,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,141,0.1309360147246515
+finetuned,d_polpos,,,Mixtral archived,NTP,german_matched,Germany,139,0.09764949795059889
+finetuned,d_polpos,,,Mixtral fresh,NTP,german_matched,Germany,139,0.09793779387976341
+finetuned,d_polpos,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,139,0.11423866639500903
+finetuned,d_polpos,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,139,0.09031564998759059
+finetuned,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,139,0.09103621665765832
+finetuned,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,139,0.12374684891257991
+finetuned,d_polpos,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,139,0.05790240698115809
+finetuned,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,139,0.09252820620188962
+finetuned,d_polpos,,,Mixtral archived,FA,german_matched,Germany,139,0.08443748152722357
+finetuned,d_polpos,,,Mixtral fresh,FA,german_matched,Germany,139,0.08225484484517445
+finetuned,d_polpos,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,139,0.12221173419887664
+finetuned,d_polpos,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,139,0.10848298098778848
+finetuned,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,139,0.10567703900384856
+finetuned,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,139,0.16807053449420942
+finetuned,d_polpos,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,139,0.08906646714535466
+finetuned,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,139,0.07415949091162194
+finetuned,d_religiousp,,,Mixtral archived,NTP,german_matched,Germany,141,0.15530953522501906
+finetuned,d_religiousp,,,Mixtral fresh,NTP,german_matched,Germany,141,0.15540021944245558
+finetuned,d_religiousp,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,141,0.37772560340425915
+finetuned,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,141,0.3728851204964956
+finetuned,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,141,0.2947956641154883
+finetuned,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,141,0.195749176213578
+finetuned,d_religiousp,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,141,0.5798974285328642
+finetuned,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,141,0.14610495688176522
+finetuned,d_religiousp,,,Mixtral archived,FA,german_matched,Germany,141,0.1562038197659427
+finetuned,d_religiousp,,,Mixtral fresh,FA,german_matched,Germany,141,0.17522347225026716
+finetuned,d_religiousp,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,141,0.39114161007290665
+finetuned,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,141,0.4015821634081958
+finetuned,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,141,0.3363165064503408
+finetuned,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,141,0.22552232095469527
+finetuned,d_religiousp,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,141,0.615868290055533
+finetuned,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,141,0.21538218017464314
+finetuned,d_trust,,,Mixtral archived,NTP,german_matched,Germany,131,0.12185755599149377
+finetuned,d_trust,,,Mixtral fresh,NTP,german_matched,Germany,131,0.12279775776696775
+finetuned,d_trust,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,131,0.33625195181636003
+finetuned,d_trust,gemma4_e4b,Gemma-4-E4B-it,german,NTP,german_matched,Germany,131,0.5274608786679673
+finetuned,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,NTP,german_matched,Germany,131,0.5789812539968663
+finetuned,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,NTP,german_matched,Germany,131,0.5931944396752962
+finetuned,d_trust,llama3_2_3b,Llama-3.2-3B,german,NTP,german_matched,Germany,131,0.5483610720767184
+finetuned,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,german,NTP,german_matched,Germany,131,0.29321921519866556
+finetuned,d_trust,,,Mixtral archived,FA,german_matched,Germany,131,0.27342562820147387
+finetuned,d_trust,,,Mixtral fresh,FA,german_matched,Germany,131,0.1476002765951727
+finetuned,d_trust,gemma4_31b,Gemma-4-31B-it,german,FA,german_matched,Germany,131,0.35662558852880166
+finetuned,d_trust,gemma4_e4b,Gemma-4-E4B-it,german,FA,german_matched,Germany,131,0.5448690035887639
+finetuned,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,FA,german_matched,Germany,131,0.611793526471447
+finetuned,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,FA,german_matched,Germany,131,0.6014196772683765
+finetuned,d_trust,llama3_2_3b,Llama-3.2-3B,german,FA,german_matched,Germany,131,0.5811510146684351
+finetuned,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,german,FA,german_matched,Germany,131,0.3516598013800634
