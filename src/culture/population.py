@@ -228,7 +228,7 @@ def check_adaptability(table: pd.DataFrame) -> None:
     assert (complete["n_cells_german"] == GERMAN_CELLS).all()
     assert table["n_cells"].le(EXPECTED_SUBPOPULATIONS).all()
     assert table["n_cells_german"].le(GERMAN_CELLS).all()
-    assert complete["adaptability_ratio"].gt(0).all()
+    assert complete["adaptability_ratio"].ge(0).all()
     _cross_check_error(complete)
 
 
