@@ -18,9 +18,13 @@ Usage:
 One invocation per model, culture and question, so a failed or interrupted run
 never takes the rest of the sweep with it: one log per run, finished runs
 skipped unless --redo, cells without a staged adapter skipped and recorded
-(muse_glimmer_30b has german only), and the comparison rebuilt at the end over
-the models swept plus every other model already holding results for these
-questions, so a one-model sweep still lands in the cross-model plates.
+(muse_glimmer_30b has german only), and the comparison and the MDS plates
+rebuilt at the end over every model rather than the ones swept, so a one-model
+sweep lands in the cross-model plates instead of replacing them with itself.
+
+The summary TSV is a ledger: this sweep's rows are printed and every cell it
+did not run is carried over from the previous sweep, since sweep_cost.csv reads
+each cell's status back from it.
 
 Without --base: every model, german, d_happy (--cultures all for the full
 grid). With --base: gemma4_31b on all four questions, cultures frozen to the
@@ -202,6 +206,10 @@ if [[ $dry_run -eq 1 ]]; then
 fi
 
 require_uv
+carried="$(mktemp)"
+swept="$(mktemp)"
+trap 'rm -f "$carried" "$swept"' EXIT
+[[ -f "$summary" ]] && cp "$summary" "$carried"
 printf 'model\tculture\tquestion\tstatus\tseconds\tvalid_answer_mass\tvalid\tprompts\tvalid_rate\n' > "$summary"
 
 index=0
@@ -264,35 +272,30 @@ for question in "${questions[@]}"; do
   done
 done
 
-compare_models=("${models[@]}")
-for candidate in "${ALL_MODELS[@]}" "${API_MODELS[@]}"; do
-    printf '%s\n' "${models[@]}" | grep -qx -- "$candidate" && continue
-    for question in "${questions[@]}"; do
-        compgen -G "$REPO_ROOT/outputs/culture/$candidate/*/$question/subpopulation_distances.csv" \
-            > /dev/null || continue
-        compare_models+=("$candidate")
-        break
-    done
-done
+cp "$summary" "$swept"
+awk -F'\t' '
+    NR == FNR { if (FNR > 1) swept[$1 FS $2 FS $3] = 1; next }
+    FNR > 1 && !($1 FS $2 FS $3 in swept)
+' "$swept" "$carried" >> "$summary"
 
 echo
 if [[ $run_compare -eq 1 && $completed -gt 0 ]]; then
     if [[ $base -eq 1 ]]; then
-        echo "Rebuilding cross-culture comparison and summary over ${compare_models[*]}..."
+        echo "Rebuilding cross-culture comparison, summary and MDS plates over every model..."
     else
-        echo "Rebuilding cross-culture comparison over ${compare_models[*]}..."
+        echo "Rebuilding cross-culture comparison and MDS plates over every model..."
     fi
-    run_python culture-compare --models "${compare_models[@]}" --questions "${questions[@]}" || true
+    run_python culture-compare --questions "${questions[@]}" || true
     if [[ $base -eq 1 ]]; then
-        run_python culture-summary --models "${compare_models[@]}" \
-            --questions "${questions[@]}" || true
+        run_python culture-summary --questions "${questions[@]}" || true
     fi
+    run_python culture-mds --questions "${questions[@]}" --all-countries --outcomes || true
     echo
 fi
 
 echo "$sweep_name started $started_at, finished $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "  completed: $completed   skipped: $skipped   failed: $failed"
 echo "  summary:   ${summary#"$REPO_ROOT"/}"
-column -t -s $'\t' "$summary" | sed 's/^/  /'
+column -t -s $'\t' "$swept" | sed 's/^/  /'
 
 [[ $failed -eq 0 ]]
