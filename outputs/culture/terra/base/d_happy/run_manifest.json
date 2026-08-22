@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/terra/base/d_happy/fig_distance_comparison.pdf": "15e57504e8fc4a629c697032a906ef4d082aace13d76bb75d4fb275126f60a69",
+    "figures/culture/terra/base/d_happy/fig_distance_comparison.png": "136f8f138134f606d7b6415f36cc4c4c1e36f9e539564488ed53d728125bcd7b",
+    "figures/culture/terra/base/d_happy/fig_full_coefficients.pdf": "d02a6229030b4e0f3e449e8ebe0d4d3f0055a2c7b61cc31d8ffc61fb6401ea41",
+    "figures/culture/terra/base/d_happy/fig_full_coefficients.png": "99bacbd1dd1fe3efef9839eb156d3b444d4019c41a76c356fffe4e421fa4a495",
+    "figures/culture/terra/base/d_happy/fig_full_standardized_coefficients.pdf": "d033e587ae520ca33f8e31c3b78c1cf957de0e4861cd5072806207eca73e283b",
+    "figures/culture/terra/base/d_happy/fig_full_standardized_coefficients.png": "9b2630e9f453ee972f000e46e8bdf00f6cc3ad1bba15017483b8143a59949612",
+    "figures/culture/terra/base/d_happy/fig_mds_fa.pdf": "08e1aff885b24636eb4caa06d83706809f653254024f7f5e79c564a62b754384",
+    "figures/culture/terra/base/d_happy/fig_mds_fa.png": "062eae0bb852cff19c07f61dd74718bb364548e2be06c3cd0dbf3114697a6b1f",
+    "figures/culture/terra/base/d_happy/fig_nemd_density_quality.pdf": "1b761cf2321c118be74f91873ea3cec73f9af78fda9e95b5f72fc821752b133b",
+    "figures/culture/terra/base/d_happy/fig_nemd_density_quality.png": "3ddde66ff2985fc8f792536d4c6ef985fd57fb423282affb2ae6abdd984599ca",
+    "figures/culture/terra/base/d_happy/fig_social_coefficients.pdf": "6b5838f15615e187c75bb3f9e191e97daa5d5aa3e95999eec10621a6ff9743eb",
+    "figures/culture/terra/base/d_happy/fig_social_coefficients.png": "844579b0aabc27cca64a0e42b6ce6013a3aa9db2c12212eae27a9ee1a5ae6706",
+    "outputs/culture/terra/base/d_happy/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/terra/base/d_happy/f_tests.csv": "a69f5c184ced260999711a61e91f2afd410ac43384dc5c8e7281d0881562fba8",
+    "outputs/culture/terra/base/d_happy/full_coefficients.csv": "dc561f51a1f44805703be3ccbef0e37aaad6483854b4f3d777ea5d4a25302b19",
+    "outputs/culture/terra/base/d_happy/full_standardized_coefficients.csv": "1f7e4166d5e68839c974a46093909836a5514f3ff92f438104e3d598f6b4af33",
+    "outputs/culture/terra/base/d_happy/pairwise_dispersion.csv": "64bc3a14feac7515e5d11c3b045b554f17d041eecc490a328bbbee2b5b31a615",
+    "outputs/culture/terra/base/d_happy/quality_bands.csv": "2103838622b7bb112a106d25ab3d9204d280698f0042555cac28d6bcf3555cce",
+    "outputs/culture/terra/base/d_happy/regression_fit.csv": "e340794cbe96b6f3de37319107a6214a89ed87f547d61da0d1372afb16c3923f",
+    "outputs/culture/terra/base/d_happy/response_distributions.csv": "b66c4312a0d2ac293018cab2e74cd0257ff5eb6b5634f72d6f4aa44dfdf2a2d3",
+    "outputs/culture/terra/base/d_happy/social_coefficients.csv": "f053a038d9dd3432393785d89144d84ea5b57393c3a08d2b0c4761053f452f66",
+    "outputs/culture/terra/base/d_happy/subpopulation_distances.csv": "9e6bb72cae8e8ef27bb466b7f6ffc42864a96dd583517850aad8c7742e472ef1",
+    "outputs/culture/terra/base/d_happy/summary_metrics.csv": "88179a71cdfd048fa35d5163bdce68c1cee43b9bb93545ecdb9664c68a8a8ecd"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26977,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-21T21:33:11.222217+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "terra (not finetuned)",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/terra/base"
+}

@@ -123,6 +123,14 @@ def _pooled_methods(distances: pd.DataFrame) -> pd.DataFrame:
     return pooled
 
 
+def _drawable_methods(pooled: pd.DataFrame, column: str = "nEMD") -> list[str]:
+    return [
+        method
+        for method in METHOD_ORDER
+        if np.any(pooled.loc[pooled["method"] == method, column].to_numpy(dtype=np.float64) > 0)
+    ]
+
+
 def _density_quality(
     paths: RunPaths,
     distances: pd.DataFrame,
@@ -131,7 +139,7 @@ def _density_quality(
     plot_data = _pooled_methods(distances)
     figure, axes = plt.subplots(1, 2, figsize=(15, 6))
 
-    for method in METHOD_ORDER:
+    for method in _drawable_methods(plot_data):
         values = plot_data.loc[plot_data["method"] == method, "nEMD"].to_numpy(dtype=np.float64)
         grid, density = log_nemd_density(values)
         axes[0].plot(
@@ -150,9 +158,8 @@ def _density_quality(
     axes[0].set(xlabel="nEMD (log scale)", ylabel="Density (per natural-log unit)")
     axes[0].legend(loc="upper left")
 
-    pivot = quality.pivot(index="method", columns="quality", values="percent").reindex(
-        list(METHOD_ORDER)
-    )
+    banded = [method for method in METHOD_ORDER if method in set(quality["method"])]
+    pivot = quality.pivot(index="method", columns="quality", values="percent").reindex(banded)
     pivot = pivot.loc[:, list(QUALITY_LABELS)]
     pivot.plot(
         kind="bar",
@@ -191,10 +198,8 @@ def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]
     names = [name for name in DISTANCES if name in plot_data.columns]
     figure, axes = plt.subplots(1, len(names), figsize=(4.4 * len(names), 4.6))
     for axis, name in zip(np.atleast_1d(axes), names, strict=True):
-        for method in METHOD_ORDER:
+        for method in _drawable_methods(plot_data, name):
             values = plot_data.loc[plot_data["method"] == method, name].to_numpy(dtype=np.float64)
-            if not np.any(values > 0):
-                continue
             grid, density = log_nemd_density(values)
             axis.plot(
                 grid,
