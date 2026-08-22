@@ -152,22 +152,24 @@ base_families,d_happy,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Aus
 base_families,d_happy,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.13997472845240336
 base_families,d_happy,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.10358598086468136
 base_families,d_happy,terra,Terra,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.13673804544336954
-base_families,d_polpos,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.10815112055552699
-base_families,d_polpos,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.10736867086254072
-base_families,d_polpos,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.14187281134231314
-base_families,d_polpos,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.1725443679701826
-base_families,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.10293005751221923
-base_families,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.11676426300305685
-base_families,d_polpos,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.09956390248448742
-base_families,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,639,0.12532318422258457
-base_families,d_religiousp,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.18536952391072184
-base_families,d_religiousp,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.23703303462356815
-base_families,d_religiousp,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.33070154562937065
-base_families,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.4011424079458023
-base_families,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.20690731673492715
-base_families,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.31018518919112664
-base_families,d_religiousp,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.3431994431563568
-base_families,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,687,0.20961988298919362
+base_families,d_polpos,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.10671499771679936
+base_families,d_polpos,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.10621049244726113
+base_families,d_polpos,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.14159404852385626
+base_families,d_polpos,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.17151845312738906
+base_families,d_polpos,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.10201938471861448
+base_families,d_polpos,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.11581453308944395
+base_families,d_polpos,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.09872273089810914
+base_families,d_polpos,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.12441324661553194
+base_families,d_polpos,terra,Terra,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,606,0.15641045352986357
+base_families,d_religiousp,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.18532641957192478
+base_families,d_religiousp,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.2366223888892691
+base_families,d_religiousp,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.33046439207906264
+base_families,d_religiousp,gemma4_e4b,Gemma-4-E4B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.4018421807301037
+base_families,d_religiousp,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.20685310041536306
+base_families,d_religiousp,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.3096138480294601
+base_families,d_religiousp,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.3439260870722203
+base_families,d_religiousp,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.20999064738759227
+base_families,d_religiousp,terra,Terra,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,682,0.23724215672454857
 base_families,d_trust,,,Mixtral archived,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.30749834639315476
 base_families,d_trust,,,Mixtral fresh,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.1722208235102528
 base_families,d_trust,gemma4_31b,Gemma-4-31B-it,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.2957364956507601
@@ -176,6 +178,7 @@ base_families,d_trust,qwen3_vl_8b,Qwen3-VL-8B-Thinking,base,FA,all_countries,Aus
 base_families,d_trust,qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.4153576984336809
 base_families,d_trust,llama3_2_3b,Llama-3.2-3B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.34425629367621724
 base_families,d_trust,muse_glimmer_30b,Muse-Glimmer-30B,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.31504892893460507
+base_families,d_trust,terra,Terra,base,FA,all_countries,Australia; Germany; Mexico; Russia; United States,686,0.2539964776164849
 finetuned,d_happy,,,Mixtral archived,NTP,german_matched,Germany,141,0.061031171112713646
 finetuned,d_happy,,,Mixtral fresh,NTP,german_matched,Germany,141,0.061617506369118884
 finetuned,d_happy,gemma4_31b,Gemma-4-31B-it,german,NTP,german_matched,Germany,141,0.18218130726700563
