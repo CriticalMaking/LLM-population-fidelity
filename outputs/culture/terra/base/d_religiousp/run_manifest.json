@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/terra/base/d_religiousp/fig_distance_comparison.pdf": "8f17dbf36a0db7937cf4bc64e50e2559862e7f832eb467e3f41a8384a6545d74",
+    "figures/culture/terra/base/d_religiousp/fig_distance_comparison.png": "c8a2d478195af18e72c0de6809dfab82130693e8e22d5df75f37696b81cba266",
+    "figures/culture/terra/base/d_religiousp/fig_full_coefficients.pdf": "b1910f6ddf77ba817734eece80d1fc0bc4dc621b14332391f5152c3ae47744d1",
+    "figures/culture/terra/base/d_religiousp/fig_full_coefficients.png": "8d967ef54d984f54d3a448c6b09b4831cdd49558da59c5680740690176393e25",
+    "figures/culture/terra/base/d_religiousp/fig_full_standardized_coefficients.pdf": "ca4902434abf0bca7612058597d2a18c1b32508008be2f82d56e6c932322d09d",
+    "figures/culture/terra/base/d_religiousp/fig_full_standardized_coefficients.png": "a1d2eab23fe17ace8e39bca4c88e808a7b74868e606bc8f0a47ca8f5e7510d6f",
+    "figures/culture/terra/base/d_religiousp/fig_mds_fa.pdf": "a557422893e43dc7e0f0b0ce2909a3ba5c1f8ab0ab2900a2790a8360dec8708d",
+    "figures/culture/terra/base/d_religiousp/fig_mds_fa.png": "6028988c33c357a413d92fe7eb14518716e57f9f581c36145c8e112c98d48f5d",
+    "figures/culture/terra/base/d_religiousp/fig_nemd_density_quality.pdf": "620633bb70130470e1ba83db08d16baf37cc1a46113ce625ef454e1212d3b38f",
+    "figures/culture/terra/base/d_religiousp/fig_nemd_density_quality.png": "8a7436d487fac98bfd5d39b0bf1bb1c889c2d23b468e06b20fd3090dd48a4fe6",
+    "figures/culture/terra/base/d_religiousp/fig_social_coefficients.pdf": "5ba1170a3b0de46105a20acaa2166270cb4fb97c8a3decc5bd9caf98df2f6b14",
+    "figures/culture/terra/base/d_religiousp/fig_social_coefficients.png": "c7165e58e43d2a89c249f4ee6601c2be1beeec6d11b1e852fa4d3ce1c3bda062",
+    "outputs/culture/terra/base/d_religiousp/center_holdouts.csv": "710dcfb1c56e6979e64fe7b6262e0207e99d2a118f26500edab57e46214a9717",
+    "outputs/culture/terra/base/d_religiousp/f_tests.csv": "6ab176c1a6bc45fabd9e45f5735c96e11172fac0f3f7bf197c0d3b74575fe805",
+    "outputs/culture/terra/base/d_religiousp/full_coefficients.csv": "de053af479ecbe4844cf875b73994270b606e3f72a695606db84c99fec94fa19",
+    "outputs/culture/terra/base/d_religiousp/full_standardized_coefficients.csv": "c8679ded650ba390da67240ea175953eb6ad3d9bdb6487158ad5a0838400168c",
+    "outputs/culture/terra/base/d_religiousp/pairwise_dispersion.csv": "70e7ecc181dc6f3445d3fab01b1db4792658aadddc76c96d041360e73fba1662",
+    "outputs/culture/terra/base/d_religiousp/quality_bands.csv": "c5e60b4d349bb74da5702c1a5eb58763af52acf6f7e4f916b22bea48e89c91e1",
+    "outputs/culture/terra/base/d_religiousp/regression_fit.csv": "0c3288111e5414394c10890a05a8c2bae7548f8db9605f4db8e55cec8d9b190d",
+    "outputs/culture/terra/base/d_religiousp/response_distributions.csv": "cb97e11371d03a5edf08d9a86d6b1b769a2ff0aa9bc3ec94d8ca4da07b2c3e79",
+    "outputs/culture/terra/base/d_religiousp/social_coefficients.csv": "59ca112ff66c4cc45f03959013beffa177712cafae04be625307c63b42b82a3f",
+    "outputs/culture/terra/base/d_religiousp/subpopulation_distances.csv": "5b8bb2bca169d50ecccea80315c004eb923e285764c01dad19249773176de2de",
+    "outputs/culture/terra/base/d_religiousp/summary_metrics.csv": "fa88bd03cd5049ad6651bc1bbb632a3d490bc6524f17289d821edee77072a510"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26771,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 5,
+    "subpopulations_retained": 682,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-22T13:22:10.539489+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 7,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "terra (not finetuned)",
+    "question": "d_religiousp",
+    "question_label": "Religion",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/terra/base"
+}
