@@ -153,6 +153,17 @@ CULTURE_MODELS: dict[str, CultureModel] = {
 }
 
 
+SIZE_TIERS: dict[str, tuple[str, ...]] = {
+    "small": ("qwen3_vl_2b", "llama3_2_3b", "gemma4_e4b"),
+    "mid": ("qwen3_vl_8b",),
+    "big": ("gemma4_31b", "muse_glimmer_30b"),
+}
+
+
+def tier_models(tier: str) -> list[CultureModel]:
+    return [CULTURE_MODELS[key] for key in SIZE_TIERS[tier]]
+
+
 def served_models() -> list[CultureModel]:
     return [model for model in CULTURE_MODELS.values() if model.backend == SERVED_BACKEND]
 

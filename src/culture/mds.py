@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -139,6 +139,7 @@ def _draw_panel(
     home: BoolArray | None = None,
     home_countries: str = "",
     only: Sequence[str] | None = None,
+    hollow: Sequence[str] | None = None,
 ) -> list[tuple[str, float]]:
     columns = list(question.answer_columns)
     wvs_props = next(iter(series.values())).wvs_props.loc[names, columns]
@@ -164,6 +165,21 @@ def _draw_panel(
         error = float(np.mean(nemd(wvs_props.to_numpy(), model_props.to_numpy())))
         tuned = not is_reference(label)
         tone = mds_arm_tone(label)
+        if hollow is not None and label in hollow:
+            axis.scatter(
+                coordinates[:, 0],
+                coordinates[:, 1],
+                s=30,
+                alpha=0.8,
+                marker=arm_marker(label),
+                label=label,
+                facecolors="none",
+                edgecolors=tone.ink,
+                linewidths=1.0,
+                zorder=3,
+            )
+            errors.append((label, error))
+            continue
         axis.scatter(
             coordinates[:, 0],
             coordinates[:, 1],
@@ -260,7 +276,7 @@ def _embed_ntp_only(
 def _share_scale(
     axes: Any,
     wvs_coordinates: FloatArray,
-    model_coordinates: dict[tuple[str, str], FloatArray],
+    model_coordinates: Mapping[Any, FloatArray],
 ) -> None:
     spread = np.vstack([wvs_coordinates, *model_coordinates.values()])
     half = max(float(np.ptp(spread[:, 0])), float(np.ptp(spread[:, 1]))) / 2 * 1.05
