@@ -1,0 +1,4 @@
+model,label,model_id,prompts,attempts,answered,wrapped,deflected,refused,unreadable,strict_rate,tolerant_rate,first_attempt,mean_ntp_mass,logprobs_supported,reasoning_effort,reasoning_effort_supported,mean_reasoning_tokens,fa_temperature,fa_max_tokens,ntp_seconds,fa_seconds,seconds_per_prompt
+luna,Luna,gpt-5.6-luna,5,3,1,1,3,0,0,0.2,0.4,0,0.0,False,medium,True,58.5,,300,1.6454091020859778,13.038806073134765,2.607761214626953
+terra,Terra,gpt-5.6-terra,5,3,5,0,0,0,0,1.0,1.0,5,0.0,False,medium,True,35.8,,300,0.9988752619829029,3.5394109040498734,0.7078821808099747
+sol,Sol,gpt-5.6-sol,5,3,5,0,0,0,0,1.0,1.0,5,0.0,False,medium,True,38.0,,300,0.8657383660320193,5.185426089912653,1.0370852179825305
