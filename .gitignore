@@ -31,6 +31,10 @@ outputs/reports/tex/
 logs/
 *.tmp
 
+# The Hugging Face staging mirror of outputs/, rebuilt by `hub build`. Anchored,
+# so it never matches the src/hub package.
+/hub/
+
 # LaTeX build products
 *.aux
 *.bbl
