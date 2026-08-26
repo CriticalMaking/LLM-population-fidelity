@@ -33,6 +33,7 @@ from culture.mds import culture_mds
 from culture.runner import run_one
 from culture.served_smoke import SMOKE_ATTEMPTS, SMOKE_FA_MAX_TOKENS, SMOKE_PROMPTS
 from culture.summary import culture_summary
+from hub import commands as hub_commands
 
 from .analysis import run_analysis
 from .config import (
@@ -718,6 +719,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_question_argument(prompt_check, plural=True)
     prompt_check.set_defaults(handler=command_prompt_check)
+
+    hub_commands.register(subparsers)
     return parser
 
 
