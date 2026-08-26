@@ -1,0 +1,274 @@
+from __future__ import annotations
+
+import argparse
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Any
+
+import pandas as pd
+
+from machine_bias_reproduction.prompts import CONTEXT_ORDER
+from machine_bias_reproduction.questions import QUESTIONS
+
+from .config import DEFAULT_CONFIG, load_config
+
+DEFAULT_KEYWORDS = (
+    "relig",
+    "trust",
+    "polit",
+    "happy",
+    "education",
+    "employment",
+    "marital",
+    "country",
+    "gender",
+    "age",
+    "family",
+    "authority",
+    "tradition",
+    "secular",
+    "survival",
+    "self",
+    "expression",
+    "confidence",
+    "democracy",
+    "god",
+    "value",
+)
+
+
+def _csv_tuple(value: str) -> tuple[str, ...]:
+    return tuple(part.strip() for part in value.split(",") if part.strip())
+
+
+def _string(value: Any) -> str:
+    if pd.isna(value):
+        return ""
+    return str(value)
+
+
+def _question_text(row: pd.Series) -> str:
+    for column in ("full_q", "constrained_q", "orig_q"):
+        value = _string(row.get(column))
+        if value:
+            return value
+    return ""
+
+
+def _matched_variables(
+    questions: pd.DataFrame,
+    wvs_columns: Sequence[str],
+    keywords: Sequence[str],
+) -> tuple[str, ...]:
+    matched: set[str] = set()
+    lowered_keywords = tuple(keyword.lower() for keyword in keywords)
+    for _, row in questions.iterrows():
+        var = _string(row.get("var"))
+        haystack = " ".join(_string(row.get(column)) for column in questions.columns).lower()
+        if var and any(keyword in haystack for keyword in lowered_keywords):
+            matched.add(var)
+    matched.update(column for column in wvs_columns if column.startswith(("i_", "d_")))
+    return tuple(sorted(matched))
+
+
+def _levels_by_variable(levels: pd.DataFrame) -> dict[str, list[str]]:
+    grouped: dict[str, list[str]] = {}
+    if not {"variable", "label"}.issubset(levels.columns):
+        return grouped
+    for variable, rows in levels.groupby("variable"):
+        labels = [_string(value) for value in rows["label"].dropna().tolist()]
+        grouped[_string(variable)] = labels
+    return grouped
+
+
+def _question_lookup(questions: pd.DataFrame) -> dict[str, pd.Series]:
+    if "var" not in questions.columns:
+        return {}
+    return {_string(row["var"]): row for _, row in questions.iterrows()}
+
+
+def variable_inventory(
+    wvs: pd.DataFrame,
+    questions: pd.DataFrame,
+    levels: pd.DataFrame,
+    *,
+    keywords: Sequence[str] = DEFAULT_KEYWORDS,
+) -> list[dict[str, Any]]:
+    q_lookup = _question_lookup(questions)
+    l_lookup = _levels_by_variable(levels)
+    variables = _matched_variables(questions, tuple(wvs.columns), keywords)
+    targets = set(QUESTIONS)
+    baseline = set(CONTEXT_ORDER)
+    rows: list[dict[str, Any]] = []
+    for variable in variables:
+        series = wvs[variable] if variable in wvs.columns else pd.Series(dtype=object)
+        non_null = int(series.notna().sum()) if variable in wvs.columns else 0
+        unique_count = int(series.dropna().nunique()) if variable in wvs.columns else 0
+        top_values = []
+        if variable in wvs.columns:
+            top_values = [
+                f"{_string(value)} ({count})"
+                for value, count in series.dropna().value_counts().head(8).items()
+            ]
+        q_row = q_lookup.get(variable)
+        rows.append(
+            {
+                "variable": variable,
+                "in_wvs": variable in wvs.columns,
+                "role": _role(variable, baseline, targets),
+                "type": "" if q_row is None else _string(q_row.get("type")),
+                "question": "" if q_row is None else _question_text(q_row),
+                "non_null": non_null,
+                "unique": unique_count,
+                "levels": l_lookup.get(variable, []),
+                "top_values": top_values,
+            }
+        )
+    return rows
+
+
+def _role(variable: str, baseline: set[str], targets: set[str]) -> str:
+    roles = []
+    if variable in baseline:
+        roles.append("baseline-context")
+    if variable in targets:
+        roles.append("target")
+    return ", ".join(roles) if roles else "candidate"
+
+
+def _format_values(values: Sequence[str], *, limit: int = 6) -> str:
+    if not values:
+        return ""
+    shown = list(values[:limit])
+    suffix = "" if len(values) <= limit else f"; +{len(values) - limit} more"
+    return "; ".join(shown) + suffix
+
+
+def render_inventory(
+    *,
+    config_path: Path,
+    config: dict[str, Any],
+    wvs: pd.DataFrame,
+    questions: pd.DataFrame,
+    levels: pd.DataFrame,
+    rows: Sequence[dict[str, Any]],
+) -> str:
+    target_vars = ", ".join(QUESTIONS)
+    baseline_vars = ", ".join(CONTEXT_ORDER)
+    present_theory_candidates = [
+        row["variable"]
+        for row in rows
+        if row["role"] == "candidate" and row["in_wvs"]
+    ]
+    candidate_text = ", ".join(present_theory_candidates) or "none"
+    lines = [
+        "# WVS Variable Inventory",
+        "",
+        "Generated by `uv run python -m context_injection.metadata`.",
+        "",
+        "## Inputs",
+        "",
+        f"- Config: `{config_path}`",
+        f"- WVS data: `{config['wvs_csv']}` ({len(wvs)} rows, {len(wvs.columns)} columns)",
+        f"- WVS questions: `{config['wvs_questions_csv']}` ({len(questions)} rows)",
+        f"- WVS levels: `{config['wvs_levels_csv']}` ({len(levels)} rows)",
+        "",
+        "## Current Reduced Dataset",
+        "",
+        f"- Baseline prompt context variables: `{baseline_vars}`",
+        f"- Target variables: `{target_vars}`",
+        f"- Present non-target candidate variables: `{candidate_text}`",
+        "",
+        (
+            "The configured `wvs-data.csv` is the reduced Machine Bias dataset. It contains "
+            "baseline demographic/profile columns plus four target outcomes, not the full WVS "
+            "question battery needed for a verified Inglehart-Welzel mapping."
+        ),
+        "",
+        "## Candidate Inventory",
+        "",
+        "| Variable | In WVS | Role | Type | Non-null | Unique | Question | Levels | Top values |",
+        "| --- | --- | --- | --- | ---: | ---: | --- | --- | --- |",
+    ]
+    for row in rows:
+        lines.append(
+            "| {variable} | {in_wvs} | {role} | {type} | {non_null} | {unique} | "
+            "{question} | {levels} | {top_values} |".format(
+                variable=row["variable"],
+                in_wvs="yes" if row["in_wvs"] else "no",
+                role=row["role"],
+                type=row["type"],
+                non_null=row["non_null"],
+                unique=row["unique"],
+                question=_escape_table(row["question"]),
+                levels=_escape_table(_format_values(row["levels"])),
+                top_values=_escape_table(_format_values(row["top_values"])),
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Implication For The Next Phase",
+            "",
+            (
+                "Use this reduced CSV for baseline reproduction and prompt-export smoke tests. "
+                "For the theory phase, add or point the config at a fuller WVS extract before "
+                "finalizing `C3` selected variables and the `C4` structured mapping."
+            ),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _escape_table(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", " ")
+
+
+def write_inventory(
+    path: Path,
+    *,
+    config_path: Path = DEFAULT_CONFIG,
+    keywords: Sequence[str] = DEFAULT_KEYWORDS,
+) -> None:
+    config = load_config(config_path)
+    wvs = pd.read_csv(config["wvs_csv"])
+    questions = pd.read_csv(config["wvs_questions_csv"])
+    levels = pd.read_csv(config["wvs_levels_csv"])
+    rows = variable_inventory(wvs, questions, levels, keywords=keywords)
+    body = render_inventory(
+        config_path=config_path,
+        config=config,
+        wvs=wvs,
+        questions=questions,
+        levels=levels,
+        rows=rows,
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(body, encoding="utf-8")
+
+
+def parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Write a Markdown WVS variable inventory")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, type=Path, help="Root config JSON")
+    parser.add_argument("--out", required=True, type=Path, help="Output Markdown path")
+    parser.add_argument(
+        "--keywords",
+        default=",".join(DEFAULT_KEYWORDS),
+        help="Comma-separated question metadata keywords to include",
+    )
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> None:
+    args = parser().parse_args(argv)
+    write_inventory(
+        args.out,
+        config_path=args.config,
+        keywords=_csv_tuple(args.keywords),
+    )
+    print(f"wrote WVS variable inventory to {args.out}")
+
+
+if __name__ == "__main__":
+    main()
