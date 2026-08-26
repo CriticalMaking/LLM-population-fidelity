@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    "C0",
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+  ],
+  "mode": "ntp",
+  "out_path": "prompts/reduced_d_trust_ntp.jsonl",
+  "question": "d_trust",
+  "raw_variables": [
+    "d_happy",
+    "d_religiousp",
+    "d_polpos"
+  ],
+  "record_count": 69520,
+  "selected_variables": [
+    "d_happy",
+    "d_religiousp",
+    "d_polpos"
+  ],
+  "theory_map": "src/context_injection/theories/reduced_proxy_theory_map.json",
+  "wvs_path": "/Users/Hades-611-Yang/Documents/PhD/social_safety_matt_CIFAR/Machine-Bias-replication/data/WVS/wvs-data.csv"
+}

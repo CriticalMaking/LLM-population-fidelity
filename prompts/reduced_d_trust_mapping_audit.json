@@ -1,0 +1,109 @@
+{
+  "items": [
+    {
+      "dimension": "traditional_secular",
+      "observed_values": [
+        "Less often",
+        "More than once a week",
+        "Never, practically never",
+        "Once a month",
+        "Once a week",
+        "Once a year",
+        "Only on special holy days"
+      ],
+      "present": true,
+      "scored_values": [
+        "Less often",
+        "More than once a week",
+        "Never, practically never",
+        "Once a month",
+        "Once a week",
+        "Once a year",
+        "Only on special holy days"
+      ],
+      "unscored_observed_values": [],
+      "unused_score_values": [],
+      "variable": "d_religiousp"
+    },
+    {
+      "dimension": "survival_self_expression",
+      "observed_values": [
+        "Not at all happy",
+        "Not very happy",
+        "Quite happy",
+        "Very happy"
+      ],
+      "present": true,
+      "scored_values": [
+        "Not at all happy",
+        "Not very happy",
+        "Quite happy",
+        "Very happy"
+      ],
+      "unscored_observed_values": [],
+      "unused_score_values": [],
+      "variable": "d_happy"
+    },
+    {
+      "dimension": "survival_self_expression",
+      "observed_values": [
+        "1.0",
+        "10.0",
+        "2.0",
+        "3.0",
+        "4.0",
+        "5.0",
+        "6.0",
+        "7.0",
+        "8.0",
+        "9.0"
+      ],
+      "present": true,
+      "scored_values": [
+        "1",
+        "1.0",
+        "10",
+        "10.0",
+        "2",
+        "2.0",
+        "3",
+        "3.0",
+        "4",
+        "4.0",
+        "5",
+        "5.0",
+        "6",
+        "6.0",
+        "7",
+        "7.0",
+        "8",
+        "8.0",
+        "9",
+        "9.0"
+      ],
+      "unscored_observed_values": [],
+      "unused_score_values": [
+        "1",
+        "10",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "variable": "d_polpos"
+    }
+  ],
+  "missing_variables": [],
+  "ok": true,
+  "question": "d_trust",
+  "source_variables": [
+    "d_happy",
+    "d_religiousp",
+    "d_polpos"
+  ],
+  "target_leakage_variables": []
+}

@@ -12,6 +12,7 @@ dist/
 build/
 .claude/
 .DS_Store
+context/
 .env
 
 # The 736 MB upstream replication package; upstream/MANIFEST.json records the

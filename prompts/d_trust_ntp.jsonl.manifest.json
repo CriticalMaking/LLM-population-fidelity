@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    "C0",
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+  ],
+  "mode": "ntp",
+  "out_path": "prompts/d_trust_ntp.jsonl",
+  "question": "d_trust",
+  "raw_variables": [
+    "i_age",
+    "i_sex",
+    "i_education"
+  ],
+  "record_count": 69520,
+  "selected_variables": [
+    "i_age",
+    "i_education"
+  ],
+  "theory_map": null,
+  "wvs_path": "/Users/Hades-611-Yang/Documents/PhD/social_safety_matt_CIFAR/Machine-Bias-replication/data/WVS/wvs-data.csv"
+}

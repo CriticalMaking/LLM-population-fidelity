@@ -1,0 +1,58 @@
+{
+  "source_variables": [
+    "d_happy",
+    "d_religiousp",
+    "d_polpos"
+  ],
+  "items": [
+    {
+      "variable": "d_religiousp",
+      "dimension": "traditional_secular",
+      "scores": {
+        "More than once a week": -1.0,
+        "Once a week": -0.8,
+        "Once a month": -0.5,
+        "Only on special holy days": -0.2,
+        "Once a year": 0.2,
+        "Less often": 0.6,
+        "Never, practically never": 1.0
+      }
+    },
+    {
+      "variable": "d_happy",
+      "dimension": "survival_self_expression",
+      "scores": {
+        "Very happy": 1.0,
+        "Quite happy": 0.4,
+        "Not very happy": -0.4,
+        "Not at all happy": -1.0
+      }
+    },
+    {
+      "variable": "d_polpos",
+      "dimension": "survival_self_expression",
+      "scores": {
+        "1": -0.8,
+        "2": -0.6,
+        "3": -0.4,
+        "4": -0.2,
+        "5": 0.0,
+        "6": 0.2,
+        "7": 0.4,
+        "8": 0.6,
+        "9": 0.8,
+        "10": 1.0,
+        "1.0": -0.8,
+        "2.0": -0.6,
+        "3.0": -0.4,
+        "4.0": -0.2,
+        "5.0": 0.0,
+        "6.0": 0.2,
+        "7.0": 0.4,
+        "8.0": 0.6,
+        "9.0": 0.8,
+        "10.0": 1.0
+      }
+    }
+  ]
+}
