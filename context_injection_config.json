@@ -1,10 +1,10 @@
 {
-  "data_root": "../Machine-Bias-replication/data",
-  "wvs_csv": "../Machine-Bias-replication/data/WVS/wvs-data.csv",
-  "wvs_questions_csv": "../Machine-Bias-replication/data/WVS/wvs-questions.csv",
-  "wvs_levels_csv": "../Machine-Bias-replication/data/WVS/wvs-levels.csv",
-  "subpops_csv": "../Machine-Bias-replication/data/subpops.csv",
-  "linear_root": "../Machine-Bias-replication/data/Linear",
-  "llm_outputs_csv_root": "../Machine-Bias-replication/data/LLM-outputs/csv",
+  "data_root": "upstream/extracted/Machine-Bias-replication/data",
+  "wvs_csv": "upstream/extracted/Machine-Bias-replication/data/WVS/wvs-data.csv",
+  "wvs_questions_csv": "upstream/extracted/Machine-Bias-replication/data/WVS/wvs-questions.csv",
+  "wvs_levels_csv": "upstream/extracted/Machine-Bias-replication/data/WVS/wvs-levels.csv",
+  "subpops_csv": "upstream/extracted/Machine-Bias-replication/data/subpops.csv",
+  "linear_root": "upstream/extracted/Machine-Bias-replication/data/Linear",
+  "llm_outputs_csv_root": "upstream/extracted/Machine-Bias-replication/data/LLM-outputs/csv",
   "context_output_root": "prompts"
 }
