@@ -294,8 +294,10 @@ marital status, answering four opinion questions.
 | --- | --- | --- |
 | `fresh` | Mixtral-8x7B-v0.1 Q4_K_M (llama.cpp) | reproduction of the original protocol |
 | `culture/gemma4_31b` | google/gemma-4-31B-it | `base`, `german` (QLoRA) |
-| `culture/gemma4_e4b` | google/gemma-4-e4b-it | `base`, `german` (QLoRA) |
-| `culture/qwen3_vl_8b` | Qwen/Qwen3-VL-8B-Thinking | `base`, `german` (QLoRA) |
+| `culture/gemma4_e4b` | google/gemma-4-e4b-it | `base`, `german` (LoRA) |
+| `culture/qwen3_vl_8b` | Qwen/Qwen3-VL-8B-Thinking | `base`, `german` (LoRA) |
+| `culture/qwen3_vl_2b` | Qwen/Qwen3-VL-2B-Thinking | `base`, `german` (LoRA) |
+| `culture/llama3_2_3b` | meta-llama/Llama-3.2-3B | `base`, `german` (LoRA) |
 | `culture/muse_glimmer_30b` | meta-models/Muse-Glimmer-30B | `base`, `german` (QLoRA) |
 | `archived` | upstream Mixtral outputs, reanalysed | derived tables only (no raw records) |
 

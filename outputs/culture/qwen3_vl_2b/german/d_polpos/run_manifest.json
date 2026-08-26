@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_distance_comparison.pdf": "dbaf1da674b25a37a9e9369456043ea8644f7ed5c985c7a032bfa57ce607321d",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_distance_comparison.png": "220ea70eefb6f1521b64fc2c6be12843770989419e0e600f923ccda8ade78fd0",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_full_coefficients.pdf": "96605d53b141810500a5f17cfef50fc5862b9a4838b2159838a84200a2cfdfbb",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_full_coefficients.png": "d32161123d0daded9ae095d665404c9bc3971565d70dfde5e421fbe0566714c6",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_full_standardized_coefficients.pdf": "1494ee9ccf9660f6fb133975598f905faf8ef4bcde668a8dca31d515578d9dc5",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_full_standardized_coefficients.png": "01baa352279cb03aa12b376d555303ecaf590374d02b66a205c668da9f89f4f9",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_mds_fa.pdf": "33452b134de5dc0fded1b4786d37c97f89c97f14600339819134971ec34eca34",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_mds_fa.png": "ead842d0d6aaf223270a02539d5888cc1662da2fbcba00fe43194c98a8f936b2",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_mds_ntp.pdf": "1044736844fcdba3a4f16d10c5e5ef4c804e9eff14821738e6c2279c5256563a",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_mds_ntp.png": "b20be8324c59068c7a2d037461bdb5df1a6b6d29922d411a043c929c64177554",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_nemd_density_quality.pdf": "f3148403e6c151aa9127fee7cea81d4c8e4e68f71b53d4b6719f89cbc621a7b0",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_nemd_density_quality.png": "b09471bb8788f594011ac50edc163d65b2e89e66bb181f37b2f37c1265516e80",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_social_coefficients.pdf": "d7a2a0736cafbcf0ea43d165effe8b604c641789be8b4044b4010f3084fd103c",
+    "figures/culture/qwen3_vl_2b/german/d_polpos/fig_social_coefficients.png": "bb837beaa2358d2a38dcad7e460491a6f8f1fbaf24b19c5320ba43adce18018e",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/center_holdouts.csv": "36cd5791e1de98aca8342d017eab98b37dd13706701fb826f9054a2c5d149425",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/f_tests.csv": "aa95efb1c04e1d08f154ed23e57403720af7dba89b6935af84dd057e2a7473a5",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/full_coefficients.csv": "0c85ed6de956fd834a6fd36aa6adce5205c9b4eef3d7fc676d1b7063db34c00b",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/full_standardized_coefficients.csv": "9057fee612c26ee37e9f42b7d9200d345277c5c7f4323b6708015624b5c1580d",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/pairwise_dispersion.csv": "fb216eb98f69e671ffe6faa67c3cb1f3d45c869286095a460a9a18f12bc35cfb",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/quality_bands.csv": "e5821203a74049078758cd9126c9b16e9e57830b9510bd10c43df0c93035a170",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/regression_fit.csv": "f18a08f1a80f7cb38046ddd78cd14a58dd82e41d7fd8f8e076befbac3e00095d",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/response_distributions.csv": "ab35c79f1f1d740046965cc708ddbf166e2ad36febc6588e59bc927f2d1d6013",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/social_coefficients.csv": "2b241747e6de8f37b5650d576ab7b531ed8d6213e290ed8996819864c0bf0fdf",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/subpopulation_distances.csv": "167e474f2f7a90ae4d3d2515dbcd537ba4b5cff64522cf9ea8eb7f50272a06ac",
+    "outputs/culture/qwen3_vl_2b/german/d_polpos/summary_metrics.csv": "1211d08da61db216aab6ba8e7492d9620aef9f42531dfb025f46e055c7c8d24e"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-21T22:33:36.297541+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Qwen/Qwen3-VL-2B-Thinking + german LoRA",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/qwen3_vl_2b/german"
+}

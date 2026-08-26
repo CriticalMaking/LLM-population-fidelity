@@ -18,14 +18,26 @@ Usage:
 One invocation per model, culture and question, so a failed or interrupted run
 never takes the rest of the sweep with it: one log per run, finished runs
 skipped unless --redo, cells without a staged adapter skipped and recorded
-(muse_glimmer_30b has german only), and the comparison rebuilt at the end from
-whatever finished.
+(muse_glimmer_30b has german only), and the comparison and the MDS plates
+rebuilt at the end over every model rather than the ones swept, so a one-model
+sweep lands in the cross-model plates instead of replacing them with itself.
+
+The summary TSV is a ledger: this sweep's rows are printed and every cell it
+did not run is carried over from the previous sweep, since sweep_cost.csv reads
+each cell's status back from it.
 
 Without --base: every model, german, d_happy (--cultures all for the full
 grid). With --base: gemma4_31b on all four questions, cultures frozen to the
 base arm, Germany's prompts first (ordering, not selection; --no-priority for
 the plain order), the cross-question summary rebuilt too, and a refusal to
 start while other work holds the GPU unless --allow-concurrent.
+
+luna, terra and sol are served through the OpenAI API and never join the default
+set: name them with --models, on the base variant only, and expect API charges.
+They need OPENAI_API_KEY and one <MODEL>_MODEL_ID per model in .env, and they
+leave the GPU alone. Probe them with `served-smoke` before paying for a run.
+An API model answers in FA only — the served endpoint gives no next-token
+probabilities, so its NTP probe is empty and it appears in the FA plates alone.
 
 Examples:
   ./scripts/sweep.sh                                   # every model, german, d_happy
@@ -37,7 +49,8 @@ Unrecognised options pass through to the underlying run: --mode, --batch-size,
 EOF
 }
 
-ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b muse_glimmer_30b)
+ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b muse_glimmer_30b)
+API_MODELS=(luna terra sol)
 ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish turkish)
 ALL_QUESTIONS=(d_happy d_polpos d_religiousp d_trust)
 
@@ -109,8 +122,8 @@ elif [[ $base -eq 1 && ${#first_countries[@]} -eq 0 ]]; then
 fi
 
 for model in "${models[@]}"; do
-    printf '%s\n' "${ALL_MODELS[@]}" | grep -qx -- "$model" ||
-        die "unknown model: $model (known: ${ALL_MODELS[*]})"
+    printf '%s\n' "${ALL_MODELS[@]}" "${API_MODELS[@]}" | grep -qx -- "$model" ||
+        die "unknown model: $model (known: ${ALL_MODELS[*]} ${API_MODELS[*]})"
 done
 if [[ $base -eq 0 ]]; then
     for culture in "${cultures[@]}"; do
@@ -123,7 +136,15 @@ for question in "${questions[@]}"; do
         die "unknown question: $question (known: ${ALL_QUESTIONS[*]})"
 done
 
-if [[ $base -eq 1 && $dry_run -eq 0 && $allow_concurrent -eq 0 ]]; then
+needs_gpu=1
+if [[ ${#models[@]} -gt 0 ]]; then
+    needs_gpu=0
+    for model in "${models[@]}"; do
+        printf '%s\n' "${API_MODELS[@]}" | grep -qx -- "$model" || needs_gpu=1
+    done
+fi
+
+if [[ $base -eq 1 && $dry_run -eq 0 && $allow_concurrent -eq 0 && $needs_gpu -eq 1 ]]; then
     running="$(pgrep -af 'python -m machine_bias_reproduction culture($| )' | head -1 || true)"
     if [[ -z "$running" ]]; then
         running="$(nvidia-smi --query-compute-apps=pid,process_name --format=csv,noheader 2>/dev/null | head -1 || true)"
@@ -185,6 +206,10 @@ if [[ $dry_run -eq 1 ]]; then
 fi
 
 require_uv
+carried="$(mktemp)"
+swept="$(mktemp)"
+trap 'rm -f "$carried" "$swept"' EXIT
+[[ -f "$summary" ]] && cp "$summary" "$carried"
 printf 'model\tculture\tquestion\tstatus\tseconds\tvalid_answer_mass\tvalid\tprompts\tvalid_rate\n' > "$summary"
 
 index=0
@@ -247,23 +272,30 @@ for question in "${questions[@]}"; do
   done
 done
 
+cp "$summary" "$swept"
+awk -F'\t' '
+    NR == FNR { if (FNR > 1) swept[$1 FS $2 FS $3] = 1; next }
+    FNR > 1 && !($1 FS $2 FS $3 in swept)
+' "$swept" "$carried" >> "$summary"
+
 echo
 if [[ $run_compare -eq 1 && $completed -gt 0 ]]; then
     if [[ $base -eq 1 ]]; then
-        echo "Rebuilding cross-culture comparison and summary..."
+        echo "Rebuilding cross-culture comparison, summary and MDS plates over every model..."
     else
-        echo "Rebuilding cross-culture comparison..."
+        echo "Rebuilding cross-culture comparison and MDS plates over every model..."
     fi
-    run_python culture-compare --models "${models[@]}" --questions "${questions[@]}" || true
+    run_python culture-compare --questions "${questions[@]}" || true
     if [[ $base -eq 1 ]]; then
-        run_python culture-summary --models "${models[@]}" --questions "${questions[@]}" || true
+        run_python culture-summary --questions "${questions[@]}" || true
     fi
+    run_python culture-mds --questions "${questions[@]}" --all-countries --outcomes || true
     echo
 fi
 
 echo "$sweep_name started $started_at, finished $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "  completed: $completed   skipped: $skipped   failed: $failed"
 echo "  summary:   ${summary#"$REPO_ROOT"/}"
-column -t -s $'\t' "$summary" | sed 's/^/  /'
+column -t -s $'\t' "$swept" | sed 's/^/  /'
 
 [[ $failed -eq 0 ]]

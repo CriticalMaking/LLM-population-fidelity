@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/terra/base/d_trust/fig_distance_comparison.pdf": "b0bba27529c6436706bf598131ab5c37c6b8f4ac1a9eef23e89345371c5bd079",
+    "figures/culture/terra/base/d_trust/fig_distance_comparison.png": "4e09a721587c6d31c727806a37215dc19e2ddd5647aa4e214ba154b6e27086f0",
+    "figures/culture/terra/base/d_trust/fig_full_coefficients.pdf": "0e229424c23ca9d0d2cd5bfd80d8c5ad801a477454feb0ab8d7606ff21048197",
+    "figures/culture/terra/base/d_trust/fig_full_coefficients.png": "58670deb982fd4ccec161aee3c46d937a41e8cb4d59d5e5bdb347dd298fbcd89",
+    "figures/culture/terra/base/d_trust/fig_full_standardized_coefficients.pdf": "fbd9d7d4d305bd7d9889c780f3b02d67625ad81483673a23d082f77007f4488b",
+    "figures/culture/terra/base/d_trust/fig_full_standardized_coefficients.png": "ed889fb6944360ae732c3e1d41cdba8a2ad575ee9194a837a275b2c4eb37f0eb",
+    "figures/culture/terra/base/d_trust/fig_mds_fa.pdf": "af1eee1ce1dd70e8bcd1ff3b88440e9abe8356013fa888f88f282e729ed5310e",
+    "figures/culture/terra/base/d_trust/fig_mds_fa.png": "e84b5df8480b7fc496a76879e1265c5335282bcabee471d5961603e9d7004ed0",
+    "figures/culture/terra/base/d_trust/fig_nemd_density_quality.pdf": "2917b7eecae6a181b5959e9a94c98135cfae2cf8a0f103d0316b79d2e926cdba",
+    "figures/culture/terra/base/d_trust/fig_nemd_density_quality.png": "9738ed966f98237ca688e62597f0ed7518e1af6df11fdb6a9735ae30f65f9149",
+    "figures/culture/terra/base/d_trust/fig_social_coefficients.pdf": "63445d30b26e73e875334b6d845b8a6121409a2bdd126ca69b10e8b9201724ff",
+    "figures/culture/terra/base/d_trust/fig_social_coefficients.png": "8b33c3fc4cfed71146215fbdd6efd1ef976c5c140a9ba89e1d8cea408cc9673d",
+    "outputs/culture/terra/base/d_trust/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/terra/base/d_trust/f_tests.csv": "ea8bd9d9a5b9fc74df4da1f5746b613c8879d8474cfdb5151866acbd8a6957d7",
+    "outputs/culture/terra/base/d_trust/full_coefficients.csv": "07a1b8eea9c115881e50d7c969cd435dc24c0948be29f3d3a48c84a3319f8aac",
+    "outputs/culture/terra/base/d_trust/full_standardized_coefficients.csv": "597f1ccd1ac2a08f42eea3d5387d05264c3f5ff73d8d978027b8c62ec97fd654",
+    "outputs/culture/terra/base/d_trust/pairwise_dispersion.csv": "b3ea20fe384ff198bd79addee5fd755e30935289c4340017ea04a31880745088",
+    "outputs/culture/terra/base/d_trust/quality_bands.csv": "7e2a864932d8c5d5a7a7ee4800bf796a0deaaeb100d9ab5fcbe665cf70b399e4",
+    "outputs/culture/terra/base/d_trust/regression_fit.csv": "756869db204cf4c890ca3193945a240ad0d1d47eeb4e35e02b75d89c57f28a25",
+    "outputs/culture/terra/base/d_trust/response_distributions.csv": "2914899e46b39e9f25b5955b0e6083a07a34d01d0208b7fad034276af6231035",
+    "outputs/culture/terra/base/d_trust/social_coefficients.csv": "0b11e01b03e09be51e8e857940d601889f7b5ef0c8606651656effea2b805287",
+    "outputs/culture/terra/base/d_trust/subpopulation_distances.csv": "8a4a50f328f393064d4de23efbdd9ad7e874973a506331126a2496130322fb08",
+    "outputs/culture/terra/base/d_trust/summary_metrics.csv": "f7d0744b5fd8100b71e9f24b8faffda2e72404215a2696a8c2886d112fbc73af"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-22T16:54:16.253577+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 2,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "terra (not finetuned)",
+    "question": "d_trust",
+    "question_label": "Trust",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/terra/base"
+}

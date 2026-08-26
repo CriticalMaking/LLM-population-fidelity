@@ -1,0 +1,2 @@
+model_key,model_label,culture,valid_answer_rate,valid_answer_mass,informative,subpopulations_retained,subpopulations_dropped,mode,subpopulations,mean_nEMD,median_nEMD,p90_nEMD,mean_EMD,mean_KL,mean_JS,mean_MMD,overall_nEMD,social_adj_r_squared
+terra,Terra,base,0.9998517475260369,,True,687,0,FA,687,0.1367380454433695,0.1309523809523809,0.2166666666666666,0.41021413633010856,7.443609079781506,0.21688208515675533,0.2868579434551578,0.1247553790792829,0.5126258312333574

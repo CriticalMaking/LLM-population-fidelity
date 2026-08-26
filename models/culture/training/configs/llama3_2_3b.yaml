@@ -1,0 +1,42 @@
+model:
+  id: "meta-llama/Llama-3.2-3B"
+  modality: "text"               # text-only base — no vision tower to load
+  backend: "hf"                  # auto-detects cuda > mps > cpu at runtime
+  dtype: "bfloat16"
+  chat_template: "configs/templates/llama3_chat.jinja"
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+  layers: 8
+  target_modules:
+    - "q_proj"
+    - "v_proj"
+    - "k_proj"
+    - "o_proj"
+
+training:
+  batch_size: 4
+  gradient_accumulation: 4       # effective batch = 16
+  max_epochs: 250
+  learning_rate: 2.0e-4
+  lr_schedule: "cosine"
+  warmup_steps: 50
+  early_stopping_patience: 15
+  early_stopping_min_epochs: 20
+  max_seq_len: 512
+  logging_steps: 25
+  eval_steps: 100
+  save_steps: 100
+  max_grad_norm: 0.3
+  gradient_checkpointing: false  # ~6.5 GB of bf16 weights on a 32 GB card
+
+cultures:
+  - german
+
+n_folds: 5
+
+mlflow:
+  experiment: "culture_mllm_training"
+  tracking_uri: "http://127.0.0.1:5000"

@@ -11,6 +11,10 @@ Usage:
                                            [--cultures NAME...] [--force]
   ./run_experiment_add_culture.sh health [--models KEY...] [--cultures NAME...]
   ./run_experiment_add_culture.sh smoke --models KEY... [--cultures NAME...]
+  ./run_experiment_add_culture.sh served-smoke [--models KEY...] [--questions Q...]
+                                               [--prompts N] [--attempts N]
+                                               [--fa-max-tokens N] [--batch-size N]
+                                               [--reasoning-effort LEVEL]
   ./run_experiment_add_culture.sh run --models KEY... [--cultures NAME...]
                                       [--questions Q...] [--mode ntp|fa|all]
                                       [--batch-size N] [--fa-max-tokens N]
@@ -28,10 +32,14 @@ Usage:
   ./run_experiment_add_culture.sh summary [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
 
-Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, muse_glimmer_30b
+Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, qwen3_vl_2b, llama3_2_3b,
+           muse_glimmer_30b, luna, terra, sol
            (muse_glimmer_30b runs alone — its transformers pin lives in the
            muse extra, selected automatically; german is its only adapter.
-           run and smoke need --models named: the default set spans both pins)
+           run and smoke need --models named: the default set spans both pins.
+           luna, terra and sol are served through the OpenAI API on the base
+           variant only, run apart from the local models under the api extra,
+           and need .env)
 Cultures:  arabic bengali chinese english german korean portuguese spanish turkish
            (sweep default german; --cultures all for the full grid)
 Questions: d_happy d_polpos d_religiousp d_trust (default d_happy)
@@ -46,6 +54,15 @@ Start with `adapters` to stage the LoRA weights under models/culture, then
 `smoke` for the throughput and valid-answer probe. `adapters` prints a health
 line per staged adapter and `health` reprints them: a diverged checkpoint
 costs an hour a question through inference, seconds through the weights.
+
+`served-smoke` puts every served model over the same prompts and splits what
+comes back four ways — answered in the paper's exact format, an answer the
+paper's parser rejects for its wrapping, the question handed back to the user,
+and a refusal to answer from the profile. Three variants side by side say
+whether a low answer rate tracks the model or the chat format itself, compared
+at one pinned --reasoning-effort (default medium) so effort and model are not
+read as one thing. It writes only to outputs/culture/served_smoke, never into a
+run directory, so it cannot make a sweep think a cell is finished.
 
 `sweep` drives one model/culture/question at a time — a failing adapter never
 takes the grid with it — with one log per run, finished runs skipped
@@ -72,6 +89,7 @@ case "$command_name" in
     adapters) run_python culture-adapters "$@" ;;
     health) run_python culture-health "$@" ;;
     smoke) run_culture --limit 2 --skip-compare "$@" ;;
+    served-smoke) run_served_smoke "$@" ;;
     run) run_culture "$@" ;;
     sweep) ./scripts/sweep.sh "$@" ;;
     compare) run_python culture-compare "$@" ;;

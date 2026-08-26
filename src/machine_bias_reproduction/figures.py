@@ -123,6 +123,14 @@ def _pooled_methods(distances: pd.DataFrame) -> pd.DataFrame:
     return pooled
 
 
+def _drawable_methods(pooled: pd.DataFrame, column: str = "nEMD") -> list[str]:
+    return [
+        method
+        for method in METHOD_ORDER
+        if np.any(pooled.loc[pooled["method"] == method, column].to_numpy(dtype=np.float64) > 0)
+    ]
+
+
 def _density_quality(
     paths: RunPaths,
     distances: pd.DataFrame,
@@ -131,7 +139,7 @@ def _density_quality(
     plot_data = _pooled_methods(distances)
     figure, axes = plt.subplots(1, 2, figsize=(15, 6))
 
-    for method in METHOD_ORDER:
+    for method in _drawable_methods(plot_data):
         values = plot_data.loc[plot_data["method"] == method, "nEMD"].to_numpy(dtype=np.float64)
         grid, density = log_nemd_density(values)
         axes[0].plot(
@@ -150,9 +158,8 @@ def _density_quality(
     axes[0].set(xlabel="nEMD (log scale)", ylabel="Density (per natural-log unit)")
     axes[0].legend(loc="upper left")
 
-    pivot = quality.pivot(index="method", columns="quality", values="percent").reindex(
-        list(METHOD_ORDER)
-    )
+    banded = [method for method in METHOD_ORDER if method in set(quality["method"])]
+    pivot = quality.pivot(index="method", columns="quality", values="percent").reindex(banded)
     pivot = pivot.loc[:, list(QUALITY_LABELS)]
     pivot.plot(
         kind="bar",
@@ -191,10 +198,8 @@ def _distance_comparison(paths: RunPaths, distances: pd.DataFrame) -> list[Path]
     names = [name for name in DISTANCES if name in plot_data.columns]
     figure, axes = plt.subplots(1, len(names), figsize=(4.4 * len(names), 4.6))
     for axis, name in zip(np.atleast_1d(axes), names, strict=True):
-        for method in METHOD_ORDER:
+        for method in _drawable_methods(plot_data, name):
             values = plot_data.loc[plot_data["method"] == method, name].to_numpy(dtype=np.float64)
-            if not np.any(values > 0):
-                continue
             grid, density = log_nemd_density(values)
             axis.plot(
                 grid,
@@ -240,8 +245,8 @@ def classical_mds(distance: FloatArray) -> FloatArray:
 
 def _mds(paths: RunPaths, data: PreparedData, distances: pd.DataFrame) -> list[Path]:
     columns = list(data.question.answer_columns)
-    modes = ("NTP", "FA")
-    model_props = {"NTP": data.ntp_props, "FA": data.fa_props}
+    modes = tuple(mode.upper() for mode in data.modes())
+    model_props = {mode.upper(): data.props(mode) for mode in data.modes()}
     wvs = data.wvs_props.loc[:, columns].to_numpy(dtype=np.float64)
     blocks = [wvs] * len(modes)
     blocks.extend(model_props[mode].loc[:, columns].to_numpy(dtype=np.float64) for mode in modes)
@@ -375,24 +380,24 @@ def _coefficient_figure(
     xlabel: str,
 ) -> list[Path]:
     frame = coefficients[coefficients["predictor"] != "const"].copy()
-    modes = ("ntp", "fa")
+    modes = tuple(mode for mode in ("ntp", "fa") if (frame["mode"] == mode).any())
     social_rows = predictor_rows(set(frame["predictor"]))
     has_center = CENTER_PREDICTOR in set(frame["predictor"])
     r_squared = fit[fit["model"] == fit_model].set_index("mode")["adjusted_r_squared"]
 
     height = max(8.0, 0.34 * len(social_rows) + (1.4 if has_center else 0.0))
-    figure = Figure(figsize=(15, height))
+    figure = Figure(figsize=(7.5 * len(modes), height))
     if has_center:
         grid = GridSpec(
             2,
-            2,
+            len(modes),
             figure=figure,
             height_ratios=[1, len(social_rows)],
             hspace=0.12,
             wspace=0.08,
         )
     else:
-        grid = GridSpec(1, 2, figure=figure, wspace=0.08)
+        grid = GridSpec(1, len(modes), figure=figure, wspace=0.08)
 
     center_axes: list[Axes] = []
     social_axes: list[Axes] = []

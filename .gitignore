@@ -13,6 +13,7 @@ build/
 .claude/
 .DS_Store
 context/
+.env
 
 # The 736 MB upstream replication package; upstream/MANIFEST.json records the
 # SHA-256 of everything consumed from it, so provenance survives the exclusion.

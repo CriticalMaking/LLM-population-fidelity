@@ -360,15 +360,21 @@ def load_source(
     paths: RunPaths,
     question: Question,
     stems: tuple[str, str] | None,
+    modes: tuple[str, ...] = ("ntp", "fa"),
 ) -> PreparedData:
     if source == "archived":
         return prepare_data(archived_ntp(question), archived_fa(question), question)
     ntp_path, fa_path = canonical_run_paths(paths.outputs, question, stems)
-    if not ntp_path.is_file() or not fa_path.is_file():
+    wanted = {"ntp": ntp_path, "fa": fa_path}
+    missing = [mode for mode in modes if not wanted[mode].is_file()]
+    if missing:
         raise FileNotFoundError(
-            f"canonical NTP and FA CSVs are required before analysis: {paths.outputs}"
+            f"canonical {' and '.join(mode.upper() for mode in missing)} CSVs "
+            f"are required before analysis: {paths.outputs}"
         )
-    return prepare_data(pd.read_csv(ntp_path), pd.read_csv(fa_path), question)
+    ntp = pd.read_csv(ntp_path) if "ntp" in modes else None
+    fa = pd.read_csv(fa_path) if "fa" in modes else None
+    return prepare_data(ntp, fa, question)
 
 
 def run_analysis(
@@ -378,32 +384,35 @@ def run_analysis(
     model_description: str = "Mixtral-8x7B-v0.1.Q4_K_M",
     csv_stems: tuple[str, str] | None = None,
     paper_checkpoints: bool = True,
+    modes: tuple[str, ...] = ("ntp", "fa"),
 ) -> dict[str, Any]:
     outcome = resolve_question(question)
     columns = outcome.answer_columns
     paths = paths_for(source, outcome.var)
     paths.ensure()
-    data = load_source(source, paths, outcome, csv_stems)
+    data = load_source(source, paths, outcome, csv_stems, modes)
     if not data.names.size:
         return _empty_analysis(source, outcome, paths, data, model_description)
 
     wvs_average = _response_distribution(
         outcome.normalize(data.wvs[outcome.var]), outcome.wvs_labels
     )
-    ntp_average = outcome.ntp_answers(data.ntp_raw).mean().to_numpy()
-    fa_average = _response_distribution(
-        outcome.normalize(data.fa_raw[outcome.var]), outcome.fa_answers
-    )
+    averages: dict[str, np.ndarray] = {"WVS": wvs_average}
+    if data.ntp_raw is not None:
+        averages["NTP"] = outcome.ntp_answers(data.ntp_raw).mean().to_numpy()
+    if data.fa_raw is not None:
+        averages["FA"] = _response_distribution(
+            outcome.normalize(data.fa_raw[outcome.var]), outcome.fa_answers
+        )
     distributions = pd.DataFrame(
         [
-            {"method": "WVS", **dict(zip(columns, wvs_average, strict=True))},
-            {"method": "NTP", **dict(zip(columns, ntp_average, strict=True))},
-            {"method": "FA", **dict(zip(columns, fa_average, strict=True))},
+            {"method": method, **dict(zip(columns, average, strict=True))}
+            for method, average in averages.items()
         ]
     )
 
     reference = data.wvs_props.to_numpy(dtype=np.float64)
-    method_props = {"NTP": data.ntp_props, "FA": data.fa_props}
+    method_props = {mode.upper(): data.props(mode) for mode in data.modes()}
     distance_frames: list[pd.DataFrame] = [
         _distance_rows(method, data.names, reference, props.to_numpy(dtype=np.float64))
         for method, props in method_props.items()
@@ -438,47 +447,55 @@ def run_analysis(
         )
     pairwise = pd.DataFrame(pairwise_rows)
 
-    ntp_overall = float(nemd(wvs_average, ntp_average))
-    fa_overall = float(nemd(wvs_average, fa_average))
-    metrics = pd.DataFrame(
-        [
-            {"metric": "wvs_rows", "method": "WVS", "value": float(len(data.wvs))},
-            {
-                "metric": "ntp_profiles",
-                "method": "NTP",
-                "value": float(len(data.ntp_raw)),
-            },
-            {
-                "metric": "subpopulations",
-                "method": "WVS",
-                "value": float(len(data.names)),
-            },
+    overall = {
+        method: float(nemd(wvs_average, average))
+        for method, average in averages.items()
+        if method != "WVS"
+    }
+    ntp_overall = overall.get("NTP")
+    fa_overall = overall.get("FA")
+    metric_rows: list[dict[str, Any]] = [
+        {"metric": "wvs_rows", "method": "WVS", "value": float(len(data.wvs))},
+    ]
+    if data.ntp_raw is not None:
+        metric_rows.append(
+            {"metric": "ntp_profiles", "method": "NTP", "value": float(len(data.ntp_raw))}
+        )
+    metric_rows.append(
+        {"metric": "subpopulations", "method": "WVS", "value": float(len(data.names))}
+    )
+    if data.ntp_raw is not None:
+        metric_rows.append(
             {
                 "metric": "valid_token_mass_mean",
                 "method": "NTP",
                 "value": float(data.ntp_raw["mass"].mean()),
-            },
-            {
-                "metric": "subpopulations_dropped",
-                "method": "WVS",
-                "value": float(data.coverage.subpopulations_dropped),
-            },
-            {"metric": "overall_nEMD", "method": "NTP", "value": ntp_overall},
-            {"metric": "overall_nEMD", "method": "FA", "value": fa_overall},
-            *[
-                {
-                    "metric": "median_pairwise_nEMD",
-                    "method": row["method"],
-                    "value": row["median_pairwise_nEMD"],
-                }
-                for _, row in pairwise.iterrows()
-            ],
-        ]
+            }
+        )
+    metric_rows.append(
+        {
+            "metric": "subpopulations_dropped",
+            "method": "WVS",
+            "value": float(data.coverage.subpopulations_dropped),
+        }
     )
+    metric_rows.extend(
+        {"metric": "overall_nEMD", "method": method, "value": value}
+        for method, value in overall.items()
+    )
+    metric_rows.extend(
+        {
+            "metric": "median_pairwise_nEMD",
+            "method": row["method"],
+            "value": row["median_pairwise_nEMD"],
+        }
+        for _, row in pairwise.iterrows()
+    )
+    metrics = pd.DataFrame(metric_rows)
 
     regressions_by_mode = [
-        regressions(data.names, data.wvs_props, props, data.social_predictors, mode)
-        for mode, props in (("ntp", data.ntp_props), ("fa", data.fa_props))
+        regressions(data.names, data.wvs_props, data.props(mode), data.social_predictors, mode)
+        for mode in data.modes()
     ]
     regression_fit = pd.concat([item.fit for item in regressions_by_mode], ignore_index=True)
     f_tests = pd.concat([item.f_tests for item in regressions_by_mode], ignore_index=True)
@@ -509,7 +526,7 @@ def run_analysis(
         "full_standardized_coefficients.csv": standardized_coefficients,
         "center_holdouts.csv": holdouts,
     }
-    if paper_checkpoints:
+    if paper_checkpoints and "ntp" in data.modes():
         artifacts["paper_regression_checkpoints.csv"] = _paper_regression_checkpoints(
             regression_fit, f_tests
         )
@@ -563,7 +580,7 @@ def _manifest(
             "question_label": question.label,
             "answer_levels": question.levels,
             "model": model_description,
-            "generation_modes": ["ntp", "fa"],
+            "generation_modes": list(data.modes()),
             "random_baseline_replicates": 20,
             "center_holdout_size": 20,
             "distances": list(DISTANCES),

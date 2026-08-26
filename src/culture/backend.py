@@ -10,7 +10,12 @@ from machine_bias_reproduction.inference import strip_trailing_newline
 from machine_bias_reproduction.questions import Question, resolve_question
 
 from .adapters import read_adapter_config
-from .registry import BASE_ARM, CHECKPOINT_CONDITION_DIRECTORY, CultureModel
+from .registry import (
+    BASE_ARM,
+    CHECKPOINT_CONDITION_DIRECTORY,
+    TEXT_MODALITY,
+    CultureModel,
+)
 
 FA_MAX_NEW_TOKENS = 12
 
@@ -84,7 +89,11 @@ class TransformersBackend:
         try:
             import torch
             from peft import PeftModel
-            from transformers import AutoModelForImageTextToText, AutoTokenizer
+            from transformers import (
+                AutoModelForCausalLM,
+                AutoModelForImageTextToText,
+                AutoTokenizer,
+            )
         except ImportError as error:
             raise RuntimeError(
                 "culture inference requires: uv sync --locked --extra culture"
@@ -110,7 +119,10 @@ class TransformersBackend:
         if self._tokenizer.pad_token_id is None:
             self._tokenizer.pad_token = self._tokenizer.eos_token
 
-        base = self._load_base(model, AutoModelForImageTextToText, torch)
+        auto_class = (
+            AutoModelForCausalLM if model.modality == TEXT_MODALITY else AutoModelForImageTextToText
+        )
+        base = self._load_base(model, auto_class, torch)
         self._model_class = type(base).__name__
         self._attn_implementation = getattr(base.config, "_attn_implementation", None)
         if names:
@@ -238,6 +250,7 @@ class TransformersBackend:
             "accelerate": _package_version("accelerate"),
             "device": self._device,
             "dtype": self._model_spec.dtype,
+            "modality": self._model_spec.modality,
             "quantization": self._model_spec.quantization,
             "attn_implementation": self._attn_implementation,
             "batch_size": self._batch_size,

@@ -129,6 +129,19 @@ def preflight(
     }
 
 
+def effective_modes(
+    modes: list[PromptMode],
+    probe: Mapping[str, Any] | None,
+    backend: CultureBackend,
+) -> list[PromptMode]:
+    degrades = bool(getattr(backend, "ntp_degrades_to_fa", False))
+    if not degrades or probe is None or probe.get("informative") is not False:
+        return list(modes)
+    if len(modes) < 2 or "ntp" not in modes:
+        return list(modes)
+    return [mode for mode in modes if mode != "ntp"]
+
+
 def _capacity_summary(frame: pd.DataFrame) -> dict[str, Any]:
     if frame.empty:
         return {"prompts": 0, "valid": 0, "valid_rate": 0.0}
@@ -166,26 +179,35 @@ def run_one(
     trace = run_context(model, culture, weights, backend, sha256_file)
     print(f"[{model.key}/{culture}] {question.var} run_id: {trace.run_id}", flush=True)
 
-    modes: list[PromptMode] = resolve_modes(arguments.mode)
+    requested: list[PromptMode] = resolve_modes(arguments.mode)
     counts: dict[str, dict[str, int]] = {}
     records_by_mode: dict[str, list[PromptRecord]] = {}
-    probe: dict[str, Any] | None = None
-    retries = MAX_FA_RETRIES
     first_countries = getattr(arguments, "first_countries", None) or []
+    probe_records = prompt_records(wvs, requested[0], question)
+    if arguments.limit is not None:
+        probe_records = probe_records[: arguments.limit]
+    probe = preflight(model, culture, backend, probe_records)
+    modes = effective_modes(requested, probe, backend)
+    if modes != requested:
+        dropped = [mode for mode in requested if mode not in modes]
+        print(
+            f"[{model.key}/{culture}] {', '.join(dropped)} dropped for this run "
+            "because the probe found no valid-answer mass",
+            flush=True,
+        )
+    retries = MAX_FA_RETRIES
+    if probe["informative"] is False:
+        retries = DEGENERATE_FA_RETRIES
+        print(
+            f"[{model.key}/{culture}] FA retries capped at {retries} for this run "
+            "because the probe found no valid-answer mass",
+            flush=True,
+        )
     for mode in modes:
         records = prompt_records(wvs, mode, question)
         if arguments.limit is not None:
             records = records[: arguments.limit]
         records_by_mode[mode] = records
-        if probe is None:
-            probe = preflight(model, culture, backend, records)
-            if probe["informative"] is False:
-                retries = DEGENERATE_FA_RETRIES
-                print(
-                    f"[{model.key}/{culture}] FA retries capped at {retries} for this run "
-                    "because the probe found no valid-answer mass",
-                    flush=True,
-                )
         phases = phase_records(records, first_countries)
         if len(phases) > 1:
             print(
@@ -233,7 +255,9 @@ def run_one(
             consolidate_ntp(records_by_mode["ntp"], paths, ntp_path, question, skip_missing=True)
         if "fa" in modes:
             consolidate_fa(records_by_mode["fa"], paths, fa_path, question, skip_missing=True)
-        if ntp_path.is_file() and fa_path.is_file():
+        mode_paths: dict[str, Path] = {"ntp": ntp_path, "fa": fa_path}
+        available = tuple(mode for mode in ("ntp", "fa") if mode_paths[mode].is_file())
+        if available:
             described = (
                 f"{model.base_model_id} (not finetuned)"
                 if is_base(culture)
@@ -245,6 +269,7 @@ def run_one(
                 model_description=described,
                 csv_stems=stems,
                 paper_checkpoints=False,
+                modes=available,
             )
 
     manifest = manifest_writer(
@@ -256,6 +281,8 @@ def run_one(
         counts=counts,
     )
     manifest["preflight"] = probe
+    manifest["modes_requested"] = list(requested)
+    manifest["modes_run"] = list(modes)
     manifest["capacity"] = summary
     manifest["question"] = question.var
     atomic_write_json(paths.outputs / "inference_manifest.json", manifest)

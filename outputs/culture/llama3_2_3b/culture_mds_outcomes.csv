@@ -1,0 +1,10 @@
+model_key,model_label,culture,question,sample,series,mode,subpopulations,countries,mean_nEMD
+llama3_2_3b,Llama-3.2-3B,german,d_happy,matched,Mixtral archived,NTP,144,Germany,0.061981049913407124
+llama3_2_3b,Llama-3.2-3B,german,d_happy,matched,Mixtral fresh,NTP,144,Germany,0.0625264609833189
+llama3_2_3b,Llama-3.2-3B,german,d_happy,matched,german,NTP,144,Germany,0.2785569641241327
+llama3_2_3b,Llama-3.2-3B,german,d_polpos,matched,Mixtral archived,NTP,144,Germany,0.0985880379075019
+llama3_2_3b,Llama-3.2-3B,german,d_polpos,matched,Mixtral fresh,NTP,144,Germany,0.09892358962767663
+llama3_2_3b,Llama-3.2-3B,german,d_polpos,matched,german,NTP,144,Germany,0.0582106229780297
+llama3_2_3b,Llama-3.2-3B,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
+llama3_2_3b,Llama-3.2-3B,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
+llama3_2_3b,Llama-3.2-3B,german,d_religiousp,matched,german,NTP,144,Germany,0.5805313615030829
