@@ -15,7 +15,8 @@ WVS_COUNTRIES = ("Australia", "Germany", "Mexico", "Russia", "United States")
 CULTURE_COUNTRIES: dict[str, tuple[str, ...]] = {
     "english": ("Australia", "United States"),
     "german": ("Germany",),
-    "spanish": ("Mexico",),
+    "spanish": ("Mexico", "Argentina"),
+    "spanish-mx": ("Mexico",),
 }
 
 MATCHED_CULTURES: tuple[str, ...] = tuple(CULTURE_COUNTRIES)

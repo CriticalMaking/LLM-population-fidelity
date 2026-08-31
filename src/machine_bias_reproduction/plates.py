@@ -96,9 +96,10 @@ CATEGORICAL_INKS: tuple[str, ...] = (
     "#a6761d",
     "#666666",
     "#1f78b4",
+    "#e31a1c",
 )
 
-CATEGORICAL_MARKERS: tuple[str, ...] = ("o", "s", "^", "D", "v", "P", "X", "<", ">")
+CATEGORICAL_MARKERS: tuple[str, ...] = ("o", "s", "^", "D", "v", "P", "X", "<", ">", "p")
 
 CATEGORICAL_LINESTYLES: tuple[Any, ...] = (
     "solid",
@@ -110,6 +111,7 @@ CATEGORICAL_LINESTYLES: tuple[Any, ...] = (
     (0, (2, 1.2)),
     (0, (8, 3)),
     (0, (4, 1.6, 1, 1.6)),
+    (0, (6, 1.5, 2, 1.5)),
 )
 
 REFERENCE_TONE = tone("#000000")
