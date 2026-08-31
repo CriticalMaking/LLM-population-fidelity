@@ -28,6 +28,7 @@ from culture import (
     write_health,
 )
 from culture.api_backend import REASONING_EFFORT, REASONING_EFFORTS
+from culture.cross_culture import DEFAULT_PAIR, culture_cross
 from culture.figures import compare_cultures
 from culture.mds import culture_mds
 from culture.runner import run_one
@@ -420,6 +421,18 @@ def command_culture_compare(arguments: argparse.Namespace) -> None:
     )
 
 
+def command_culture_cross(arguments: argparse.Namespace) -> None:
+    models = resolve_models(arguments.models)
+    cultures = resolve_cultures(arguments.cultures)
+    pair = (arguments.pair[0], arguments.pair[1])
+    _json_print(
+        [
+            culture_cross(models, cultures, question, pair=pair)
+            for question in resolve_questions(arguments.questions)
+        ]
+    )
+
+
 def command_culture_mds(arguments: argparse.Namespace) -> None:
     models = resolve_models(arguments.models)
     cultures = resolve_cultures(arguments.cultures)
@@ -555,7 +568,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=str(DEFAULT_CHECKPOINT_ROOT),
         help="checkpoint root holding <culture>/<model>/cultural directories",
     )
-    _add_selection_arguments(adapters, cultures_help="cultures (default: all nine)")
+    _add_selection_arguments(adapters, cultures_help="cultures (default: every culture)")
     adapters.add_argument("--force", action="store_true", help="re-copy staged weights")
     adapters.set_defaults(handler=command_culture_adapters)
 
@@ -563,7 +576,7 @@ def build_parser() -> argparse.ArgumentParser:
         "culture-health",
         help="check staged adapters for divergence before spending GPU time",
     )
-    _add_selection_arguments(culture_health, cultures_help="cultures (default: all nine)")
+    _add_selection_arguments(culture_health, cultures_help="cultures (default: every culture)")
     culture_health.set_defaults(handler=command_culture_health)
 
     culture = subparsers.add_parser(
@@ -572,7 +585,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_selection_arguments(
         culture,
-        cultures_help="arms: the nine cultures and 'base' (default: base and all nine)",
+        cultures_help="arms: every culture and 'base' (default: base and every culture)",
     )
     culture.add_argument(
         "--first-countries",
@@ -649,11 +662,29 @@ def build_parser() -> argparse.ArgumentParser:
 
     culture_compare = subparsers.add_parser(
         "culture-compare",
-        help="build cross-culture figures and reports from existing outputs",
+        help="build each culture variant's survey-comparison figures and reports "
+        "from existing outputs",
     )
-    _add_selection_arguments(culture_compare, cultures_help="arms (default: base and all nine)")
+    _add_selection_arguments(culture_compare, cultures_help="arms (default: base and every culture)")
     _add_question_argument(culture_compare, plural=True)
     culture_compare.set_defaults(handler=command_culture_compare)
+
+    culture_cross_parser = subparsers.add_parser(
+        "culture-cross",
+        help="compare the culture-finetuned variants against each other from existing outputs",
+    )
+    _add_selection_arguments(
+        culture_cross_parser, cultures_help="arms (default: base and every culture)"
+    )
+    culture_cross_parser.add_argument(
+        "--pair",
+        nargs=2,
+        default=list(DEFAULT_PAIR),
+        metavar=("ARM", "ARM"),
+        help="two variants scored on the same reference countries (default: spanish spanish-mx)",
+    )
+    _add_question_argument(culture_cross_parser, plural=True)
+    culture_cross_parser.set_defaults(handler=command_culture_cross)
 
     culture_mds_parser = subparsers.add_parser(
         "culture-mds",
@@ -681,7 +712,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="build the cross-question summary figures and tables",
     )
     _add_selection_arguments(
-        culture_summary_parser, cultures_help="arms (default: base and all nine)"
+        culture_summary_parser, cultures_help="arms (default: base and every culture)"
     )
     _add_question_argument(culture_summary_parser, plural=True)
     culture_summary_parser.set_defaults(handler=command_culture_summary)
