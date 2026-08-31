@@ -3,7 +3,11 @@ muse_glimmer_30b,Muse-Glimmer-30B,base,d_happy,Happiness,5.398154445277778,1,
 muse_glimmer_30b,Muse-Glimmer-30B,base,d_polpos,Politics,5.970143475555555,1,
 muse_glimmer_30b,Muse-Glimmer-30B,base,d_religiousp,Religion,3.890350156111111,1,
 muse_glimmer_30b,Muse-Glimmer-30B,base,d_trust,Trust,2.7347500633333333,1,
-muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,Happiness,2.9684393641666666,1,ok
-muse_glimmer_30b,Muse-Glimmer-30B,german,d_polpos,Politics,3.594437783888889,2,ok
-muse_glimmer_30b,Muse-Glimmer-30B,german,d_religiousp,Religion,3.0867676269444444,1,ok
-muse_glimmer_30b,Muse-Glimmer-30B,german,d_trust,Trust,2.974703607222222,1,ok
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,Happiness,2.9684393641666666,1,
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_polpos,Politics,3.594437783888889,2,
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_religiousp,Religion,3.0867676269444444,1,
+muse_glimmer_30b,Muse-Glimmer-30B,german,d_trust,Trust,2.974703607222222,1,
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,Happiness,3.0238237266666665,1,
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_polpos,Politics,2.990213873888889,1,
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_religiousp,Religion,3.7238257230555556,1,
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_trust,Trust,4.066932420555555,1,
