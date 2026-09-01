@@ -19,6 +19,26 @@ gemma4_31b,Gemma-4-31B-it,german,d_happy,all_countries,german,NTP,678,Australia;
 gemma4_31b,Gemma-4-31B-it,german,d_happy,all_countries,Mixtral archived,FA,678,Australia; Germany; Mexico; Russia; United States,0.09845318787592584
 gemma4_31b,Gemma-4-31B-it,german,d_happy,all_countries,Mixtral fresh,FA,678,Australia; Germany; Mexico; Russia; United States,0.09368354666073005
 gemma4_31b,Gemma-4-31B-it,german,d_happy,all_countries,german,FA,678,Australia; Germany; Mexico; Russia; United States,0.18366171387473465
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.1972352341414589
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,matched,Mixtral archived,FA,131,Mexico,0.10943185915354849
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,matched,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,matched,spanish-mx,FA,131,Mexico,0.1995764796089743
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,base,NTP,131,Mexico,0.19234800672661242
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,spanish-mx,NTP,131,Mexico,0.1972352341414589
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,base,FA,131,Mexico,0.19497533946023207
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,Mixtral archived,FA,131,Mexico,0.10943185915354849
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,comparison,spanish-mx,FA,131,Mexico,0.1995764796089743
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0887666267772936
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.08860640840286475
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,all_countries,spanish-mx,NTP,687,Australia; Germany; Mexico; Russia; United States,0.15135674169187566
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
+gemma4_31b,Gemma-4-31B-it,spanish-mx,d_happy,all_countries,spanish-mx,FA,687,Australia; Germany; Mexico; Russia; United States,0.15460786974400295
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,matched,Mixtral archived,NTP,144,Germany,0.061981049913407124
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,matched,Mixtral fresh,NTP,144,Germany,0.0625264609833189
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,matched,german,NTP,144,Germany,0.1072967725901502
@@ -39,6 +59,26 @@ gemma4_e4b,Gemma-4-E4B-it,german,d_happy,all_countries,german,NTP,687,Australia;
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
 gemma4_e4b,Gemma-4-E4B-it,german,d_happy,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.14042454326874199
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.18007365280243076
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,Mixtral archived,FA,131,Mexico,0.10943185915354849
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,spanish-mx,FA,131,Mexico,0.1945691767268022
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,base,NTP,131,Mexico,0.1861311329387636
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,spanish-mx,NTP,131,Mexico,0.18007365280243076
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,base,FA,131,Mexico,0.1971694495953194
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,Mixtral archived,FA,131,Mexico,0.10943185915354849
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,comparison,spanish-mx,FA,131,Mexico,0.1945691767268022
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0887666267772936
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.08860640840286475
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,all_countries,spanish-mx,NTP,687,Australia; Germany; Mexico; Russia; United States,0.1283406430862596
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,all_countries,spanish-mx,FA,687,Australia; Germany; Mexico; Russia; United States,0.14456130772648662
 qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,matched,Mixtral archived,NTP,144,Germany,0.061981049913407124
 qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,matched,Mixtral fresh,NTP,144,Germany,0.0625264609833189
 qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,matched,german,NTP,144,Germany,0.23496140360720513
@@ -59,6 +99,26 @@ qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,all_countries,german,NTP,687,Aus
 qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
 qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
 qwen3_vl_8b,Qwen3-VL-8B-Thinking,german,d_happy,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.23572499564249633
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.14128526782869108
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,matched,Mixtral archived,FA,131,Mexico,0.10943185915354849
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,matched,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,matched,spanish-mx,FA,131,Mexico,0.16394331499401765
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,base,NTP,131,Mexico,0.10342922555487513
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,spanish-mx,NTP,131,Mexico,0.14128526782869108
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,base,FA,131,Mexico,0.12204465442175502
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,Mixtral archived,FA,131,Mexico,0.10943185915354849
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,comparison,spanish-mx,FA,131,Mexico,0.16394331499401765
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0887666267772936
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.08860640840286475
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,all_countries,spanish-mx,NTP,687,Australia; Germany; Mexico; Russia; United States,0.09926516823304792
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
+qwen3_vl_8b,Qwen3-VL-8B-Thinking,spanish-mx,d_happy,all_countries,spanish-mx,FA,687,Australia; Germany; Mexico; Russia; United States,0.11844980354523549
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,matched,Mixtral archived,NTP,144,Germany,0.061981049913407124
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,matched,Mixtral fresh,NTP,144,Germany,0.0625264609833189
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,matched,german,NTP,144,Germany,0.11919426961357488
@@ -79,6 +139,26 @@ qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,all_countries,german,NTP,687,Aus
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.15535053834705173
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.1864338409731326
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,Mixtral archived,FA,131,Mexico,0.10943185915354849
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,spanish-mx,FA,131,Mexico,0.2055834804090066
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,base,NTP,131,Mexico,0.13239586023895766
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,spanish-mx,NTP,131,Mexico,0.1864338409731326
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,base,FA,131,Mexico,0.13017800594475973
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,Mixtral archived,FA,131,Mexico,0.10943185915354849
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,comparison,spanish-mx,FA,131,Mexico,0.2055834804090066
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0887666267772936
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.08860640840286475
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,all_countries,spanish-mx,NTP,687,Australia; Germany; Mexico; Russia; United States,0.12057561209000651
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,all_countries,spanish-mx,FA,687,Australia; Germany; Mexico; Russia; United States,0.1402280784500298
 llama3_2_3b,Llama-3.2-3B,german,d_happy,matched,Mixtral archived,NTP,144,Germany,0.061981049913407124
 llama3_2_3b,Llama-3.2-3B,german,d_happy,matched,Mixtral fresh,NTP,144,Germany,0.0625264609833189
 llama3_2_3b,Llama-3.2-3B,german,d_happy,matched,german,NTP,144,Germany,0.2785569641241327
@@ -99,6 +179,26 @@ llama3_2_3b,Llama-3.2-3B,german,d_happy,all_countries,german,NTP,687,Australia; 
 llama3_2_3b,Llama-3.2-3B,german,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
 llama3_2_3b,Llama-3.2-3B,german,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
 llama3_2_3b,Llama-3.2-3B,german,d_happy,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.25061040443088584
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.12022040763921667
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,Mixtral archived,FA,131,Mexico,0.10943185915354849
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,spanish-mx,FA,131,Mexico,0.10515816261980968
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,base,NTP,131,Mexico,0.12529169783291383
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,spanish-mx,NTP,131,Mexico,0.12022040763921667
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,base,FA,131,Mexico,0.10907522170667404
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,Mixtral archived,FA,131,Mexico,0.10943185915354849
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,comparison,spanish-mx,FA,131,Mexico,0.10515816261980968
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0887666267772936
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.08860640840286475
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,all_countries,spanish-mx,NTP,687,Australia; Germany; Mexico; Russia; United States,0.1288193774243341
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,all_countries,spanish-mx,FA,687,Australia; Germany; Mexico; Russia; United States,0.1285561787162598
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,matched,Mixtral archived,NTP,144,Germany,0.061981049913407124
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,matched,Mixtral fresh,NTP,144,Germany,0.0625264609833189
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,matched,german,NTP,144,Germany,0.12972049411350184
@@ -119,3 +219,23 @@ muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,all_countries,german,NTP,687,Au
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_happy,all_countries,german,FA,687,Australia; Germany; Mexico; Russia; United States,0.118550404357108
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.10901666389923512
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,Mixtral archived,FA,131,Mexico,0.10943185915354849
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,spanish-mx,FA,131,Mexico,0.1309867385279169
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,base,NTP,131,Mexico,0.09297561163129296
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,spanish-mx,NTP,131,Mexico,0.10901666389923512
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,base,FA,131,Mexico,0.10850167040516374
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,Mixtral archived,FA,131,Mexico,0.10943185915354849
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,Mixtral fresh,FA,131,Mexico,0.1254637653170934
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,comparison,spanish-mx,FA,131,Mexico,0.1309867385279169
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,all_countries,Mixtral archived,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0887666267772936
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,all_countries,Mixtral fresh,NTP,687,Australia; Germany; Mexico; Russia; United States,0.08860640840286475
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,all_countries,spanish-mx,NTP,687,Australia; Germany; Mexico; Russia; United States,0.0895187050212563
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,all_countries,Mixtral archived,FA,687,Australia; Germany; Mexico; Russia; United States,0.09928171609421263
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,all_countries,Mixtral fresh,FA,687,Australia; Germany; Mexico; Russia; United States,0.09440570064288493
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,all_countries,spanish-mx,FA,687,Australia; Germany; Mexico; Russia; United States,0.10218515792958005
