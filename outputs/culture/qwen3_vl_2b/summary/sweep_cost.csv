@@ -3,7 +3,11 @@ qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,d_happy,Happiness,0.28001336833333335,1,ok
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,d_polpos,Politics,0.32187101777777777,1,ok
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,d_religiousp,Religion,0.3311948286111111,1,ok
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,base,d_trust,Trust,0.3254153222222222,1,ok
-qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,Happiness,0.35406115888888884,1,ok
-qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_polpos,Politics,0.36132470805555555,1,ok
-qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_religiousp,Religion,0.420988605,1,ok
-qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_trust,Trust,0.38049974277777776,1,ok
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_happy,Happiness,0.35406115888888884,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_polpos,Politics,0.36132470805555555,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_religiousp,Religion,0.420988605,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_trust,Trust,0.38049974277777776,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,Happiness,0.13318179444444445,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_polpos,Politics,0.14287241416666666,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_religiousp,Religion,0.1435232786111111,1,
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_trust,Trust,0.1360041227777778,1,

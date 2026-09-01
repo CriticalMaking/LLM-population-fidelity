@@ -22,6 +22,7 @@ CULTURES: tuple[str, ...] = (
     "korean",
     "portuguese",
     "spanish",
+    "spanish-mx",
     "turkish",
 )
 

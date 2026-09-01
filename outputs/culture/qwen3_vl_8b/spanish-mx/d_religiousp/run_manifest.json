@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_distance_comparison.pdf": "6905fb21f7ffcb120d06c9ddf2be299332bf70124bbdddbaaf1baf233f5e95a3",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_distance_comparison.png": "8f3d1bf2e5c2d4169e535947a34a8c744a3c4b1d4bdaf563e3e6313799bf8aa3",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_full_coefficients.pdf": "afe7ea7e577a16d4278c6eb57fb3ae5f303a58d9e7d000c5027905929d6f74f9",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_full_coefficients.png": "8c1ab81e1584d646c7e9eb5cff6eadc84015bd06c3f09ad82f00adc20f5ecf67",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_full_standardized_coefficients.pdf": "e71d113071e96d5b017ff82f7071931d5ce7fedb825ebb80fb750f879610aa09",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_full_standardized_coefficients.png": "b7dcaba2e6f046018a6b4b6e246aea202dcfeb381f42961aa2bd5350724f84ab",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_mds_fa.pdf": "8ecacaa4874026d56bdcc6df1abf07f2dd3073340b0300e18a482563a584bf3c",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_mds_fa.png": "4dbfc4ecad7cb4fb701407d45f3dbed40413d2b943de40e6568cf64acba59593",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_mds_ntp.pdf": "4f02c14e8f97948dec0c791b85f0a2d5d7ff55967438e273af1bf25520c3bcfc",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_mds_ntp.png": "3b0489059ab4922c8a530a0efa74ea7ec058aa02d91691ba131021dcc87fe356",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_nemd_density_quality.pdf": "05ca449bd3f166c37165704b09536529e10848c8509176362ca5de6e938d007e",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_nemd_density_quality.png": "22dad562bd793c089d2af8400b1768b11de9bf5ec64e69ec9d1c80758bea3b39",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_social_coefficients.pdf": "19090d6797501956388fc9b8fe7e0a093a8c3e541d89a36f9d3de5382bb36fc3",
+    "figures/culture/qwen3_vl_8b/spanish-mx/d_religiousp/fig_social_coefficients.png": "f86f96816ba426d365eb24fcc26d9879bdcbc6d47d9415b948b36d50e31e2133",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/f_tests.csv": "9abf9785d5b48ec120afbcc4e52125c369f8afcf0a245407eb936e1e5d29ceeb",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/full_coefficients.csv": "40b8a2450f1eb2b03aae8775ac6f84e6fdc811a8fcbd8b1f32ba74fab31d4040",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/full_standardized_coefficients.csv": "eef40cf8a132edf3255aa705a41ead74dbe96d3f21fc45348cf599a594a929fd",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/pairwise_dispersion.csv": "6b4fc05d124d8988d25925d6664c76181c0c2ffab7fe8806337f67c7762a9d41",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/quality_bands.csv": "e3cd1b0891d028ae77c530794671c314e1e7ae45ec6b887eb33c08440d90be51",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/regression_fit.csv": "dccd57633626f1041e9b5482386d574a9afd9cfd5ff3898ba815c2787943b732",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/response_distributions.csv": "7da74aea15bb7af433fe621f37221b6adfa5b930a6a99c620b7dfb66dcc3123c",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/social_coefficients.csv": "42ea81d3828b44f9fa40bbb2c467fb6dec7b88a20348d0d1cb968a6d553534f1",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/subpopulation_distances.csv": "2b552941da4fbbb1c43610ad0b1a64d665618bea3052afcd1c26dc3e6a287597",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/d_religiousp/summary_metrics.csv": "169b4fa70c61e9d9e2fa314f10d3b8d912d7d889a686a449a3a7bdf9e2544b3b"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-29T01:39:05.585318+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 7,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Qwen/Qwen3-VL-8B-Thinking + spanish-mx LoRA",
+    "question": "d_religiousp",
+    "question_label": "Religion",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/qwen3_vl_8b/spanish-mx"
+}

@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_distance_comparison.pdf": "5b26e583a02c243860ccdb4794e9e4b4e2039996bb83e7c46d9c88cde73f3b85",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_distance_comparison.png": "76c461acd820e582fd9004f572303e01a4b09de51a0db6b225131201f7773107",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_full_coefficients.pdf": "ada119cffd04a03153f7d806223df9904432c43f0e896b3e121facfb73ff0f7e",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_full_coefficients.png": "5698f4cf7bd6913d6ddc41d73186b488e7c9a619db0a78a0358ea6b50a8e649f",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_full_standardized_coefficients.pdf": "182d7bc4a5a01d0473d18cff263a92e4797786b5d7a592c385c6b08f693b92b6",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_full_standardized_coefficients.png": "25c433b06cc4e93f788a1fd418cc46cfa92bedb698fd859f845d053e4e9cc62c",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_mds_fa.pdf": "80b945175552b7fb0dd5ddf1b16917f0517558720a6f67037309f1c4facd9ca5",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_mds_fa.png": "343812933c989db4f26091b1b363c619669f9fc6e2f826a9dc3e629eb00fb8b3",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_mds_ntp.pdf": "9df9fc6b4a1d4cd5655ef36fd71414bff3943ee4bcec19f06827a2f416df8581",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_mds_ntp.png": "caa39bafeebbfbcaa2097140eb6b0aa8f917775c0fcd517d89444ecd3d1361e1",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_nemd_density_quality.pdf": "8ef68476a06b5623054e6d34f96e5ff73c84317de8d95e8cdf0bd4c0a38cc998",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_nemd_density_quality.png": "9bc341e591a959aebb43e58729174c9adde734aa2742669d7cd772914815df05",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_social_coefficients.pdf": "6f2b0a8353bd11f4bad53a89f03875b9df24f07ea118c269a0fb422d18986f06",
+    "figures/culture/gemma4_e4b/spanish-mx/d_happy/fig_social_coefficients.png": "28f0a329cb3f71d379b19daf8224bfbcb990841e3173bfc203a035c7e27b200d",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/f_tests.csv": "87eb0718c1449c832db5b049b60023de10238f247f00197ca334f11110f8cf5c",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/full_coefficients.csv": "89767ae1ba58b8bf7ee3e6cd6f1202e3b199f2cf1377d545ac062440b329a6c4",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/full_standardized_coefficients.csv": "3898aa518b3a10f90d3e8acc413a41b60220d69379662d002d47861d9f8ad59b",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/pairwise_dispersion.csv": "7ac50a4a0aff47927dadd717f024267fafa6009c659b0ed0dbde84fdf44dd09d",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/quality_bands.csv": "c473d4d30013749de8ba6a6658da08884950bd74e4ae181bcc516ad78bff1e8c",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/regression_fit.csv": "a74cf9a965863b8a87dc44c87743d5119e4e66657537ccc33e3e0f8a538efc49",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/response_distributions.csv": "056ecc397e7c98504c8209e81d0053aefc32bb0f8e255bc7b9bf21d98d8ca403",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/social_coefficients.csv": "3a7ef7208f309cfae13ed24101e75e6c1d44bbba2d6d32b309f66a8924f2e52d",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/subpopulation_distances.csv": "4a4d8305d7234efe0e6e9cb9c53f20dc928a8540a5b8e4e71705047b2d4af0d2",
+    "outputs/culture/gemma4_e4b/spanish-mx/d_happy/summary_metrics.csv": "2bd3d79a623a42fa5291b25ccd22ede2e3e32d6054fb6b2f6c74ef4c35e0245d"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-27T18:35:06.078140+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "google/gemma-4-E4B-it + spanish-mx LoRA",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/gemma4_e4b/spanish-mx"
+}

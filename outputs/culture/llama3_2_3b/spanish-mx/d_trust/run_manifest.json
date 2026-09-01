@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_distance_comparison.pdf": "5591984b02c9d0fd76fb3b51771097eef6a1499f068f62c6b7e7731cf3b926ff",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_distance_comparison.png": "f6081507b956d7327081631c98f77580a46947255564144a22eacdfb409743a4",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_full_coefficients.pdf": "bfc8f2a2b281ad0358e29a45a2ef0032d612aac4026d1cb01b0e7f868c907d1d",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_full_coefficients.png": "8e33429da1eaf67aa756afc7c660b8e594457b23e94e45991fb289ae310b9d83",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_full_standardized_coefficients.pdf": "250f1722c45547ab9be1f3ca98d6da633d4dc7924db66760c3d04927539c78d0",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_full_standardized_coefficients.png": "9c02a9ab74d101d2170707339e8d2e27bf375c37387c05453aa1e99fe595ec53",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_mds_fa.pdf": "071cf605ec02dcc8feb8007d4a5ea4d864e7ec93d128a74ec43c41d2d7a2a29e",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_mds_fa.png": "2c8268ba98e0303f82aac8398defd6dced1d17f5121f51352334afdaaaeb7140",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_mds_ntp.pdf": "86a11ea321edcb9306a5cbabbc22f40d11a1d00df5086d96c6336799c2e1e725",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_mds_ntp.png": "214729d19309cb494a6e70c65610ba099d588aad5e2b05798ebff2405ba9dcca",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_nemd_density_quality.pdf": "980572d1626ac7e25aafc366dc646fcbf45a2b4a885d09afb0f10cfe242d848b",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_nemd_density_quality.png": "073ec779b255d8618c6613cb4617ebea75b1b16e6806c87d566bf2d1e81785f3",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_social_coefficients.pdf": "024e281029c8466a39c8e583a53e0021bbb19872e0ac76e30d787ef49b80db56",
+    "figures/culture/llama3_2_3b/spanish-mx/d_trust/fig_social_coefficients.png": "d21122f2258260e791d3d8b5ad613abb4ae01e63b0a620fcb650886afaad6d0a",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/f_tests.csv": "8d760c57c609803485ea0bbba23290dd710fbdad262eea1d50921c0d8e1def64",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/full_coefficients.csv": "ca500c33807e62c6e8bd695a9022b43b35828e8ad99c0b7c4b2fc26d8cb4aef2",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/full_standardized_coefficients.csv": "135269da69ccfe0912efaa85a4bd56703e1496ea99928205001b6a1295c234ec",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/pairwise_dispersion.csv": "d515c57a8a64a0ddaabdbce0b2789f366377eebffdb42b4a74306ae03b53eb0e",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/quality_bands.csv": "0b8774a2ad483c4fb82b223d3a8e23e87c6831d8eeb2ff57a9acab9663fb34e0",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/regression_fit.csv": "c539218e6bc18e6afb5eef1acfc66a13661198e4c8b4949907fd1824b60f136a",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/response_distributions.csv": "71a6bab8437c647102635d6b3c2ae24d4daa99d21148e788e250c95b6be18faa",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/social_coefficients.csv": "96539c1d1e3e35b8322d59273eecf5d4ee1771a36704e9bacee34a5bfe72ba84",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/subpopulation_distances.csv": "29051429a4f8ea78c3f8df2884b8ade609ede329fb292815a7ac147fc1a2d937",
+    "outputs/culture/llama3_2_3b/spanish-mx/d_trust/summary_metrics.csv": "54861824897e8b007c65ed726f0c2e3b4db2c8907da641379bf233d9a1253382"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-08-29T18:56:00.720346+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 2,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "meta-llama/Llama-3.2-3B + spanish-mx LoRA",
+    "question": "d_trust",
+    "question_label": "Trust",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/llama3_2_3b/spanish-mx"
+}

@@ -1,0 +1,3 @@
+mode,prompts,valid,invalid,failed,valid_rate,mean_valid_mass,median_valid_mass,p10_valid_mass,distinct_distributions,tied_answers,response_std
+NTP,13904,13904,0,0,1.0,0.9900507475632273,0.9912706576287746,0.9847959635779262,2670.0,841.0,0.05585169357101625
+FA,26981,26981,0,0,1.0,,,,,,

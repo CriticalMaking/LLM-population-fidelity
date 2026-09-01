@@ -53,7 +53,7 @@ class RunPaths:
         self.raw.mkdir(parents=True, exist_ok=True)
 
 
-CULTURE_SOURCE_PATTERN = re.compile(r"^culture/[A-Za-z0-9_]+/[A-Za-z0-9_]+$")
+CULTURE_SOURCE_PATTERN = re.compile(r"^culture/[A-Za-z0-9_]+/[A-Za-z0-9_][A-Za-z0-9_-]*$")
 
 QUESTION_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 

@@ -18,9 +18,10 @@ Usage:
 One invocation per model, culture and question, so a failed or interrupted run
 never takes the rest of the sweep with it: one log per run, finished runs
 skipped unless --redo, cells without a staged adapter skipped and recorded
-(muse_glimmer_30b has german only), and the comparison and the MDS plates
-rebuilt at the end over every model rather than the ones swept, so a one-model
-sweep lands in the cross-model plates instead of replacing them with itself.
+(german, spanish and spanish-mx are staged for every model), and the
+comparison and the MDS plates rebuilt at the end over every model rather
+than the ones swept, so a one-model sweep lands in the cross-model plates
+instead of replacing them with itself.
 
 The summary TSV is a ledger: this sweep's rows are printed and every cell it
 did not run is carried over from the previous sweep, since sweep_cost.csv reads
@@ -51,7 +52,7 @@ EOF
 
 ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b muse_glimmer_30b)
 API_MODELS=(luna terra sol)
-ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish turkish)
+ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish spanish-mx turkish)
 ALL_QUESTIONS=(d_happy d_polpos d_religiousp d_trust)
 
 base=0

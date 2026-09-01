@@ -35,12 +35,13 @@ Usage:
 Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, qwen3_vl_2b, llama3_2_3b,
            muse_glimmer_30b, luna, terra, sol
            (muse_glimmer_30b runs alone — its transformers pin lives in the
-           muse extra, selected automatically; german is its only adapter.
+           muse extra, selected automatically.
            run and smoke need --models named: the default set spans both pins.
            luna, terra and sol are served through the OpenAI API on the base
            variant only, run apart from the local models under the api extra,
            and need .env)
-Cultures:  arabic bengali chinese english german korean portuguese spanish turkish
+Cultures:  arabic bengali chinese english german korean portuguese spanish
+           spanish-mx turkish
            (sweep default german; --cultures all for the full grid)
 Questions: d_happy d_polpos d_religiousp d_trust (default d_happy)
 

@@ -435,6 +435,70 @@ hand-built CUDA `llama-cpp-python` wheel. The adaptability notebook must run
 first — the structure notebook joins its table. Both write to
 `outputs/culture/population_*.csv` and the top level of `figures/`.
 
+## Population fidelity
+
+One score over the three population readings the plates above keep apart, from
+the same run distributions, and then asked again inside every group of
+subpopulations the survey distinguishes.
+
+`PFS = geometric_mean(accuracy, dispersion, structure)`, each term pulled to
+0-1 with higher better: `accuracy = 1 - E`, `dispersion = min(AR, 1/AR)`,
+`structure = max(0, rho)`. Cultural center alignment, `1 - C`, is reported
+beside it and never inside it — a model can relocate its average opinion toward
+the target culture while staying flat across cells, and keeping the two apart is
+what makes that visible. `pfs_with_center` carries the four-term form for anyone
+who wants it folded in.
+
+Seven group families are parsed out of the subpopulation label itself — country,
+survey wave, sex, age band, education, employment, marital status — and every
+term is recomputed **inside** each group, never averaged down from the pooled
+figure. The upstream cell assignment is a matching rather than a strict
+partition, so the label defines the group, not the respondents inside the cell.
+
+| Plate | Folder | x / columns |
+| --- | --- | --- |
+| `fig_fidelity_ranking_<view>_<mode>` | `figures/fidelity/` | PFS per run, ranked |
+| `fig_fidelity_components_<view>_<mode>` | `figures/fidelity/` | the three terms and the centre behind each PFS |
+| `fig_fidelity_center_<view>_<mode>` | `figures/fidelity/` | centre alignment against PFS |
+| `fig_fidelity_shift_<view>_<mode>` | `figures/fidelity/` | change in PFS against change in centre |
+| `fig_fidelity_cells_<view>_<mode>` | `figures/fidelity/` | the per-cell nEMD spread the accuracy term averages |
+| `fig_fidelity_<family>_<view>_<mode>` | `figures/fidelity/<family>/` | that family's levels |
+| `fig_fidelity_<family>_components_<view>_<mode>` | `figures/fidelity/<family>/` | the same four terms, one panel each |
+| `fig_fidelity_<family>_shift_<view>_<mode>` | `figures/fidelity/<family>/` | change in PFS against the untuned base |
+
+Score heatmaps run 0-1 on `viridis`, so bright is good — the reverse of the
+error heatmaps elsewhere, which run `viridis_r`. Five views and two modes as
+above, `.png` and `.pdf` throughout.
+
+The notebook asserts its own recomputation against the split per-run outputs
+that `combined-metric-inputs.csv` was aggregated from: every per-cell `nEMD`
+matches the run's `subpopulation_distances.csv` row for row, and the pooled row
+reproduces `population_adaptability.csv`. One column deliberately differs —
+`center_nEMD` there pools respondents, `c_center_nemd` here pools retained
+cells.
+
+`max(0, rho)` is discontinuous at zero and the score is a product, so a model
+correlating at `rho = -0.0001` scores exactly zero. Nineteen of the 116 pooled
+rows land there, every one on a `rho` between `-0.026` and `-0.0001`. Nothing
+smooths it: `binding_term` names the term that bound in every row of every
+table, and the ranking plate prints it beside each zero bar.
+
+```bash
+uv run --no-sync --with nbclient --with ipykernel python - <<'NB'
+import nbformat
+from nbclient import NotebookClient
+
+path = "notebooks/population_fidelity_evaluation.ipynb"
+nb = nbformat.read(path, as_version=4)
+NotebookClient(nb, timeout=7200, kernel_name="python3").execute()
+nbformat.write(nb, path)
+NB
+```
+
+Reads nothing the adaptability and structure notebooks write, so it can run on
+its own. Writes `outputs/culture/population_fidelity_{cells,groups,overall}.csv`
+and 520 files under `figures/fidelity/`.
+
 ## Grouped MDS plates
 
 A sweep rebuilds each model's own MDS plates at the end of its run.
