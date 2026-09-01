@@ -8,3 +8,12 @@ qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_polpos,matched,german,NTP,144,Germany,
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
 qwen3_vl_2b,Qwen3-VL-2B-Thinking,german,d_religiousp,matched,german,NTP,144,Germany,0.194835102343272
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.1864338409731326
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_polpos,matched,Mixtral archived,NTP,131,Mexico,0.09920672454583081
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_polpos,matched,Mixtral fresh,NTP,131,Mexico,0.09948740258390829
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_polpos,matched,spanish-mx,NTP,131,Mexico,0.17684304146138602
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_religiousp,matched,Mixtral archived,NTP,131,Mexico,0.4044111194123226
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_religiousp,matched,Mixtral fresh,NTP,131,Mexico,0.40606756181251763
+qwen3_vl_2b,Qwen3-VL-2B-Thinking,spanish-mx,d_religiousp,matched,spanish-mx,NTP,131,Mexico,0.38583908657967414
