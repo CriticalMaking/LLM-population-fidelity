@@ -8,3 +8,12 @@ gemma4_e4b,Gemma-4-E4B-it,german,d_polpos,matched,german,NTP,144,Germany,0.09184
 gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
 gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
 gemma4_e4b,Gemma-4-E4B-it,german,d_religiousp,matched,german,NTP,144,Germany,0.36904629394251
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.18007365280243076
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_polpos,matched,Mixtral archived,NTP,131,Mexico,0.09920672454583081
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_polpos,matched,Mixtral fresh,NTP,131,Mexico,0.09948740258390829
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_polpos,matched,spanish-mx,NTP,131,Mexico,0.15947390794748725
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_religiousp,matched,Mixtral archived,NTP,131,Mexico,0.4044111194123226
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_religiousp,matched,Mixtral fresh,NTP,131,Mexico,0.40606756181251763
+gemma4_e4b,Gemma-4-E4B-it,spanish-mx,d_religiousp,matched,spanish-mx,NTP,131,Mexico,0.16416330446604882
