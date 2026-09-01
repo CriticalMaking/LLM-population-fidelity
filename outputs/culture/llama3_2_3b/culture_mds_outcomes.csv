@@ -8,3 +8,12 @@ llama3_2_3b,Llama-3.2-3B,german,d_polpos,matched,german,NTP,144,Germany,0.058210
 llama3_2_3b,Llama-3.2-3B,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
 llama3_2_3b,Llama-3.2-3B,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
 llama3_2_3b,Llama-3.2-3B,german,d_religiousp,matched,german,NTP,144,Germany,0.5805313615030829
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.12022040763921667
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_polpos,matched,Mixtral archived,NTP,131,Mexico,0.09920672454583081
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_polpos,matched,Mixtral fresh,NTP,131,Mexico,0.09948740258390829
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_polpos,matched,spanish-mx,NTP,131,Mexico,0.10727763885101546
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_religiousp,matched,Mixtral archived,NTP,131,Mexico,0.4044111194123226
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_religiousp,matched,Mixtral fresh,NTP,131,Mexico,0.40606756181251763
+llama3_2_3b,Llama-3.2-3B,spanish-mx,d_religiousp,matched,spanish-mx,NTP,131,Mexico,0.12908220789255212
