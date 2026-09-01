@@ -8,3 +8,12 @@ muse_glimmer_30b,Muse-Glimmer-30B,german,d_polpos,matched,german,NTP,144,Germany
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_religiousp,matched,Mixtral archived,NTP,144,Germany,0.15547536685430327
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_religiousp,matched,Mixtral fresh,NTP,144,Germany,0.15550099671651826
 muse_glimmer_30b,Muse-Glimmer-30B,german,d_religiousp,matched,german,NTP,144,Germany,0.14667309988468258
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,Mixtral archived,NTP,131,Mexico,0.12227536195983407
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,Mixtral fresh,NTP,131,Mexico,0.12143299563154976
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_happy,matched,spanish-mx,NTP,131,Mexico,0.10901666389923512
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_polpos,matched,Mixtral archived,NTP,131,Mexico,0.09920672454583081
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_polpos,matched,Mixtral fresh,NTP,131,Mexico,0.09948740258390829
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_polpos,matched,spanish-mx,NTP,131,Mexico,0.08783956097360558
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_religiousp,matched,Mixtral archived,NTP,131,Mexico,0.4044111194123226
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_religiousp,matched,Mixtral fresh,NTP,131,Mexico,0.40606756181251763
+muse_glimmer_30b,Muse-Glimmer-30B,spanish-mx,d_religiousp,matched,spanish-mx,NTP,131,Mexico,0.10694332048489784
