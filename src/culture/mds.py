@@ -32,7 +32,14 @@ from .palette import (
     is_reference,
     mds_arm_tone,
 )
-from .registry import BASE_ARM, CULTURE_FIGURES, CULTURE_ROOT, CultureModel, csv_stems
+from .registry import (
+    BASE_ARM,
+    CULTURE_FIGURES,
+    CULTURE_ROOT,
+    CultureModel,
+    arm_display,
+    csv_stems,
+)
 
 FloatArray = npt.NDArray[np.float64]
 BoolArray = npt.NDArray[np.bool_]
@@ -172,7 +179,7 @@ def _draw_panel(
                 s=30,
                 alpha=0.8,
                 marker=arm_marker(label),
-                label=label,
+                label=arm_display(label),
                 facecolors="none",
                 edgecolors=tone.ink,
                 linewidths=1.0,
@@ -186,7 +193,7 @@ def _draw_panel(
             s=28 if tuned else 22,
             alpha=0.75 if tuned else 0.5,
             marker=arm_marker(label),
-            label=label,
+            label=arm_display(label),
             color=tone.fill if tuned else tone.ink,
             edgecolors=tone.ink if tuned else SEPARATOR,
             linewidths=0.5 if tuned else 0.0,
@@ -566,7 +573,7 @@ def degenerate_ntp_plate(
             s=34 if degenerate else 22,
             alpha=0.75 if degenerate else 0.5,
             marker=arm_marker(label),
-            label=f"{label} (no valid answers)" if degenerate else label,
+            label=f"{arm_display(label)} (no valid answers)" if degenerate else arm_display(label),
             facecolors="none" if degenerate else tone.fill,
             edgecolors=tone.ink,
             linewidths=1.0 if degenerate else 0.4,
