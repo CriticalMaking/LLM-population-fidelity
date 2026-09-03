@@ -9,6 +9,7 @@ from .adapters import (
 )
 from .registry import (
     ADAPTERS_MANIFEST,
+    ARM_DISPLAY,
     ARMS,
     BASE_ARM,
     CULTURE_MODELS,
@@ -17,6 +18,7 @@ from .registry import (
     SERVED_BACKEND,
     TEXT_MODALITY,
     VISION_TEXT_MODALITY,
+    arm_display,
     csv_stems,
     is_base,
     is_served,
@@ -32,6 +34,7 @@ from .registry import (
 __all__ = [
     "ADAPTERS_MANIFEST",
     "ARMS",
+    "ARM_DISPLAY",
     "BASE_ARM",
     "CULTURES",
     "CULTURE_MODELS",
@@ -39,6 +42,7 @@ __all__ = [
     "SERVED_BACKEND",
     "TEXT_MODALITY",
     "VISION_TEXT_MODALITY",
+    "arm_display",
     "copy_adapters",
     "csv_stems",
     "health_lines",
