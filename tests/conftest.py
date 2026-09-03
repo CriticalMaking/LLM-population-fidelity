@@ -6,6 +6,8 @@ from typing import Any
 import matplotlib
 import pytest
 
+from machine_bias_reproduction.config import UPSTREAM_DATA
+
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
@@ -27,3 +29,12 @@ def captured_axes(monkeypatch: pytest.MonkeyPatch) -> list[Any]:
 
     monkeypatch.setattr(plt, "subplots", capture)
     return drawn
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    if UPSTREAM_DATA.is_dir():
+        return
+    reason = f"upstream replication package not extracted at {UPSTREAM_DATA}; see README, Install"
+    for item in items:
+        if item.get_closest_marker("integration"):
+            item.add_marker(pytest.mark.skip(reason=reason))
