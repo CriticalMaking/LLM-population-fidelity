@@ -16,6 +16,7 @@ from machine_bias_reproduction.questions import Question
 
 from .palette import arm_linestyle, arm_tone
 from .plate import MIXTRAL_INK, ModeFigure, empty_panel, per_mode
+from .registry import arm_display
 from .tables import is_flagged, reference_distances, series
 
 
@@ -35,7 +36,7 @@ def draw_culture_densities(
         axis.plot(
             grid,
             density,
-            label=culture,
+            label=arm_display(culture),
             color=arm_tone(culture).ink,
             linewidth=1.4,
             linestyle=(0, (1, 1.6)) if flagged else arm_linestyle(culture),
