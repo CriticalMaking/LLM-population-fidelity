@@ -27,6 +27,7 @@ models/culture/*
 # outputs/ and figures/ are tracked except what is regenerable and huge:
 # per-prompt raw responses, the booktabs re-encoding of each report CSV, logs.
 outputs/**/raw/
+outputs/**/raw-*.parquet
 outputs/reports/tex/
 logs/
 *.tmp
