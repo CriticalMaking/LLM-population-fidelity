@@ -3,11 +3,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pyarrow.parquet as pq
 import pytest
 
 from hub import cards, datasets, push
-from hub.convert import convert_mode, record_row
+
+pq = pytest.importorskip("pyarrow.parquet")
+convert = pytest.importorskip("hub.convert")
+convert_mode = convert.convert_mode
+record_row = convert.record_row
 
 RECORD = {
     "mode": "fa",
