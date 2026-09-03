@@ -7,7 +7,6 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 UPSTREAM_DIR = PROJECT_ROOT / "upstream"
 ARCHIVE_PATH = UPSTREAM_DIR / "Machine-Bias-replication.zip"
-PAPER_PATH = UPSTREAM_DIR / "paper.pdf"
 UPSTREAM_ROOT = UPSTREAM_DIR / "extracted" / "Machine-Bias-replication"
 UPSTREAM_DATA = UPSTREAM_ROOT / "data"
 UPSTREAM_CODE = UPSTREAM_ROOT / "code"
@@ -16,7 +15,6 @@ FIGURES_ROOT = PROJECT_ROOT / "figures"
 MODELS_ROOT = PROJECT_ROOT / "models"
 
 ARCHIVE_SHA256 = "679f0726dcd8cd6ec0fdd6d3bd727e4c6b72b4224785cdd9eabd12bc564aa5e2"
-PAPER_SHA256 = "123585b09c98ec6546a8508b6d4bbf7032cd8b6f032cc560d88c5b8c9b724261"
 MODEL_SHA256 = "5e066c60d89d904db46c3bf577661040578a223a5a39ba3fd23ff091549767f0"
 
 EXPECTED_WVS_ROWS = 26_981
