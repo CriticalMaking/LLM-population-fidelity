@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from hub import cards, datasets, push
+pytest.importorskip("pyarrow.parquet", reason="requires the hub extra")
 
-pq = pytest.importorskip("pyarrow.parquet")
-convert = pytest.importorskip("hub.convert")
-convert_mode = convert.convert_mode
-record_row = convert.record_row
+import pyarrow.parquet as pq
+
+from hub import cards, datasets, push
+from hub.convert import convert_mode, record_row
 
 RECORD = {
     "mode": "fa",
