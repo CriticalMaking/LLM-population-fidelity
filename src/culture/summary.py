@@ -25,6 +25,7 @@ from .registry import (
     CULTURE_FIGURES,
     CULTURE_ROOT,
     CultureModel,
+    arm_display,
     is_base,
 )
 from .tables import read_csv, read_csv_tsv
@@ -93,7 +94,7 @@ def distance_table(
 
 
 MIXTRAL_REFERENCE = "Mixtral archived"
-BASE_REFERENCE = "base (same model)"
+BASE_REFERENCE = "as released (same model)"
 
 
 def home_advantage_table(
@@ -359,7 +360,7 @@ def _grouped_bars(
             positions + offset,
             heights,
             width,
-            label=series,
+            label=arm_display(series),
             color=tone.fill,
             edgecolor=tone.ink,
             linewidth=0.7,
@@ -439,7 +440,7 @@ def base_delta_figure(
                 positions + offset,
                 heights,
                 width,
-                label=arm if question is questions[0] else None,
+                label=arm_display(arm) if question is questions[0] else None,
                 color=tone.fill,
                 edgecolor=tone.ink,
                 linewidth=0.7,
@@ -494,7 +495,7 @@ def home_advantage_figure(
                 positions[slot] + offset,
                 float(splits[combined[0]]),
                 width,
-                label=culture if slot == 0 else None,
+                label=arm_display(culture) if slot == 0 else None,
                 color=tone.fill,
                 edgecolor=tone.ink,
                 linewidth=0.7,
@@ -542,7 +543,7 @@ def sweep_cost_figure(runs: pd.DataFrame, destination: Path) -> list[Path]:
                 positions[slot] + offset,
                 height,
                 width,
-                label=culture if slot == 0 else None,
+                label=arm_display(culture) if slot == 0 else None,
                 color=tone.fill,
                 edgecolor=tone.ink,
                 linewidth=0.7,
