@@ -44,8 +44,14 @@ def test_resolvers_split_on_whether_weights_must_exist() -> None:
         culture.resolve_cultures(["klingon"])
 
 
-def test_base_run_is_labelled_as_not_finetuned() -> None:
-    assert MODEL.run_label("base") == "Gemma-4-31B-it (base, not finetuned)"
+def test_base_prints_as_released_and_every_culture_prints_itself() -> None:
+    assert culture.arm_display("base") == "as released"
+    assert culture.arm_display("german") == "german"
+    assert culture.arm_display("Mixtral archived") == "Mixtral archived"
+
+
+def test_base_run_is_labelled_as_released() -> None:
+    assert MODEL.run_label("base") == "Gemma-4-31B-it (as released)"
     assert MODEL.run_label("german") == "Gemma-4-31B-it + german LoRA"
 
 
