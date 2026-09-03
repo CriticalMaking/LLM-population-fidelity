@@ -7,6 +7,7 @@ GROUPS = {
     "tables": ["data/**/*.csv", "data/**/*.tsv", "data/**/*.json", "data/**/*.jsonl"],
     "raw": ["data/**/raw-*.parquet"],
     "card": ["README.md"],
+    "upstream": ["upstream/*.tar.gz"],
 }
 
 
