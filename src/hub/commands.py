@@ -7,6 +7,12 @@ from machine_bias_reproduction.config import OUTPUTS_ROOT, PROJECT_ROOT
 
 from .cards import DATASET_REPO_ID, DATASET_URL
 from .fetch import GROUPS
+from .upstream import (
+    ARCHIVE_NAME,
+    build_upstream_archive,
+    staged_archive,
+    staged_archive_bytes,
+)
 
 DEFAULT_STAGING = PROJECT_ROOT / "hub" / "datasets"
 DEFAULT_DOWNLOAD = PROJECT_ROOT / "hub" / "downloads"
@@ -42,6 +48,11 @@ def command_hub_status(arguments: argparse.Namespace) -> None:
         print(f"chunks    {len(chunks)} staged")
     else:
         print("chunks    staging not built")
+    archive_bytes = staged_archive_bytes(arguments.staging)
+    if archive_bytes:
+        print(f"upstream  upstream/{ARCHIVE_NAME} staged ({archive_bytes / 2**20:.0f} MB)")
+    else:
+        print("upstream  not staged (hub build --upstream)")
 
 
 def command_hub_build(arguments: argparse.Namespace) -> None:
@@ -49,20 +60,42 @@ def command_hub_build(arguments: argparse.Namespace) -> None:
     from .datasets import build_staging
 
     counts = build_staging(arguments.outputs, arguments.staging, force=arguments.force)
+    if arguments.upstream:
+        build_upstream_archive(arguments.staging)
+    counts["upstream_bytes"] = staged_archive_bytes(arguments.staging)
     write_dataset_card(arguments.staging, counts, arguments.repo)
     print(
         f"staged {counts['tables']} tables and {counts['parquet']} parquet files "
         f"from {counts['runs']} runs"
     )
+    if counts["upstream_bytes"]:
+        print(f"staged upstream/{ARCHIVE_NAME} ({counts['upstream_bytes'] / 2**20:.0f} MB)")
 
 
 def command_hub_push(arguments: argparse.Namespace) -> None:
     from .auth import resolve_api
     from .cards import write_dataset_card
     from .datasets import build_staging, dataset_chunks, dataset_files
-    from .push import UploadState, upload_chunks, upload_file
+    from .push import UploadState, upload_archive, upload_chunks, upload_file
+
+    if arguments.upstream_only:
+        archive = build_upstream_archive(arguments.staging)
+        api = None if arguments.dry_run else resolve_api(write=True)
+        upload_archive(
+            api,
+            arguments.repo,
+            arguments.staging,
+            archive,
+            UploadState(arguments.state),
+            dry_run=arguments.dry_run,
+        )
+        print(f"https://huggingface.co/datasets/{arguments.repo}")
+        return
 
     counts = build_staging(arguments.outputs, arguments.staging, force=arguments.force)
+    if arguments.upstream:
+        build_upstream_archive(arguments.staging)
+    counts["upstream_bytes"] = staged_archive_bytes(arguments.staging)
     write_dataset_card(arguments.staging, counts, arguments.repo)
 
     api = None if arguments.dry_run else resolve_api(write=True)
@@ -80,6 +113,15 @@ def command_hub_push(arguments: argparse.Namespace) -> None:
         print(f"upload {relative}")
         if not arguments.dry_run:
             upload_file(api, arguments.repo, path, str(relative))
+    if counts["upstream_bytes"]:
+        upload_archive(
+            api,
+            arguments.repo,
+            arguments.staging,
+            staged_archive(arguments.staging),
+            state,
+            dry_run=arguments.dry_run,
+        )
 
     print(
         f"\nuploaded={summary['uploaded']} skipped={summary['skipped']} "
@@ -99,6 +141,11 @@ def command_hub_pull(arguments: argparse.Namespace) -> None:
         force=arguments.force,
     )
     print(f"downloaded {arguments.repo} to {path}")
+    archive = staged_archive(path)
+    if archive.is_file():
+        inside = archive.is_relative_to(PROJECT_ROOT)
+        shown = archive.relative_to(PROJECT_ROOT) if inside else archive
+        print(f"extract the upstream subset at the repository root: tar xzf {shown}")
 
 
 def _add_repo_argument(parser: argparse.ArgumentParser) -> None:
@@ -106,6 +153,14 @@ def _add_repo_argument(parser: argparse.ArgumentParser) -> None:
         "--repo",
         default=DATASET_REPO_ID,
         help=f"dataset repo (default: {DATASET_URL})",
+    )
+
+
+def _add_upstream_argument(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--upstream",
+        action="store_true",
+        help=f"also pack the upstream subset the analysis reads into upstream/{ARCHIVE_NAME}",
     )
 
 
@@ -127,6 +182,7 @@ def register(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) ->
     _add_repo_argument(build)
     _add_staging_arguments(build)
     build.add_argument("--force", action="store_true", help="rewrite parquet already up to date")
+    _add_upstream_argument(build)
     build.set_defaults(handler=command_hub_build)
 
     push = actions.add_parser("push", help="build the staging tree and upload it")
@@ -135,6 +191,12 @@ def register(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) ->
     push.add_argument("--state", type=Path, default=STATE_PATH)
     push.add_argument("--force", action="store_true", help="rewrite parquet already up to date")
     push.add_argument("--dry-run", action="store_true", help="report what would upload")
+    _add_upstream_argument(push)
+    push.add_argument(
+        "--upstream-only",
+        action="store_true",
+        help=f"pack and upload upstream/{ARCHIVE_NAME} alone, touching nothing under data/",
+    )
     push.set_defaults(handler=command_hub_push)
 
     pull = actions.add_parser("pull", help="download the published dataset")
