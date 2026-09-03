@@ -57,8 +57,16 @@ and is enough for every figure and table in this README. The full package is
 **not** versioned anywhere (736 MB zip, ~790,000 files): `upstream/MANIFEST.json`
 holds the SHA-256 of every file consumed, so a separately obtained copy verifies
 against this repo with `./run_experiment.sh verify`, and the tests that read the
-prompt trees and the zip skip until it is present. The survey data are the World
-Values Survey's; the replication package terms govern their reuse.
+prompt trees and the zip skip until it is present, naming what they want. With
+the zip already in `upstream/`, the prompt trees those tests need come out of it
+in seconds:
+
+```bash
+unzip -q -o upstream/Machine-Bias-replication.zip "Machine-Bias-replication/data/prompts/*" -d upstream/extracted
+```
+
+The survey data are the World Values Survey's; the replication package terms
+govern their reuse.
 
 ---
 
