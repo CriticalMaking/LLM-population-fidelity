@@ -40,10 +40,25 @@ culture-finetuned LLMs.
 uv sync --locked --group dev
 ```
 
-Also needs the upstream replication package extracted to
-`upstream/extracted/Machine-Bias-replication/`. It is **not** versioned here
-(736 MB, ~790,000 files); `upstream/MANIFEST.json` holds the SHA-256 of every
-file consumed, so a separately obtained copy verifies against this repo.
+Also needs the upstream replication package. The analysis reads a small part of
+it — the WVS respondent table and answer levels, the subpopulation cells, the
+archived model response tables, the linear baselines and the original code —
+and the dataset repository carries exactly that part as
+`upstream/redraw-subset.tar.gz`. Pull it and extract it at the repository root:
+
+```bash
+uv sync --locked --group dev --extra hub
+uv run --no-sync python -m machine_bias_reproduction hub pull --groups upstream
+tar xzf hub/downloads/upstream/redraw-subset.tar.gz
+```
+
+It lands under the gitignored `upstream/extracted/Machine-Bias-replication/`
+and is enough for every figure and table in this README. The full package is
+**not** versioned anywhere (736 MB zip, ~790,000 files): `upstream/MANIFEST.json`
+holds the SHA-256 of every file consumed, so a separately obtained copy verifies
+against this repo with `./run_experiment.sh verify`, and the tests that read the
+prompt trees and the zip skip until it is present. The survey data are the World
+Values Survey's; the replication package terms govern their reuse.
 
 ---
 
@@ -583,6 +598,38 @@ sample are not treated as independent; p-values Holm-adjusted across NTP and FA.
 Because failing to reject a difference does not establish sameness, a
 cluster-robust equivalence test also runs (default ±0.005 nEMD, one tenth of the
 narrowest quality band; `--equivalence-margin` to change).
+
+## Hugging Face dataset
+
+The outputs are published as
+[MInDS-lab-UTFPR/TowardsSociallyGroundedAISafety](https://huggingface.co/datasets/MInDS-lab-UTFPR/TowardsSociallyGroundedAISafety):
+every derived table under `outputs/` plus the raw per-prompt records as parquet,
+and, since the redraw needs it, the upstream subset described under Install.
+All of it comes back with one command; `--groups` narrows it.
+
+```bash
+uv sync --locked --group dev --extra hub
+uv run --no-sync python -m machine_bias_reproduction hub status
+uv run --no-sync python -m machine_bias_reproduction hub pull                      # tables, raw parquet, card, upstream subset
+uv run --no-sync python -m machine_bias_reproduction hub pull --groups upstream    # the upstream subset alone
+tar xzf hub/downloads/upstream/redraw-subset.tar.gz
+```
+
+Publishing needs a write-scoped token (`hf auth login` or `HF_TOKEN`). `hub build`
+mirrors `outputs/` into `hub/datasets/`; `hub push` builds and uploads it, skipping
+every chunk whose contents did not change. `--upstream` on either packs the
+upstream subset from this checkout's `upstream/` into
+`upstream/redraw-subset.tar.gz` as well; the archive is rebuilt byte-identically
+from an unchanged subset, so it re-uploads only when its contents move. Publish
+it deliberately: the subset carries World Values Survey data.
+
+```bash
+uv run --no-sync python -m machine_bias_reproduction hub push --upstream --dry-run
+uv run --no-sync python -m machine_bias_reproduction hub push --upstream
+uv run --no-sync python -m machine_bias_reproduction hub push --upstream-only   # the archive alone, nothing under data/
+```
+
+---
 
 ## Citation
 
