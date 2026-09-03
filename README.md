@@ -615,9 +615,20 @@ uv run --no-sync python -m machine_bias_reproduction hub pull --groups upstream 
 tar xzf hub/downloads/upstream/redraw-subset.tar.gz
 ```
 
-Publishing needs a write-scoped token (`hf auth login` or `HF_TOKEN`). `hub build`
-mirrors `outputs/` into `hub/datasets/`; `hub push` builds and uploads it, skipping
-every chunk whose contents did not change. `--upstream` on either packs the
+The dataset is public, so `pull` needs no token. Publishing does: log in once,
+pasting a write-scoped token at the prompt, and it is stored in
+`~/.cache/huggingface/token`, where every `hub` command finds it. Never put the
+token in a file or on a command line; `whoami` confirms the identity and
+`hub status` shows the token line.
+
+```bash
+uv run --no-sync hf auth login
+uv run --no-sync hf auth whoami
+uv run --no-sync python -m machine_bias_reproduction hub status
+```
+
+`hub build` mirrors `outputs/` into `hub/datasets/`; `hub push` builds and uploads
+it, skipping every chunk whose contents did not change. `--upstream` on either packs the
 upstream subset from this checkout's `upstream/` into
 `upstream/redraw-subset.tar.gz` as well; the archive is rebuilt byte-identically
 from an unchanged subset, so it re-uploads only when its contents move. Publish
