@@ -206,7 +206,7 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
     axis.set_xlabel(PFS_LABEL)
     axis.set_title(_title(view, mode, POPULATION, "Population fidelity"))
     handles: list[Any] = [
-        Patch(facecolor=SURFACE, edgecolor=INK, label="hollow fill: untuned base"),
+        Patch(facecolor=SURFACE, edgecolor=INK, label="hollow fill: as released"),
         Patch(facecolor=GRID, edgecolor=INK, label="solid fill: culture-finetuned"),
     ]
     if drawn:
@@ -318,7 +318,11 @@ def center_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -
     handles.append(spacer())
     handles.append(
         Line2D(
-            [], [], color=MUTED_INK, linestyle=(0, (1, 1.2)), label="base to its finetuned variant"
+            [],
+            [],
+            color=MUTED_INK,
+            linestyle=(0, (1, 1.2)),
+            label="as released to its finetuned variant",
         )
     )
     figure.legend(handles=handles, loc="outside right upper")
@@ -357,8 +361,8 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
     axis.set_xlim(-reach * 1.25, reach * 1.25)
     axis.set_ylim(-reach * 1.25, reach * 1.25)
     _corner_notes(axis, SHIFT_CORNERS)
-    axis.set_xlabel("Change in PFS against the untuned base")
-    axis.set_ylabel("Change in center alignment against the untuned base")
+    axis.set_xlabel("Change in PFS against the as-released variant")
+    axis.set_ylabel("Change in center alignment against the as-released variant")
     axis.set_title(_title(view, mode, POPULATION, "What the finetuning bought"))
     handles = series_handles(drawable) if not drawable.empty else []
     handles.append(spacer())
@@ -560,7 +564,7 @@ def group_shift_plate(
     return _heatmap(
         matrix,
         _title(view, mode, family, "Finetuning change in fidelity"),
-        "Change in PFS against the untuned base",
+        "Change in PFS against the as-released variant",
         destination / f"fig_fidelity_{family}_shift_{view}_{mode}",
         shift=True,
     )
