@@ -26,11 +26,25 @@ OUTSIDE_FILES = (
 
 
 class FakeApi:
-    def __init__(self) -> None:
+    def __init__(self, present: bool = True) -> None:
         self.uploaded: list[str] = []
+        self.present = present
 
     def upload_file(self, **kwargs: Any) -> None:
         self.uploaded.append(str(kwargs["path_in_repo"]))
+        self.present = True
+
+    def file_exists(self, repo_id: str, filename: str, **kwargs: Any) -> bool:
+        return self.present
+
+
+class RefusingApi(FakeApi):
+    def file_exists(self, repo_id: str, filename: str, **kwargs: Any) -> bool:
+        raise ConnectionError("hub unreachable")
+
+
+def _quiet(_: str) -> None:
+    return None
 
 
 def _package(root: Path, names: tuple[str, ...]) -> None:
@@ -125,3 +139,29 @@ def test_the_card_describes_the_archive_only_when_it_is_staged() -> None:
     assert "hub pull --groups upstream" in with_archive
     assert "replication package terms" in with_archive
     assert "upstream/redraw-subset.tar.gz" not in cards.dataset_card({"runs": 1})
+
+
+def test_an_archive_deleted_from_the_remote_uploads_again(tmp_path: Path) -> None:
+    staging = tmp_path / "staging"
+    archive = upstream.staged_archive(staging)
+    archive.parent.mkdir(parents=True)
+    archive.write_bytes(b"first")
+    state = push.UploadState(tmp_path / "upload_state.json")
+    api = FakeApi()
+    assert push.upload_archive(api, "lab/repo", staging, archive, state, on_event=_quiet)
+
+    api.present = False
+    assert push.upload_archive(api, "lab/repo", staging, archive, state, on_event=_quiet)
+    assert api.uploaded == ["upstream/redraw-subset.tar.gz"] * 2
+
+
+def test_an_unreachable_hub_leaves_an_unchanged_archive_alone(tmp_path: Path) -> None:
+    staging = tmp_path / "staging"
+    archive = upstream.staged_archive(staging)
+    archive.parent.mkdir(parents=True)
+    archive.write_bytes(b"first")
+    state = push.UploadState(tmp_path / "upload_state.json")
+    api = RefusingApi()
+    assert push.upload_archive(api, "lab/repo", staging, archive, state, on_event=_quiet)
+    assert not push.upload_archive(api, "lab/repo", staging, archive, state, on_event=_quiet)
+    assert api.uploaded == ["upstream/redraw-subset.tar.gz"]
