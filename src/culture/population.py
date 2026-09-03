@@ -19,7 +19,7 @@ from .palette import (
     MIXTRAL_FRESH,
     arm_order,
 )
-from .registry import ARMS, CULTURE_MODELS, csv_stems
+from .registry import ARMS, CULTURE_MODELS, arm_display, csv_stems
 from .tables import read_csv
 
 MODES = ("ntp", "fa")
@@ -37,7 +37,7 @@ MODEL_INDEX = {key: index for index, key in enumerate(CULTURE_MODELS)}
 
 def sources() -> list[tuple[str, str, str | None, str, str | None]]:
     found: list[tuple[str, str, str | None, str, str | None]] = [
-        (f"{model.label} ({arm})", f"culture/{key}/{arm}", key, model.label, arm)
+        (f"{model.label} ({arm_display(arm)})", f"culture/{key}/{arm}", key, model.label, arm)
         for key, model in CULTURE_MODELS.items()
         for arm in arm_order(ARMS)
     ]
