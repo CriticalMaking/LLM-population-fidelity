@@ -117,7 +117,7 @@ def league_figure(league: pd.DataFrame, destination: Path) -> list[Path]:
                 axis.scatter(
                     anchored["base_mean_nEMD"],
                     [positions[culture] for culture in anchored["culture"]],
-                    label=f"{label} — base variant",
+                    label=f"{label} — as-released variant",
                     marker="|",
                     s=140,
                     color=tone.ink,
