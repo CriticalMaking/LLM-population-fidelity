@@ -19,6 +19,7 @@ from .plate import (
     empty_panel,
     per_mode,
 )
+from .registry import arm_display
 
 
 def response_shift(
@@ -48,7 +49,7 @@ def response_shift(
                 positions + offsets[index],
                 selected.iloc[0][columns].to_numpy(dtype=np.float64),
                 width=width,
-                label=culture,
+                label=arm_display(culture),
                 color=arm_tone(culture).fill,
                 edgecolor=arm_tone(culture).ink,
                 linewidth=0.7,
