@@ -11,6 +11,8 @@ from machine_bias_reproduction.questions import (
     resolve_question,
 )
 
+pytestmark = pytest.mark.integration
+
 MODES = (("ntp", "NTP"), ("fa", "FA"))
 SAMPLE = 25
 
