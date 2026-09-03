@@ -16,6 +16,7 @@ def test_r_set_seed_one_matches_known_uniform_prefix() -> None:
     )
 
 
+@pytest.mark.integration
 def test_center_holdouts_match_golden_subpopulation_ids() -> None:
     data = prepare_data(archived_ntp("d_happy"), archived_fa("d_happy"), "d_happy")
     golden = pd.read_csv(PROJECT_ROOT / "tests" / "golden" / "center_holdouts.csv")
