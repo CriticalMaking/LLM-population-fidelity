@@ -106,6 +106,15 @@ def upload_chunks(
     return {"uploaded": uploaded, "skipped": skipped, "chunks": len(chunks)}
 
 
+def remote_has(api: Any, repo_id: str, path_in_repo: str) -> bool:
+    if api is None:
+        return True
+    try:
+        return bool(api.file_exists(repo_id, path_in_repo, repo_type="dataset"))
+    except Exception:
+        return True
+
+
 def upload_archive(
     api: Any,
     repo_id: str,
@@ -120,7 +129,7 @@ def upload_archive(
     key = f"dataset:{repo_id}:{relative}"
     digest = file_digest(archive)
     size_mb = archive.stat().st_size / 2**20
-    if state.is_current(key, digest):
+    if state.is_current(key, digest) and remote_has(api, repo_id, relative):
         on_event(f"skip   {relative}  ({size_mb:.0f} MB)")
         return False
     on_event(f"upload {relative}  ({size_mb:.0f} MB)")
