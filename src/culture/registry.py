@@ -28,6 +28,8 @@ CULTURES: tuple[str, ...] = (
 
 BASE_ARM = "base"
 
+ARM_DISPLAY = {BASE_ARM: "as released"}
+
 SERVED_BACKEND = "openai"
 
 ARMS: tuple[str, ...] = (BASE_ARM, *CULTURES)
@@ -70,7 +72,7 @@ class CultureModel:
 
     def run_label(self, culture: str) -> str:
         if is_base(culture):
-            return f"{self.label} (base, not finetuned)"
+            return f"{self.label} ({arm_display(culture)})"
         return f"{self.label} + {culture} LoRA"
 
 
@@ -136,7 +138,7 @@ CULTURE_MODELS: dict[str, CultureModel] = {
     "terra": CultureModel(
         key="terra",
         base_model_id="terra",
-        label="Terra",
+        label="GPT-5.6-Terra",
         dtype="api",
         quantization=None,
         batch_size=4,
@@ -188,6 +190,10 @@ def resolve_models(selected: Sequence[str] | None) -> list[CultureModel]:
 
 def is_base(culture: str) -> bool:
     return culture == BASE_ARM
+
+
+def arm_display(arm: str) -> str:
+    return ARM_DISPLAY.get(arm, arm)
 
 
 def resolve_cultures(selected: Sequence[str] | None) -> list[str]:
