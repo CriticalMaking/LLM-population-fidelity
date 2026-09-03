@@ -249,6 +249,7 @@ def test_staged_adapter_points_at_the_copy_not_the_source(
         culture.staged_adapter("qwen3_vl_8b", "german")
 
 
+@pytest.mark.integration
 def test_culture_prompts_are_the_papers_prompts_byte_for_byte() -> None:
     from machine_bias_reproduction.config import UPSTREAM_DATA
     from machine_bias_reproduction.data import load_wvs
