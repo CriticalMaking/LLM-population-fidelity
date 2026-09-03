@@ -618,10 +618,31 @@ All of it comes back with one command; `--groups` narrows it.
 ```bash
 uv sync --locked --group dev --extra hub
 uv run --no-sync python -m machine_bias_reproduction hub status
-uv run --no-sync python -m machine_bias_reproduction hub pull                      # tables, raw parquet, card, upstream subset
-uv run --no-sync python -m machine_bias_reproduction hub pull --groups upstream    # the upstream subset alone
+uv run --no-sync python -m machine_bias_reproduction hub pull                          # tables, raw parquet, card, upstream subset
+uv run --no-sync python -m machine_bias_reproduction hub pull --groups upstream tables # everything but the raw records
+uv run --no-sync python -m machine_bias_reproduction hub pull --groups upstream        # the upstream subset alone
 tar xzf hub/downloads/upstream/redraw-subset.tar.gz
 ```
+
+### Put the raw records back under `outputs/`
+
+A pull lands in `hub/downloads/` in the same shape as `outputs/`, so the records
+of a published run move next to that run's tables in one copy. Useful on a
+machine that has the repository but not the runs: the tables come from git, the
+per-prompt records come from here.
+
+```bash
+uv run --no-sync python -m machine_bias_reproduction hub pull --groups raw
+rsync -a hub/downloads/data/ outputs/
+```
+
+Each `hub/downloads/data/<arm>/<question>/raw-fa.parquet` becomes
+`outputs/<arm>/<question>/raw-fa.parquet`, beside that run's CSVs, and is
+gitignored there. Nothing in the analysis reads it — every figure is drawn from
+the consolidated CSVs — so this is for inspecting or re-deriving per-prompt
+data; open one with `pandas.read_parquet`. A sweep that is still running is
+published too, so a run pulled mid-sweep can be partial; pull it again once the
+sweep lands.
 
 The dataset is public, so `pull` needs no token. Publishing does: log in once,
 pasting a write-scoped token at the prompt, and it is stored in
@@ -636,7 +657,10 @@ uv run --no-sync python -m machine_bias_reproduction hub status
 ```
 
 `hub build` mirrors `outputs/` into `hub/datasets/`; `hub push` builds and uploads
-it, skipping every chunk whose contents did not change. `--upstream` on either packs the
+it, skipping every chunk whose contents did not change. The per-prompt records go
+up as parquet, one `raw-fa`/`raw-ntp` pair per run, because the records themselves
+are millions of small JSON files; a push therefore publishes every run present in
+`outputs/`, including any a sweep is still writing. `--upstream` on either packs the
 upstream subset from this checkout's `upstream/` into
 `upstream/redraw-subset.tar.gz` as well; the archive is rebuilt byte-identically
 from an unchanged subset, so it re-uploads only when its contents move. Publish
