@@ -107,7 +107,7 @@ def table() -> pd.DataFrame:
     rows = []
     for question, label in (("d_happy", "Happiness"), ("d_trust", "Trust")):
         for key, arm, series in (
-            ("gemma4_31b", "base", "Gemma (base)"),
+            ("gemma4_31b", "base", "Gemma (as released)"),
             ("gemma4_31b", "german", "Gemma (german)"),
             (None, None, "Mixtral archived"),
         ):
