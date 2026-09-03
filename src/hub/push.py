@@ -50,6 +50,14 @@ def folder_digest(folder: Path) -> str:
     return digest.hexdigest()
 
 
+def file_digest(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(DIGEST_BLOCK), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 def folder_size(folder: Path) -> int:
     return sum(path.stat().st_size for path in uploaded_files(folder))
 
@@ -96,6 +104,30 @@ def upload_chunks(
         state.record(key, digest)
 
     return {"uploaded": uploaded, "skipped": skipped, "chunks": len(chunks)}
+
+
+def upload_archive(
+    api: Any,
+    repo_id: str,
+    staging: Path,
+    archive: Path,
+    state: UploadState,
+    *,
+    dry_run: bool = False,
+    on_event: Callable[[str], None] = print,
+) -> bool:
+    relative = archive.relative_to(staging).as_posix()
+    key = f"dataset:{repo_id}:{relative}"
+    digest = file_digest(archive)
+    size_mb = archive.stat().st_size / 2**20
+    if state.is_current(key, digest):
+        on_event(f"skip   {relative}  ({size_mb:.0f} MB)")
+        return False
+    on_event(f"upload {relative}  ({size_mb:.0f} MB)")
+    if not dry_run:
+        upload_file(api, repo_id, archive, relative)
+        state.record(key, digest)
+    return True
 
 
 def upload_file(api: Any, repo_id: str, path: Path, path_in_repo: str) -> None:
