@@ -51,8 +51,27 @@ def _table(rows: tuple[tuple[str, ...], ...], header: tuple[str, ...]) -> str:
     return "\n".join(lines)
 
 
+def _upstream_section(archive_bytes: int) -> str:
+    if not archive_bytes:
+        return ""
+    return f"""
+## Upstream replication package
+
+`upstream/redraw-subset.tar.gz` ({archive_bytes / 2**20:.0f} MB) carries the part of the
+Boelaert et al. replication package that the analysis reads: the WVS respondent table and
+answer levels, the subpopulation cells, the archived Mixtral, Llama-3-70B and GPT-4T response
+tables, the linear baselines and the original R and Python code. Pull it with
+`hub pull --groups upstream` and extract it at the repository root with
+`tar xzf hub/downloads/upstream/redraw-subset.tar.gz`; it lands under the gitignored
+`upstream/extracted/Machine-Bias-replication/`, which is enough for every figure and table.
+The survey data are the World Values Survey's: the replication package terms, not this
+dataset's licence, govern their reuse.
+"""
+
+
 def dataset_card(counts: dict[str, int], repo_id: str = DATASET_REPO_ID) -> str:
     arms = _table(ARMS, ("Arm", "Model", "Variants"))
+    upstream = _upstream_section(counts.get("upstream_bytes", 0))
     inventory = _table(
         (
             ("run directories", str(counts.get("runs", 0))),
@@ -100,7 +119,7 @@ data/culture/model_standardized_coefficients.csv   pooled coefficient table behi
                                                    fig_model_standardized_coefficients plates
 data/reports/           cross-arm paper tables (nEMD, regressions, F-tests)
 ```
-
+{upstream}
 ## Raw parquet schema
 
 One row per prompt. `profile` is the `§`-delimited respondent cell, also split into
