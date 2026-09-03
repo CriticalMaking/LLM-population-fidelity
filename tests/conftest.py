@@ -6,7 +6,7 @@ from typing import Any
 import matplotlib
 import pytest
 
-from machine_bias_reproduction.config import UPSTREAM_DATA
+from machine_bias_reproduction.config import ARCHIVE_PATH, UPSTREAM_DATA
 
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
@@ -31,10 +31,19 @@ def captured_axes(monkeypatch: pytest.MonkeyPatch) -> list[Any]:
     return drawn
 
 
+UPSTREAM_SENTINELS = (
+    ARCHIVE_PATH,
+    UPSTREAM_DATA / "WVS" / "wvs-data.csv",
+    UPSTREAM_DATA / "LLM-outputs" / "csv" / "NTP-Mixtral-8x7B-d_happy.csv",
+    UPSTREAM_DATA / "prompts" / "FA" / "d_happy",
+)
+
+
 def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
-    if UPSTREAM_DATA.is_dir():
+    missing = [str(path) for path in UPSTREAM_SENTINELS if not path.exists()]
+    if not missing:
         return
-    reason = f"upstream replication package not extracted at {UPSTREAM_DATA}; see README, Install"
+    reason = f"upstream replication package incomplete, missing {', '.join(missing)}"
     for item in items:
         if item.get_closest_marker("integration"):
             item.add_marker(pytest.mark.skip(reason=reason))
