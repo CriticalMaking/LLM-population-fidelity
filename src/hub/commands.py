@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Any
 
 from machine_bias_reproduction.config import OUTPUTS_ROOT, PROJECT_ROOT
 
@@ -72,15 +73,22 @@ def command_hub_build(arguments: argparse.Namespace) -> None:
         print(f"staged upstream/{ARCHIVE_NAME} ({counts['upstream_bytes'] / 2**20:.0f} MB)")
 
 
+def _push_api(arguments: argparse.Namespace) -> Any:
+    from .auth import read_token, resolve_api
+
+    if not arguments.dry_run:
+        return resolve_api(write=True)
+    return resolve_api() if read_token() is not None else None
+
+
 def command_hub_push(arguments: argparse.Namespace) -> None:
-    from .auth import resolve_api
     from .cards import write_dataset_card
     from .datasets import build_staging, dataset_chunks, dataset_files
     from .push import UploadState, upload_archive, upload_chunks, upload_file
 
     if arguments.upstream_only:
         archive = build_upstream_archive(arguments.staging)
-        api = None if arguments.dry_run else resolve_api(write=True)
+        api = _push_api(arguments)
         upload_archive(
             api,
             arguments.repo,
@@ -98,7 +106,7 @@ def command_hub_push(arguments: argparse.Namespace) -> None:
     counts["upstream_bytes"] = staged_archive_bytes(arguments.staging)
     write_dataset_card(arguments.staging, counts, arguments.repo)
 
-    api = None if arguments.dry_run else resolve_api(write=True)
+    api = _push_api(arguments)
     state = UploadState(arguments.state)
     summary = upload_chunks(
         api,
