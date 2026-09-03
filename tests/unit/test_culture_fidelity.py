@@ -114,7 +114,7 @@ def scored() -> pd.DataFrame:
     rows = []
     for question in ("d_happy", "d_trust"):
         for key, arm, series in (
-            ("gemma4_31b", "base", "Gemma (base)"),
+            ("gemma4_31b", "base", "Gemma (as released)"),
             ("gemma4_31b", "german", "Gemma (german)"),
             (None, None, "Mixtral archived"),
         ):
@@ -175,7 +175,7 @@ def test_a_finetuned_variant_is_differenced_against_its_own_base_and_a_reference
 def test_the_all_view_is_the_geometric_mean_across_the_topics() -> None:
     overall = fidelity.overall_fidelity(scored())
     pooled = overall[
-        overall["series"].eq("Gemma (base)") & overall["group"].eq(fidelity.POPULATION)
+        overall["series"].eq("Gemma (as released)") & overall["group"].eq(fidelity.POPULATION)
     ]
 
     assert len(pooled) == 1
