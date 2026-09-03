@@ -106,5 +106,6 @@ def dataset_files(staging: Path) -> list[Path]:
         for path in staging.rglob("*")
         if path.is_file()
         and not any(part.startswith(".") for part in path.relative_to(staging).parts)
+        and path.relative_to(staging).parts[0] != "upstream"
         and not any(chunk in path.parents for chunk in chunks)
     )
