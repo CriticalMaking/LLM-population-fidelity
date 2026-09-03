@@ -9,8 +9,6 @@ from typing import Any
 from .config import (
     ARCHIVE_PATH,
     ARCHIVE_SHA256,
-    PAPER_PATH,
-    PAPER_SHA256,
     PROJECT_ROOT,
     UPSTREAM_CODE,
     UPSTREAM_DATA,
@@ -100,12 +98,6 @@ def create_manifest() -> dict[str, Any]:
             "expected_sha256": ARCHIVE_SHA256,
             "size_bytes": ARCHIVE_PATH.stat().st_size,
         },
-        "paper": {
-            "path": str(PAPER_PATH.relative_to(PROJECT_ROOT)),
-            "sha256": sha256_file(PAPER_PATH),
-            "expected_sha256": PAPER_SHA256,
-            "size_bytes": PAPER_PATH.stat().st_size,
-        },
         "working_extraction": {
             "path": str(UPSTREAM_ROOT.relative_to(PROJECT_ROOT)),
             "excluded_patterns": ["__MACOSX/**", "**/._*", "**/.DS_Store"],
@@ -126,11 +118,8 @@ def load_manifest() -> dict[str, Any]:
 def verify_upstream(*, full: bool = False) -> dict[str, Any]:
     errors: list[str] = []
     archive_hash = sha256_file(ARCHIVE_PATH)
-    paper_hash = sha256_file(PAPER_PATH)
     if archive_hash != ARCHIVE_SHA256:
         errors.append(f"archive SHA-256 mismatch: {archive_hash}")
-    if paper_hash != PAPER_SHA256:
-        errors.append(f"paper SHA-256 mismatch: {paper_hash}")
 
     manifest = load_manifest() if MANIFEST_PATH.exists() else create_manifest()
     consumed = manifest.get("consumed_files", {})
@@ -170,7 +159,6 @@ def verify_upstream(*, full: bool = False) -> dict[str, Any]:
         "ok": not errors,
         "full": full,
         "archive_sha256": archive_hash,
-        "paper_sha256": paper_hash,
         "checked_files": checked_files,
         "checked_bytes": checked_bytes,
         "errors": errors,
