@@ -97,6 +97,37 @@ def model_marker(model_key: str, index: int = 0) -> str:
     return slot_marker(MODEL_SLOTS.get(model_key, 2 + index))
 
 
+# Shape and colour name the model, so the variant has to live in the fill. Three states
+# are needed now that a model can be finetuned for more than one culture: hollow for the
+# model as released, solid for the first culture, and a half-fill for each further one.
+# The half-fill is "bottom" because it stays legible at 6.5pt on every marker in
+# CATEGORICAL_MARKERS, including the triangles, where a left/right split is a sliver.
+ARM_FILLS: dict[str, str] = {"german": "full", "spanish-mx": "bottom"}
+
+FILL_CYCLE: tuple[str, ...] = ("left", "top", "right")
+
+# Bars cannot be half-filled, so they carry the same distinction as a hatch.
+ARM_HATCHES: dict[str, str] = {"german": "", "spanish-mx": "///"}
+
+HATCH_CYCLE: tuple[str, ...] = ("\\\\\\", "...", "xxx")
+
+
+def arm_fill(arm: Any) -> str:
+    if not isinstance(arm, str) or arm == BASE_ARM:
+        return "none"
+    if arm in ARM_FILLS:
+        return ARM_FILLS[arm]
+    return FILL_CYCLE[CULTURE_SLOTS.get(arm, 0) % len(FILL_CYCLE)]
+
+
+def arm_hatch(arm: Any) -> str:
+    if not isinstance(arm, str) or arm == BASE_ARM:
+        return ""
+    if arm in ARM_HATCHES:
+        return ARM_HATCHES[arm]
+    return HATCH_CYCLE[CULTURE_SLOTS.get(arm, 0) % len(HATCH_CYCLE)]
+
+
 def arm_order(arms: Iterable[str]) -> list[str]:
     names = sorted(arms)
     return [arm for arm in names if arm == BASE_ARM] + [arm for arm in names if arm != BASE_ARM]
