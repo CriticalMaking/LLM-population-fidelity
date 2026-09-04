@@ -10,16 +10,18 @@ from matplotlib.lines import Line2D
 
 from machine_bias_reproduction.config import FIGURES_ROOT
 from machine_bias_reproduction.figures import save_plate
-from machine_bias_reproduction.plates import GRID, MUTED_INK
+from machine_bias_reproduction.plates import GRID, MUTED_INK, SURFACE
 
+from .matching import CULTURE_COUNTRIES
 from .palette import (
     MIXTRAL_ARCHIVED,
     REFERENCE_MARKERS,
     REFERENCE_TONES,
+    arm_fill,
     model_marker,
     model_tone,
 )
-from .population import MODEL_INDEX
+from .population import MODEL_INDEX, REFERENCE_COUNTRIES
 from .registry import is_base
 
 VIEWS: dict[str, str | None] = {
@@ -36,11 +38,31 @@ XTICK: dict[str, Any] = {"marker": "|", "markersize": 7, "markeredgewidth": 1.2}
 
 YTICK: dict[str, Any] = {"marker": "_", "markersize": 7, "markeredgewidth": 1.2}
 
+SLASH_TICK: dict[str, Any] = {"marker": (2, 0, 45), "markersize": 7, "markeredgewidth": 1.2}
+
+REFERENCE_ADJECTIVES: dict[str, str] = {"german": "German", "mexican": "Mexican"}
+
+# Each reference country reaches from the marker to its own cells, capped by a tick
+# no series wears: an upright bar for Germany, a slash for Mexico. The bar keeps its
+# axis-dependent orientation (vertical on the x reaches, horizontal on the y ones);
+# the slash is the same either way, so only the angle says which country is which.
+REFERENCE_TICKS: dict[str, dict[str, dict[str, Any]]] = {
+    "german": {"x": XTICK, "y": YTICK},
+    "mexican": {"x": SLASH_TICK, "y": SLASH_TICK},
+}
+
+# Germany keeps the unqualified stem it has always written, so the figure the paper
+# already includes keeps its name; every further reference country is named in its own.
+CENTER_STEMS: dict[str, str] = {
+    "german": "fig_population_center",
+    "mexican": "fig_population_center_mexican",
+}
+
 ADAPTABILITY_XLABEL = "Mean nEMD to the WVS cells (E)"
 
-ADAPTABILITY_YLABEL = "Model dispersion / survey dispersion (AR)"
+ADAPTABILITY_YLABEL = "Model dispersion / survey dispersion (A)"
 
-GERMAN_TICK_LABEL = "same run over the German cells alone"
+TICK_LABEL = "same run over the {} cells alone"
 
 ADAPTABILITY_CORNERS = (
     (0.02, 0.97, "left", "top", "Accurate but over-dispersed"),
@@ -72,7 +94,9 @@ def series_style(label: str, model_key: Any, arm: Any) -> dict[str, Any]:
     return {
         "marker": model_marker(model_key, index),
         "color": ink,
-        "markerfacecolor": "none" if is_base(arm) else ink,
+        "fillstyle": arm_fill(arm),
+        "markerfacecolor": ink,
+        "markerfacecoloralt": SURFACE,
         "markeredgecolor": ink,
         "zorder": 3.1,
     }
@@ -95,14 +119,15 @@ def spacer() -> Line2D:
     return Line2D([], [], linestyle="none", label=" ")
 
 
-def german_reach(
+def country_reach(
     axis: Axes,
     row: pd.Series,
     ink: str,
     column: str,
     along: str,
+    tick: dict[str, Any],
 ) -> None:
-    if pd.isna(row[column]):
+    if column not in row or pd.isna(row[column]):
         return
     if along == "x":
         axis.plot(
@@ -113,7 +138,7 @@ def german_reach(
             zorder=2,
             **REACH_RULE,
         )
-        axis.plot(row[column], row["_y"], linestyle="none", color=ink, zorder=2.5, **XTICK)
+        axis.plot(row[column], row["_y"], linestyle="none", color=ink, zorder=2.5, **tick)
         return
     axis.plot(
         [row["_x"], row["_x"]],
@@ -123,7 +148,45 @@ def german_reach(
         zorder=2,
         **REACH_RULE,
     )
-    axis.plot(row["_x"], row[column], linestyle="none", color=ink, zorder=2.5, **YTICK)
+    axis.plot(row["_x"], row[column], linestyle="none", color=ink, zorder=2.5, **tick)
+
+
+def reference_keys(arm: Any) -> tuple[str, ...]:
+    """The reference countries a row reaches to.
+
+    A culture-finetuned variant reaches only to the country it was fitted for, so a
+    german marker carries the German tick alone and a spanish-mx marker the Mexican
+    one. The as-released variant reaches to every reference country, because it is
+    the baseline each tuned tick is read against.
+    """
+    if not isinstance(arm, str) or is_base(arm):
+        return tuple(REFERENCE_COUNTRIES)
+    targets = set(CULTURE_COUNTRIES.get(arm, ()))
+    return tuple(key for key, country in REFERENCE_COUNTRIES.items() if country in targets)
+
+
+def reference_reaches(
+    axis: Axes,
+    row: pd.Series,
+    ink: str,
+    template: str,
+    along: str,
+) -> None:
+    for key in reference_keys(row["arm"]):
+        country_reach(axis, row, ink, template.format(key), along, REFERENCE_TICKS[key][along])
+
+
+def reference_handles(along: str) -> list[Line2D]:
+    return [
+        Line2D(
+            [], [],
+            color=MUTED_INK,
+            label=TICK_LABEL.format(REFERENCE_ADJECTIVES[key]),
+            **REACH_RULE,
+            **REFERENCE_TICKS[key][along],
+        )
+        for key in REFERENCE_COUNTRIES
+    ]
 
 
 def _view_frame(table: pd.DataFrame, mode: str, view: str) -> pd.DataFrame:
@@ -177,7 +240,7 @@ def adaptability_plate(
         for _, row in subset.iterrows():
             style = series_style(row["series"], row["model_key"], row["arm"])
             if is_served_model(row):
-                german_reach(axis, row, style["color"], "e_mean_nemd_german", "x")
+                reference_reaches(axis, row, style["color"], "e_mean_nemd_{}", "x")
             axis.plot(
                 row["_x"], row["_y"],
                 linestyle="none",
@@ -193,18 +256,16 @@ def adaptability_plate(
     figure.supxlabel(ADAPTABILITY_XLABEL, fontsize=9)
     handles = series_handles(frame)
     handles.append(spacer())
-    handles.append(
-        Line2D([], [], color=MUTED_INK, label=GERMAN_TICK_LABEL, **REACH_RULE, **XTICK)
-    )
+    handles.extend(reference_handles("x"))
     handles.append(
         Line2D(
             [], [],
             linestyle=(0, (4, 2)),
             color=MUTED_INK,
-            label="reference: survey dispersion (AR = 1)",
+            label="reference: survey dispersion (A = 1)",
         )
     )
-    handles.append(Line2D([], [], linestyle="none", label="ideal: E → 0 with AR = 1"))
+    handles.append(Line2D([], [], linestyle="none", label="ideal: E → 0 with A = 1"))
     figure.legend(handles=handles, loc="outside right upper")
     return save_plate(figure, destination / f"fig_population_adaptability_{view}_{mode}")
 
@@ -214,12 +275,13 @@ def center_plate(
     mode: str,
     view: str,
     destination: Path = FIGURES_ROOT,
+    country: str = "german",
 ) -> list[Path]:
     frame = _view_frame(table, mode, view)
     figure, axes, questions = _plate(frame, mode)
-    limit = (
-        float(max(frame["c_center_german_nemd"].max(), frame["c_center_pop_nemd"].max())) * 1.12
-    )
+    adjective = REFERENCE_ADJECTIVES[country]
+    column = f"c_center_{country}_nemd"
+    limit = float(max(frame[column].max(), frame["c_center_pop_nemd"].max())) * 1.12
     for axis, question in zip(axes, questions, strict=True):
         subset = frame[frame["question"] == question]
         axis.plot([0, limit], [0, limit], linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=0.9)
@@ -228,7 +290,7 @@ def center_plate(
         for _, row in subset.iterrows():
             style = series_style(row["series"], row["model_key"], row["arm"])
             axis.plot(
-                row["c_center_german_nemd"],
+                row[column],
                 row["c_center_pop_nemd"],
                 linestyle="none",
                 markersize=6.5,
@@ -240,7 +302,7 @@ def center_plate(
         axis.set_ylim(-0.02 * limit, limit)
     axes[0].set_ylabel("C_pop, nEMD to every subpopulation pooled")
     axes[0].text(
-        0.03, 0.97, "closer to the German pool",
+        0.03, 0.97, f"closer to the {adjective} pool",
         transform=axes[0].transAxes, ha="left", va="top",
         fontsize=7, style="italic", color=MUTED_INK,
     )
@@ -249,7 +311,7 @@ def center_plate(
         transform=axes[0].transAxes, ha="right", va="bottom",
         fontsize=7, style="italic", color=MUTED_INK,
     )
-    figure.supxlabel("C_german, nEMD to the pooled German cells", fontsize=9)
+    figure.supxlabel(f"C_{country}, nEMD to the pooled {adjective} cells", fontsize=9)
     handles = series_handles(frame)
     handles.append(spacer())
     handles.append(
@@ -257,14 +319,14 @@ def center_plate(
             [], [],
             linestyle=(0, (4, 2)),
             color=MUTED_INK,
-            label="reference: indifference (C_german = C_pop)",
+            label=f"reference: indifference (C_{country} = C_pop)",
         )
     )
     handles.append(
-        Line2D([], [], linestyle="none", label="x carries the German reference here")
+        Line2D([], [], linestyle="none", label=f"x carries the {adjective} reference here")
     )
     figure.legend(handles=handles, loc="outside right upper")
-    return save_plate(figure, destination / f"fig_population_center_{view}_{mode}")
+    return save_plate(figure, destination / f"{CENTER_STEMS[country]}_{view}_{mode}")
 
 
 def structure_plate(
@@ -292,7 +354,7 @@ def structure_plate(
         for _, row in subset.iterrows():
             style = series_style(row["series"], row["model_key"], row["arm"])
             if is_served_model(row):
-                german_reach(axis, row, style["color"], f"{column}_german", "y")
+                reference_reaches(axis, row, style["color"], column + "_{}", "y")
             axis.plot(
                 row["_x"], row["_y"],
                 linestyle="none",
@@ -308,19 +370,17 @@ def structure_plate(
     figure.supxlabel(ADAPTABILITY_YLABEL, fontsize=9)
     handles = series_handles(frame)
     handles.append(spacer())
-    handles.append(
-        Line2D([], [], color=MUTED_INK, label=GERMAN_TICK_LABEL, **REACH_RULE, **YTICK)
-    )
+    handles.extend(reference_handles("y"))
     handles.append(
         Line2D(
             [], [],
             linestyle=(0, (4, 2)),
             color=MUTED_INK,
-            label="reference: AR = 1 / correlation = 0",
+            label="reference: A = 1 / correlation = 0",
         )
     )
     handles.append(
-        Line2D([], [], linestyle="none", label="ideal: AR = 1 with the correlation high")
+        Line2D([], [], linestyle="none", label="ideal: A = 1 with the correlation high")
     )
     figure.legend(handles=handles, loc="outside right upper")
     return save_plate(figure, destination / f"{stem}_{view}_{mode}")
