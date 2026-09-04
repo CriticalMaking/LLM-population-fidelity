@@ -24,9 +24,9 @@ from .tables import read_csv
 
 MODES = ("ntp", "fa")
 
-REFERENCE_COUNTRY = "Germany"
+REFERENCE_COUNTRIES: dict[str, str] = {"german": "Germany", "mexican": "Mexico"}
 
-GERMAN_CELLS = 144
+REFERENCE_CELLS: dict[str, int] = {"german": 144, "mexican": 131}
 
 ADAPTABILITY_TABLE = OUTPUTS_ROOT / "culture" / "population_adaptability.csv"
 
@@ -61,9 +61,9 @@ def load_run(
     return None
 
 
-def german_names(prepared: PreparedData) -> pd.Index:
+def country_names(prepared: PreparedData, country: str) -> pd.Index:
     labels = prepared.names.to_series(index=prepared.names)
-    return prepared.names[(country_of(labels) == REFERENCE_COUNTRY).to_numpy()]
+    return prepared.names[(country_of(labels) == country).to_numpy()]
 
 
 def center_r2(wvs: np.ndarray, llm: np.ndarray, mode: str) -> float:
@@ -91,43 +91,69 @@ def _arrays(
     return wvs, llm
 
 
+def _reference_metrics(
+    prepared: PreparedData,
+    props: pd.DataFrame,
+    key: str,
+    country: str,
+    mode: str,
+) -> dict[str, Any]:
+    names = country_names(prepared, country)
+    if not len(names):
+        return {
+            f"n_cells_{key}": 0,
+            f"e_mean_nemd_{key}": float("nan"),
+            f"d_wvs_{key}": float("nan"),
+            f"d_llm_{key}": float("nan"),
+            f"adaptability_ratio_{key}": float("nan"),
+            f"c_center_{key}_nemd": float("nan"),
+            f"r2_center_{key}": float("nan"),
+        }
+    wvs, llm = _arrays(prepared, props, names)
+    d_wvs = float(np.median(pairwise_nemd(wvs))) if len(names) > 1 else float("nan")
+    d_llm = float(np.median(pairwise_nemd(llm))) if len(names) > 1 else float("nan")
+    return {
+        f"n_cells_{key}": len(names),
+        f"e_mean_nemd_{key}": float(np.mean(nemd(wvs, llm))),
+        f"d_wvs_{key}": d_wvs,
+        f"d_llm_{key}": d_llm,
+        f"adaptability_ratio_{key}": d_llm / d_wvs if d_wvs else float("nan"),
+        f"c_center_{key}_nemd": float(nemd(wvs.mean(axis=0), llm.mean(axis=0))),
+        f"r2_center_{key}": center_r2(wvs, llm, mode),
+    }
+
+
 def population_metrics(prepared: PreparedData, mode: str) -> dict[str, Any] | None:
     if mode not in prepared.modes():
         return None
     props = prepared.props(mode)
-    german = german_names(prepared)
     wvs, llm = _arrays(prepared, props, prepared.names)
-    wvs_de, llm_de = _arrays(prepared, props, german)
     d_wvs = float(np.median(pairwise_nemd(wvs)))
     d_llm = float(np.median(pairwise_nemd(llm)))
-    d_wvs_de = float(np.median(pairwise_nemd(wvs_de))) if len(german) > 1 else float("nan")
-    d_llm_de = float(np.median(pairwise_nemd(llm_de))) if len(german) > 1 else float("nan")
-    return {
+    row: dict[str, Any] = {
         "n_cells": len(prepared.names),
-        "n_cells_german": len(german),
         "e_mean_nemd": float(np.mean(nemd(wvs, llm))),
-        "e_mean_nemd_german": float(np.mean(nemd(wvs_de, llm_de))) if len(german) else float("nan"),
         "d_wvs": d_wvs,
         "d_llm": d_llm,
         "adaptability_ratio": d_llm / d_wvs if d_wvs else float("nan"),
-        "d_wvs_german": d_wvs_de,
-        "d_llm_german": d_llm_de,
-        "adaptability_ratio_german": d_llm_de / d_wvs_de if d_wvs_de else float("nan"),
         "c_center_pop_nemd": float(nemd(wvs.mean(axis=0), llm.mean(axis=0))),
-        "c_center_german_nemd": (
-            float(nemd(wvs_de.mean(axis=0), llm_de.mean(axis=0))) if len(german) else float("nan")
-        ),
-        "r2_center_german": center_r2(wvs_de, llm_de, mode) if len(german) else float("nan"),
     }
+    for key, country in REFERENCE_COUNTRIES.items():
+        row.update(_reference_metrics(prepared, props, key, country, mode))
+    return row
 
 
 def structure_metrics(prepared: PreparedData, mode: str) -> dict[str, Any] | None:
     if mode not in prepared.modes():
         return None
     props = prepared.props(mode)
-    german = german_names(prepared)
-    row: dict[str, Any] = {"n_cells": len(prepared.names), "n_cells_german": len(german)}
-    for suffix, names in (("", prepared.names), ("_german", german)):
+    row: dict[str, Any] = {"n_cells": len(prepared.names)}
+    scopes: list[tuple[str, pd.Index]] = [("", prepared.names)]
+    for key, country in REFERENCE_COUNTRIES.items():
+        names = country_names(prepared, country)
+        row[f"n_cells_{key}"] = len(names)
+        scopes.append((f"_{key}", names))
+    for suffix, names in scopes:
         wvs, llm = _arrays(prepared, props, names)
         if len(names) < 3:
             row[f"n_pairs{suffix}"] = 0
@@ -220,14 +246,17 @@ def check_adaptability(table: pd.DataFrame) -> None:
     assert not table.empty
     complete = _complete(table)
     assert not complete.empty
+    columns = ["d_wvs", *(f"d_wvs_{key}" for key in REFERENCE_COUNTRIES)]
     for (question, mode), group in complete.groupby(["question", "mode"]):
-        spread = group["d_wvs"].to_numpy(dtype=np.float64)
-        assert np.allclose(spread, spread[0]), f"survey dispersion moved for {question}/{mode}"
-        german = group["d_wvs_german"].to_numpy(dtype=np.float64)
-        assert np.allclose(german, german[0]), f"german dispersion moved for {question}/{mode}"
-    assert (complete["n_cells_german"] == GERMAN_CELLS).all()
+        for column in columns:
+            spread = group[column].to_numpy(dtype=np.float64)
+            assert np.allclose(spread, spread[0]), (
+                f"survey dispersion moved for {column} on {question}/{mode}"
+            )
     assert table["n_cells"].le(EXPECTED_SUBPOPULATIONS).all()
-    assert table["n_cells_german"].le(GERMAN_CELLS).all()
+    for key, expected in REFERENCE_CELLS.items():
+        assert (complete[f"n_cells_{key}"] == expected).all(), f"{key} cell count moved"
+        assert table[f"n_cells_{key}"].le(expected).all()
     assert complete["adaptability_ratio"].ge(0).all()
     _cross_check_error(complete)
 
@@ -236,8 +265,9 @@ def check_structure(table: pd.DataFrame) -> None:
     assert not table.empty
     complete = _complete(table)
     assert not complete.empty
-    expected = GERMAN_CELLS * (GERMAN_CELLS - 1) // 2
-    assert (complete["n_pairs_german"] == expected).all()
+    for key, cells in REFERENCE_CELLS.items():
+        expected = cells * (cells - 1) // 2
+        assert (complete[f"n_pairs_{key}"] == expected).all(), f"{key} pair count moved"
     for column in ("rho_structure", "pearson_structure"):
         values = complete[column].to_numpy(dtype=np.float64)
         assert np.all((values >= -1.0) & (values <= 1.0))
