@@ -30,7 +30,7 @@ from .fidelity import (
     POPULATION,
     levels,
 )
-from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, model_tone
+from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, arm_hatch, arm_order, model_tone
 from .population import MODEL_INDEX, MODES
 from .population_plates import VIEWS, series_handles, series_style, spacer
 from .registry import is_base
@@ -47,7 +47,7 @@ REFERENCE_DASH = (0, (4, 2))
 
 COMPONENTS: tuple[tuple[str, str, str], ...] = (
     ("score_accuracy", "o", "Accuracy: 1 - mean nEMD"),
-    ("score_dispersion", "s", "Dispersion: min(AR, 1/AR)"),
+    ("score_dispersion", "s", "Dispersion: min(A, 1/A)"),
     ("score_structure", "^", "Structure: max(0, rho)"),
 )
 
@@ -61,7 +61,7 @@ CENTER_NOTE = "reported beside PFS, never inside it"
 
 GROUP_COMPONENTS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "Accuracy: 1 - mean nEMD"),
-    ("score_dispersion", "Dispersion: min(AR, 1/AR)"),
+    ("score_dispersion", "Dispersion: min(A, 1/A)"),
     ("score_structure", "Structure: max(0, rho) — the usual bottleneck"),
     ("score_center", "Center: 1 - C — reported, never inside PFS"),
 )
@@ -107,7 +107,24 @@ def bar_style(series: str, model_key: Any, arm: Any) -> dict[str, Any]:
     return {
         "facecolor": SURFACE if is_base(arm) else shade.fill,
         "edgecolor": shade.ink,
+        "hatch": arm_hatch(arm),
     }
+
+
+def fill_handles(frame: pd.DataFrame) -> list[Patch]:
+    """One patch per variant present, so the legend names every fill the bars use."""
+    handles = [Patch(facecolor=SURFACE, edgecolor=INK, label="hollow fill: as released")]
+    arms = [arm for arm in arm_order(set(frame["arm"].dropna())) if not is_base(arm)]
+    handles += [
+        Patch(
+            facecolor=GRID,
+            edgecolor=INK,
+            hatch=arm_hatch(arm),
+            label=f"{'hatched' if arm_hatch(arm) else 'solid'} fill: {arm}",
+        )
+        for arm in arms
+    ]
+    return handles
 
 
 def view_frame(
@@ -205,10 +222,7 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
     axis.set_xlim(0.0, min(1.0, max(float(ordered["pfs"].max()) * 1.18, 0.25)))
     axis.set_xlabel(PFS_LABEL)
     axis.set_title(_title(view, mode, POPULATION, "Population fidelity"))
-    handles: list[Any] = [
-        Patch(facecolor=SURFACE, edgecolor=INK, label="hollow fill: as released"),
-        Patch(facecolor=GRID, edgecolor=INK, label="solid fill: culture-finetuned"),
-    ]
+    handles: list[Any] = list(fill_handles(ordered))
     if drawn:
         handles.append(_reference_handle("reference: Mixtral archived"))
     axis.legend(handles=handles, loc="lower right")
