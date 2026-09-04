@@ -8,6 +8,7 @@ import pytest
 
 from culture import population, population_plates
 from machine_bias_reproduction.data import Coverage, PreparedData
+from machine_bias_reproduction.plates import CATEGORICAL_MARKERS
 from machine_bias_reproduction.questions import QUESTIONS
 
 COLUMNS = ("A", "B", "C", "D")
@@ -65,25 +66,41 @@ def prepared(with_ntp: bool = True, with_fa: bool = True) -> PreparedData:
     )
 
 
-def test_the_german_cells_are_the_ones_whose_label_starts_with_germany() -> None:
-    assert list(population.german_names(prepared())) == list(CELLS[:3])
+def test_the_reference_cells_are_the_ones_whose_label_starts_with_that_country() -> None:
+    assert list(population.country_names(prepared(), "Germany")) == list(CELLS[:3])
+    assert list(population.country_names(prepared(), "Mexico")) == list(CELLS[3:5])
+    assert list(population.country_names(prepared(), "Japan")) == []
 
 
-def test_metrics_score_every_cell_and_the_german_cells_apart() -> None:
+def test_metrics_score_every_cell_and_each_reference_country_apart() -> None:
     values = population.population_metrics(prepared(), "ntp")
     assert values is not None
 
     assert values["n_cells"] == 6
     assert values["n_cells_german"] == 3
-    assert values["e_mean_nemd"] != values["e_mean_nemd_german"]
-    assert values["adaptability_ratio"] != values["adaptability_ratio_german"]
-    assert values["c_center_pop_nemd"] != values["c_center_german_nemd"]
+    assert values["n_cells_mexican"] == 2
     assert values["adaptability_ratio"] == pytest.approx(
         values["d_llm"] / values["d_wvs"]
     )
+    for key in population.REFERENCE_COUNTRIES:
+        assert values["e_mean_nemd"] != values[f"e_mean_nemd_{key}"]
+        assert values["adaptability_ratio"] != values[f"adaptability_ratio_{key}"]
+        assert values["c_center_pop_nemd"] != values[f"c_center_{key}_nemd"]
+    assert values["e_mean_nemd_german"] != values["e_mean_nemd_mexican"]
+    assert values["c_center_german_nemd"] != values["c_center_mexican_nemd"]
 
 
-def test_structure_correlates_every_pair_and_the_german_pairs_apart() -> None:
+def test_metrics_report_a_reference_country_absent_from_the_run_as_empty() -> None:
+    values = population._reference_metrics(
+        prepared(), prepared().props("ntp"), "japanese", "Japan", "ntp"
+    )
+
+    assert values["n_cells_japanese"] == 0
+    assert np.isnan(values["e_mean_nemd_japanese"])
+    assert np.isnan(values["adaptability_ratio_japanese"])
+
+
+def test_structure_correlates_every_pair_and_each_reference_country_apart() -> None:
     values = population.structure_metrics(prepared(), "fa")
     assert values is not None
 
@@ -92,6 +109,10 @@ def test_structure_correlates_every_pair_and_the_german_pairs_apart() -> None:
     assert -1.0 <= values["rho_structure"] <= 1.0
     assert -1.0 <= values["pearson_structure"] <= 1.0
     assert values["rho_structure"] != values["rho_structure_german"]
+
+    assert values["n_cells_mexican"] == 2
+    assert values["n_pairs_mexican"] == 0
+    assert np.isnan(values["rho_structure_mexican"])
 
 
 def test_a_run_without_next_token_probability_scores_full_answers_only() -> None:
@@ -123,18 +144,24 @@ def table() -> pd.DataFrame:
                     "mode": "ntp",
                     "n_cells": 6,
                     "n_cells_german": 3,
+                    "n_cells_mexican": 2,
                     "e_mean_nemd": 0.08,
                     "e_mean_nemd_german": 0.05,
+                    "e_mean_nemd_mexican": 0.11,
                     "d_wvs": 0.2,
                     "d_llm": 0.1,
                     "adaptability_ratio": 0.5,
                     "adaptability_ratio_german": 0.6,
+                    "adaptability_ratio_mexican": 0.45,
                     "c_center_pop_nemd": 0.04,
                     "c_center_german_nemd": 0.03,
+                    "c_center_mexican_nemd": 0.05,
                     "rho_structure": 0.4,
                     "rho_structure_german": 0.2,
+                    "rho_structure_mexican": 0.1,
                     "pearson_structure": 0.35,
                     "pearson_structure_german": 0.25,
+                    "pearson_structure_mexican": 0.15,
                 }
             )
     return pd.DataFrame(rows)
@@ -159,7 +186,8 @@ def test_every_view_draws_one_panel_per_question_it_covers(tmp_path: Path) -> No
 
 def test_the_three_families_each_write_a_plate(tmp_path: Path) -> None:
     population_plates.adaptability_plate(table(), "ntp", "all", tmp_path)
-    population_plates.center_plate(table(), "ntp", "all", tmp_path)
+    for country in population.REFERENCE_COUNTRIES:
+        population_plates.center_plate(table(), "ntp", "all", tmp_path, country=country)
     population_plates.structure_plate(
         table(),
         "ntp",
@@ -174,13 +202,52 @@ def test_the_three_families_each_write_a_plate(tmp_path: Path) -> None:
     assert written == [
         "fig_population_adaptability_all_ntp.png",
         "fig_population_center_all_ntp.png",
+        "fig_population_center_mexican_all_ntp.png",
         "fig_population_structure_all_ntp.png",
     ]
 
 
-def test_a_run_with_no_german_reference_still_draws(tmp_path: Path) -> None:
+def test_each_variant_of_a_model_gets_its_own_fill() -> None:
+    fills = {
+        arm: population_plates.series_style("Gemma", "gemma4_31b", arm)["fillstyle"]
+        for arm in ("base", "german", "spanish-mx")
+    }
+
+    assert fills["base"] == "none"
+    assert len(set(fills.values())) == 3, "two variants of one model share a fill"
+
+
+def test_a_tuned_variant_reaches_only_to_the_country_it_targets() -> None:
+    assert population_plates.reference_keys("german") == ("german",)
+    assert population_plates.reference_keys("spanish-mx") == ("mexican",)
+    assert population_plates.reference_keys("turkish") == ()
+    assert population_plates.reference_keys("base") == tuple(population.REFERENCE_COUNTRIES)
+    assert population_plates.reference_keys(None) == tuple(population.REFERENCE_COUNTRIES)
+
+
+def test_every_reference_country_gets_its_own_tick(tmp_path: Path) -> None:
+    assert set(population_plates.REFERENCE_TICKS) == set(population.REFERENCE_COUNTRIES)
+    assert set(population_plates.CENTER_STEMS) == set(population.REFERENCE_COUNTRIES)
+
+    for along in ("x", "y"):
+        marks = [
+            population_plates.REFERENCE_TICKS[key][along]["marker"]
+            for key in population.REFERENCE_COUNTRIES
+        ]
+        assert len(set(marks)) == len(marks), f"two reference ticks share a glyph on {along}"
+        assert not set(marks) & set(CATEGORICAL_MARKERS), "a reference tick wears a series glyph"
+
+    labels = [handle.get_label() for handle in population_plates.reference_handles("x")]
+    assert labels == [
+        "same run over the German cells alone",
+        "same run over the Mexican cells alone",
+    ]
+
+
+def test_a_run_with_no_reference_columns_still_draws(tmp_path: Path) -> None:
     without = table()
     without["e_mean_nemd_german"] = np.nan
+    without = without.drop(columns=["e_mean_nemd_mexican"])
 
     built = population_plates.adaptability_plate(without, "ntp", "all", tmp_path)
     assert built[0].is_file()
