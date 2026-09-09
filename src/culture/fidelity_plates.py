@@ -47,7 +47,7 @@ REFERENCE_DASH = (0, (4, 2))
 
 COMPONENTS: tuple[tuple[str, str, str], ...] = (
     ("score_accuracy", "o", "Accuracy: 1 - mean nEMD"),
-    ("score_dispersion", "s", "Dispersion: min(A, 1/A)"),
+    ("score_dispersion", "s", "Adaptability: min(A, 1/A)"),
     ("score_structure", "^", "Structure: max(0, rho)"),
 )
 
@@ -61,7 +61,7 @@ CENTER_NOTE = "reported beside PFS, never inside it"
 
 GROUP_COMPONENTS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "Accuracy: 1 - mean nEMD"),
-    ("score_dispersion", "Dispersion: min(A, 1/A)"),
+    ("score_dispersion", "Adaptability: min(A, 1/A)"),
     ("score_structure", "Structure: max(0, rho) — the usual bottleneck"),
     ("score_center", "Center: 1 - C — reported, never inside PFS"),
 )

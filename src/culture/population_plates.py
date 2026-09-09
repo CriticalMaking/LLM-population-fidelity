@@ -60,7 +60,7 @@ CENTER_STEMS: dict[str, str] = {
 
 ADAPTABILITY_XLABEL = "Mean nEMD to the WVS cells (E)"
 
-ADAPTABILITY_YLABEL = "Model dispersion / survey dispersion (A)"
+ADAPTABILITY_YLABEL = "Adaptability ratio A (model / survey dispersion)"
 
 TICK_LABEL = "same run over the {} cells alone"
 
