@@ -25,24 +25,12 @@ models/culture/*
 !models/culture/training/
 
 # outputs/ and figures/ are tracked except what is regenerable and huge:
-# per-prompt raw responses, the booktabs re-encoding of each report CSV, logs.
+# per-prompt raw responses and logs.
 outputs/**/raw/
 outputs/**/raw-*.parquet
-outputs/reports/tex/
 logs/
 *.tmp
 
 # The Hugging Face staging mirror of outputs/, rebuilt by `hub build`. Anchored,
 # so it never matches the src/hub package.
 /hub/
-
-# LaTeX build products
-*.aux
-*.bbl
-*.blg
-*.fdb_latexmk
-*.fls
-*.log
-*.out
-*.synctex.gz
-*.toc
