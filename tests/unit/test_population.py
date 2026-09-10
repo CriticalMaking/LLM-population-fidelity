@@ -239,9 +239,22 @@ def test_every_reference_country_gets_its_own_tick(tmp_path: Path) -> None:
 
     labels = [handle.get_label() for handle in population_plates.reference_handles("x")]
     assert labels == [
-        "same run over the German cells alone",
-        "same run over the Mexican cells alone",
+        "same run, German cells alone",
+        "same run, Mexican cells alone",
     ]
+
+
+def test_the_legend_names_each_model_once_and_the_fills_apart() -> None:
+    labels = [handle.get_label() for handle in population_plates.compact_handles(table())]
+
+    assert labels == [
+        "Gemma (as released)",
+        "hollow: as released",
+        "solid: german",
+        "Mixtral archived",
+    ]
+    assert population_plates.stacked("Gemma-4-31B-it (german)") == "Gemma-4-31B-it\n(german)"
+    assert population_plates.stacked("Mixtral archived") == "Mixtral archived"
 
 
 def _replicated() -> pd.DataFrame:

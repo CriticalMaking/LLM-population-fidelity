@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
+from math import ceil
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
+from matplotlib import rc_context
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -19,11 +22,12 @@ from .palette import (
     REFERENCE_MARKERS,
     REFERENCE_TONES,
     arm_fill,
+    arm_order,
     model_marker,
     model_tone,
 )
 from .population import MODEL_INDEX, REFERENCE_COUNTRIES, across_replicates
-from .registry import is_base
+from .registry import BASE_ARM, arm_display, is_base
 
 VIEWS: dict[str, str | None] = {
     "all": None,
@@ -33,13 +37,34 @@ VIEWS: dict[str, str | None] = {
     "trust": "d_trust",
 }
 
-REACH_RULE: dict[str, Any] = {"linestyle": (0, (1, 1.2)), "linewidth": 0.9}
+PLATE_TEXT: dict[str, Any] = {
+    "font.size": 16.0,
+    "axes.labelsize": 16.0,
+    "axes.titlesize": 17.0,
+    "figure.titlesize": 18.0,
+    "figure.labelsize": 16.0,
+    "xtick.labelsize": 15.0,
+    "ytick.labelsize": 15.0,
+    "legend.fontsize": 14.0,
+}
 
-XTICK: dict[str, Any] = {"marker": "|", "markersize": 7, "markeredgewidth": 1.2}
+NOTE_SIZE = 11.5
 
-YTICK: dict[str, Any] = {"marker": "_", "markersize": 7, "markeredgewidth": 1.2}
+PANEL_NOTE_SIZE = 9.5
 
-SLASH_TICK: dict[str, Any] = {"marker": (2, 0, 45), "markersize": 7, "markeredgewidth": 1.2}
+MARKER_SIZE = 9.0
+
+MARKER_EDGE = 1.4
+
+LEGEND_ROW = 0.36
+
+REACH_RULE: dict[str, Any] = {"linestyle": (0, (1, 1.2)), "linewidth": 1.1}
+
+XTICK: dict[str, Any] = {"marker": "|", "markersize": 10, "markeredgewidth": 1.5}
+
+YTICK: dict[str, Any] = {"marker": "_", "markersize": 10, "markeredgewidth": 1.5}
+
+SLASH_TICK: dict[str, Any] = {"marker": (2, 0, 45), "markersize": 10, "markeredgewidth": 1.5}
 
 REFERENCE_ADJECTIVES: dict[str, str] = {"german": "German", "mexican": "Mexican"}
 
@@ -70,30 +95,39 @@ POPULATION_SPREAD: tuple[str, ...] = (
 
 SPREAD_BAR: dict[str, Any] = {
     "fmt": "none",
-    "elinewidth": 0.9,
-    "capsize": 2.2,
-    "capthick": 0.9,
+    "elinewidth": 1.1,
+    "capsize": 2.6,
+    "capthick": 1.1,
     "alpha": 0.75,
     "zorder": 2.8,
 }
 
-ADAPTABILITY_XLABEL = "Mean nEMD to the WVS cells (E)"
+FILL_NAMES: dict[str, str] = {
+    "none": "hollow",
+    "full": "solid",
+    "bottom": "bottom half",
+    "top": "top half",
+    "left": "left half",
+    "right": "right half",
+}
 
-ADAPTABILITY_YLABEL = "Adaptability ratio A (model / survey dispersion)"
+ADAPTABILITY_XLABEL = "Mean nEMD to WVS cells (E)"
 
-TICK_LABEL = "same run over the {} cells alone"
+ADAPTABILITY_YLABEL = "Adaptability ratio A\n(model / survey dispersion)"
+
+TICK_LABEL = "same run, {} cells alone"
 
 ADAPTABILITY_CORNERS = (
-    (0.02, 0.97, "left", "top", "Accurate but over-dispersed"),
-    (0.02, 0.03, "left", "bottom", "Accurate but under-dispersed"),
-    (0.98, 0.03, "right", "bottom", "Inaccurate and under-dispersed"),
-    (0.98, 0.97, "right", "top", "Inaccurate and over-dispersed"),
+    (0.02, 0.97, "left", "top", "Accurate but\nover-dispersed"),
+    (0.02, 0.03, "left", "bottom", "Accurate but\nunder-dispersed"),
+    (0.98, 0.03, "right", "bottom", "Inaccurate and\nunder-dispersed"),
+    (0.98, 0.97, "right", "top", "Inaccurate and\nover-dispersed"),
 )
 
 STRUCTURE_CORNERS = (
-    (0.02, 0.97, "left", "top", "Compressed, correctly directed"),
-    (0.98, 0.97, "right", "top", "Expansive, correctly directed"),
-    (0.02, 0.03, "left", "bottom", "Compressed and unstructured"),
+    (0.02, 0.97, "left", "top", "Compressed,\ncorrectly directed"),
+    (0.98, 0.97, "right", "top", "Expansive,\ncorrectly directed"),
+    (0.02, 0.03, "left", "bottom", "Compressed and\nunstructured"),
     (0.98, 0.03, "right", "bottom", "Over-steerability\nwithout social fidelity"),
 )
 
@@ -125,17 +159,55 @@ def is_served_model(row: pd.Series) -> bool:
     return isinstance(row["model_key"], str)
 
 
-def series_handles(frame: pd.DataFrame) -> list[Line2D]:
-    handles = []
-    for series in dict.fromkeys(frame["series"]):
-        subset = frame[frame["series"] == series]
-        style = series_style(series, subset["model_key"].iat[0], subset["arm"].iat[0])
-        handles.append(Line2D([], [], linestyle="none", markersize=6, label=series, **style))
+def stacked(series: Any) -> str:
+    return str(series).replace(" (", "\n(", 1)
+
+
+def compact_handles(frame: pd.DataFrame) -> list[Line2D]:
+    handles: list[Line2D] = []
+    models = frame.dropna(subset=["model_key"]).drop_duplicates("model_key")
+    for row in models.itertuples():
+        style = series_style(str(row.series), row.model_key, BASE_ARM)
+        handles.append(
+            Line2D(
+                [], [],
+                linestyle="none",
+                markersize=MARKER_SIZE,
+                label=str(row.model_label),
+                **style,
+            )
+        )
+    for arm in arm_order(set(frame["arm"].dropna())):
+        fill = arm_fill(arm)
+        handles.append(
+            Line2D(
+                [], [],
+                linestyle="none",
+                marker="o",
+                markersize=MARKER_SIZE,
+                color=MUTED_INK,
+                markerfacecolor=MUTED_INK,
+                markerfacecoloralt=SURFACE,
+                markeredgecolor=MUTED_INK,
+                fillstyle=cast(Any, fill),
+                label=f"{FILL_NAMES.get(fill, fill)}: {arm_display(arm)}",
+            )
+        )
+    references = frame[frame["model_key"].isna()].drop_duplicates("series")
+    for row in references.itertuples():
+        style = series_style(str(row.series), None, None)
+        handles.append(
+            Line2D([], [], linestyle="none", markersize=MARKER_SIZE, label=str(row.series), **style)
+        )
     return handles
 
 
-def spacer() -> Line2D:
-    return Line2D([], [], linestyle="none", label=" ")
+def legend_height(handles: Sequence[Line2D], columns: int) -> float:
+    return LEGEND_ROW * ceil(len(handles) / columns) + 0.6
+
+
+def legend_below(figure: Figure, handles: Sequence[Line2D], columns: int) -> None:
+    figure.legend(handles=list(handles), loc="outside lower center", ncols=columns)
 
 
 def spread_of(row: Any, column: str) -> float | None:
@@ -158,7 +230,7 @@ def spread_handle() -> Line2D:
         [], [],
         color=MUTED_INK,
         linewidth=SPREAD_BAR["elinewidth"],
-        label="bar: ± one s.d. across replicate runs",
+        label="± one s.d. across runs",
     )
 
 
@@ -250,22 +322,47 @@ def _corner_notes(axis: Axes, corners: tuple[tuple[float, float, str, str, str],
             x, y, text,
             transform=axis.transAxes,
             ha=ha, va=va,
-            fontsize=7, style="italic", color=MUTED_INK,
+            fontsize=PANEL_NOTE_SIZE, style="italic", color=MUTED_INK,
         )
+
+
+def _label_axes(axes: Sequence[Axes], xlabel: str, ylabel: str) -> None:
+    for axis in axes:
+        axis.set_xlabel(xlabel)
+    axes[0].set_ylabel(ylabel)
+
+
+def _dashed(label: str) -> Line2D:
+    return Line2D([], [], linestyle=(0, (4, 2)), color=MUTED_INK, label=label)
 
 
 def _plate(
     frame: pd.DataFrame,
     mode: str,
+    handles: Sequence[Line2D],
     title_suffix: str = "",
 ) -> tuple[Figure, list[Axes], list[str]]:
     questions = list(dict.fromkeys(frame["question"]))
     count = len(questions)
-    width = 3.6 * count + (0.0 if count >= 3 else 4.0)
-    figure = Figure(figsize=(width, 4.2), layout="constrained")
+    columns = 4 if count >= 3 else 2
+    width = 3.4 * count if count >= 3 else 6.8
+    figure = Figure(
+        figsize=(width, 4.8 + legend_height(handles, columns)), layout="constrained"
+    )
     axes = list(figure.subplots(1, count, sharey=True, squeeze=False)[0])
-    figure.suptitle(f"{mode.upper()}{title_suffix}")
+    # figure.suptitle(f"{mode.upper()}{title_suffix}")
+    legend_below(figure, handles, columns)
     return figure, axes, questions
+
+
+def _marker(axis: Axes, row: pd.Series, style: dict[str, Any]) -> None:
+    axis.plot(
+        row["_x"], row["_y"],
+        linestyle="none",
+        markersize=MARKER_SIZE,
+        markeredgewidth=MARKER_EDGE,
+        **style,
+    )
 
 
 def adaptability_plate(
@@ -275,49 +372,36 @@ def adaptability_plate(
     destination: Path = FIGURES_ROOT,
 ) -> list[Path]:
     frame = _view_frame(table, mode, view)
-    figure, axes, questions = _plate(frame, mode)
-    top = max(1.08, float(frame["adaptability_ratio"].max()) * 1.12)
-    for axis, question in zip(axes, questions, strict=True):
-        subset = frame[frame["question"] == question].copy()
-        subset["_x"] = subset["e_mean_nemd"]
-        subset["_y"] = subset["adaptability_ratio"]
-        axis.axhline(1.0, linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=0.9)
-        axis.grid(color=GRID, linewidth=0.6)
-        axis.set_axisbelow(True)
-        for _, row in subset.iterrows():
-            style = series_style(row["series"], row["model_key"], row["arm"])
-            if is_served_model(row):
-                reference_reaches(axis, row, style["color"], "e_mean_nemd_{}", "x")
-            spread_bars(axis, row, "e_mean_nemd", "adaptability_ratio", style["color"])
-            axis.plot(
-                row["_x"], row["_y"],
-                linestyle="none",
-                markersize=6.5,
-                markeredgewidth=1.1,
-                **style,
-            )
-        axis.set_title(str(subset["question_label"].iat[0]))
-        axis.set_xlim(left=0)
-        axis.set_ylim(-0.03 * top, top)
-    axes[0].set_ylabel(ADAPTABILITY_YLABEL)
-    _corner_notes(axes[0], ADAPTABILITY_CORNERS)
-    figure.supxlabel(ADAPTABILITY_XLABEL, fontsize=9)
-    handles = series_handles(frame)
-    handles.append(spacer())
-    handles.extend(reference_handles("x"))
+    handles = [
+        *compact_handles(frame),
+        *reference_handles("x"),
+        _dashed("survey dispersion (A = 1)"),
+        Line2D([], [], linestyle="none", label="ideal: E → 0 with A = 1"),
+    ]
     if replicated(frame):
         handles.append(spread_handle())
-    handles.append(
-        Line2D(
-            [], [],
-            linestyle=(0, (4, 2)),
-            color=MUTED_INK,
-            label="reference: survey dispersion (A = 1)",
-        )
-    )
-    handles.append(Line2D([], [], linestyle="none", label="ideal: E → 0 with A = 1"))
-    figure.legend(handles=handles, loc="outside right upper")
-    return save_plate(figure, destination / f"fig_population_adaptability_{view}_{mode}")
+    with rc_context(cast(Any, PLATE_TEXT)):
+        figure, axes, questions = _plate(frame, mode, handles)
+        top = max(1.08, float(frame["adaptability_ratio"].max()) * 1.12)
+        for axis, question in zip(axes, questions, strict=True):
+            subset = frame[frame["question"] == question].copy()
+            subset["_x"] = subset["e_mean_nemd"]
+            subset["_y"] = subset["adaptability_ratio"]
+            axis.axhline(1.0, linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=1.1)
+            axis.grid(color=GRID, linewidth=0.6)
+            axis.set_axisbelow(True)
+            for _, row in subset.iterrows():
+                style = series_style(row["series"], row["model_key"], row["arm"])
+                if is_served_model(row):
+                    reference_reaches(axis, row, style["color"], "e_mean_nemd_{}", "x")
+                spread_bars(axis, row, "e_mean_nemd", "adaptability_ratio", style["color"])
+                _marker(axis, row, style)
+            axis.set_title(str(subset["question_label"].iat[0]))
+            axis.set_xlim(left=0)
+            axis.set_ylim(-0.03 * top, top)
+        _label_axes(axes, ADAPTABILITY_XLABEL, ADAPTABILITY_YLABEL)
+        _corner_notes(axes[0], ADAPTABILITY_CORNERS)
+        return save_plate(figure, destination / f"fig_population_adaptability_{view}_{mode}")
 
 
 def center_plate(
@@ -328,60 +412,46 @@ def center_plate(
     country: str = "german",
 ) -> list[Path]:
     frame = _view_frame(table, mode, view)
-    figure, axes, questions = _plate(frame, mode)
     adjective = REFERENCE_ADJECTIVES[country]
     column = f"c_center_{country}_nemd"
-    limit = float(max(frame[column].max(), frame["c_center_pop_nemd"].max())) * 1.12
-    for axis, question in zip(axes, questions, strict=True):
-        subset = frame[frame["question"] == question].copy()
-        subset["_x"] = subset[column]
-        subset["_y"] = subset["c_center_pop_nemd"]
-        axis.plot([0, limit], [0, limit], linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=0.9)
-        axis.grid(color=GRID, linewidth=0.6)
-        axis.set_axisbelow(True)
-        for _, row in subset.iterrows():
-            style = series_style(row["series"], row["model_key"], row["arm"])
-            spread_bars(axis, row, column, "c_center_pop_nemd", style["color"])
-            axis.plot(
-                row["_x"],
-                row["_y"],
-                linestyle="none",
-                markersize=6.5,
-                markeredgewidth=1.1,
-                **style,
-            )
-        axis.set_title(str(subset["question_label"].iat[0]))
-        axis.set_xlim(-0.02 * limit, limit)
-        axis.set_ylim(-0.02 * limit, limit)
-    axes[0].set_ylabel("C_pop, nEMD to every subpopulation pooled")
-    axes[0].text(
-        0.03, 0.97, f"closer to the {adjective} pool",
-        transform=axes[0].transAxes, ha="left", va="top",
-        fontsize=7, style="italic", color=MUTED_INK,
-    )
-    axes[0].text(
-        0.97, 0.03, "closer to the pooled world",
-        transform=axes[0].transAxes, ha="right", va="bottom",
-        fontsize=7, style="italic", color=MUTED_INK,
-    )
-    figure.supxlabel(f"C_{country}, nEMD to the pooled {adjective} cells", fontsize=9)
-    handles = series_handles(frame)
-    handles.append(spacer())
-    handles.append(
-        Line2D(
-            [], [],
-            linestyle=(0, (4, 2)),
-            color=MUTED_INK,
-            label=f"reference: indifference (C_{country} = C_pop)",
-        )
-    )
-    handles.append(
-        Line2D([], [], linestyle="none", label=f"x carries the {adjective} reference here")
-    )
+    handles = [
+        *compact_handles(frame),
+        _dashed(f"indifference: C_{country} = C_pop"),
+    ]
     if replicated(frame):
         handles.append(spread_handle())
-    figure.legend(handles=handles, loc="outside right upper")
-    return save_plate(figure, destination / f"{CENTER_STEMS[country]}_{view}_{mode}")
+    with rc_context(cast(Any, PLATE_TEXT)):
+        figure, axes, questions = _plate(frame, mode, handles)
+        limit = float(max(frame[column].max(), frame["c_center_pop_nemd"].max())) * 1.12
+        for axis, question in zip(axes, questions, strict=True):
+            subset = frame[frame["question"] == question].copy()
+            subset["_x"] = subset[column]
+            subset["_y"] = subset["c_center_pop_nemd"]
+            axis.plot(
+                [0, limit], [0, limit], linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=1.1
+            )
+            axis.grid(color=GRID, linewidth=0.6)
+            axis.set_axisbelow(True)
+            for _, row in subset.iterrows():
+                style = series_style(row["series"], row["model_key"], row["arm"])
+                spread_bars(axis, row, column, "c_center_pop_nemd", style["color"])
+                _marker(axis, row, style)
+            axis.set_title(str(subset["question_label"].iat[0]))
+            axis.set_xlim(-0.02 * limit, limit)
+            axis.set_ylim(-0.02 * limit, limit)
+        _label_axes(
+            axes,
+            f"C_{country}: nEMD to the\npooled {adjective} cells",
+            "C_pop: nEMD to the\npooled cells",
+        )
+        _corner_notes(
+            axes[0],
+            (
+                (0.03, 0.97, "left", "top", f"closer to the\n{adjective} pool"),
+                (0.97, 0.03, "right", "bottom", "closer to the\npooled world"),
+            ),
+        )
+        return save_plate(figure, destination / f"{CENTER_STEMS[country]}_{view}_{mode}")
 
 
 def structure_plate(
@@ -394,51 +464,36 @@ def structure_plate(
     destination: Path = FIGURES_ROOT,
 ) -> list[Path]:
     frame = _view_frame(joined, mode, view)
-    figure, axes, questions = _plate(
-        frame, mode, "" if column == "rho_structure" else " — Pearson"
-    )
-    right = max(1.08, float(frame["adaptability_ratio"].max()) * 1.12)
-    for axis, question in zip(axes, questions, strict=True):
-        subset = frame[frame["question"] == question].copy()
-        subset["_x"] = subset["adaptability_ratio"]
-        subset["_y"] = subset[column]
-        axis.axvline(1.0, linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=0.9)
-        axis.axhline(0.0, linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=0.9)
-        axis.grid(color=GRID, linewidth=0.6)
-        axis.set_axisbelow(True)
-        for _, row in subset.iterrows():
-            style = series_style(row["series"], row["model_key"], row["arm"])
-            if is_served_model(row):
-                reference_reaches(axis, row, style["color"], column + "_{}", "y")
-            spread_bars(axis, row, "adaptability_ratio", column, style["color"])
-            axis.plot(
-                row["_x"], row["_y"],
-                linestyle="none",
-                markersize=6.5,
-                markeredgewidth=1.1,
-                **style,
-            )
-        axis.set_title(str(subset["question_label"].iat[0]))
-        axis.set_xlim(-0.02 * right, right)
-        axis.set_ylim(-1.05, 1.05)
-    axes[0].set_ylabel(ylabel)
-    _corner_notes(axes[0], STRUCTURE_CORNERS)
-    figure.supxlabel(ADAPTABILITY_YLABEL, fontsize=9)
-    handles = series_handles(frame)
-    handles.append(spacer())
-    handles.extend(reference_handles("y"))
-    handles.append(
-        Line2D(
-            [], [],
-            linestyle=(0, (4, 2)),
-            color=MUTED_INK,
-            label="reference: A = 1 / correlation = 0",
-        )
-    )
-    handles.append(
-        Line2D([], [], linestyle="none", label="ideal: A = 1 with the correlation high")
-    )
+    handles = [
+        *compact_handles(frame),
+        *reference_handles("y"),
+        _dashed("A = 1 and correlation = 0"),
+        Line2D([], [], linestyle="none", label="ideal: A = 1, high correlation"),
+    ]
     if replicated(frame):
         handles.append(spread_handle())
-    figure.legend(handles=handles, loc="outside right upper")
-    return save_plate(figure, destination / f"{stem}_{view}_{mode}")
+    with rc_context(cast(Any, PLATE_TEXT)):
+        figure, axes, questions = _plate(
+            frame, mode, handles, "" if column == "rho_structure" else " — Pearson"
+        )
+        right = max(1.08, float(frame["adaptability_ratio"].max()) * 1.12)
+        for axis, question in zip(axes, questions, strict=True):
+            subset = frame[frame["question"] == question].copy()
+            subset["_x"] = subset["adaptability_ratio"]
+            subset["_y"] = subset[column]
+            axis.axvline(1.0, linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=1.1)
+            axis.axhline(0.0, linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=1.1)
+            axis.grid(color=GRID, linewidth=0.6)
+            axis.set_axisbelow(True)
+            for _, row in subset.iterrows():
+                style = series_style(row["series"], row["model_key"], row["arm"])
+                if is_served_model(row):
+                    reference_reaches(axis, row, style["color"], column + "_{}", "y")
+                spread_bars(axis, row, "adaptability_ratio", column, style["color"])
+                _marker(axis, row, style)
+            axis.set_title(str(subset["question_label"].iat[0]))
+            axis.set_xlim(-0.02 * right, right)
+            axis.set_ylim(-1.05, 1.05)
+        _label_axes(axes, ADAPTABILITY_YLABEL, ylabel)
+        _corner_notes(axes[0], STRUCTURE_CORNERS)
+        return save_plate(figure, destination / f"{stem}_{view}_{mode}")
