@@ -36,14 +36,20 @@ from .fidelity import (
 from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, arm_hatch, arm_order, model_tone
 from .population import MODEL_INDEX, MODES, across_replicates
 from .population_plates import (
+    MARKER_EDGE,
+    MARKER_SIZE,
+    NOTE_SIZE,
+    PLATE_TEXT,
     SPREAD_BAR,
     VIEWS,
+    compact_handles,
+    legend_below,
+    legend_height,
     replicated,
-    series_handles,
     series_style,
-    spacer,
     spread_handle,
     spread_of,
+    stacked,
 )
 from .registry import is_base
 
@@ -57,20 +63,17 @@ SHIFT_COLORMAP = LinearSegmentedColormap.from_list(
 
 REFERENCE_DASH = (0, (4, 2))
 
-PLATE_TEXT: dict[str, Any] = {
-    "font.size": 12.5,
-    "axes.labelsize": 12.5,
-    "axes.titlesize": 13.0,
-    "xtick.labelsize": 11.5,
-    "ytick.labelsize": 11.5,
-    "legend.fontsize": 11.0,
-}
+VALUE_SIZE = 12.0
 
-NOTE_SIZE = 9.5
+CELL_VALUE_SIZE = 12.0
 
-VALUE_SIZE = 9.0
+ROW_WIDTH = 6.9
 
-CELL_VALUE_SIZE = 8.0
+ROW_HEIGHT = 0.62
+
+ROW_LABEL_PAD = 10.0
+
+SCATTER_WIDTH = 5.8
 
 DELTA_PFS = delta_column("pfs")
 
@@ -78,7 +81,7 @@ DELTA_CENTER = delta_column("score_center")
 
 SPREAD: tuple[str, ...] = (*SCORE_COLUMNS, "e_mean_nemd", DELTA_PFS, DELTA_CENTER)
 
-BAR_SPREAD: dict[str, Any] = {"ecolor": MUTED_INK, "elinewidth": 0.9, "capsize": 2.2}
+BAR_SPREAD: dict[str, Any] = {"ecolor": MUTED_INK, "elinewidth": 1.1, "capsize": 2.6}
 
 COMPONENTS: tuple[tuple[str, str, str], ...] = (
     ("score_accuracy", "o", "Accuracy: 1 - mean nEMD"),
@@ -92,7 +95,7 @@ CENTER_LABEL = "Cultural center alignment (1 - C)"
 
 PFS_LABEL = "Population Fidelity Score"
 
-CENTER_LEGEND = "Center alignment (1 - C), kept out of PFS"
+CENTER_LEGEND = "Center: 1 - C (not in PFS)"
 
 GROUP_COMPONENTS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "Accuracy: 1 - mean nEMD"),
@@ -188,11 +191,17 @@ def _ordered(frame: pd.DataFrame, column: str) -> pd.DataFrame:
 
 
 def _row_figure(count: int, width: float) -> tuple[Figure, Axes]:
-    figure = Figure(figsize=(width, 0.36 * count + 2.6), layout="constrained")
+    figure = Figure(figsize=(width, ROW_HEIGHT * count + 3.0), layout="constrained")
     axis = figure.subplots(1, 1)
     axis.grid(axis="x", color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
     return figure, axis
+
+
+def _row_labels(axis: Axes, frame: pd.DataFrame) -> None:
+    axis.set_yticks(range(len(frame)), [stacked(series) for series in frame["series"]])
+    axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
+    axis.set_ylim(-0.6, len(frame) - 0.4)
 
 
 def _corner_notes(axis: Axes, corners: tuple[tuple[float, float, str, str, str], ...]) -> None:
@@ -219,7 +228,7 @@ def _reference_rule(axis: Axes, frame: pd.DataFrame, column: str, orientation: s
         float(str(reference.iat[0])),
         color=REFERENCE_TONES[MIXTRAL_ARCHIVED].ink,
         linestyle=REFERENCE_DASH,
-        linewidth=0.9,
+        linewidth=1.1,
     )
     return True
 
@@ -236,7 +245,7 @@ def _reference_handle(label: str) -> Line2D:
 
 def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     ordered = _ordered(frame, "pfs")
-    figure, axis = _row_figure(len(ordered), 7.4)
+    figure, axis = _row_figure(len(ordered), ROW_WIDTH)
     for position, row in enumerate(_rows(ordered)):
         spread = spread_of(row, "pfs")
         axis.barh(
@@ -258,11 +267,10 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
             color=MUTED_INK,
         )
     drawn = _reference_rule(axis, ordered, "pfs", "x")
-    axis.set_yticks(range(len(ordered)), list(ordered["series"]))
-    axis.set_ylim(-0.6, len(ordered) - 0.4)
+    _row_labels(axis, ordered)
     axis.set_xlim(0.0, min(1.0, max(float(ordered["pfs"].max()) * 1.18, 0.25)))
     axis.set_xlabel(PFS_LABEL)
-    axis.set_title(_title(view, mode, POPULATION, "Population fidelity"))
+    # axis.set_title(_title(view, mode, POPULATION, "Population fidelity"))
     handles: list[Any] = list(fill_handles(ordered))
     if drawn:
         handles.append(_reference_handle("reference: Mixtral archived"))
@@ -274,14 +282,14 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
 
 def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     ordered = _ordered(frame, "pfs")
-    figure, axis = _row_figure(len(ordered), 8.0)
+    figure, axis = _row_figure(len(ordered), ROW_WIDTH)
     for position, row in enumerate(_rows(ordered)):
         scores = [float(getattr(row, column)) for column, _, _ in COMPONENTS]
         axis.plot(
             [min(scores), max(scores)],
             [position, position],
             color=GRID,
-            linewidth=1.2,
+            linewidth=1.4,
             zorder=1.5,
         )
         for (column, marker, _), shade in zip(COMPONENTS, COMPONENT_INKS, strict=True):
@@ -290,7 +298,7 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
                 float(getattr(row, column)),
                 position,
                 marker=marker,
-                markersize=6,
+                markersize=MARKER_SIZE,
                 linestyle="none",
                 color=shade,
                 markeredgecolor=shade,
@@ -300,10 +308,11 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             float(row.score_center),
             position,
             marker="s",
-            markersize=8,
+            markersize=12,
             linestyle="none",
             markerfacecolor="none",
             markeredgecolor=MUTED_INK,
+            markeredgewidth=MARKER_EDGE,
             zorder=2.5,
         )
         _spread_bar(axis, float(row.pfs), position, spread_of(row, "pfs"), INK)
@@ -311,44 +320,71 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             float(row.pfs),
             position,
             marker="D",
-            markersize=6.5,
+            markersize=10,
             linestyle="none",
             color=INK,
             zorder=3.5,
         )
-    axis.set_yticks(range(len(ordered)), list(ordered["series"]))
-    axis.set_ylim(-0.6, len(ordered) - 0.4)
+    _row_labels(axis, ordered)
     axis.set_xlim(0.0, 1.0)
     axis.set_xlabel("Score (0 to 1, higher is better)")
-    axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
+    # axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
     handles = [
-        Line2D([], [], linestyle="none", marker=marker, color=shade, label=label)
+        Line2D(
+            [],
+            [],
+            linestyle="none",
+            marker=marker,
+            markersize=MARKER_SIZE,
+            color=shade,
+            label=label,
+        )
         for (_, marker, label), shade in zip(COMPONENTS, COMPONENT_INKS, strict=True)
     ]
-    handles.append(Line2D([], [], linestyle="none", marker="D", color=INK, label=PFS_LABEL))
+    handles.append(
+        Line2D([], [], linestyle="none", marker="D", markersize=10, color=INK, label=PFS_LABEL)
+    )
     handles.append(
         Line2D(
             [],
             [],
             linestyle="none",
             marker="s",
+            markersize=12,
             markerfacecolor="none",
             markeredgecolor=MUTED_INK,
+            markeredgewidth=MARKER_EDGE,
             label=CENTER_LEGEND,
         )
     )
     if replicated(ordered):
         handles.append(spread_handle())
-    figure.legend(handles=handles, loc="outside lower center", ncols=2)
+    legend_below(figure, handles, 2)
     return save_plate(figure, destination / f"fig_fidelity_components_{view}_{mode}")
+
+
+def _scatter_figure(handles: Sequence[Line2D]) -> tuple[Figure, Axes]:
+    figure = Figure(figsize=(SCATTER_WIDTH, 5.6 + legend_height(handles, 2)), layout="constrained")
+    axis = figure.subplots(1, 1)
+    axis.grid(color=GRID, linewidth=0.6)
+    axis.set_axisbelow(True)
+    legend_below(figure, handles, 2)
+    return figure, axis
 
 
 def center_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     drawable = frame.dropna(subset=["pfs", "score_center"])
-    figure = Figure(figsize=(6.6, 5.2), layout="constrained")
-    axis = figure.subplots(1, 1)
-    axis.grid(color=GRID, linewidth=0.6)
-    axis.set_axisbelow(True)
+    handles = [
+        *compact_handles(drawable),
+        Line2D(
+            [],
+            [],
+            color=MUTED_INK,
+            linestyle=(0, (1, 1.2)),
+            label="as released to its finetuned variant",
+        ),
+    ]
+    figure, axis = _scatter_figure(handles)
     for model_key, pair in drawable.groupby("model_key", dropna=True):
         if len(pair) < 2:
             continue
@@ -358,7 +394,7 @@ def center_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -
             pair["score_center"],
             pair["pfs"],
             color=shade.ink,
-            linewidth=0.9,
+            linewidth=1.1,
             linestyle=(0, (1, 1.2)),
             zorder=2,
         )
@@ -367,26 +403,14 @@ def center_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -
             float(row.score_center),
             float(row.pfs),
             linestyle="none",
-            markersize=6.5,
-            markeredgewidth=1.1,
+            markersize=MARKER_SIZE,
+            markeredgewidth=MARKER_EDGE,
             **series_style(str(row.series), row.model_key, row.arm),
         )
     _corner_notes(axis, CENTER_CORNERS)
     axis.set_xlabel(CENTER_LABEL)
     axis.set_ylabel(PFS_LABEL)
-    axis.set_title(_title(view, mode, POPULATION, "Fidelity against center"))
-    handles = series_handles(drawable)
-    handles.append(spacer())
-    handles.append(
-        Line2D(
-            [],
-            [],
-            color=MUTED_INK,
-            linestyle=(0, (1, 1.2)),
-            label="as released to its finetuned variant",
-        )
-    )
-    figure.legend(handles=handles, loc="outside right upper")
+    # axis.set_title(_title(view, mode, POPULATION, "Fidelity against center"))
     return save_plate(figure, destination / f"fig_fidelity_center_{view}_{mode}")
 
 
@@ -408,12 +432,15 @@ def _reach(frame: pd.DataFrame, columns: Sequence[str]) -> float:
 
 def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     drawable = frame.dropna(subset=[DELTA_PFS, DELTA_CENTER])
-    figure = Figure(figsize=(6.4, 7.6), layout="constrained")
-    axis = figure.subplots(1, 1)
-    axis.grid(color=GRID, linewidth=0.6)
-    axis.set_axisbelow(True)
-    axis.axvline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=0.9)
-    axis.axhline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=0.9)
+    handles = [
+        *compact_handles(drawable),
+        Line2D([], [], linestyle=REFERENCE_DASH, color=MUTED_INK, label="no change"),
+    ]
+    if replicated(drawable):
+        handles.append(spread_handle())
+    figure, axis = _scatter_figure(handles)
+    axis.axvline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=1.1)
+    axis.axhline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=1.1)
     for row in _rows(drawable):
         style = series_style(str(row.series), row.model_key, row.arm)
         x = float(getattr(row, DELTA_PFS))
@@ -422,35 +449,29 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
         yerr = spread_of(row, DELTA_CENTER)
         if xerr is not None or yerr is not None:
             axis.errorbar(x, y, xerr=xerr, yerr=yerr, ecolor=style["color"], **SPREAD_BAR)
-        axis.plot(x, y, linestyle="none", markersize=7, markeredgewidth=1.1, **style)
+        axis.plot(
+            x, y, linestyle="none", markersize=MARKER_SIZE, markeredgewidth=MARKER_EDGE, **style
+        )
     reach = _reach(drawable, (DELTA_PFS, DELTA_CENTER))
     axis.set_xlim(-reach * 1.25, reach * 1.25)
     axis.set_ylim(-reach * 1.25, reach * 1.25)
     _corner_notes(axis, SHIFT_CORNERS)
     axis.set_xlabel("Change in PFS against the as-released variant")
-    axis.set_ylabel("Change in center alignment against the as-released variant")
-    axis.set_title(_title(view, mode, POPULATION, "What the finetuning bought"))
-    handles = series_handles(drawable) if not drawable.empty else []
-    handles.append(spacer())
-    handles.append(
-        Line2D([], [], linestyle=REFERENCE_DASH, color=MUTED_INK, label="reference: no change")
-    )
-    if replicated(drawable):
-        handles.append(spread_handle())
-    figure.legend(handles=handles, loc="outside lower center", ncols=2)
+    axis.set_ylabel("Change in center alignment\nagainst the as-released variant")
+    # axis.set_title(_title(view, mode, POPULATION, "What the finetuning bought"))
     return save_plate(figure, destination / f"fig_fidelity_shift_{view}_{mode}")
 
 
 def cells_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     ordered = _ordered(frame, "e_mean_nemd").iloc[::-1]
-    figure, axis = _row_figure(len(ordered), 7.6)
+    figure, axis = _row_figure(len(ordered), ROW_WIDTH)
     for position, row in enumerate(_rows(ordered)):
         shade = bar_style(str(row.series), row.model_key, row.arm)
         axis.plot(
             [float(row.e_q10_nemd), float(row.e_q90_nemd)],
             [position, position],
             color=shade["edgecolor"],
-            linewidth=1.0,
+            linewidth=1.2,
             zorder=2,
         )
         axis.barh(
@@ -466,8 +487,8 @@ def cells_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
             float(row.e_median_nemd),
             position,
             marker="|",
-            markersize=9,
-            markeredgewidth=1.4,
+            markersize=13,
+            markeredgewidth=1.8,
             color=shade["edgecolor"],
             linestyle="none",
             zorder=3,
@@ -476,28 +497,33 @@ def cells_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
             float(row.e_mean_nemd),
             position,
             marker="D",
-            markersize=4.5,
+            markersize=7,
             color=INK,
             linestyle="none",
             zorder=3.5,
         )
     drawn = _reference_rule(axis, ordered, "e_mean_nemd", "x")
-    axis.set_yticks(range(len(ordered)), list(ordered["series"]))
-    axis.set_ylim(-0.6, len(ordered) - 0.4)
+    _row_labels(axis, ordered)
     axis.set_xlim(left=0.0)
     axis.set_xlabel("Subpopulation nEMD (lower is closer to the WVS)")
-    axis.set_title(_title(view, mode, POPULATION, "Every subpopulation behind the mean"))
+    # axis.set_title(_title(view, mode, POPULATION, "Every subpopulation behind the mean"))
     handles: list[Any] = [
         Patch(facecolor=GRID, edgecolor=INK, label="q25 to q75 of the run's cells"),
-        Line2D([], [], color=MUTED_INK, lw=1, label="q10 to q90"),
-        Line2D([], [], linestyle="none", marker="|", color=INK, label="median cell"),
+        Line2D([], [], color=MUTED_INK, lw=1.2, label="q10 to q90"),
+        Line2D([], [], linestyle="none", marker="|", markersize=13, color=INK, label="median cell"),
         Line2D(
-            [], [], linestyle="none", marker="D", color=INK, label="mean cell, the accuracy term"
+            [],
+            [],
+            linestyle="none",
+            marker="D",
+            markersize=7,
+            color=INK,
+            label="mean cell, the accuracy term",
         ),
     ]
     if drawn:
         handles.append(_reference_handle("reference: Mixtral archived"))
-    figure.legend(handles=handles, loc="outside lower center", ncols=2)
+    legend_below(figure, handles, 2)
     return save_plate(figure, destination / f"fig_fidelity_cells_{view}_{mode}")
 
 
@@ -527,6 +553,13 @@ def _annotate(axis: Axes, matrix: pd.DataFrame, light_below: float | None) -> No
             )
 
 
+def _matrix_ticks(axis: Axes, matrix: pd.DataFrame) -> None:
+    axis.set_xticks(range(matrix.shape[1]), list(matrix.columns), rotation=30, ha="right")
+    axis.set_yticks(range(matrix.shape[0]), [stacked(series) for series in matrix.index])
+    axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
+    axis.grid(visible=False)
+
+
 def _heatmap(
     matrix: pd.DataFrame,
     title: str,
@@ -536,7 +569,7 @@ def _heatmap(
     shift: bool,
 ) -> list[Path]:
     figure = Figure(
-        figsize=(0.92 * matrix.shape[1] + 5.2, 0.34 * matrix.shape[0] + 2.2),
+        figsize=(1.1 * matrix.shape[1] + 3.8, 0.5 * matrix.shape[0] + 2.8),
         layout="constrained",
     )
     axis = figure.subplots(1, 1)
@@ -554,10 +587,8 @@ def _heatmap(
     else:
         image = axis.imshow(values, cmap=FIDELITY_COLORMAP, vmin=0.0, vmax=1.0, aspect="auto")
         _annotate(axis, matrix, 0.5)
-    axis.set_xticks(range(matrix.shape[1]), list(matrix.columns), rotation=30, ha="right")
-    axis.set_yticks(range(matrix.shape[0]), list(matrix.index))
-    axis.grid(visible=False)
-    axis.set_title(title)
+    _matrix_ticks(axis, matrix)
+    # axis.set_title(title)
     figure.colorbar(image, ax=axis, fraction=0.03, pad=0.02, label=bar_label)
     return save_plate(figure, stem)
 
@@ -588,7 +619,7 @@ def group_components_plate(
 ) -> list[Path]:
     shape = _matrix(frame, family, "pfs").shape
     figure = Figure(
-        figsize=(1.45 * shape[1] + 5.0, 0.68 * shape[0] + 2.8),
+        figsize=(1.6 * shape[1] + 4.4, 0.8 * shape[0] + 3.2),
         layout="constrained",
     )
     axes = figure.subplots(2, 2, sharey=True, squeeze=False).ravel()
@@ -605,11 +636,9 @@ def group_components_plate(
             )
         )
         _annotate(axis, matrix, 0.5)
-        axis.set_xticks(range(matrix.shape[1]), list(matrix.columns), rotation=30, ha="right")
-        axis.set_yticks(range(matrix.shape[0]), list(matrix.index))
-        axis.grid(visible=False)
-        axis.set_title(label, fontsize=11)
-    figure.suptitle(_title(view, mode, family, "What each PFS is made of"))
+        _matrix_ticks(axis, matrix)
+        axis.set_title(label, fontsize=15)
+    # figure.suptitle(_title(view, mode, family, "What each PFS is made of"))
     figure.colorbar(
         images[0],
         ax=axes.tolist(),
