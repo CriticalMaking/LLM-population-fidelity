@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
@@ -21,7 +22,7 @@ from .palette import (
     model_marker,
     model_tone,
 )
-from .population import MODEL_INDEX, REFERENCE_COUNTRIES
+from .population import MODEL_INDEX, REFERENCE_COUNTRIES, across_replicates
 from .registry import is_base
 
 VIEWS: dict[str, str | None] = {
@@ -56,6 +57,24 @@ REFERENCE_TICKS: dict[str, dict[str, dict[str, Any]]] = {
 CENTER_STEMS: dict[str, str] = {
     "german": "fig_population_center",
     "mexican": "fig_population_center_mexican",
+}
+
+POPULATION_SPREAD: tuple[str, ...] = (
+    "e_mean_nemd",
+    "adaptability_ratio",
+    "rho_structure",
+    "pearson_structure",
+    "c_center_pop_nemd",
+    *(f"c_center_{key}_nemd" for key in REFERENCE_COUNTRIES),
+)
+
+SPREAD_BAR: dict[str, Any] = {
+    "fmt": "none",
+    "elinewidth": 0.9,
+    "capsize": 2.2,
+    "capthick": 0.9,
+    "alpha": 0.75,
+    "zorder": 2.8,
 }
 
 ADAPTABILITY_XLABEL = "Mean nEMD to the WVS cells (E)"
@@ -117,6 +136,30 @@ def series_handles(frame: pd.DataFrame) -> list[Line2D]:
 
 def spacer() -> Line2D:
     return Line2D([], [], linestyle="none", label=" ")
+
+
+def spread_of(row: Any, column: str) -> float | None:
+    value = getattr(row, f"{column}_sd", None)
+    if value is None or not np.isfinite(value) or float(value) <= 0.0:
+        return None
+    return float(value)
+
+
+def spread_bars(axis: Axes, row: pd.Series, x_column: str, y_column: str, ink: str) -> None:
+    xerr = spread_of(row, x_column)
+    yerr = spread_of(row, y_column)
+    if xerr is None and yerr is None:
+        return
+    axis.errorbar(row["_x"], row["_y"], xerr=xerr, yerr=yerr, ecolor=ink, **SPREAD_BAR)
+
+
+def spread_handle() -> Line2D:
+    return Line2D(
+        [], [],
+        color=MUTED_INK,
+        linewidth=SPREAD_BAR["elinewidth"],
+        label="bar: ± one s.d. across replicate runs",
+    )
 
 
 def country_reach(
@@ -194,7 +237,11 @@ def _view_frame(table: pd.DataFrame, mode: str, view: str) -> pd.DataFrame:
     question = VIEWS[view]
     if question is not None:
         frame = frame[frame["question"] == question]
-    return frame
+    return across_replicates(frame, spread=POPULATION_SPREAD)
+
+
+def replicated(frame: pd.DataFrame) -> bool:
+    return "n_replicates" in frame.columns and bool(frame["n_replicates"].gt(1).any())
 
 
 def _corner_notes(axis: Axes, corners: tuple[tuple[float, float, str, str, str], ...]) -> None:
@@ -241,6 +288,7 @@ def adaptability_plate(
             style = series_style(row["series"], row["model_key"], row["arm"])
             if is_served_model(row):
                 reference_reaches(axis, row, style["color"], "e_mean_nemd_{}", "x")
+            spread_bars(axis, row, "e_mean_nemd", "adaptability_ratio", style["color"])
             axis.plot(
                 row["_x"], row["_y"],
                 linestyle="none",
@@ -257,6 +305,8 @@ def adaptability_plate(
     handles = series_handles(frame)
     handles.append(spacer())
     handles.extend(reference_handles("x"))
+    if replicated(frame):
+        handles.append(spread_handle())
     handles.append(
         Line2D(
             [], [],
@@ -283,15 +333,18 @@ def center_plate(
     column = f"c_center_{country}_nemd"
     limit = float(max(frame[column].max(), frame["c_center_pop_nemd"].max())) * 1.12
     for axis, question in zip(axes, questions, strict=True):
-        subset = frame[frame["question"] == question]
+        subset = frame[frame["question"] == question].copy()
+        subset["_x"] = subset[column]
+        subset["_y"] = subset["c_center_pop_nemd"]
         axis.plot([0, limit], [0, limit], linestyle=(0, (4, 2)), color=MUTED_INK, linewidth=0.9)
         axis.grid(color=GRID, linewidth=0.6)
         axis.set_axisbelow(True)
         for _, row in subset.iterrows():
             style = series_style(row["series"], row["model_key"], row["arm"])
+            spread_bars(axis, row, column, "c_center_pop_nemd", style["color"])
             axis.plot(
-                row[column],
-                row["c_center_pop_nemd"],
+                row["_x"],
+                row["_y"],
                 linestyle="none",
                 markersize=6.5,
                 markeredgewidth=1.1,
@@ -325,6 +378,8 @@ def center_plate(
     handles.append(
         Line2D([], [], linestyle="none", label=f"x carries the {adjective} reference here")
     )
+    if replicated(frame):
+        handles.append(spread_handle())
     figure.legend(handles=handles, loc="outside right upper")
     return save_plate(figure, destination / f"{CENTER_STEMS[country]}_{view}_{mode}")
 
@@ -355,6 +410,7 @@ def structure_plate(
             style = series_style(row["series"], row["model_key"], row["arm"])
             if is_served_model(row):
                 reference_reaches(axis, row, style["color"], column + "_{}", "y")
+            spread_bars(axis, row, "adaptability_ratio", column, style["color"])
             axis.plot(
                 row["_x"], row["_y"],
                 linestyle="none",
@@ -382,5 +438,7 @@ def structure_plate(
     handles.append(
         Line2D([], [], linestyle="none", label="ideal: A = 1 with the correlation high")
     )
+    if replicated(frame):
+        handles.append(spread_handle())
     figure.legend(handles=handles, loc="outside right upper")
     return save_plate(figure, destination / f"{stem}_{view}_{mode}")

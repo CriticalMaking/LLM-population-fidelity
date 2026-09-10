@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import Any
 
 import numpy as np
@@ -10,13 +10,13 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 from machine_bias_reproduction.config import EXPECTED_SUBPOPULATIONS, OUTPUTS_ROOT, paths_for
-from machine_bias_reproduction.data import load_subpops
+from machine_bias_reproduction.data import PreparedData, load_subpops
 from machine_bias_reproduction.metrics import nemd, pairwise_nemd
 from machine_bias_reproduction.questions import Question, resolve_questions
 
 from .matching import WVS_COUNTRIES
-from .population import MODES, load_run, sources
-from .registry import BASE_ARM
+from .population import MODES, REPLICATE, RunSource, load_run, run_identity, sources
+from .registry import BASE_ARM, is_base
 from .tables import read_csv
 
 FloatArray = npt.NDArray[np.float64]
@@ -100,11 +100,31 @@ SCORE_COLUMNS: tuple[str, ...] = (
     "pfs_with_center",
 )
 
-DELTA_COLUMNS: tuple[str, ...] = ("pfs", "pfs_with_center", "score_center")
+GEOMETRIC_ACROSS_QUESTIONS: tuple[str, ...] = ("pfs", "pfs_with_center")
+
+OVERALL_METRICS: tuple[str, ...] = (
+    *SCORE_COLUMNS,
+    "e_mean_nemd",
+    *(name for name, _ in QUANTILES),
+    "adaptability_ratio",
+    "rho_structure",
+    "c_center_nemd",
+)
+
+PAIRED_METRICS: tuple[str, ...] = (
+    "e_mean_nemd",
+    "d_llm",
+    "adaptability_ratio",
+    "rho_structure",
+    "c_center_nemd",
+    *SCORE_COLUMNS,
+)
+
+BASE_PREFIX = "base_"
 
 TERMS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "accuracy"),
-    ("score_dispersion", "dispersion"),
+    ("score_dispersion", "adaptability"),
     ("score_structure", "structure"),
 )
 
@@ -117,13 +137,24 @@ IDENTITY: tuple[str, ...] = (
     "series",
     "source",
     "mode",
+    REPLICATE,
 )
+
+PAIRED_IDENTITY: tuple[str, ...] = (*IDENTITY, "base_source")
 
 CELLS_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_cells.csv"
 
 GROUPS_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_groups.csv"
 
 OVERALL_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_overall.csv"
+
+PAIRED_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_paired.csv"
+
+PAIRED_OVERALL_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_paired_overall.csv"
+
+
+def delta_column(metric: str) -> str:
+    return f"delta_{metric}_vs_base"
 
 
 def _parse(name: str) -> dict[str, str]:
@@ -216,9 +247,19 @@ def group_fidelity(wvs: FloatArray, llm: FloatArray) -> dict[str, Any]:
     return row
 
 
-def binding_term(frame: pd.DataFrame) -> pd.Series:
-    names = dict(TERMS)
-    return frame[[column for column, _ in TERMS]].idxmin(axis=1).map(names)
+def paired_fidelity(wvs: FloatArray, tuned: FloatArray, base: FloatArray) -> dict[str, Any]:
+    row = group_fidelity(wvs, tuned)
+    reference = group_fidelity(wvs, base)
+    for metric in PAIRED_METRICS:
+        row[f"{BASE_PREFIX}{metric}"] = reference[metric]
+        row[delta_column(metric)] = row[metric] - reference[metric]
+    row[f"{BASE_PREFIX}model_flat"] = reference["model_flat"]
+    return row
+
+
+def binding_term(frame: pd.DataFrame, prefix: str = "") -> pd.Series:
+    names = {f"{prefix}{column}": term for column, term in TERMS}
+    return frame[list(names)].idxmin(axis=1).map(names)
 
 
 def _lead_with(frame: pd.DataFrame, lead: Sequence[str]) -> pd.DataFrame:
@@ -226,47 +267,99 @@ def _lead_with(frame: pd.DataFrame, lead: Sequence[str]) -> pd.DataFrame:
     return frame[[*lead, *rest]]
 
 
-def base_deltas(frame: pd.DataFrame, keys: Sequence[str]) -> pd.DataFrame:
-    columns = [column for column in DELTA_COLUMNS if column in frame.columns]
-    untuned = frame[frame["arm"].eq(BASE_ARM)]
-    lookup = untuned[[*keys, *columns]].rename(
-        columns={column: f"_base_{column}" for column in columns}
-    )
-    merged = frame.merge(lookup, on=list(keys), how="left")
-    for column in columns:
-        merged[f"delta_{column}_vs_base"] = merged[column] - merged[f"_base_{column}"]
-    return merged.drop(columns=[f"_base_{column}" for column in columns])
+def common_cells(runs: Iterable[PreparedData]) -> pd.Index:
+    names: pd.Index | None = None
+    for prepared in runs:
+        names = prepared.names if names is None else names.intersection(prepared.names)
+    if names is None:
+        raise ValueError("no runs to share cells between")
+    return names.sort_values()
+
+
+Loaded = tuple[RunSource, PreparedData]
+
+Pair = tuple[Loaded, Loaded, pd.Index]
+
+
+def paired_runs(loaded: Sequence[Loaded], mode: str) -> Iterator[Pair]:
+    scored = [(run, prepared) for run, prepared in loaded if mode in prepared.modes()]
+    by_arm: dict[tuple[str, str], dict[int, Loaded]] = {}
+    for run, prepared in scored:
+        if run.key is not None and run.arm is not None:
+            by_arm.setdefault((run.key, run.arm), {})[run.replicate] = (run, prepared)
+    for (key, arm), tuned in by_arm.items():
+        base = by_arm.get((key, BASE_ARM))
+        if is_base(arm) or base is None:
+            continue
+        shared = sorted(set(tuned) & set(base))
+        if not shared:
+            continue
+        common = common_cells([*(tuned[r][1] for r in shared), *(base[r][1] for r in shared)])
+        for replicate in shared:
+            yield tuned[replicate], base[replicate], common
+
+
+def _grouped(
+    identity: dict[str, Any],
+    facet: pd.DataFrame,
+    score: Callable[..., dict[str, Any]],
+    *arrays: FloatArray,
+) -> list[dict[str, Any]]:
+    def scored(keep: npt.NDArray[np.bool_]) -> dict[str, Any]:
+        return score(*(array[keep] for array in arrays))
+
+    rows = [
+        {
+            **identity,
+            "group": POPULATION,
+            "level": EVERY_CELL,
+            **scored(np.ones(len(facet), dtype=bool)),
+        }
+    ]
+    for family in FAMILIES:
+        values = facet[family]
+        for level in levels(family, values):
+            rows.append(
+                {
+                    **identity,
+                    "group": family,
+                    "level": level,
+                    **scored(values.eq(level).to_numpy()),
+                }
+            )
+    return rows
+
+
+def _loaded_runs(question: Question) -> list[Loaded]:
+    found: list[Loaded] = []
+    for run in sources():
+        prepared = load_run(run.source, run.key, run.arm, question)
+        if prepared is not None:
+            found.append((run, prepared))
+    return found
+
+
+def _answers(prepared: PreparedData, props: pd.DataFrame, names: pd.Index) -> FloatArray:
+    columns = list(prepared.question.answer_columns)
+    return props.loc[names, columns].to_numpy(dtype=np.float64)
 
 
 def build_fidelity(
     questions: list[Question] | None = None,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     facets = cell_facets()
     cell_frames: list[pd.DataFrame] = []
     rows: list[dict[str, Any]] = []
+    paired_rows: list[dict[str, Any]] = []
     for question in questions or resolve_questions(None):
-        columns = list(question.answer_columns)
-        for series, source, key, label, arm in sources():
-            prepared = load_run(source, key, arm, question)
-            if prepared is None:
-                continue
+        loaded = _loaded_runs(question)
+        for run, prepared in loaded:
             names = prepared.names
             facet = facets.reindex(names)
-            wvs = prepared.wvs_props.loc[names, columns].to_numpy(dtype=np.float64)
-            for mode in MODES:
-                if mode not in prepared.modes():
-                    continue
-                llm = prepared.props(mode).loc[names, columns].to_numpy(dtype=np.float64)
-                identity: dict[str, Any] = {
-                    "question": question.var,
-                    "question_label": question.label,
-                    "model_key": key,
-                    "model_label": label,
-                    "arm": arm,
-                    "series": series,
-                    "source": source,
-                    "mode": mode,
-                }
+            wvs = _answers(prepared, prepared.wvs_props, names)
+            for mode in prepared.modes():
+                llm = _answers(prepared, prepared.props(mode), names)
+                identity = run_identity(run, question, mode)
                 error = np.atleast_1d(np.asarray(nemd(wvs, llm), dtype=np.float64))
                 cell_frames.append(
                     facet.assign(
@@ -276,61 +369,85 @@ def build_fidelity(
                         score_accuracy=np.clip(1.0 - error, 0.0, 1.0),
                     ).reset_index(drop=True)
                 )
-                rows.append(
-                    {
-                        **identity,
-                        "group": POPULATION,
-                        "level": EVERY_CELL,
-                        **group_fidelity(wvs, llm),
-                    }
+                rows += _grouped(identity, facet, group_fidelity, wvs, llm)
+        for mode in MODES:
+            for (run, tuned_run), (base_run, base_data), common in paired_runs(loaded, mode):
+                identity = {**run_identity(run, question, mode), "base_source": base_run.source}
+                paired_rows += _grouped(
+                    identity,
+                    facets.reindex(common),
+                    paired_fidelity,
+                    _answers(tuned_run, tuned_run.wvs_props, common),
+                    _answers(tuned_run, tuned_run.props(mode), common),
+                    _answers(base_data, base_data.props(mode), common),
                 )
-                for family in FAMILIES:
-                    values = facet[family]
-                    for level in levels(family, values):
-                        keep = values.eq(level).to_numpy()
-                        rows.append(
-                            {
-                                **identity,
-                                "group": family,
-                                "level": level,
-                                **group_fidelity(wvs[keep], llm[keep]),
-                            }
-                        )
     cells = _lead_with(pd.concat(cell_frames, ignore_index=True), [*IDENTITY, "subpopulation"])
-    scored = pd.DataFrame(rows)
-    scored["binding_term"] = binding_term(scored)
-    groups = base_deltas(scored, ("model_key", "mode", "question", "group", "level"))
-    return cells, _lead_with(groups, [*IDENTITY, "group", "level"])
+    groups = pd.DataFrame(rows)
+    groups["binding_term"] = binding_term(groups)
+    paired = pd.DataFrame(paired_rows)
+    if not paired.empty:
+        paired["binding_term"] = binding_term(paired)
+        paired[f"{BASE_PREFIX}binding_term"] = binding_term(paired, BASE_PREFIX)
+        paired = _lead_with(paired, [*PAIRED_IDENTITY, "group", "level"])
+    return cells, _lead_with(groups, [*IDENTITY, "group", "level"]), paired
+
+
+def _across_questions(
+    frame: pd.DataFrame,
+    keys: Sequence[str],
+    metrics: Sequence[str],
+    flags: Sequence[str],
+) -> pd.DataFrame:
+    aggregates: dict[str, tuple[str, Any]] = {
+        "n_questions": ("question", "nunique"),
+        "n_cells": ("n_cells", "min"),
+    }
+    for metric in metrics:
+        geometric = metric.removeprefix(BASE_PREFIX) in GEOMETRIC_ACROSS_QUESTIONS
+        aggregates[metric] = (metric, _geometric_mean_of if geometric else "mean")
+    aggregates.update({flag: (flag, "any") for flag in flags})
+    return frame.groupby(list(keys), dropna=False).agg(**aggregates).reset_index()
 
 
 def overall_fidelity(groups: pd.DataFrame) -> pd.DataFrame:
-    keys = ["series", "source", "model_key", "model_label", "arm", "mode", "group", "level"]
-    overall = (
-        groups.groupby(keys, dropna=False)
-        .agg(
-            n_questions=("question", "nunique"),
-            n_cells=("n_cells", "min"),
-            pfs=("pfs", _geometric_mean_of),
-            pfs_with_center=("pfs_with_center", _geometric_mean_of),
-            score_accuracy=("score_accuracy", "mean"),
-            score_dispersion=("score_dispersion", "mean"),
-            score_structure=("score_structure", "mean"),
-            score_center=("score_center", "mean"),
-            e_mean_nemd=("e_mean_nemd", "mean"),
-            e_q10_nemd=("e_q10_nemd", "mean"),
-            e_q25_nemd=("e_q25_nemd", "mean"),
-            e_median_nemd=("e_median_nemd", "mean"),
-            e_q75_nemd=("e_q75_nemd", "mean"),
-            e_q90_nemd=("e_q90_nemd", "mean"),
-            adaptability_ratio=("adaptability_ratio", "mean"),
-            rho_structure=("rho_structure", "mean"),
-            model_flat=("model_flat", "any"),
-            c_center_nemd=("c_center_nemd", "mean"),
-        )
-        .reset_index()
-    )
+    keys = [
+        "series",
+        "source",
+        "model_key",
+        "model_label",
+        "arm",
+        "mode",
+        REPLICATE,
+        "group",
+        "level",
+    ]
+    overall = _across_questions(groups, keys, OVERALL_METRICS, ("model_flat",))
     overall["binding_term"] = binding_term(overall)
-    return base_deltas(overall, ("model_key", "mode", "group", "level"))
+    return overall
+
+
+def overall_paired(paired: pd.DataFrame) -> pd.DataFrame:
+    if paired.empty:
+        return paired
+    keys = [
+        "series",
+        "source",
+        "base_source",
+        "model_key",
+        "model_label",
+        "arm",
+        "mode",
+        REPLICATE,
+        "group",
+        "level",
+    ]
+    metrics = [*PAIRED_METRICS, *(f"{BASE_PREFIX}{metric}" for metric in PAIRED_METRICS)]
+    overall = _across_questions(paired, keys, metrics, ("model_flat", f"{BASE_PREFIX}model_flat"))
+    for metric in PAIRED_METRICS:
+        overall[delta_column(metric)] = overall[metric] - overall[f"{BASE_PREFIX}{metric}"]
+    overall["binding_term"] = binding_term(overall)
+    overall[f"{BASE_PREFIX}binding_term"] = binding_term(overall, BASE_PREFIX)
+    return overall
 
 
 def cell_summary(cells: pd.DataFrame) -> pd.DataFrame:
@@ -338,7 +455,7 @@ def cell_summary(cells: pd.DataFrame) -> pd.DataFrame:
     summary = (
         cells.groupby(keys, dropna=False)
         .agg(
-            n_runs=("series", "nunique"),
+            n_runs=("source", "nunique"),
             mean_nEMD=("nEMD", "mean"),
             median_nEMD=("nEMD", "median"),
             min_nEMD=("nEMD", "min"),
@@ -373,15 +490,32 @@ def cross_check_cells(cells: pd.DataFrame) -> int:
     return reconciled
 
 
-def check_fidelity(cells: pd.DataFrame, groups: pd.DataFrame) -> None:
+def _check_paired(groups: pd.DataFrame, paired: pd.DataFrame) -> None:
+    if paired.empty:
+        return
+    assert not paired["arm"].map(is_base).any()
+    assert paired["n_cells"].gt(0).all()
+    own = _population(groups).set_index(["question", "mode", "source"])["n_cells"]
+    pooled = _population(paired)
+    for column in ("source", "base_source"):
+        shared = pooled.set_index(["question", "mode", column])["n_cells"]
+        assert shared.le(own.reindex(shared.index)).all(), f"paired cells exceed the {column} run"
+    per_pair = pooled.groupby(["question", "mode", "model_key", "arm"])["n_cells"].nunique()
+    assert per_pair.eq(1).all(), "replicates of one pair were scored on different cells"
+    for metric in PAIRED_METRICS:
+        expected = paired[metric] - paired[f"{BASE_PREFIX}{metric}"]
+        assert np.allclose(paired[delta_column(metric)], expected, equal_nan=True)
+
+
+def check_fidelity(cells: pd.DataFrame, groups: pd.DataFrame, paired: pd.DataFrame) -> None:
     assert not cells.empty
     assert not groups.empty
     assert set(groups["group"]) == {POPULATION, *FAMILIES}
     assert groups["n_cells"].le(EXPECTED_SUBPOPULATIONS).all()
-    pooled = _population(groups).set_index(["question", "mode", "series"])["n_cells"]
+    pooled = _population(groups).set_index(["question", "mode", "source"])["n_cells"]
     for family in FAMILIES:
         family_rows = groups[groups["group"].eq(family)]
-        totals = family_rows.groupby(["question", "mode", "series"])["n_cells"].sum()
+        totals = family_rows.groupby(["question", "mode", "source"])["n_cells"].sum()
         assert totals.le(pooled.reindex(totals.index)).all(), f"{family} covers unseen cells"
     scored = groups[list(SCORE_COLUMNS)].to_numpy(dtype=np.float64)
     finite = scored[np.isfinite(scored)]
@@ -391,4 +525,5 @@ def check_fidelity(cells: pd.DataFrame, groups: pd.DataFrame) -> None:
         complete = group[group["n_cells"].eq(group["n_cells"].max())]
         spread = complete["d_wvs"].to_numpy(dtype=np.float64)
         assert np.allclose(spread, spread[0]), f"survey dispersion moved for {question}/{mode}"
-    assert cells.groupby(["question", "mode", "series"])["subpopulation"].nunique().gt(0).all()
+    assert cells.groupby(["question", "mode", "source"])["subpopulation"].nunique().gt(0).all()
+    _check_paired(groups, paired)

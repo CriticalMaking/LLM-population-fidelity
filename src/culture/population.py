@@ -1,14 +1,21 @@
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Sequence
+from typing import Any, NamedTuple
 
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from pandas.api.types import is_bool_dtype, is_numeric_dtype
 from scipy.stats import pearsonr, spearmanr
 
 from machine_bias_reproduction.analysis import load_source
-from machine_bias_reproduction.config import EXPECTED_SUBPOPULATIONS, OUTPUTS_ROOT, paths_for
+from machine_bias_reproduction.config import (
+    EXPECTED_SUBPOPULATIONS,
+    FIRST_REPLICATE,
+    OUTPUTS_ROOT,
+    paths_for,
+)
 from machine_bias_reproduction.data import PreparedData, country_of
 from machine_bias_reproduction.metrics import nemd, pairwise_nemd
 from machine_bias_reproduction.questions import Question, resolve_questions
@@ -19,10 +26,24 @@ from .palette import (
     MIXTRAL_FRESH,
     arm_order,
 )
-from .registry import ARMS, CULTURE_MODELS, arm_display, csv_stems
+from .registry import ARMS, CULTURE_MODELS, arm_display, csv_stems, replicates, run_slug
 from .tables import read_csv
 
 MODES = ("ntp", "fa")
+
+REPLICATE = "replicate"
+
+RUN_KEYS: tuple[str, ...] = (
+    "question",
+    "question_label",
+    "model_key",
+    "model_label",
+    "arm",
+    "series",
+    "mode",
+    "group",
+    "level",
+)
 
 REFERENCE_COUNTRIES: dict[str, str] = {"german": "Germany", "mexican": "Mexico"}
 
@@ -35,15 +56,73 @@ STRUCTURE_TABLE = OUTPUTS_ROOT / "culture" / "population_structure.csv"
 MODEL_INDEX = {key: index for index, key in enumerate(CULTURE_MODELS)}
 
 
-def sources() -> list[tuple[str, str, str | None, str, str | None]]:
-    found: list[tuple[str, str, str | None, str, str | None]] = [
-        (f"{model.label} ({arm_display(arm)})", f"culture/{key}/{arm}", key, model.label, arm)
+class RunSource(NamedTuple):
+    series: str
+    source: str
+    key: str | None
+    label: str
+    arm: str | None
+    replicate: int
+
+
+def sources() -> list[RunSource]:
+    found = [
+        RunSource(
+            f"{model.label} ({arm_display(arm)})",
+            run_slug(key, arm, replicate),
+            key,
+            model.label,
+            arm,
+            replicate,
+        )
         for key, model in CULTURE_MODELS.items()
         for arm in arm_order(ARMS)
+        for replicate in replicates(key, arm)
     ]
-    found.append((MIXTRAL_ARCHIVED, "archived", None, MIXTRAL_ARCHIVED, None))
-    found.append((MIXTRAL_FRESH, "fresh", None, MIXTRAL_FRESH, None))
+    for label, source in ((MIXTRAL_ARCHIVED, "archived"), (MIXTRAL_FRESH, "fresh")):
+        found.append(RunSource(label, source, None, label, None, FIRST_REPLICATE))
     return found
+
+
+def run_identity(run: RunSource, question: Question, mode: str) -> dict[str, Any]:
+    return {
+        "question": question.var,
+        "question_label": question.label,
+        "model_key": run.key,
+        "model_label": run.label,
+        "arm": run.arm,
+        "series": run.series,
+        "source": run.source,
+        "mode": mode,
+        REPLICATE: run.replicate,
+    }
+
+
+def across_replicates(
+    frame: pd.DataFrame,
+    keys: Sequence[str] = RUN_KEYS,
+    spread: Sequence[str] = (),
+) -> pd.DataFrame:
+    if REPLICATE not in frame.columns or frame.empty:
+        return frame
+    present = [key for key in keys if key in frame.columns]
+    rest = [column for column in frame.columns if column not in (*present, REPLICATE)]
+    flags = [column for column in rest if is_bool_dtype(frame[column])]
+    numeric = [column for column in rest if column not in flags and is_numeric_dtype(frame[column])]
+    labels = [column for column in rest if column not in flags and column not in numeric]
+    aggregates: dict[str, tuple[str, Any]] = {
+        **{column: (column, "mean") for column in numeric},
+        **{column: (column, "any") for column in flags},
+        **{column: (column, "first") for column in labels},
+        "n_replicates": (REPLICATE, "nunique"),
+    }
+    grouped = frame.groupby(present, dropna=False, sort=False)
+    collapsed = grouped.agg(**aggregates)
+    measured = [column for column in spread if column in numeric]
+    if measured:
+        collapsed = pd.concat([collapsed, grouped[measured].std(ddof=1).add_suffix("_sd")], axis=1)
+    ordered = [*present, *rest, "n_replicates", *(f"{column}_sd" for column in measured)]
+    return collapsed.reset_index()[ordered]
 
 
 def load_run(
@@ -189,26 +268,16 @@ def _build(
 ) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     for question in questions or resolve_questions(None):
-        for series, source, key, label, arm in sources():
-            prepared = load_run(source, key, arm, question)
+        for run in sources():
+            prepared = load_run(run.source, run.key, run.arm, question)
             if prepared is None:
                 continue
-            reported = reported_center(source, question) if with_reported_center else {}
+            reported = reported_center(run.source, question) if with_reported_center else {}
             for mode in MODES:
                 values = metrics(prepared, mode)
                 if values is None:
                     continue
-                row = {
-                    "question": question.var,
-                    "question_label": question.label,
-                    "model_key": key,
-                    "model_label": label,
-                    "arm": arm,
-                    "series": series,
-                    "source": source,
-                    "mode": mode,
-                    **values,
-                }
+                row = {**run_identity(run, question, mode), **values}
                 if with_reported_center:
                     row["r2_center_reported"] = reported.get(mode, float("nan"))
                 rows.append(row)

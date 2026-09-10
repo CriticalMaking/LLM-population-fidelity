@@ -244,6 +244,45 @@ def test_every_reference_country_gets_its_own_tick(tmp_path: Path) -> None:
     ]
 
 
+def _replicated() -> pd.DataFrame:
+    first = table()
+    first["replicate"] = 1
+    second = first[first["series"].eq("Gemma (german)")].copy()
+    second["replicate"] = 2
+    second["e_mean_nemd"] = 0.12
+    second["adaptability_ratio"] = 0.7
+    return pd.concat([first, second], ignore_index=True)
+
+
+def test_across_replicates_averages_each_series_and_keeps_the_spread() -> None:
+    collapsed = population.across_replicates(
+        _replicated(), spread=("e_mean_nemd", "adaptability_ratio", "absent")
+    )
+
+    assert len(collapsed) == len(table())
+    assert "replicate" not in collapsed.columns
+    german = collapsed[
+        collapsed["series"].eq("Gemma (german)") & collapsed["question"].eq("d_happy")
+    ].iloc[0]
+    assert german["n_replicates"] == 2
+    assert german["e_mean_nemd"] == pytest.approx(0.10)
+    assert german["e_mean_nemd_sd"] == pytest.approx(np.std([0.08, 0.12], ddof=1))
+    assert german["adaptability_ratio"] == pytest.approx(0.6)
+    assert german["source"] == "culture/gemma4_31b/german"
+    single = collapsed[collapsed["series"].eq("Mixtral archived")].iloc[0]
+    assert single["n_replicates"] == 1
+    assert np.isnan(single["e_mean_nemd_sd"])
+    assert "absent_sd" not in collapsed.columns
+    assert population.across_replicates(table()).equals(table())
+
+
+def test_replicated_runs_draw_one_marker_with_a_spread_bar(tmp_path: Path) -> None:
+    built = population_plates.adaptability_plate(_replicated(), "ntp", "all", tmp_path)
+    assert built[0].is_file()
+    assert population_plates.replicated(population_plates._view_frame(_replicated(), "ntp", "all"))
+    assert not population_plates.replicated(table())
+
+
 def test_a_run_with_no_reference_columns_still_draws(tmp_path: Path) -> None:
     without = table()
     without["e_mean_nemd_german"] = np.nan

@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from culture import fidelity, fidelity_plates
+from culture.population import RunSource
+from machine_bias_reproduction.data import Coverage, PreparedData
+from machine_bias_reproduction.questions import QUESTIONS
 
 CELLS = (
     "Germany 2018 Female 45-54 Middle Working Married",
@@ -33,6 +37,16 @@ MODEL = np.array(
         [0.2, 0.3, 0.3, 0.2],
         [0.6, 0.2, 0.1, 0.1],
         [0.2, 0.1, 0.2, 0.5],
+    ]
+)
+
+BASE = np.array(
+    [
+        [0.3, 0.3, 0.3, 0.1],
+        [0.25, 0.25, 0.25, 0.25],
+        [0.2, 0.3, 0.3, 0.2],
+        [0.4, 0.3, 0.2, 0.1],
+        [0.3, 0.2, 0.2, 0.3],
     ]
 )
 
@@ -110,66 +124,151 @@ def test_a_model_with_one_answer_for_every_cell_scores_zero_not_undefined() -> N
     assert values["pfs"] == 0.0
 
 
+def test_a_paired_score_reads_both_conditions_off_the_same_cells() -> None:
+    values = fidelity.paired_fidelity(SURVEY, MODEL, BASE)
+    tuned = fidelity.group_fidelity(SURVEY, MODEL)
+    reference = fidelity.group_fidelity(SURVEY, BASE)
+
+    assert values["n_cells"] == 5
+    for metric in fidelity.PAIRED_METRICS:
+        assert values[metric] == pytest.approx(tuned[metric])
+        assert values[f"base_{metric}"] == pytest.approx(reference[metric])
+        assert values[fidelity.delta_column(metric)] == pytest.approx(
+            tuned[metric] - reference[metric]
+        )
+    assert values["base_model_flat"] is False
+
+
+def _prepared(names: tuple[str, ...], model: np.ndarray, modes: tuple[str, ...]) -> PreparedData:
+    index = pd.Index(names, name="name")
+    columns = list(QUESTIONS["d_happy"].answer_columns)
+    survey = pd.DataFrame(SURVEY[: len(names)], index=index, columns=columns)
+    answers = pd.DataFrame(model[: len(names)], index=index, columns=columns)
+    return PreparedData(
+        question=QUESTIONS["d_happy"],
+        wvs=pd.DataFrame(),
+        subpops=pd.DataFrame(),
+        ntp_raw=pd.DataFrame() if "ntp" in modes else None,
+        fa_raw=pd.DataFrame() if "fa" in modes else None,
+        names=index,
+        wvs_props=survey,
+        ntp_props=answers if "ntp" in modes else None,
+        fa_props=answers if "fa" in modes else None,
+        social_predictors=pd.DataFrame(index=index),
+        coverage=Coverage(0, 0, 0, 0, len(names), len(names)),
+    )
+
+
+def _run(arm: str | None, replicate: int = 1) -> RunSource:
+    if arm is None:
+        return RunSource("Mixtral archived", "archived", None, "Mixtral archived", None, 1)
+    source = f"culture/gemma4_31b/{arm}" + ("" if replicate == 1 else f"/rep{replicate}")
+    return RunSource(f"Gemma ({arm})", source, "gemma4_31b", "Gemma", arm, replicate)
+
+
+def test_common_cells_is_the_intersection_over_every_run_named() -> None:
+    runs = [
+        _prepared(("e", "d", "c", "b", "a"), MODEL, ("fa",)),
+        _prepared(("d", "c", "b", "a"), MODEL, ("fa",)),
+        _prepared(("c", "b", "e"), MODEL, ("fa",)),
+    ]
+
+    assert list(fidelity.common_cells(runs)) == ["b", "c"]
+    with pytest.raises(ValueError, match="no runs"):
+        fidelity.common_cells([])
+
+
+def test_each_replicate_is_paired_with_its_own_base_on_the_cells_every_replicate_kept() -> None:
+    loaded = [
+        (_run("base"), _prepared(("a", "b", "c", "d", "e"), BASE, ("ntp", "fa"))),
+        (_run("base", 2), _prepared(("a", "b", "c", "d"), BASE, ("fa",))),
+        (_run("german"), _prepared(("b", "c", "d", "e"), MODEL, ("ntp", "fa"))),
+        (_run("german", 2), _prepared(("a", "b", "c", "d", "e"), MODEL, ("fa",))),
+        (_run("german", 3), _prepared(("a", "b", "c", "d", "e"), MODEL, ("fa",))),
+        (_run("spanish-mx"), _prepared(("a", "b", "c", "d", "e"), MODEL, ("fa",))),
+        (_run(None), _prepared(("a", "b", "c", "d", "e"), MODEL, ("ntp", "fa"))),
+    ]
+
+    pairs = list(fidelity.paired_runs(loaded, "fa"))
+    described = [
+        (run.arm, run.replicate, base.replicate, list(common))
+        for (run, _), (base, _), common in pairs
+    ]
+    assert described == [
+        ("german", 1, 1, ["b", "c", "d"]),
+        ("german", 2, 2, ["b", "c", "d"]),
+        ("spanish-mx", 1, 1, ["a", "b", "c", "d", "e"]),
+    ]
+
+    ntp_pairs = list(fidelity.paired_runs(loaded, "ntp"))
+    assert [(run.arm, list(common)) for (run, _), _, common in ntp_pairs] == [
+        ("german", ["b", "c", "d", "e"])
+    ]
+
+
+def _identity(question: str, arm: str | None, series: str) -> dict[str, Any]:
+    key = None if arm is None else "gemma4_31b"
+    return {
+        "question": question,
+        "question_label": question,
+        "model_key": key,
+        "model_label": series,
+        "arm": arm,
+        "series": series,
+        "source": "archived" if key is None else f"culture/{key}/{arm}",
+        "mode": "ntp",
+        "replicate": 1,
+    }
+
+
 def scored() -> pd.DataFrame:
     rows = []
     for question in ("d_happy", "d_trust"):
-        for key, arm, series in (
-            ("gemma4_31b", "base", "Gemma (as released)"),
-            ("gemma4_31b", "german", "Gemma (german)"),
-            (None, None, "Mixtral archived"),
+        for arm, series, answers in (
+            ("base", "Gemma (as released)", BASE),
+            ("german", "Gemma (german)", MODEL),
+            (None, "Mixtral archived", MODEL),
         ):
             for group, level in ((fidelity.POPULATION, fidelity.EVERY_CELL), ("sex", "Female")):
                 rows.append(
                     {
-                        "question": question,
-                        "question_label": question,
-                        "model_key": key,
-                        "model_label": series,
-                        "arm": arm,
-                        "series": series,
-                        "source": "archived" if key is None else f"culture/{key}/{arm}",
-                        "mode": "ntp",
+                        **_identity(question, arm, series),
                         "group": group,
                         "level": level,
-                        "n_cells": 5,
-                        "n_pairs": 10,
-                        "e_mean_nemd": 0.2,
-                        "e_q10_nemd": 0.1,
-                        "e_q25_nemd": 0.15,
-                        "e_median_nemd": 0.2,
-                        "e_q75_nemd": 0.25,
-                        "e_q90_nemd": 0.3,
-                        "d_wvs": 0.2,
-                        "d_llm": 0.1,
-                        "adaptability_ratio": 0.5,
-                        "rho_structure": 0.4,
-                        "rho_structure_p_value": 0.01,
-                        "model_flat": False,
-                        "c_center_nemd": 0.05,
-                        "score_accuracy": 0.8,
-                        "score_dispersion": 0.5,
-                        "score_structure": 0.25 if arm == "german" else 0.4,
-                        "score_center": 0.95,
-                        "pfs": 0.4 if arm == "german" else 0.5,
-                        "pfs_with_center": 0.5 if arm == "german" else 0.6,
+                        **fidelity.group_fidelity(SURVEY, answers),
                     }
                 )
     frame = pd.DataFrame(rows)
     frame["binding_term"] = fidelity.binding_term(frame)
-    return fidelity.base_deltas(frame, ("model_key", "mode", "question", "group", "level"))
+    return frame
+
+
+def paired() -> pd.DataFrame:
+    rows = []
+    for question in ("d_happy", "d_trust"):
+        for group, level in ((fidelity.POPULATION, fidelity.EVERY_CELL), ("sex", "Female")):
+            rows.append(
+                {
+                    **_identity(question, "german", "Gemma (german)"),
+                    "base_source": "culture/gemma4_31b/base",
+                    "group": group,
+                    "level": level,
+                    **fidelity.paired_fidelity(SURVEY, MODEL, BASE),
+                }
+            )
+    frame = pd.DataFrame(rows)
+    frame["binding_term"] = fidelity.binding_term(frame)
+    frame["base_binding_term"] = fidelity.binding_term(frame, "base_")
+    return frame
 
 
 def test_the_binding_term_names_the_smallest_of_the_three() -> None:
-    assert set(scored()["binding_term"]) == {"structure"}
-
-
-def test_a_finetuned_variant_is_differenced_against_its_own_base_and_a_reference_is_not() -> None:
     frame = scored()
-    tuned = frame[frame["arm"].eq("german")]
-    reference = frame[frame["series"].eq("Mixtral archived")]
+    smallest = frame[["score_accuracy", "score_dispersion", "score_structure"]].idxmin(axis=1)
+    expected = smallest.map(dict(fidelity.TERMS))
 
-    assert np.allclose(tuned["delta_pfs_vs_base"].to_numpy(), -0.1)
-    assert reference["delta_pfs_vs_base"].isna().all()
+    assert frame["binding_term"].tolist() == expected.tolist()
+    assert set(frame["binding_term"]) <= {"accuracy", "adaptability", "structure"}
 
 
 def test_the_all_view_is_the_geometric_mean_across_the_topics() -> None:
@@ -177,18 +276,59 @@ def test_the_all_view_is_the_geometric_mean_across_the_topics() -> None:
     pooled = overall[
         overall["series"].eq("Gemma (as released)") & overall["group"].eq(fidelity.POPULATION)
     ]
+    expected = fidelity.group_fidelity(SURVEY, BASE)["pfs"]
 
     assert len(pooled) == 1
     assert pooled["n_questions"].iat[0] == 2
-    assert pooled["pfs"].iat[0] == pytest.approx(0.5)
-    assert pooled["binding_term"].iat[0] == "structure"
+    assert pooled["pfs"].iat[0] == pytest.approx(expected)
+    assert "delta_pfs_vs_base" not in overall.columns
+
+
+def test_the_paired_all_view_differences_the_two_geometric_means() -> None:
+    frame = paired()
+    frame.loc[frame["question"].eq("d_trust"), "pfs"] = 0.9
+    frame.loc[frame["question"].eq("d_happy"), "pfs"] = 0.4
+    frame["base_pfs"] = 0.5
+    frame["delta_pfs_vs_base"] = frame["pfs"] - frame["base_pfs"]
+
+    overall = fidelity.overall_paired(frame)
+    pooled = overall[overall["group"].eq(fidelity.POPULATION)]
+
+    assert len(pooled) == 1
+    assert pooled["pfs"].iat[0] == pytest.approx(0.6)
+    assert pooled["base_pfs"].iat[0] == pytest.approx(0.5)
+    assert pooled["delta_pfs_vs_base"].iat[0] == pytest.approx(0.1)
+    assert fidelity.overall_paired(frame.iloc[0:0]).empty
+
+
+def test_the_checks_accept_paired_rows_that_never_exceed_their_runs() -> None:
+    groups = scored()
+
+    fidelity._check_paired(groups, paired())
+    fidelity._check_paired(groups, paired().iloc[0:0])
+
+    oversized = paired()
+    oversized["n_cells"] = 6
+    with pytest.raises(AssertionError, match="exceed"):
+        fidelity._check_paired(groups, oversized)
+
+    uneven = pd.concat([paired(), paired().assign(replicate=2, n_cells=4)], ignore_index=True)
+    with pytest.raises(AssertionError, match="different cells"):
+        fidelity._check_paired(groups, uneven)
 
 
 def test_the_root_holds_the_pooled_report_and_a_subfolder_holds_each_family(
     tmp_path: Path,
 ) -> None:
     groups = scored()
-    written = fidelity_plates.fidelity_plates(groups, fidelity.overall_fidelity(groups), tmp_path)
+    shifts = paired()
+    written = fidelity_plates.fidelity_plates(
+        groups,
+        fidelity.overall_fidelity(groups),
+        shifts,
+        fidelity.overall_paired(shifts),
+        tmp_path,
+    )
 
     assert sorted({path.suffix for path in written}) == [".pdf", ".png"]
     assert sorted(path.name for path in tmp_path.glob("*.png")) == [
@@ -220,3 +360,26 @@ def test_the_root_holds_the_pooled_report_and_a_subfolder_holds_each_family(
         "fig_fidelity_sex_trust_ntp.png",
     ]
     assert not (tmp_path / "country").exists()
+
+
+def test_replicates_are_drawn_as_one_marker_with_a_spread(tmp_path: Path) -> None:
+    groups = scored()
+    second = groups[groups["arm"].eq("german")].copy()
+    second["replicate"] = 2
+    second["pfs"] = second["pfs"] + 0.05
+    shifts = paired()
+    again = shifts.copy()
+    again["replicate"] = 2
+    again["delta_pfs_vs_base"] = again["delta_pfs_vs_base"] + 0.1
+    stacked = pd.concat([groups, second], ignore_index=True)
+    stacked_shifts = pd.concat([shifts, again], ignore_index=True)
+
+    written = fidelity_plates.fidelity_plates(
+        stacked,
+        fidelity.overall_fidelity(stacked),
+        stacked_shifts,
+        fidelity.overall_paired(stacked_shifts),
+        tmp_path,
+    )
+
+    assert (tmp_path / "fig_fidelity_shift_happiness_ntp.png") in written

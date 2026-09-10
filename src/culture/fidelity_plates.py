@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
+from matplotlib import rc_context
 from matplotlib.axes import Axes
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
@@ -28,11 +29,22 @@ from .fidelity import (
     FAMILIES,
     FAMILY_LABELS,
     POPULATION,
+    SCORE_COLUMNS,
+    delta_column,
     levels,
 )
 from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, arm_hatch, arm_order, model_tone
-from .population import MODEL_INDEX, MODES
-from .population_plates import VIEWS, series_handles, series_style, spacer
+from .population import MODEL_INDEX, MODES, across_replicates
+from .population_plates import (
+    SPREAD_BAR,
+    VIEWS,
+    replicated,
+    series_handles,
+    series_style,
+    spacer,
+    spread_handle,
+    spread_of,
+)
 from .registry import is_base
 
 FIDELITY_FIGURES = FIGURES_ROOT / "fidelity"
@@ -44,6 +56,29 @@ SHIFT_COLORMAP = LinearSegmentedColormap.from_list(
 )
 
 REFERENCE_DASH = (0, (4, 2))
+
+PLATE_TEXT: dict[str, Any] = {
+    "font.size": 12.5,
+    "axes.labelsize": 12.5,
+    "axes.titlesize": 13.0,
+    "xtick.labelsize": 11.5,
+    "ytick.labelsize": 11.5,
+    "legend.fontsize": 11.0,
+}
+
+NOTE_SIZE = 9.5
+
+VALUE_SIZE = 9.0
+
+CELL_VALUE_SIZE = 8.0
+
+DELTA_PFS = delta_column("pfs")
+
+DELTA_CENTER = delta_column("score_center")
+
+SPREAD: tuple[str, ...] = (*SCORE_COLUMNS, "e_mean_nemd", DELTA_PFS, DELTA_CENTER)
+
+BAR_SPREAD: dict[str, Any] = {"ecolor": MUTED_INK, "elinewidth": 0.9, "capsize": 2.2}
 
 COMPONENTS: tuple[tuple[str, str, str], ...] = (
     ("score_accuracy", "o", "Accuracy: 1 - mean nEMD"),
@@ -57,7 +92,7 @@ CENTER_LABEL = "Cultural center alignment (1 - C)"
 
 PFS_LABEL = "Population Fidelity Score"
 
-CENTER_NOTE = "reported beside PFS, never inside it"
+CENTER_LEGEND = "Center alignment (1 - C), kept out of PFS"
 
 GROUP_COMPONENTS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "Accuracy: 1 - mean nEMD"),
@@ -135,7 +170,10 @@ def view_frame(
     family: str,
 ) -> pd.DataFrame:
     question = VIEWS[view]
-    frame = overall if question is None else per_question[per_question["question"].eq(question)]
+    table = overall if question is None else per_question
+    if table.empty:
+        return table
+    frame = table if question is None else table[table["question"].eq(question)]
     return frame[frame["mode"].eq(mode) & frame["group"].eq(family)].copy()
 
 
@@ -150,7 +188,7 @@ def _ordered(frame: pd.DataFrame, column: str) -> pd.DataFrame:
 
 
 def _row_figure(count: int, width: float) -> tuple[Figure, Axes]:
-    figure = Figure(figsize=(width, 0.34 * count + 2.0), layout="constrained")
+    figure = Figure(figsize=(width, 0.36 * count + 2.6), layout="constrained")
     axis = figure.subplots(1, 1)
     axis.grid(axis="x", color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
@@ -166,7 +204,7 @@ def _corner_notes(axis: Axes, corners: tuple[tuple[float, float, str, str, str],
             transform=axis.transAxes,
             ha=ha,
             va=va,
-            fontsize=7,
+            fontsize=NOTE_SIZE,
             style="italic",
             color=MUTED_INK,
         )
@@ -200,20 +238,23 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
     ordered = _ordered(frame, "pfs")
     figure, axis = _row_figure(len(ordered), 7.4)
     for position, row in enumerate(_rows(ordered)):
+        spread = spread_of(row, "pfs")
         axis.barh(
             position,
             float(row.pfs),
             height=0.68,
             linewidth=1.0,
+            xerr=spread,
+            error_kw=BAR_SPREAD,
             **bar_style(str(row.series), row.model_key, row.arm),
         )
         note = f" ({row.binding_term})" if float(row.pfs) == 0.0 else ""
         axis.text(
-            float(row.pfs) + 0.008,
+            float(row.pfs) + (spread or 0.0) + 0.008,
             position,
             f"{row.pfs:.3f}{note}",
             va="center",
-            fontsize=7,
+            fontsize=VALUE_SIZE,
             color=MUTED_INK,
         )
     drawn = _reference_rule(axis, ordered, "pfs", "x")
@@ -225,6 +266,8 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
     handles: list[Any] = list(fill_handles(ordered))
     if drawn:
         handles.append(_reference_handle("reference: Mixtral archived"))
+    if replicated(ordered):
+        handles.append(spread_handle())
     axis.legend(handles=handles, loc="lower right")
     return save_plate(figure, destination / f"fig_fidelity_ranking_{view}_{mode}")
 
@@ -242,6 +285,7 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             zorder=1.5,
         )
         for (column, marker, _), shade in zip(COMPONENTS, COMPONENT_INKS, strict=True):
+            _spread_bar(axis, float(getattr(row, column)), position, spread_of(row, column), shade)
             axis.plot(
                 float(getattr(row, column)),
                 position,
@@ -262,6 +306,7 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             markeredgecolor=MUTED_INK,
             zorder=2.5,
         )
+        _spread_bar(axis, float(row.pfs), position, spread_of(row, "pfs"), INK)
         axis.plot(
             float(row.pfs),
             position,
@@ -289,9 +334,11 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             marker="s",
             markerfacecolor="none",
             markeredgecolor=MUTED_INK,
-            label=f"{CENTER_LABEL} — {CENTER_NOTE}",
+            label=CENTER_LEGEND,
         )
     )
+    if replicated(ordered):
+        handles.append(spread_handle())
     figure.legend(handles=handles, loc="outside lower center", ncols=2)
     return save_plate(figure, destination / f"fig_fidelity_components_{view}_{mode}")
 
@@ -343,35 +390,40 @@ def center_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -
     return save_plate(figure, destination / f"fig_fidelity_center_{view}_{mode}")
 
 
+def _spread_bar(axis: Axes, x: float, y: float, spread: float | None, ink: str) -> None:
+    if spread is not None:
+        axis.errorbar(x, y, xerr=spread, ecolor=ink, **SPREAD_BAR)
+
+
+def _reach(frame: pd.DataFrame, columns: Sequence[str]) -> float:
+    extent = 0.0
+    for column in columns:
+        values = frame[column].abs()
+        if f"{column}_sd" in frame.columns:
+            values = values + frame[f"{column}_sd"].fillna(0.0)
+        if not values.empty:
+            extent = max(extent, float(values.max()))
+    return extent or 0.1
+
+
 def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
-    drawable = frame.dropna(subset=["delta_pfs_vs_base", "delta_score_center_vs_base"])
-    drawable = drawable[~drawable["arm"].map(is_base)]
-    figure = Figure(figsize=(6.6, 5.2), layout="constrained")
+    drawable = frame.dropna(subset=[DELTA_PFS, DELTA_CENTER])
+    figure = Figure(figsize=(6.4, 7.6), layout="constrained")
     axis = figure.subplots(1, 1)
     axis.grid(color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
     axis.axvline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=0.9)
     axis.axhline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=0.9)
     for row in _rows(drawable):
-        axis.plot(
-            float(row.delta_pfs_vs_base),
-            float(row.delta_score_center_vs_base),
-            linestyle="none",
-            markersize=6.5,
-            markeredgewidth=1.1,
-            **series_style(str(row.series), row.model_key, row.arm),
-        )
-    reach = float(
-        np.nanmax(
-            np.abs(
-                drawable[["delta_pfs_vs_base", "delta_score_center_vs_base"]].to_numpy(
-                    dtype=np.float64
-                )
-            )
-        )
-        if not drawable.empty
-        else 0.1
-    )
+        style = series_style(str(row.series), row.model_key, row.arm)
+        x = float(getattr(row, DELTA_PFS))
+        y = float(getattr(row, DELTA_CENTER))
+        xerr = spread_of(row, DELTA_PFS)
+        yerr = spread_of(row, DELTA_CENTER)
+        if xerr is not None or yerr is not None:
+            axis.errorbar(x, y, xerr=xerr, yerr=yerr, ecolor=style["color"], **SPREAD_BAR)
+        axis.plot(x, y, linestyle="none", markersize=7, markeredgewidth=1.1, **style)
+    reach = _reach(drawable, (DELTA_PFS, DELTA_CENTER))
     axis.set_xlim(-reach * 1.25, reach * 1.25)
     axis.set_ylim(-reach * 1.25, reach * 1.25)
     _corner_notes(axis, SHIFT_CORNERS)
@@ -383,7 +435,9 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
     handles.append(
         Line2D([], [], linestyle=REFERENCE_DASH, color=MUTED_INK, label="reference: no change")
     )
-    figure.legend(handles=handles, loc="outside right upper")
+    if replicated(drawable):
+        handles.append(spread_handle())
+    figure.legend(handles=handles, loc="outside lower center", ncols=2)
     return save_plate(figure, destination / f"fig_fidelity_shift_{view}_{mode}")
 
 
@@ -468,7 +522,7 @@ def _annotate(axis: Axes, matrix: pd.DataFrame, light_below: float | None) -> No
                 f"{value:.2f}",
                 ha="center",
                 va="center",
-                fontsize=6.5,
+                fontsize=CELL_VALUE_SIZE,
                 color=SEPARATOR if pale else INK,
             )
 
@@ -554,7 +608,7 @@ def group_components_plate(
         axis.set_xticks(range(matrix.shape[1]), list(matrix.columns), rotation=30, ha="right")
         axis.set_yticks(range(matrix.shape[0]), list(matrix.index))
         axis.grid(visible=False)
-        axis.set_title(label, fontsize=9)
+        axis.set_title(label, fontsize=11)
     figure.suptitle(_title(view, mode, family, "What each PFS is made of"))
     figure.colorbar(
         images[0],
@@ -573,8 +627,7 @@ def group_shift_plate(
     view: str,
     destination: Path,
 ) -> list[Path]:
-    tuned = frame[~frame["arm"].map(is_base)].dropna(subset=["delta_pfs_vs_base"])
-    matrix = _matrix(tuned, family, "delta_pfs_vs_base")
+    matrix = _matrix(frame.dropna(subset=[DELTA_PFS]), family, DELTA_PFS)
     return _heatmap(
         matrix,
         _title(view, mode, family, "Finetuning change in fidelity"),
@@ -587,27 +640,38 @@ def group_shift_plate(
 def fidelity_plates(
     groups: pd.DataFrame,
     overall: pd.DataFrame,
+    paired: pd.DataFrame,
+    paired_overall: pd.DataFrame,
     destination: Path = FIDELITY_FIGURES,
 ) -> list[Path]:
     destination.mkdir(parents=True, exist_ok=True)
+    groups, overall, paired, paired_overall = (
+        across_replicates(frame, spread=SPREAD)
+        for frame in (groups, overall, paired, paired_overall)
+    )
     produced: list[Path] = []
-    for mode in MODES:
-        for view in VIEWS:
-            pooled = view_frame(groups, overall, view, mode, POPULATION)
-            if pooled.empty:
-                continue
-            produced += ranking_plate(pooled, mode, view, destination)
-            produced += components_plate(pooled, mode, view, destination)
-            produced += center_plate(pooled, mode, view, destination)
-            produced += shift_plate(pooled, mode, view, destination)
-            produced += cells_plate(pooled, mode, view, destination)
-            for family in FAMILIES:
-                frame = view_frame(groups, overall, view, mode, family)
-                if frame.empty:
+    with rc_context(cast(Any, PLATE_TEXT)):
+        for mode in MODES:
+            for view in VIEWS:
+                pooled = view_frame(groups, overall, view, mode, POPULATION)
+                if pooled.empty:
                     continue
-                folder = destination / family
-                folder.mkdir(parents=True, exist_ok=True)
-                produced += group_plate(frame, family, mode, view, folder)
-                produced += group_components_plate(frame, family, mode, view, folder)
-                produced += group_shift_plate(frame, family, mode, view, folder)
+                produced += ranking_plate(pooled, mode, view, destination)
+                produced += components_plate(pooled, mode, view, destination)
+                produced += center_plate(pooled, mode, view, destination)
+                produced += cells_plate(pooled, mode, view, destination)
+                shifts = view_frame(paired, paired_overall, view, mode, POPULATION)
+                if not shifts.empty:
+                    produced += shift_plate(shifts, mode, view, destination)
+                for family in FAMILIES:
+                    frame = view_frame(groups, overall, view, mode, family)
+                    if frame.empty:
+                        continue
+                    folder = destination / family
+                    folder.mkdir(parents=True, exist_ok=True)
+                    produced += group_plate(frame, family, mode, view, folder)
+                    produced += group_components_plate(frame, family, mode, view, folder)
+                    shifts = view_frame(paired, paired_overall, view, mode, family)
+                    if not shifts.empty:
+                        produced += group_shift_plate(shifts, family, mode, view, folder)
     return produced
