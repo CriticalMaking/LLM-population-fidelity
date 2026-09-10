@@ -173,6 +173,22 @@ never takes the grid with it: one log per run, outcomes in `sweep_summary.tsv`,
 completed runs skipped (`--redo` forces). Each run is 13,904 NTP + 26,981 FA
 prompts and interrupting is safe, so detach it with `screen`.
 
+```bash
+./run_experiment_add_culture.sh sweep --models gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b gemma4_31b \
+                                      --cultures german spanish-mx --questions all --replicates 3
+./run_experiment_add_culture.sh sweep --models muse_glimmer_30b \
+                                      --cultures german spanish-mx --questions all --replicates 3
+```
+
+`--replicates N` repeats every cell N times. The first replicate is the run as it
+stands and is skipped once complete; each further one resamples the full answers
+alone, under its own seed stream (`GLOBAL_SEED + k - 1`), into
+`outputs/culture/<model>/<arm>/rep<k>/<question>/`, next-token probabilities
+being deterministic. Replicates are the outermost loop, so the second pass over
+every cell finishes before the third begins. `run --replicate K --mode fa` is the
+single-cell form. Every analysis table then carries one row per `replicate`, and
+the plates draw the mean with a bar of one standard deviation across the runs.
+
 Models get the paper's prompt verbatim, not the chat contract they were finetuned
 on, so capacity is measured rather than assumed: every prompt is classified
 valid / invalid / failed in `capacity.csv`, rejected generations are kept in
@@ -188,6 +204,7 @@ did.
 ```bash
 ./run_experiment_base_models.sh run --models all --dry-run   # the 16 runs
 ./run_experiment_base_models.sh run --models all
+./run_experiment_base_models.sh run --models all --replicates 3   # FA resampled twice more
 ./run_experiment_base_models.sh summary                      # rebuild the tables
 
 column -t -s $'\t' outputs/culture/logs/base_summary.tsv
@@ -316,14 +333,24 @@ Seven group families are parsed out of the subpopulation label — country, surv
 wave, sex, age band, education, employment, marital status — and every term is
 recomputed inside each group rather than averaged down.
 
+Every finetuning effect is a paired difference on common cells. A run keeps only
+the cells with at least 20 valid answers, so a finetuned variant and its
+as-released model can retain different cell sets; `population_fidelity_paired.csv`
+recomputes every term for both conditions on the intersection of their retained
+cells, taken across every replicate of both, and its `delta_*_vs_base` columns
+are the only deltas written. `population_fidelity_groups.csv` scores each run on
+its own cells and carries no deltas. `population_fidelity_paired_overall.csv` is
+the cross-question form, a geometric mean of each condition's per-question PFS
+before the difference is taken.
+
 | Plate | Folder | Shows |
 | --- | --- | --- |
 | `fig_fidelity_ranking_<view>_<mode>` | `figures/fidelity/` | PFS per run, ranked |
 | `fig_fidelity_components_<view>_<mode>` | `figures/fidelity/` | the three terms and the center behind each PFS |
 | `fig_fidelity_center_<view>_<mode>` | `figures/fidelity/` | center alignment against PFS |
-| `fig_fidelity_shift_<view>_<mode>` | `figures/fidelity/` | change in PFS against change in center |
+| `fig_fidelity_shift_<view>_<mode>` | `figures/fidelity/` | change in PFS against change in center, both conditions on their common cells |
 | `fig_fidelity_cells_<view>_<mode>` | `figures/fidelity/` | the per-cell nEMD spread the accuracy term averages |
-| `fig_fidelity_<family>_*_<view>_<mode>` | `figures/fidelity/<family>/` | that family's levels, components and shift |
+| `fig_fidelity_<family>_*_<view>_<mode>` | `figures/fidelity/<family>/` | that family's levels, components and paired shift |
 
 Score heatmaps run 0–1 on `viridis`, so bright is good — the reverse of the error
 heatmaps elsewhere. `max(0, rho)` is discontinuous at zero and the score is a
@@ -351,7 +378,7 @@ a column by being added there.
 | --- | --- |
 | `population_adaptability.ipynb` | `population_adaptability.csv`, 60 files in `figures/` |
 | `population_structure.ipynb` | `population_structure.csv`, 40 files in `figures/` |
-| `population_fidelity_evaluation.ipynb` | `population_fidelity_{cells,groups,overall}.csv`, 520 files in `figures/fidelity/` |
+| `population_fidelity_evaluation.ipynb` | `population_fidelity_{cells,groups,overall,paired,paired_overall}.csv`, 520 files in `figures/fidelity/` |
 | `mds_model_comparison.ipynb` | `culture_mds_groups.csv` and the grouped MDS plates |
 
 Adaptability runs before structure, which joins its table; fidelity and MDS read
