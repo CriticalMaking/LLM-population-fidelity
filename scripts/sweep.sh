@@ -9,10 +9,11 @@ summary row per run.
 Usage:
   ./scripts/sweep.sh        [--models all|KEY...] [--cultures all|NAME...]
                             [--questions all|Q...] [--first-countries NAME...]
-                            [--redo] [--no-compare] [--dry-run] [run options...]
+                            [--replicates N] [--redo] [--no-compare] [--dry-run]
+                            [run options...]
   ./scripts/sweep.sh --base [--models all|KEY...] [--questions all|Q...]
                             [--first-countries NAME...] [--no-priority]
-                            [--redo] [--no-compare] [--dry-run]
+                            [--replicates N] [--redo] [--no-compare] [--dry-run]
                             [--allow-concurrent] [run options...]
 
 One invocation per model, culture and question, so a failed or interrupted run
@@ -26,6 +27,13 @@ instead of replacing them with itself.
 The summary TSV is a ledger: this sweep's rows are printed and every cell it
 did not run is carried over from the previous sweep, since sweep_cost.csv reads
 each cell's status back from it.
+
+--replicates N runs every cell N times over. The first replicate is the run as
+it stands and is skipped once complete; each further one resamples the full
+answers alone, under its own seed stream, into
+outputs/culture/<model>/<arm>/rep<k>/<question>/, next-token probabilities
+being deterministic. Replicates are the outermost loop, so the second pass over
+every cell finishes before the third begins.
 
 Without --base: every model, german, d_happy (--cultures all for the full
 grid). With --base: gemma4_31b on all four questions, cultures frozen to the
@@ -44,6 +52,7 @@ Examples:
   ./scripts/sweep.sh                                   # every model, german, d_happy
   ./scripts/sweep.sh --models gemma4_31b --cultures all
   ./scripts/sweep.sh --base --models all --dry-run
+  ./scripts/sweep.sh --cultures german spanish-mx --questions all --replicates 3
 
 Unrecognised options pass through to the underlying run: --mode, --batch-size,
 --fa-max-tokens, --force and --legacy-unseeded-fa all work here.
@@ -66,6 +75,7 @@ skip_completed=1
 run_compare=1
 dry_run=0
 allow_concurrent=0
+replicates=1
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -90,6 +100,11 @@ while [[ $# -gt 0 ]]; do
             shift
             while [[ $# -gt 0 && "$1" != --* ]]; do first_countries+=("$1"); shift; done
             [[ ${#first_countries[@]} -gt 0 ]] || die "--first-countries requires at least one value"
+            ;;
+        --replicates)
+            [[ $# -ge 2 && "$2" =~ ^[1-9][0-9]*$ ]] ||
+                die "--replicates requires a whole number of 1 or more"
+            replicates="$2"; shift 2
             ;;
         --no-priority) prioritize=0; shift ;;
         --allow-concurrent) allow_concurrent=1; shift ;;
@@ -171,7 +186,18 @@ started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 priority_options=()
 [[ ${#first_countries[@]} -gt 0 ]] && priority_options=(--first-countries "${first_countries[@]}")
 
-total=$(( ${#models[@]} * ${#cultures[@]} * ${#questions[@]} ))
+set_replicate_arguments() {
+    replicate_arguments=()
+    [[ "$1" -gt 1 ]] && replicate_arguments=(--replicate "$1" --mode fa)
+    true
+}
+
+replicate_directory() {
+    [[ "$1" -gt 1 ]] && printf '/rep%s' "$1"
+    true
+}
+
+total=$(( ${#models[@]} * ${#cultures[@]} * ${#questions[@]} * replicates ))
 if [[ $base -eq 1 ]]; then
     echo "$sweep_name: ${#models[@]} model(s) x ${#questions[@]} question(s) = $total run(s)"
 else
@@ -185,11 +211,14 @@ if [[ ${#first_countries[@]} -gt 0 ]]; then
 elif [[ $base -eq 1 ]]; then
     echo "First:     no country priority"
 fi
+[[ $replicates -gt 1 ]] && echo "Replicates: $replicates (the first is skipped where complete; the rest resample FA alone)"
 [[ ${#passthrough[@]} -gt 0 ]] && echo "Run options: ${passthrough[*]}"
 echo "Logs:      ${log_dir#"$REPO_ROOT"/}"
 echo
 
 if [[ $dry_run -eq 1 ]]; then
+  for replicate in $(seq 1 "$replicates"); do
+    set_replicate_arguments "$replicate"
     for question in "${questions[@]}"; do
         for model in "${models[@]}"; do
             for culture in "${cultures[@]}"; do
@@ -198,11 +227,17 @@ if [[ $dry_run -eq 1 ]]; then
                     continue
                 fi
                 arguments=(--models "$model" --cultures "$culture" --questions "$question"
-                           "${priority_options[@]}" "${passthrough[@]}")
+                           "${priority_options[@]}" "${passthrough[@]}" "${replicate_arguments[@]}")
+                run_outputs="$REPO_ROOT/outputs/culture/$model/$culture$(replicate_directory "$replicate")/$question"
+                if [[ $skip_completed -eq 1 && -f "$run_outputs/capacity.csv" ]]; then
+                    echo "would skip: ${arguments[*]} (already run)"
+                    continue
+                fi
                 echo "would run: ${arguments[*]}"
             done
         done
     done
+  done
     exit 0
 fi
 
@@ -211,31 +246,33 @@ carried="$(mktemp)"
 swept="$(mktemp)"
 trap 'rm -f "$carried" "$swept"' EXIT
 [[ -f "$summary" ]] && cp "$summary" "$carried"
-printf 'model\tculture\tquestion\tstatus\tseconds\tvalid_answer_mass\tvalid\tprompts\tvalid_rate\n' > "$summary"
+printf 'model\tculture\tquestion\treplicate\tstatus\tseconds\tvalid_answer_mass\tvalid\tprompts\tvalid_rate\n' > "$summary"
 
 index=0
 completed=0
 skipped=0
 failed=0
 
-for question in "${questions[@]}"; do
+for replicate in $(seq 1 "$replicates"); do
+  set_replicate_arguments "$replicate"
+  for question in "${questions[@]}"; do
   for model in "${models[@]}"; do
     for culture in "${cultures[@]}"; do
         index=$((index + 1))
-        run_id="$model/$culture/$question"
+        run_id="$model/$culture$(replicate_directory "$replicate")/$question"
         run_outputs="$REPO_ROOT/outputs/culture/$run_id"
-        log="$log_dir/$model-$culture-$question.log"
+        log="$log_dir/$model-$culture-$question$(replicate_directory "$replicate" | tr / -).log"
 
         if [[ $base -eq 0 && ! -d "$REPO_ROOT/models/culture/$model/$culture" ]]; then
             echo "[$index/$total] $run_id — no $culture adapter staged for $model, skipping"
-            printf '%s\t%s\t%s\tno-adapter\t0\t\t\t\t\n' "$model" "$culture" "$question" >> "$summary"
+            printf '%s\t%s\t%s\t%s\tno-adapter\t0\t\t\t\t\n' "$model" "$culture" "$question" "$replicate" >> "$summary"
             skipped=$((skipped + 1))
             continue
         fi
 
         if [[ $skip_completed -eq 1 && -f "$run_outputs/capacity.csv" ]]; then
             echo "[$index/$total] $run_id — already run, skipping (--redo to rerun)"
-            printf '%s\t%s\t%s\tskipped\t0\t\t\t\t\n' "$model" "$culture" "$question" >> "$summary"
+            printf '%s\t%s\t%s\t%s\tskipped\t0\t\t\t\t\n' "$model" "$culture" "$question" "$replicate" >> "$summary"
             skipped=$((skipped + 1))
             continue
         fi
@@ -248,7 +285,8 @@ for question in "${questions[@]}"; do
                 --questions "$question" \
                 --skip-compare \
                 "${priority_options[@]}" \
-                "${passthrough[@]}" > "$log" 2>&1; then
+                "${passthrough[@]}" \
+                "${replicate_arguments[@]}" > "$log" 2>&1; then
             status="ok"
             completed=$((completed + 1))
         else
@@ -262,8 +300,8 @@ for question in "${questions[@]}"; do
         prompts="$(printf '%s' "$capacity_line" | sed -n 's|.*capacity: [0-9]*/\([0-9]*\) .*|\1|p')"
         rate="$(printf '%s' "$capacity_line" | sed -n 's|.*(\([0-9.]*\)%).*|\1|p')"
 
-        printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-            "$model" "$culture" "$question" "$status" "$elapsed" "$mass" "$valid" "$prompts" "$rate" >> "$summary"
+        printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+            "$model" "$culture" "$question" "$replicate" "$status" "$elapsed" "$mass" "$valid" "$prompts" "$rate" >> "$summary"
         echo "    $status in ${elapsed}s${mass:+, valid-answer mass $mass}${rate:+, answered ${rate}%}"
         if [[ "$status" == "FAILED" ]]; then
             echo "    last lines of $log:"
@@ -271,12 +309,16 @@ for question in "${questions[@]}"; do
         fi
     done
   done
+  done
 done
 
 cp "$summary" "$swept"
-awk -F'\t' '
-    NR == FNR { if (FNR > 1) swept[$1 FS $2 FS $3] = 1; next }
-    FNR > 1 && !($1 FS $2 FS $3 in swept)
+awk -F'\t' -v OFS='\t' '
+    NR == FNR { if (FNR > 1) swept[$1 FS $2 FS $3 FS $4] = 1; next }
+    FNR > 1 {
+        if (NF == 9) { $0 = $1 OFS $2 OFS $3 OFS 1 OFS $4 OFS $5 OFS $6 OFS $7 OFS $8 OFS $9 }
+        if (!($1 FS $2 FS $3 FS $4 in swept)) print
+    }
 ' "$swept" "$carried" >> "$summary"
 
 echo

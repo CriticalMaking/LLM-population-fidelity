@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from machine_bias_reproduction.config import RunPaths, paths_for
+from machine_bias_reproduction.config import FIRST_REPLICATE, RunPaths, paths_for
 from machine_bias_reproduction.figures import label_fit, save_plate
 from machine_bias_reproduction.inference import EVENT_LOG_NAME
 from machine_bias_reproduction.plates import GRID, INK, MUTED_INK, bar_layout
@@ -304,6 +304,9 @@ def sweep_cost_table(
     ]
     present = [frame for frame in logged if frame is not None]
     summary = pd.concat(present, ignore_index=True) if present else None
+    if summary is not None and "replicate" in summary.columns:
+        first = pd.to_numeric(summary["replicate"], errors="coerce").fillna(FIRST_REPLICATE)
+        summary = summary[first.eq(FIRST_REPLICATE)]
     rows: list[dict[str, Any]] = []
     for culture in cultures:
         for question in questions:

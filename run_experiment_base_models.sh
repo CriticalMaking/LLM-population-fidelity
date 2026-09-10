@@ -8,7 +8,7 @@ experiment.
 
 Usage:
   ./run_experiment_base_models.sh run [--models all|KEY...]
-                                      [--questions all|Q...]
+                                      [--questions all|Q...] [--replicates N]
                                       [--first-countries NAME...] [--no-priority]
                                       [--redo] [--no-compare] [--dry-run]
                                       [--allow-concurrent]
@@ -40,6 +40,7 @@ to start while another culture run holds the card.
 
   ./run_experiment_base_models.sh run --dry-run          # what would run
   ./run_experiment_base_models.sh run --models all       # every base model
+  ./run_experiment_base_models.sh run --models all --replicates 3   # FA resampled twice more
   ./run_experiment_base_models.sh summary                # rebuild the tables
 EOF
 }

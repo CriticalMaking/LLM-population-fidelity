@@ -9,7 +9,7 @@ from typing import Any, Protocol
 import pandas as pd
 
 from machine_bias_reproduction.analysis import run_analysis
-from machine_bias_reproduction.config import PROJECT_ROOT, RunPaths
+from machine_bias_reproduction.config import PROJECT_ROOT, RunPaths, replicate_seed
 from machine_bias_reproduction.data import canonical_run_paths
 from machine_bias_reproduction.inference import (
     MAX_FA_RETRIES,
@@ -60,6 +60,7 @@ def run_context(
     adapter: Path | None,
     backend: CultureBackend,
     sha256_file: Sha256File,
+    replicate: int,
 ) -> RunContext:
     described = backend.describe()
     adapter_hash = sha256_file(adapter / WEIGHTS_FILE) if adapter is not None else None
@@ -69,6 +70,7 @@ def run_context(
         model={
             "model_key": model.key,
             "culture": culture,
+            "replicate": replicate,
             "base_model_id": model.base_model_id,
             "base_revision": described.get("base_revision"),
             "adapter_path": str(adapter.resolve()) if adapter is not None else None,
@@ -172,12 +174,16 @@ def run_one(
     trace_writer: TraceWriter,
     sha256_file: Sha256File,
 ) -> dict[str, Any]:
-    paths = run_paths(model.key, culture, question)
+    replicate = arguments.replicate
+    paths = run_paths(model.key, culture, question, replicate)
     paths.ensure()
     backend.set_culture(culture)
     weights = None if is_base(culture) else staged_adapter(model.key, culture)
-    trace = run_context(model, culture, weights, backend, sha256_file)
-    print(f"[{model.key}/{culture}] {question.var} run_id: {trace.run_id}", flush=True)
+    trace = run_context(model, culture, weights, backend, sha256_file, replicate)
+    print(
+        f"[{model.key}/{culture}] {question.var} replicate {replicate} run_id: {trace.run_id}",
+        flush=True,
+    )
 
     requested: list[PromptMode] = resolve_modes(arguments.mode)
     counts: dict[str, dict[str, int]] = {}
@@ -226,6 +232,7 @@ def run_one(
                 batch_size=backend.batch_size,
                 fa_max_tokens=arguments.fa_max_tokens,
                 legacy_unseeded_fa=arguments.legacy_unseeded_fa,
+                global_seed=replicate_seed(replicate),
                 force=arguments.force,
                 parse=answer_parser(question),
                 max_fa_retries=retries,
@@ -264,7 +271,7 @@ def run_one(
                 else f"{model.base_model_id} + {culture} LoRA"
             )
             analysis = run_analysis(
-                run_slug(model.key, culture),
+                run_slug(model.key, culture, replicate),
                 question,
                 model_description=described,
                 csv_stems=stems,
@@ -279,6 +286,7 @@ def run_one(
         limit=arguments.limit,
         legacy_unseeded_fa=arguments.legacy_unseeded_fa,
         counts=counts,
+        replicate=replicate,
     )
     manifest["preflight"] = probe
     manifest["modes_requested"] = list(requested)
@@ -290,6 +298,7 @@ def run_one(
         "model": model.key,
         "culture": culture,
         "question": question.var,
+        "replicate": replicate,
         "run_id": trace.run_id,
         "preflight": probe,
         "capacity": summary,

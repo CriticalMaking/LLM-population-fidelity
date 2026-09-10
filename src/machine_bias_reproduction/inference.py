@@ -259,10 +259,16 @@ def _new_payload(
     }
 
 
-def _attempt_seed(prompt_id: str, attempt: int, *, legacy_unseeded_fa: bool) -> int | None:
+def _attempt_seed(
+    prompt_id: str,
+    attempt: int,
+    *,
+    legacy_unseeded_fa: bool,
+    global_seed: int = GLOBAL_SEED,
+) -> int | None:
     if legacy_unseeded_fa:
         return None
-    return stable_seed(f"{prompt_id}#{attempt}", GLOBAL_SEED)
+    return stable_seed(f"{prompt_id}#{attempt}", global_seed)
 
 
 def _log_event(paths: RunPaths, payload: Mapping[str, Any]) -> None:
@@ -447,6 +453,7 @@ def _generate_fa_batch(
     trace: RunContext,
     sampling: Mapping[str, Any],
     legacy_unseeded_fa: bool,
+    global_seed: int,
     parse: Callable[[str], str | None],
     max_fa_retries: int,
 ) -> tuple[int, int]:
@@ -461,7 +468,12 @@ def _generate_fa_batch(
         if not outstanding:
             break
         seeds = [
-            _attempt_seed(batch[row].prompt_id, attempt, legacy_unseeded_fa=legacy_unseeded_fa)
+            _attempt_seed(
+                batch[row].prompt_id,
+                attempt,
+                legacy_unseeded_fa=legacy_unseeded_fa,
+                global_seed=global_seed,
+            )
             for row in outstanding
         ]
         attempt_started = time.monotonic()
@@ -496,7 +508,9 @@ def _generate_fa_batch(
     generated = 0
     failed = 0
     for row, (record, payload) in enumerate(zip(batch, payloads, strict=True)):
-        payload["seed"] = _attempt_seed(record.prompt_id, 0, legacy_unseeded_fa=legacy_unseeded_fa)
+        payload["seed"] = _attempt_seed(
+            record.prompt_id, 0, legacy_unseeded_fa=legacy_unseeded_fa, global_seed=global_seed
+        )
         payload["attempts"] = attempts[row]
         payload["attempt_count"] = len(attempts[row])
         if answers[row] is None:
@@ -521,6 +535,7 @@ def generate_records_batched(
     batch_size: int,
     fa_max_tokens: int = 12,
     legacy_unseeded_fa: bool = False,
+    global_seed: int = GLOBAL_SEED,
     force: bool = False,
     progress_every: int = 25,
     parse: Callable[[str], str | None] = parse_full_answer,
@@ -559,6 +574,7 @@ def generate_records_batched(
                 trace=trace,
                 sampling=sampling,
                 legacy_unseeded_fa=legacy_unseeded_fa,
+                global_seed=global_seed,
                 parse=parse,
                 max_fa_retries=max_fa_retries,
             )

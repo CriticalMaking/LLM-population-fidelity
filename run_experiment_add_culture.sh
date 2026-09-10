@@ -22,7 +22,7 @@ Usage:
                                       [--skip-compare]
   ./run_experiment_add_culture.sh sweep [--models all|KEY...]
                                         [--cultures all|NAME...]
-                                        [--questions all|Q...]
+                                        [--questions all|Q...] [--replicates N]
                                         [--redo] [--no-compare] [--dry-run]
   ./run_experiment_add_culture.sh compare [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
@@ -72,6 +72,13 @@ takes the grid with it — with one log per run, finished runs skipped
   ./run_experiment_add_culture.sh sweep                # every model, german, d_happy
   ./run_experiment_add_culture.sh sweep --cultures portuguese    # one culture
   ./run_experiment_add_culture.sh sweep --models gemma4_31b --cultures all
+  ./run_experiment_add_culture.sh sweep --cultures german spanish-mx \
+                                        --questions all --replicates 3
+
+`--replicates N` repeats every cell N times: the first replicate is the run as
+it stands, and each further one resamples the full answers under its own seed
+stream into outputs/culture/<model>/<arm>/rep<k>/, so the analysis can carry
+the spread across runs. `run --replicate K --mode fa` is the single-cell form.
 
 `run` is the single-invocation form. Both are resumable: every prompt writes
 its own atomic result file. `compare` rebuilds the per-question cross-culture

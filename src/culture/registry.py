@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 from machine_bias_reproduction.config import (
     FIGURES_ROOT,
+    FIRST_REPLICATE,
     MODELS_ROOT,
     OUTPUTS_ROOT,
     PROJECT_ROOT,
     RunPaths,
+    check_replicate,
     paths_for,
 )
 from machine_bias_reproduction.questions import Question, resolve_question
@@ -52,6 +56,9 @@ DEFAULT_CHECKPOINT_ROOT = PROJECT_ROOT.parent / "culture-mllm" / "checkpoints"
 
 CULTURE_ROOT = OUTPUTS_ROOT / "culture"
 CULTURE_FIGURES = FIGURES_ROOT / "culture"
+
+REPLICATE_DIRECTORY = "rep{}"
+REPLICATE_PATTERN = re.compile(r"^rep([2-9][0-9]*)$")
 
 
 VISION_TEXT_MODALITY = "vision_text"
@@ -218,12 +225,36 @@ def resolve_finetuned_cultures(selected: Sequence[str] | None) -> list[str]:
     return cultures
 
 
-def run_slug(model_key: str, culture: str) -> str:
-    return f"culture/{model_key}/{culture}"
+def replicate_directory(replicate: int) -> str | None:
+    if check_replicate(replicate) == FIRST_REPLICATE:
+        return None
+    return REPLICATE_DIRECTORY.format(replicate)
 
 
-def run_paths(model_key: str, culture: str, question: str | Question) -> RunPaths:
-    return paths_for(run_slug(model_key, culture), resolve_question(question).var)
+def run_slug(model_key: str, culture: str, replicate: int = FIRST_REPLICATE) -> str:
+    slug = f"culture/{model_key}/{culture}"
+    directory = replicate_directory(replicate)
+    return slug if directory is None else f"{slug}/{directory}"
+
+
+def run_paths(
+    model_key: str,
+    culture: str,
+    question: str | Question,
+    replicate: int = FIRST_REPLICATE,
+) -> RunPaths:
+    return paths_for(run_slug(model_key, culture, replicate), resolve_question(question).var)
+
+
+def replicates(model_key: str, culture: str, root: Path | None = None) -> list[int]:
+    arm = (root or CULTURE_ROOT) / model_key / culture
+    found = [FIRST_REPLICATE]
+    if arm.is_dir():
+        for entry in arm.iterdir():
+            matched = REPLICATE_PATTERN.match(entry.name)
+            if matched and entry.is_dir():
+                found.append(int(matched.group(1)))
+    return sorted(found)
 
 
 def csv_stems(model_key: str, culture: str, question: str | Question) -> tuple[str, str]:

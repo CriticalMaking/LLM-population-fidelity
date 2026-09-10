@@ -38,11 +38,13 @@ from hub import commands as hub_commands
 
 from .analysis import run_analysis
 from .config import (
-    GLOBAL_SEED,
+    FIRST_REPLICATE,
     MODEL_SHA256,
     PROJECT_ROOT,
     RunPaths,
+    check_replicate,
     paths_for,
+    replicate_seed,
 )
 from .data import canonical_run_paths, load_wvs
 from .inference import (
@@ -127,6 +129,7 @@ def _inference_manifest(
     limit: int | None,
     legacy_unseeded_fa: bool,
     counts: dict[str, dict[str, int]],
+    replicate: int = FIRST_REPLICATE,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "schema_version": 2,
@@ -139,7 +142,8 @@ def _inference_manifest(
         "parameters": {
             "modes": list(modes),
             "limit": limit,
-            "global_seed": GLOBAL_SEED,
+            "replicate": replicate,
+            "global_seed": replicate_seed(replicate),
             "legacy_unseeded_fa": legacy_unseeded_fa,
         },
         "counts": counts,
@@ -310,6 +314,11 @@ def _culture_groups(model_key: str, cultures: list[str]) -> list[tuple[list[str]
 def command_culture(arguments: argparse.Namespace) -> None:
     from culture.backend import TransformersBackend
 
+    if check_replicate(arguments.replicate) != FIRST_REPLICATE and arguments.mode != "fa":
+        raise ValueError(
+            "a replicate beyond the first resamples the full answers alone, since next-token "
+            "probabilities are deterministic: pass --mode fa"
+        )
     verify_upstream(full=False)
     models = resolve_models(arguments.models)
     if arguments.models is None:
@@ -593,6 +602,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="generate these countries' prompts first; ordering only, same final result",
     )
     culture.add_argument("--mode", choices=("ntp", "fa", "all"), default="all")
+    culture.add_argument(
+        "--replicate",
+        type=int,
+        default=FIRST_REPLICATE,
+        help="which repetition of the run this is: 1 is the run as it stands, and each further "
+        "number resamples the full answers under its own seed stream into <arm>/rep<N> "
+        "(needs --mode fa)",
+    )
     culture.add_argument("--limit", type=int, help="smoke-test only the first N prompts")
     culture.add_argument("--batch-size", type=int, help="override the model's default batch size")
     culture.add_argument("--fa-max-tokens", type=int, default=12, help="FA generation budget")

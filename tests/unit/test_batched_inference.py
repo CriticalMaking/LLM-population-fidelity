@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 import machine_bias_reproduction.config as config
-from machine_bias_reproduction.config import RunPaths
+from machine_bias_reproduction.config import GLOBAL_SEED, RunPaths, replicate_seed
 from machine_bias_reproduction.inference import (
     EVENT_LOG_NAME,
     RECORD_SCHEMA_VERSION,
@@ -175,6 +175,35 @@ def test_fa_answers_do_not_depend_on_batch_composition(
         return csv_path.read_text(encoding="utf-8").splitlines()
 
     assert run(2, "outputs-a") == run(5, "outputs-b")
+
+
+def test_a_replicate_resamples_every_prompt_under_its_own_seed_stream(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    records = _records("fa", 3)
+
+    def seeds(directory: str, global_seed: int = GLOBAL_SEED) -> list[int | None]:
+        monkeypatch.setattr(config, "OUTPUTS_ROOT", tmp_path / directory)
+        paths = RunPaths("culture/qwen3_vl_8b/german", "d_happy")
+        paths.ensure()
+        backend = FakeBatchBackend()
+        generate_records_batched(
+            records,
+            backend,
+            paths,
+            trace=_trace(),
+            batch_size=3,
+            progress_every=0,
+            global_seed=global_seed,
+        )
+        return backend.seeds_seen
+
+    first = seeds("first")
+    assert seeds("first-again", global_seed=replicate_seed(1)) == first
+    second = seeds("second", global_seed=replicate_seed(2))
+    assert len(second) == len(first) == 3
+    assert not set(second) & set(first)
+    assert all(seed is not None for seed in second)
 
 
 def test_fa_retries_are_batched_and_fully_recorded(

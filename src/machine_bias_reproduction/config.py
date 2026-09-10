@@ -21,6 +21,17 @@ EXPECTED_WVS_ROWS = 26_981
 EXPECTED_NTP_PROFILES = 13_904
 EXPECTED_SUBPOPULATIONS = 687
 GLOBAL_SEED = 20_240_110
+FIRST_REPLICATE = 1
+
+
+def check_replicate(replicate: int) -> int:
+    if replicate < FIRST_REPLICATE:
+        raise ValueError(f"replicates count from {FIRST_REPLICATE}, got {replicate}")
+    return replicate
+
+
+def replicate_seed(replicate: int) -> int:
+    return GLOBAL_SEED + check_replicate(replicate) - FIRST_REPLICATE
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,7 +62,9 @@ class RunPaths:
         self.raw.mkdir(parents=True, exist_ok=True)
 
 
-CULTURE_SOURCE_PATTERN = re.compile(r"^culture/[A-Za-z0-9_]+/[A-Za-z0-9_][A-Za-z0-9_-]*$")
+CULTURE_SOURCE_PATTERN = re.compile(
+    r"^culture/[A-Za-z0-9_]+/[A-Za-z0-9_][A-Za-z0-9_-]*(/rep[2-9][0-9]*)?$"
+)
 
 QUESTION_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 

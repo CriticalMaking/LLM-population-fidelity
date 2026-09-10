@@ -7,7 +7,13 @@ import pytest
 
 import culture
 from culture import adapters as culture_adapters
-from machine_bias_reproduction.config import FIGURES_ROOT, OUTPUTS_ROOT, paths_for
+from machine_bias_reproduction.config import (
+    FIGURES_ROOT,
+    GLOBAL_SEED,
+    OUTPUTS_ROOT,
+    paths_for,
+    replicate_seed,
+)
 
 
 def test_registry_covers_ten_cultures_and_nine_models() -> None:
@@ -108,10 +114,49 @@ def test_a_hyphenated_culture_keeps_its_hyphen_in_the_paths_and_stems() -> None:
     )
 
 
+def test_a_later_replicate_nests_under_its_arm_and_the_first_keeps_the_bare_path() -> None:
+    assert culture.run_slug("gemma4_31b", "german") == "culture/gemma4_31b/german"
+    assert culture.run_slug("gemma4_31b", "german", 1) == "culture/gemma4_31b/german"
+    assert culture.run_slug("gemma4_31b", "german", 3) == "culture/gemma4_31b/german/rep3"
+    paths = culture.run_paths("gemma4_31b", "german", "d_happy", 2)
+    assert paths.outputs == OUTPUTS_ROOT / "culture" / "gemma4_31b" / "german" / "rep2" / "d_happy"
+    assert paths.figures == FIGURES_ROOT / "culture" / "gemma4_31b" / "german" / "rep2" / "d_happy"
+    assert paths.raw == paths.outputs / "raw"
+    with pytest.raises(ValueError, match="count from 1"):
+        culture.run_slug("gemma4_31b", "german", 0)
+
+
+def test_replicates_are_read_off_the_arm_directory(tmp_path: Path) -> None:
+    arm = tmp_path / "gemma4_31b" / "german"
+    for name in ("rep3", "rep2", "d_happy", "rep1", "repx", "rep03"):
+        (arm / name).mkdir(parents=True)
+    (arm / "rep4").write_text("a file, not a run", encoding="utf-8")
+
+    assert culture.replicates("gemma4_31b", "german", tmp_path) == [1, 2, 3]
+    assert culture.replicates("gemma4_31b", "spanish-mx", tmp_path) == [1]
+
+
+def test_each_replicate_samples_under_its_own_seed_stream() -> None:
+    assert replicate_seed(1) == GLOBAL_SEED
+    assert replicate_seed(2) == GLOBAL_SEED + 1
+    assert replicate_seed(3) == GLOBAL_SEED + 2
+    with pytest.raises(ValueError, match="count from 1"):
+        replicate_seed(0)
+
+
 def test_paths_for_still_rejects_sources_that_escape_the_roots() -> None:
     assert paths_for("archived", "d_happy").source == "archived"
     assert paths_for("fresh", "d_happy").source == "fresh"
-    for bad in ("culture/../../etc", "culture/only-one", "culture/a/b/c", "elsewhere"):
+    assert paths_for("culture/a/b/rep2", "d_happy").source == "culture/a/b/rep2"
+    for bad in (
+        "culture/../../etc",
+        "culture/only-one",
+        "culture/a/b/c",
+        "culture/a/b/rep1",
+        "culture/a/b/rep0",
+        "culture/a/b/rep2/x",
+        "elsewhere",
+    ):
         with pytest.raises(ValueError, match="unknown source"):
             paths_for(bad, "d_happy")
     for bad_question in ("../etc", "d happy", "d/happy"):
