@@ -7,10 +7,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from culture import fidelity, fidelity_plates
+from culture import archived_reference, fidelity, fidelity_plates
 from culture.population import RunSource
 from machine_bias_reproduction.data import Coverage, PreparedData
-from machine_bias_reproduction.questions import QUESTIONS
+from machine_bias_reproduction.questions import QUESTIONS, resolve_question
 
 CELLS = (
     "Germany 2018 Female 45-54 Middle Working Married",
@@ -347,6 +347,12 @@ def test_the_root_holds_the_pooled_report_and_a_subfolder_holds_each_family(
         "fig_fidelity_shift_all_ntp.png",
         "fig_fidelity_shift_happiness_ntp.png",
         "fig_fidelity_shift_trust_ntp.png",
+        "fig_fidelity_subgroups_all.png",
+        "fig_fidelity_subgroups_happiness.png",
+        "fig_fidelity_subgroups_models_all_ntp.png",
+        "fig_fidelity_subgroups_models_happiness_ntp.png",
+        "fig_fidelity_subgroups_models_trust_ntp.png",
+        "fig_fidelity_subgroups_trust.png",
     ]
     assert sorted(path.name for path in (tmp_path / "sex").glob("*.png")) == [
         "fig_fidelity_sex_all_ntp.png",
@@ -360,6 +366,115 @@ def test_the_root_holds_the_pooled_report_and_a_subfolder_holds_each_family(
         "fig_fidelity_sex_trust_ntp.png",
     ]
     assert not (tmp_path / "country").exists()
+
+
+def test_the_subgroup_plate_lists_the_pooled_cells_first_and_each_family_after_a_spacer(
+    tmp_path: Path,
+) -> None:
+    groups = scored()
+    overall = fidelity.overall_fidelity(groups)
+
+    rows = fidelity_plates.level_rows(groups)
+    assert [(family, level) for family, level, _ in rows] == [
+        (fidelity.POPULATION, fidelity.EVERY_CELL),
+        (None, None),
+        ("sex", "Female"),
+    ]
+    assert rows[0][2] == r"$\bf{Every\ subpopulation}$"
+    assert rows[2][2] == r"$\bf{Sex}$: Female"
+
+    shuffled = pd.DataFrame({"group": ["age", "country", "age"], "level": ["75+", "Mexico", "<25"]})
+    assert [level for _, level, _ in fidelity_plates.level_rows(shuffled)] == [
+        "Mexico",
+        None,
+        "<25",
+        "75+",
+    ]
+
+    frame = fidelity_plates.subgroup_frame(groups, overall, "happiness", "ntp")
+    assert set(frame["series"]) == {"Gemma (as released)", "Gemma (german)"}
+    assert set(frame["group"]) == {fidelity.POPULATION, "sex"}
+    assert fidelity_plates.subgroup_frame(groups, overall, "happiness", "fa").empty
+
+    written = fidelity_plates.subgroups_plate(groups, overall, "happiness", tmp_path)
+    assert sorted(path.name for path in written) == [
+        "fig_fidelity_subgroups_happiness.pdf",
+        "fig_fidelity_subgroups_happiness.png",
+    ]
+    assert fidelity_plates.subgroups_plate(groups, overall, "politics", tmp_path) == []
+
+    offsets = fidelity_plates.variant_offsets(frame)
+    assert list(offsets) == ["base", "german"]
+    assert offsets["base"] < 0.0 < offsets["german"]
+    named = fidelity_plates.subgroup_models_plate(groups, overall, "trust", "ntp", tmp_path)
+    assert sorted(path.name for path in named) == [
+        "fig_fidelity_subgroups_models_trust_ntp.pdf",
+        "fig_fidelity_subgroups_models_trust_ntp.png",
+    ]
+    assert fidelity_plates.subgroup_models_plate(groups, overall, "trust", "fa", tmp_path) == []
+
+
+def published() -> pd.DataFrame:
+    rows = []
+    for question in ("d_happy", "d_trust"):
+        for model, mode, answers in (("GPT-4T", "ntp", MODEL), ("GPT-3", "fa", BASE)):
+            for group, level in ((fidelity.POPULATION, fidelity.EVERY_CELL), ("sex", "Female")):
+                rows.append(
+                    {
+                        **archived_reference.archived_identity(
+                            model, resolve_question(question), mode
+                        ),
+                        "group": group,
+                        "level": level,
+                        **fidelity.group_fidelity(SURVEY, answers),
+                    }
+                )
+    frame = pd.DataFrame(rows)
+    frame["binding_term"] = fidelity.binding_term(frame)
+    return frame
+
+
+def test_the_proprietary_plate_reads_each_archived_series_in_its_own_mode(tmp_path: Path) -> None:
+    groups = scored()
+    overall = fidelity.overall_fidelity(groups)
+    archived = published()
+    off_mode = archived[archived["model_label"].eq("GPT-3")].assign(mode="ntp")
+    archived = pd.concat([archived, off_mode], ignore_index=True)
+    archived_overall = fidelity.overall_fidelity(archived)
+
+    frame = fidelity_plates.proprietary_frame(groups, overall, archived, archived_overall, "trust")
+    assert dict(zip(frame["series"], frame["mode"], strict=True)) == {
+        "GPT-3 archived": "fa",
+        "GPT-4T archived": "ntp",
+    }
+    pooled = fidelity_plates.proprietary_frame(groups, overall, archived, archived_overall, "all")
+    assert "question" not in pooled.columns
+    assert len(pooled) == 4
+    starred = {fidelity_plates._proprietary_label(row) for row in frame.itertuples()}
+    assert starred == {"GPT-3 archived, FA", "GPT-4T archived, NTP*"}
+
+    written = fidelity_plates.proprietary_plate(
+        groups, overall, archived, archived_overall, "trust", tmp_path
+    )
+    assert sorted(path.name for path in written) == [
+        "fig_fidelity_subgroups_proprietary_trust.pdf",
+        "fig_fidelity_subgroups_proprietary_trust.png",
+    ]
+
+    shifts = paired()
+    fidelity_plates.fidelity_plates(
+        groups,
+        overall,
+        shifts,
+        fidelity.overall_paired(shifts),
+        tmp_path / "with_archive",
+        archived=archived,
+    )
+    assert sorted(path.name for path in (tmp_path / "with_archive").glob("*proprietary*.png")) == [
+        "fig_fidelity_subgroups_proprietary_all.png",
+        "fig_fidelity_subgroups_proprietary_happiness.png",
+        "fig_fidelity_subgroups_proprietary_trust.png",
+    ]
 
 
 def test_replicates_are_drawn_as_one_marker_with_a_spread(tmp_path: Path) -> None:

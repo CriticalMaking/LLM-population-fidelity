@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
 from typing import Any, cast
 
@@ -16,22 +16,27 @@ from matplotlib.patches import Patch
 from machine_bias_reproduction.config import FIGURES_ROOT
 from machine_bias_reproduction.figures import save_plate
 from machine_bias_reproduction.plates import (
+    CATEGORICAL_INKS,
     GRID,
     INK,
     MUTED_INK,
     QUALITY_RAMP,
     SEPARATOR,
     SURFACE,
+    bar_layout,
     magnitude_steps,
+    tinted,
 )
 
 from .fidelity import (
+    EVERY_CELL,
     FAMILIES,
     FAMILY_LABELS,
     POPULATION,
     SCORE_COLUMNS,
     delta_column,
     levels,
+    overall_fidelity,
 )
 from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, arm_hatch, arm_order, model_tone
 from .population import MODEL_INDEX, MODES, across_replicates
@@ -96,6 +101,63 @@ CENTER_LABEL = "Cultural center alignment (1 - C)"
 PFS_LABEL = "Population Fidelity Score"
 
 CENTER_LEGEND = "Center: 1 - C (not in PFS)"
+
+SCORE_XLABEL = "Score (0 to 1, higher is better)"
+
+SUBGROUP_ROW = 0.38
+
+SUBGROUP_WIDTH = 11.5
+
+SUBGROUP_DODGE = 0.19
+
+SUBGROUP_BOX = 0.32
+
+SUBGROUP_MARGIN = 0.02
+
+# One box per score on every row of the subgroup plate: (column, edge ink, fill, legend).
+# PFS keeps the solid fill of its diamond and center the hollow fill of its square, so
+# the two plates read with one key.
+SUBGROUP_BOXES: tuple[tuple[str, str, str, str], ...] = (
+    ("pfs", INK, tinted(INK, 0.5), PFS_LABEL),
+    ("score_center", MUTED_INK, SURFACE, CENTER_LEGEND),
+)
+
+LevelRow = tuple[str | None, str | None, str]
+
+SUBGROUP_MODEL_ROW = 0.42
+
+SUBGROUP_MODEL_WIDTH = 12.5
+
+SUBGROUP_MODEL_MARKER = 7.0
+
+SUBGROUP_MODEL_COLUMNS = 4
+
+# The two scores the per-model subgroup plate puts side by side, one panel each, with
+# the anchor each panel always keeps in view: 0 for PFS, where the zeros land, and 1
+# for center alignment, the perfect score.
+SUBGROUP_SCORES: tuple[tuple[str, str, float], ...] = (
+    ("pfs", PFS_LABEL, 0.0),
+    ("score_center", CENTER_LABEL, 1.0),
+)
+
+SUBGROUP_PAD = 0.04
+
+# The proprietary lineage the archive lets us read: the original study's GPT-3, published
+# under FA, and its GPT-4T, published under NTP alone, beside the served GPT-5.6-Terra,
+# evaluated under FA. FA is the plate's reference mode; a series drawn under the other
+# mode is starred in the legend.
+PROPRIETARY_MODE = "fa"
+
+PROPRIETARY_SERVED: tuple[str, ...] = ("terra",)
+
+# Each archived proprietary model and the one mode the archive holds it under.
+PROPRIETARY_ARCHIVED: dict[str, str] = {"GPT-3": "fa", "GPT-4T": "ntp"}
+
+PROPRIETARY_ORDER: tuple[str, ...] = ("GPT-3", "GPT-4T", "GPT-5.6-Terra")
+
+PROPRIETARY_INKS: dict[str, str] = {"GPT-3": CATEGORICAL_INKS[8], "GPT-4T": CATEGORICAL_INKS[9]}
+
+PROPRIETARY_COLUMNS = 3
 
 GROUP_COMPONENTS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "Accuracy: 1 - mean nEMD"),
@@ -327,7 +389,7 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
         )
     _row_labels(axis, ordered)
     axis.set_xlim(0.0, 1.0)
-    axis.set_xlabel("Score (0 to 1, higher is better)")
+    axis.set_xlabel(SCORE_XLABEL)
     # axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
     handles = [
         Line2D(
@@ -527,6 +589,337 @@ def cells_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
     return save_plate(figure, destination / f"fig_fidelity_cells_{view}_{mode}")
 
 
+def _bold(text: str) -> str:
+    escaped = text.replace(" ", r"\ ")
+    return rf"$\bf{{{escaped}}}$"
+
+
+def level_rows(frame: pd.DataFrame) -> list[LevelRow]:
+    """The y-order of the subgroup plate.
+
+    The pooled cells come first, then every family in FAMILIES order with its levels in
+    LEVEL_ORDER, a blank spacer row between families and the family name in bold, the
+    way predictor_rows labels the regression plates.
+    """
+    rows: list[LevelRow] = []
+    if frame["group"].eq(POPULATION).any():
+        rows.append((POPULATION, EVERY_CELL, _bold(FAMILY_LABELS[POPULATION])))
+    for family in FAMILIES:
+        names = levels(family, frame.loc[frame["group"].eq(family), "level"])
+        if not names:
+            continue
+        if rows:
+            rows.append((None, None, ""))
+        label = _bold(FAMILY_LABELS[family])
+        rows.extend((family, level, f"{label}: {level}") for level in names)
+    return rows
+
+
+def subgroup_frame(
+    per_question: pd.DataFrame,
+    overall: pd.DataFrame,
+    view: str,
+    mode: str,
+) -> pd.DataFrame:
+    """Every group and level of one view and mode, served models only.
+
+    The Mixtral references are the reproduction's yardstick, not conditions of the sweep,
+    so they stay out of the boxes the way they stay out of the paper's group table.
+    """
+    question = VIEWS[view]
+    table = overall if question is None else per_question
+    if table.empty:
+        return table
+    frame = table if question is None else table[table["question"].eq(question)]
+    return frame[frame["mode"].eq(mode) & frame["model_key"].notna()].copy()
+
+
+def _boxes(axis: Axes, frame: pd.DataFrame, rows: Sequence[LevelRow]) -> None:
+    offsets = (-SUBGROUP_DODGE, SUBGROUP_DODGE)
+    for position, (family, level, _) in enumerate(rows):
+        if family is None or level is None:
+            continue
+        subset = frame[frame["group"].eq(family) & frame["level"].eq(level)]
+        for (column, ink, fill, _), offset in zip(SUBGROUP_BOXES, offsets, strict=True):
+            values = subset[column].dropna().to_numpy(dtype=np.float64)
+            if values.size == 0:
+                continue
+            axis.boxplot(
+                [values],
+                orientation="horizontal",
+                positions=[position + offset],
+                widths=SUBGROUP_BOX,
+                patch_artist=True,
+                manage_ticks=False,
+                boxprops={"facecolor": fill, "edgecolor": ink, "linewidth": 1.0},
+                medianprops={"color": ink, "linewidth": 1.7},
+                whiskerprops={"color": ink, "linewidth": 0.9},
+                capprops={"color": ink, "linewidth": 0.9},
+                flierprops={
+                    "marker": "o",
+                    "markersize": 3.4,
+                    "markerfacecolor": SURFACE,
+                    "markeredgecolor": ink,
+                    "markeredgewidth": 0.8,
+                },
+                zorder=3,
+            )
+
+
+def subgroups_plate(
+    per_question: pd.DataFrame,
+    overall: pd.DataFrame,
+    view: str,
+    destination: Path,
+) -> list[Path]:
+    """PFS beside center alignment for every level of every family, NTP | FA.
+
+    One row per level and two boxes per row, each over the sweep's model conditions: the
+    filled box is PFS, the hollow one the center alignment reported beside it and never
+    inside it. The rows read as the standardized-coefficient plates do, the pooled cells
+    on top and each family in its own block.
+    """
+    panels = [(mode, subgroup_frame(per_question, overall, view, mode)) for mode in MODES]
+    panels = [(mode, frame) for mode, frame in panels if not frame.empty]
+    if not panels:
+        return []
+    rows = level_rows(pd.concat([frame for _, frame in panels], ignore_index=True))
+    counts = ", ".join(f"{mode.upper()} {int(frame['series'].nunique())}" for mode, frame in panels)
+    handles: list[Any] = [
+        Patch(facecolor=fill, edgecolor=ink, label=label) for _, ink, fill, label in SUBGROUP_BOXES
+    ]
+    handles.append(
+        Line2D(
+            [],
+            [],
+            linestyle="none",
+            label=f"boxes span the model conditions ({counts}); Mixtral references excluded",
+        )
+    )
+    figure = Figure(
+        figsize=(SUBGROUP_WIDTH, SUBGROUP_ROW * len(rows) + legend_height(handles, 2) + 1.0),
+        layout="constrained",
+    )
+    axes = figure.subplots(1, len(panels), sharey=True, squeeze=False)[0]
+    for axis, (mode, frame) in zip(axes, panels, strict=True):
+        _score_axis(axis)
+        _boxes(axis, frame, rows)
+        axis.set_title(mode.upper())
+    _level_ticks(axes, rows)
+    legend_below(figure, handles, 2)
+    return save_plate(figure, destination / f"fig_fidelity_subgroups_{view}")
+
+
+def _score_axis(axis: Axes, low: float = 0.0, high: float = 1.0) -> None:
+    axis.grid(axis="x", color=GRID, linewidth=0.6)
+    axis.set_axisbelow(True)
+    axis.set_xlim(low - SUBGROUP_MARGIN, high + SUBGROUP_MARGIN)
+    axis.set_xlabel(SCORE_XLABEL)
+
+
+def _score_span(values: pd.Series, anchor: float) -> tuple[float, float]:
+    """The data's span plus a pad, always reaching the score's anchor and never leaving [0, 1]."""
+    if values.empty:
+        return 0.0, 1.0
+    low = max(0.0, min(anchor, float(values.min()) - SUBGROUP_PAD))
+    high = min(1.0, max(anchor, float(values.max()) + SUBGROUP_PAD))
+    return low, high
+
+
+def _level_ticks(axes: Sequence[Axes], rows: Sequence[LevelRow]) -> None:
+    axes[0].set_yticks(range(len(rows)), [label for _, _, label in rows])
+    axes[0].set_ylim(len(rows) - 0.5, -0.5)
+    axes[0].tick_params(axis="y", pad=ROW_LABEL_PAD)
+    for axis in axes[1:]:
+        axis.tick_params(labelleft=False)
+
+
+def variant_offsets(frame: pd.DataFrame) -> dict[str, float]:
+    """One sub-row per variant, as released on top.
+
+    A row's markers dodge by variant rather than by model, so the fill and the vertical
+    position say the same thing and the six or seven models of one variant share a line.
+    """
+    arms = arm_order(set(frame["arm"].dropna()))
+    _, offsets = bar_layout(len(arms))
+    return {arm: float(offset) for arm, offset in zip(arms, offsets, strict=True)}
+
+
+def _level_markers(
+    axis: Axes,
+    frame: pd.DataFrame,
+    rows: Sequence[LevelRow],
+    column: str,
+    place: Callable[[Any], float],
+    style: Callable[[Any], dict[str, Any]],
+) -> None:
+    """One marker per row of the frame on the level it belongs to, dodged by `place`."""
+    for position, (family, level, _) in enumerate(rows):
+        if family is None or level is None:
+            continue
+        subset = frame[frame["group"].eq(family) & frame["level"].eq(level)]
+        for row in _rows(subset.dropna(subset=[column])):
+            axis.plot(
+                float(getattr(row, column)),
+                position + place(row),
+                linestyle="none",
+                markersize=SUBGROUP_MODEL_MARKER,
+                markeredgewidth=1.1,
+                **style(row),
+            )
+
+
+def subgroup_models_plate(
+    per_question: pd.DataFrame,
+    overall: pd.DataFrame,
+    view: str,
+    mode: str,
+    destination: Path,
+) -> list[Path]:
+    """Every model condition on every level, PFS | center, one mode.
+
+    The box plate summarises the conditions; this one names them. The rows are the
+    same, colour and marker carry the model, and the fill and the sub-row carry the
+    variant, so the spread of a row is read model by model.
+    """
+    frame = subgroup_frame(per_question, overall, view, mode)
+    if frame.empty:
+        return []
+    rows = level_rows(frame)
+    offsets = variant_offsets(frame)
+    handles = compact_handles(frame)
+    figure = Figure(
+        figsize=(
+            SUBGROUP_MODEL_WIDTH,
+            SUBGROUP_MODEL_ROW * len(rows) + legend_height(handles, SUBGROUP_MODEL_COLUMNS) + 1.0,
+        ),
+        layout="constrained",
+    )
+    axes = figure.subplots(1, len(SUBGROUP_SCORES), sharey=True, squeeze=False)[0]
+    for axis, (column, title, anchor) in zip(axes, SUBGROUP_SCORES, strict=True):
+        _score_axis(axis, *_score_span(frame[column].dropna(), anchor))
+        _level_markers(
+            axis,
+            frame,
+            rows,
+            column,
+            lambda row: offsets.get(str(row.arm), 0.0),
+            lambda row: series_style(str(row.series), row.model_key, row.arm),
+        )
+        axis.set_title(f"{title}, {mode.upper()}")
+    _level_ticks(axes, rows)
+    legend_below(figure, handles, SUBGROUP_MODEL_COLUMNS)
+    return save_plate(figure, destination / f"fig_fidelity_subgroups_models_{view}_{mode}")
+
+
+def proprietary_frame(
+    per_question: pd.DataFrame,
+    overall: pd.DataFrame,
+    archived: pd.DataFrame,
+    archived_overall: pd.DataFrame,
+    view: str,
+) -> pd.DataFrame:
+    """The served proprietary conditions under FA beside each archived proprietary series
+    under the one mode the archive holds it in."""
+    question = VIEWS[view]
+    sweep = overall if question is None else per_question
+    published = archived_overall if question is None else archived
+    served = sweep[sweep["model_key"].isin(PROPRIETARY_SERVED) & sweep["mode"].eq(PROPRIETARY_MODE)]
+    held = published["model_label"].map(PROPRIETARY_ARCHIVED)
+    parts = [served, published[published["mode"].eq(held)]]
+    frame = pd.concat([part for part in parts if not part.empty], ignore_index=True)
+    if question is not None and not frame.empty:
+        frame = frame[frame["question"].eq(question)]
+    return frame.copy()
+
+
+def _proprietary_label(row: Any) -> str:
+    mode = str(row.mode)
+    flag = "" if mode == PROPRIETARY_MODE else "*"
+    return f"{row.series}, {mode.upper()}{flag}"
+
+
+def _proprietary_style(row: Any) -> dict[str, Any]:
+    """A served model keeps the style it wears everywhere; an archived one a solid disc."""
+    if isinstance(row.model_key, str):
+        return series_style(str(row.series), row.model_key, row.arm)
+    ink = PROPRIETARY_INKS[str(row.model_label)]
+    return {
+        "marker": "o",
+        "color": ink,
+        "markerfacecolor": ink,
+        "markeredgecolor": ink,
+        "zorder": 3.1,
+    }
+
+
+def _proprietary_handles(frame: pd.DataFrame) -> list[Line2D]:
+    handles: list[Line2D] = []
+    for label in PROPRIETARY_ORDER:
+        rows = frame[frame["model_label"].eq(label)]
+        if rows.empty:
+            continue
+        row = next(_rows(rows))
+        handles.append(
+            Line2D(
+                [],
+                [],
+                linestyle="none",
+                markersize=SUBGROUP_MODEL_MARKER,
+                markeredgewidth=MARKER_EDGE,
+                label=_proprietary_label(row),
+                **_proprietary_style(row),
+            )
+        )
+    return handles
+
+
+def proprietary_plate(
+    per_question: pd.DataFrame,
+    overall: pd.DataFrame,
+    archived: pd.DataFrame,
+    archived_overall: pd.DataFrame,
+    view: str,
+    destination: Path,
+) -> list[Path]:
+    """The proprietary lineage on every level, PFS | center.
+
+    Each model keeps its own sub-row, the archived series above the served one, so the
+    original study's GPT-3 and GPT-4T and the served GPT-5.6-Terra are read level by
+    level. GPT-3 and Terra share FA; GPT-4T exists under NTP alone and is starred for it.
+    """
+    frame = proprietary_frame(per_question, overall, archived, archived_overall, view)
+    if frame.empty:
+        return []
+    rows = level_rows(frame)
+    labels = [label for label in PROPRIETARY_ORDER if frame["model_label"].eq(label).any()]
+    _, dodge = bar_layout(len(labels))
+    offsets = {label: float(offset) for label, offset in zip(labels, dodge, strict=True)}
+    handles = _proprietary_handles(frame)
+    figure = Figure(
+        figsize=(
+            SUBGROUP_MODEL_WIDTH,
+            SUBGROUP_MODEL_ROW * len(rows) + legend_height(handles, PROPRIETARY_COLUMNS) + 1.0,
+        ),
+        layout="constrained",
+    )
+    axes = figure.subplots(1, len(SUBGROUP_SCORES), sharey=True, squeeze=False)[0]
+    for axis, (column, title, anchor) in zip(axes, SUBGROUP_SCORES, strict=True):
+        _score_axis(axis, *_score_span(frame[column].dropna(), anchor))
+        _level_markers(
+            axis,
+            frame,
+            rows,
+            column,
+            lambda row: offsets[str(row.model_label)],
+            _proprietary_style,
+        )
+        axis.set_title(title)
+    _level_ticks(axes, rows)
+    legend_below(figure, handles, PROPRIETARY_COLUMNS)
+    return save_plate(figure, destination / f"fig_fidelity_subgroups_proprietary_{view}")
+
+
 def _matrix(frame: pd.DataFrame, family: str, column: str) -> pd.DataFrame:
     columns = levels(family, frame["level"])
     rows = series_order(frame)
@@ -644,7 +1037,7 @@ def group_components_plate(
         ax=axes.tolist(),
         fraction=0.02,
         pad=0.02,
-        label="Score (0 to 1, higher is better)",
+        label=SCORE_XLABEL,
     )
     return save_plate(figure, destination / f"fig_fidelity_{family}_components_{view}_{mode}")
 
@@ -672,12 +1065,19 @@ def fidelity_plates(
     paired: pd.DataFrame,
     paired_overall: pd.DataFrame,
     destination: Path = FIDELITY_FIGURES,
+    archived: pd.DataFrame | None = None,
 ) -> list[Path]:
     destination.mkdir(parents=True, exist_ok=True)
     groups, overall, paired, paired_overall = (
         across_replicates(frame, spread=SPREAD)
         for frame in (groups, overall, paired, paired_overall)
     )
+    published: tuple[pd.DataFrame, pd.DataFrame] | None = None
+    if archived is not None and not archived.empty:
+        published = (
+            across_replicates(archived, spread=SPREAD),
+            across_replicates(overall_fidelity(archived), spread=SPREAD),
+        )
     produced: list[Path] = []
     with rc_context(cast(Any, PLATE_TEXT)):
         for mode in MODES:
@@ -689,6 +1089,7 @@ def fidelity_plates(
                 produced += components_plate(pooled, mode, view, destination)
                 produced += center_plate(pooled, mode, view, destination)
                 produced += cells_plate(pooled, mode, view, destination)
+                produced += subgroup_models_plate(groups, overall, view, mode, destination)
                 shifts = view_frame(paired, paired_overall, view, mode, POPULATION)
                 if not shifts.empty:
                     produced += shift_plate(shifts, mode, view, destination)
@@ -703,4 +1104,8 @@ def fidelity_plates(
                     shifts = view_frame(paired, paired_overall, view, mode, family)
                     if not shifts.empty:
                         produced += group_shift_plate(shifts, family, mode, view, folder)
+        for view in VIEWS:
+            produced += subgroups_plate(groups, overall, view, destination)
+            if published is not None:
+                produced += proprietary_plate(groups, overall, *published, view, destination)
     return produced
