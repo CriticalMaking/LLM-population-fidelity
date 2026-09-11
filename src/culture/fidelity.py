@@ -262,7 +262,7 @@ def binding_term(frame: pd.DataFrame, prefix: str = "") -> pd.Series:
     return frame[list(names)].idxmin(axis=1).map(names)
 
 
-def _lead_with(frame: pd.DataFrame, lead: Sequence[str]) -> pd.DataFrame:
+def lead_with(frame: pd.DataFrame, lead: Sequence[str]) -> pd.DataFrame:
     rest = [column for column in frame.columns if column not in lead]
     return frame[[*lead, *rest]]
 
@@ -299,7 +299,7 @@ def paired_runs(loaded: Sequence[Loaded], mode: str) -> Iterator[Pair]:
             yield tuned[replicate], base[replicate], common
 
 
-def _grouped(
+def grouped_scores(
     identity: dict[str, Any],
     facet: pd.DataFrame,
     score: Callable[..., dict[str, Any]],
@@ -339,7 +339,7 @@ def _loaded_runs(question: Question) -> list[Loaded]:
     return found
 
 
-def _answers(prepared: PreparedData, props: pd.DataFrame, names: pd.Index) -> FloatArray:
+def answer_array(prepared: PreparedData, props: pd.DataFrame, names: pd.Index) -> FloatArray:
     columns = list(prepared.question.answer_columns)
     return props.loc[names, columns].to_numpy(dtype=np.float64)
 
@@ -356,9 +356,9 @@ def build_fidelity(
         for run, prepared in loaded:
             names = prepared.names
             facet = facets.reindex(names)
-            wvs = _answers(prepared, prepared.wvs_props, names)
+            wvs = answer_array(prepared, prepared.wvs_props, names)
             for mode in prepared.modes():
-                llm = _answers(prepared, prepared.props(mode), names)
+                llm = answer_array(prepared, prepared.props(mode), names)
                 identity = run_identity(run, question, mode)
                 error = np.atleast_1d(np.asarray(nemd(wvs, llm), dtype=np.float64))
                 cell_frames.append(
@@ -369,27 +369,27 @@ def build_fidelity(
                         score_accuracy=np.clip(1.0 - error, 0.0, 1.0),
                     ).reset_index(drop=True)
                 )
-                rows += _grouped(identity, facet, group_fidelity, wvs, llm)
+                rows += grouped_scores(identity, facet, group_fidelity, wvs, llm)
         for mode in MODES:
             for (run, tuned_run), (base_run, base_data), common in paired_runs(loaded, mode):
                 identity = {**run_identity(run, question, mode), "base_source": base_run.source}
-                paired_rows += _grouped(
+                paired_rows += grouped_scores(
                     identity,
                     facets.reindex(common),
                     paired_fidelity,
-                    _answers(tuned_run, tuned_run.wvs_props, common),
-                    _answers(tuned_run, tuned_run.props(mode), common),
-                    _answers(base_data, base_data.props(mode), common),
+                    answer_array(tuned_run, tuned_run.wvs_props, common),
+                    answer_array(tuned_run, tuned_run.props(mode), common),
+                    answer_array(base_data, base_data.props(mode), common),
                 )
-    cells = _lead_with(pd.concat(cell_frames, ignore_index=True), [*IDENTITY, "subpopulation"])
+    cells = lead_with(pd.concat(cell_frames, ignore_index=True), [*IDENTITY, "subpopulation"])
     groups = pd.DataFrame(rows)
     groups["binding_term"] = binding_term(groups)
     paired = pd.DataFrame(paired_rows)
     if not paired.empty:
         paired["binding_term"] = binding_term(paired)
         paired[f"{BASE_PREFIX}binding_term"] = binding_term(paired, BASE_PREFIX)
-        paired = _lead_with(paired, [*PAIRED_IDENTITY, "group", "level"])
-    return cells, _lead_with(groups, [*IDENTITY, "group", "level"]), paired
+        paired = lead_with(paired, [*PAIRED_IDENTITY, "group", "level"])
+    return cells, lead_with(groups, [*IDENTITY, "group", "level"]), paired
 
 
 def _across_questions(
