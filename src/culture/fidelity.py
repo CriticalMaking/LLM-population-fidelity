@@ -54,7 +54,7 @@ FAMILIES: tuple[str, ...] = (
 )
 
 FAMILY_LABELS: dict[str, str] = {
-    POPULATION: "Every subpopulation",
+    POPULATION: "All retained subpopulations",
     "country": "Country",
     "wave": "Survey wave",
     "sex": "Sex",
