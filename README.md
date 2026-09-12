@@ -378,7 +378,7 @@ a column by being added there.
 | --- | --- |
 | `population_adaptability.ipynb` | `population_adaptability.csv`, 60 files in `figures/` |
 | `population_structure.ipynb` | `population_structure.csv`, 40 files in `figures/` |
-| `population_fidelity_evaluation.ipynb` | `population_fidelity_{cells,groups,overall,paired,paired_overall,archived}.csv`, 560 files in `figures/fidelity/` |
+| `population_fidelity_evaluation.ipynb` | `population_fidelity_{cells,groups,overall,paired,paired_overall,archived}.csv`, 620 files in `figures/fidelity/` |
 | `mds_model_comparison.ipynb` | `culture_mds_groups.csv` and the grouped MDS plates |
 
 Adaptability runs before structure, which joins its table; fidelity and MDS read
