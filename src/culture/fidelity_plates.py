@@ -153,10 +153,24 @@ SUBGROUP_SCORES: tuple[tuple[str, str], ...] = (
     ("score_center", CENTER_LABEL),
 )
 
-# The box plate of one mode laid along the page: levels across, score up.
+# The box plate of one mode laid along the page: levels across, score up. The main
+# text prints it at text width and a few centimetres tall, so the panel is short and the
+# text a few points smaller than the other plates'.
 SUBGROUP_WIDE_WIDTH = 11.5
 
-SUBGROUP_WIDE_HEIGHT = 4.6
+SUBGROUP_WIDE_HEIGHT = 1.4
+
+# Room the constrained layout needs under and over the panel for the level names, the
+# family names and the legend, so the panel keeps SUBGROUP_WIDE_HEIGHT.
+SUBGROUP_WIDE_MARGINS = 1.5
+
+BOX_PLATE_TEXT: dict[str, Any] = {
+    "font.size": 13.0,
+    "axes.labelsize": 13.0,
+    "xtick.labelsize": 12.0,
+    "ytick.labelsize": 12.0,
+    "legend.fontsize": 12.0,
+}
 
 WIDE_TICK_ROTATION = 60
 
@@ -986,19 +1000,23 @@ def subgroups_wide_plate(
         return []
     rows = level_rows(frame)
     handles = _box_handles(f"{mode.upper()} {int(frame['series'].nunique())}")
-    figure = Figure(
-        figsize=(SUBGROUP_WIDE_WIDTH, SUBGROUP_WIDE_HEIGHT + legend_height(handles, 3) + 1.4),
-        layout="constrained",
-    )
-    axis = figure.subplots(1, 1)
-    axis.grid(axis="y", color=GRID, linewidth=0.6)
-    axis.set_axisbelow(True)
-    _boxes(axis, frame, rows, "vertical")
-    _wide_ticks(axis, rows)
-    axis.set_ylim(-SUBGROUP_MARGIN, 1.0 + SUBGROUP_MARGIN)
-    axis.set_ylabel(SCORE_XLABEL)
-    legend_below(figure, handles, 3)
-    return save_plate(figure, destination / f"fig_fidelity_subgroups_wide_{view}_{mode}")
+    with rc_context(cast(Any, BOX_PLATE_TEXT)):
+        figure = Figure(
+            figsize=(
+                SUBGROUP_WIDE_WIDTH,
+                SUBGROUP_WIDE_HEIGHT + legend_height(handles, 3) + SUBGROUP_WIDE_MARGINS,
+            ),
+            layout="constrained",
+        )
+        axis = figure.subplots(1, 1)
+        axis.grid(axis="y", color=GRID, linewidth=0.6)
+        axis.set_axisbelow(True)
+        _boxes(axis, frame, rows, "vertical")
+        _wide_ticks(axis, rows)
+        axis.set_ylim(-SUBGROUP_MARGIN, 1.0 + SUBGROUP_MARGIN)
+        axis.set_ylabel(SCORE_XLABEL)
+        legend_below(figure, handles, 3)
+        return save_plate(figure, destination / f"fig_fidelity_subgroups_wide_{view}_{mode}")
 
 
 def variant_offsets(frame: pd.DataFrame) -> dict[str, float]:
