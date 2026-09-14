@@ -589,6 +589,47 @@ def center_correlation(
     return pd.concat(tables, ignore_index=True)[columns]
 
 
+def center_correlation_summary(
+    groups: pd.DataFrame, resamples: int = CENTER_RESAMPLES, seed: int = GLOBAL_SEED
+) -> pd.DataFrame:
+    """The pooled correlation beside the mean and range of the per-level ones.
+
+    Both intervals come from the same resamples as ``center_correlation``: the mean is
+    recomputed over the levels inside every resample, so levels that share conditions
+    are not treated as independent.
+    """
+    rows: list[dict[str, Any]] = []
+    for identity, table, draws in _center_blocks(groups, resamples, seed):
+        pooled = table["group"].eq(POPULATION).to_numpy()
+        levels = table[~pooled]
+        row: dict[str, Any] = {
+            **identity,
+            "n_conditions": int(table["n_conditions"].to_numpy()[pooled][0]),
+            "n_levels": int(levels["spearman"].notna().sum()),
+        }
+        for statistic in CORRELATION_STATISTICS:
+            level_draws = draws[statistic][~pooled]
+            defined = np.isfinite(level_draws)
+            totals = np.where(defined, level_draws, 0.0).sum(axis=0)
+            means = np.full(totals.shape, np.nan)
+            np.divide(totals, defined.sum(axis=0), out=means, where=defined.any(axis=0))
+            low, high = interval(means[np.newaxis])
+            for part in INTERVAL_PARTS:
+                values = table[f"{statistic}{part}"].to_numpy(dtype=np.float64)
+                row[f"{POPULATION}_{statistic}{part}"] = float(values[pooled][0])
+            row.update(
+                {
+                    f"{statistic}_mean": float(levels[statistic].mean()),
+                    f"{statistic}_mean_ci_low": float(low[0]),
+                    f"{statistic}_mean_ci_high": float(high[0]),
+                    f"{statistic}_min": float(levels[statistic].min()),
+                    f"{statistic}_max": float(levels[statistic].max()),
+                }
+            )
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
 def cell_summary(cells: pd.DataFrame) -> pd.DataFrame:
     keys = ["question", "question_label", "mode", "subpopulation", *FAMILIES]
     summary = (
