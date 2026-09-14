@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
+from scipy.stats import pearsonr, spearmanr
 
 from culture import archived_reference, fidelity, fidelity_plates
 from culture.population import RunSource
@@ -299,6 +301,55 @@ def test_the_paired_all_view_differences_the_two_geometric_means() -> None:
     assert pooled["base_pfs"].iat[0] == pytest.approx(0.5)
     assert pooled["delta_pfs_vs_base"].iat[0] == pytest.approx(0.1)
     assert fidelity.overall_paired(frame.iloc[0:0]).empty
+
+
+CONDITIONS: tuple[tuple[str | None, str], ...] = (
+    ("base", "Gemma (as released)"),
+    ("german", "Gemma (german)"),
+    ("spanish-mx", "Gemma (spanish-mx)"),
+    ("french", "Gemma (french)"),
+    (None, "Mixtral archived"),
+)
+
+PFS = (0.10, 0.20, 0.30, 0.40, 0.50)
+
+CENTER = (0.60, 0.70, 0.75, 0.90, 0.65)
+
+
+def centered() -> pd.DataFrame:
+    rows = [
+        {
+            **_identity("d_happy", arm, series),
+            "group": group,
+            "level": level,
+            "pfs": pfs,
+            "score_center": center,
+        }
+        for (arm, series), pfs, center in zip(CONDITIONS, PFS, CENTER, strict=True)
+        for group, level in ((fidelity.POPULATION, fidelity.EVERY_CELL), ("sex", "Female"))
+    ]
+    return pd.DataFrame(rows)
+
+
+RESAMPLES = 400
+
+
+def test_the_correlations_match_scipy_along_the_last_axis() -> None:
+    rng = np.random.default_rng(7)
+    x = rng.normal(size=(5, 12))
+    y = rng.normal(size=(5, 12))
+    x[:, :4] = np.round(x[:, :4])
+    x[0, 5] = np.nan
+    y[1, 2] = np.nan
+
+    found = fidelity.correlations(x, y)
+
+    for row in range(len(x)):
+        kept = np.isfinite(x[row]) & np.isfinite(y[row])
+        expected_rho = spearmanr(x[row, kept], y[row, kept]).statistic
+        expected_r = pearsonr(x[row, kept], y[row, kept]).statistic
+        assert found["spearman"][row] == pytest.approx(expected_rho)
+        assert found["pearson"][row] == pytest.approx(expected_r)
 
 
 def test_the_checks_accept_paired_rows_that_never_exceed_their_runs() -> None:
