@@ -76,6 +76,10 @@ ROW_WIDTH = 6.9
 
 ROW_HEIGHT = 0.62
 
+# The component profile prints beside the shift plate at under half a column, so its
+# rows carry the series and the variant on one line and sit this close together.
+COMPONENT_ROW = 0.28
+
 ROW_LABEL_PAD = 10.0
 
 SCATTER_WIDTH = 5.8
@@ -281,16 +285,18 @@ def _ordered(frame: pd.DataFrame, column: str) -> pd.DataFrame:
     return frame.dropna(subset=[column]).sort_values(column, ascending=True)
 
 
-def _row_figure(count: int, width: float) -> tuple[Figure, Axes]:
-    figure = Figure(figsize=(width, ROW_HEIGHT * count + 3.0), layout="constrained")
+def _row_figure(count: int, width: float, row: float = ROW_HEIGHT) -> tuple[Figure, Axes]:
+    figure = Figure(figsize=(width, row * count + 3.0), layout="constrained")
     axis = figure.subplots(1, 1)
     axis.grid(axis="x", color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
     return figure, axis
 
 
-def _row_labels(axis: Axes, frame: pd.DataFrame) -> None:
-    axis.set_yticks(range(len(frame)), [stacked(series) for series in frame["series"]])
+def _row_labels(axis: Axes, frame: pd.DataFrame, one_line: bool = False) -> None:
+    """One tick per row, the variant under the series or, on one line, beside it."""
+    shape = str if one_line else stacked
+    axis.set_yticks(range(len(frame)), [shape(series) for series in frame["series"]])
     axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
     axis.set_ylim(-0.6, len(frame) - 0.4)
 
@@ -373,7 +379,7 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
 
 def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     ordered = _ordered(frame, "pfs")
-    figure, axis = _row_figure(len(ordered), ROW_WIDTH)
+    figure, axis = _row_figure(len(ordered), ROW_WIDTH, COMPONENT_ROW)
     for position, row in enumerate(_rows(ordered)):
         scores = [float(getattr(row, column)) for column, _, _ in COMPONENTS]
         axis.plot(
@@ -416,7 +422,7 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             color=INK,
             zorder=3.5,
         )
-    _row_labels(axis, ordered)
+    _row_labels(axis, ordered, one_line=True)
     axis.set_xlim(0.0, 1.0)
     axis.set_xlabel(SCORE_XLABEL)
     # axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
