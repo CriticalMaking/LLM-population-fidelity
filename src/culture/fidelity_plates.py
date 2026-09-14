@@ -156,7 +156,7 @@ SUBGROUP_SCORES: tuple[tuple[str, str], ...] = (
 # The box plate of one mode laid along the page: levels across, score up. The main
 # text prints it at text width and a few centimetres tall, so the panel is short, the
 # text a few points smaller than the other plates', and the level names stand upright
-# and centred under their columns.
+# and centred under their columns, each on one line.
 SUBGROUP_WIDE_WIDTH = 11.5
 
 SUBGROUP_WIDE_HEIGHT = 1.4
@@ -178,6 +178,8 @@ WIDE_TICK_ROTATION = 60
 BOX_TICK_ROTATION = 90
 
 POOLED_TICK = "All retained subpopulations"
+
+BOX_POOLED_TICK = "All subpopulations"
 
 # The per-model and proprietary plates laid along the page: PFS above center, levels
 # across, one sub-column per variant or model inside every level.
@@ -857,9 +859,9 @@ def _wide_ticks(axis: Axes, rows: Sequence[LevelRow]) -> None:
 
     The one-panel plate is the main text's, so each level name stands upright and centred
     under its own column rather than leaning away from the tick as the stacked plates'
-    do.
+    do, and the pooled column takes the shorter name so no name is taller than the rest.
     """
-    labels = [POOLED_TICK if family == POPULATION else level or "" for family, level, _ in rows]
+    labels = [BOX_POOLED_TICK if family == POPULATION else level or "" for family, level, _ in rows]
     axis.set_xticks(range(len(rows)), labels, rotation=BOX_TICK_ROTATION, ha="center", va="top")
     axis.set_xlim(-0.7, len(rows) - 0.3)
     _wide_blocks(axis, rows, named=True)
