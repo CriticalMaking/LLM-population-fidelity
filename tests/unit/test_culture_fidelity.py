@@ -541,6 +541,23 @@ def test_a_shift_plate_spans_each_axis_on_its_own_reach() -> None:
     assert fidelity_plates._span(frame.iloc[0:0], fidelity_plates.DELTA_PFS) == (-0.125, 0.125)
 
 
+def test_the_wide_box_plate_stands_its_level_names_upright_under_their_columns() -> None:
+    from matplotlib.figure import Figure
+
+    rows = fidelity_plates.level_rows(scored())
+    leaning = Figure().subplots(1, 1)
+    fidelity_plates._wide_ticks(leaning, rows)
+    labels = leaning.get_xticklabels()
+    assert [label.get_text() for label in labels] == ["All subpopulations", "", "Female"]
+    assert {label.get_rotation() for label in labels} == {90.0}
+    assert {label.get_horizontalalignment() for label in labels} == {"center"}
+
+    stacked = Figure().subplots(1, 1)
+    fidelity_plates._wide_tick_labels(stacked, rows)
+    assert stacked.get_xticklabels()[0].get_text() == "All retained subpopulations"
+    assert {label.get_rotation() for label in stacked.get_xticklabels()} == {60.0}
+
+
 def test_replicates_are_drawn_as_one_marker_with_a_spread(tmp_path: Path) -> None:
     groups = scored()
     second = groups[groups["arm"].eq("german")].copy()
