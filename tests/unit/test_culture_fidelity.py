@@ -404,6 +404,35 @@ def test_a_repeated_condition_counts_once_and_a_flat_level_has_no_correlation() 
     assert few[statistics].isna().to_numpy().all()
 
 
+def test_the_summary_sets_the_pooled_correlation_beside_the_mean_across_levels() -> None:
+    frame = centered()
+    female = frame[frame["level"].eq("Female")]
+    groups = pd.concat(
+        [frame, female.assign(level="Male", pfs=[0.3, 0.1, 0.4, 0.2, 0.5])], ignore_index=True
+    )
+
+    correlation = fidelity.center_correlation(groups, RESAMPLES)
+    summary = fidelity.center_correlation_summary(groups, RESAMPLES)
+    single = fidelity.center_correlation_summary(frame, RESAMPLES).iloc[0]
+    alone = fidelity.center_correlation(frame, RESAMPLES)
+
+    served = correlation[correlation["scope"].eq(fidelity.SERVED)]
+    pooled = served[served["group"].eq(fidelity.POPULATION)].iloc[0]
+    levels = served[~served["group"].eq(fidelity.POPULATION)]
+    row = summary[summary["scope"].eq(fidelity.SERVED)].iloc[0]
+    assert len(summary) == 2
+    assert (row["n_conditions"], row["n_levels"]) == (4, 2)
+    for part in fidelity.INTERVAL_PARTS:
+        assert row[f"population_spearman{part}"] == pytest.approx(pooled[f"spearman{part}"])
+    assert row["spearman_mean"] == pytest.approx(levels["spearman"].mean())
+    assert row["spearman_min"] == pytest.approx(levels["spearman"].min())
+    assert row["pearson_max"] == pytest.approx(levels["pearson"].max())
+    assert "spearman_sd" not in summary.columns
+    one_level = alone[alone["scope"].eq(fidelity.SERVED) & alone["level"].eq("Female")].iloc[0]
+    assert single["spearman_mean_ci_low"] == pytest.approx(one_level["spearman_ci_low"])
+    assert single["pearson_mean_ci_high"] == pytest.approx(one_level["pearson_ci_high"])
+
+
 def test_the_checks_accept_paired_rows_that_never_exceed_their_runs() -> None:
     groups = scored()
 
