@@ -91,7 +91,7 @@ SCATTER_WIDTH = 5.8
 SCATTER_HEIGHT = 5.6
 
 # The shift plate prints at half a column next to the component profile, so its box is
-# wider than tall.
+# wider than tall and each axis spans its own reach rather than the larger of the two.
 SHIFT_HEIGHT = 3.6
 
 DELTA_PFS = delta_column("pfs")
@@ -542,6 +542,12 @@ def _reach(frame: pd.DataFrame, columns: Sequence[str]) -> float:
     return extent or 0.1
 
 
+def _span(frame: pd.DataFrame, column: str) -> tuple[float, float]:
+    """Symmetric limits around zero with a quarter of the column's reach to spare."""
+    reach = _reach(frame, (column,)) * 1.25
+    return -reach, reach
+
+
 def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     drawable = frame.dropna(subset=[DELTA_PFS, DELTA_CENTER])
     handles = [
@@ -564,9 +570,8 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
         axis.plot(
             x, y, linestyle="none", markersize=MARKER_SIZE, markeredgewidth=MARKER_EDGE, **style
         )
-    reach = _reach(drawable, (DELTA_PFS, DELTA_CENTER))
-    axis.set_xlim(-reach * 1.25, reach * 1.25)
-    axis.set_ylim(-reach * 1.25, reach * 1.25)
+    axis.set_xlim(*_span(drawable, DELTA_PFS))
+    axis.set_ylim(*_span(drawable, DELTA_CENTER))
     _corner_notes(axis, SHIFT_CORNERS)
     axis.set_xlabel("Change in PFS against the as-released variant")
     axis.set_ylabel("Change in center alignment\nagainst the as-released variant")
