@@ -88,6 +88,12 @@ ROW_LABEL_PAD = 10.0
 
 SCATTER_WIDTH = 5.8
 
+SCATTER_HEIGHT = 5.6
+
+# The shift plate prints at half a column next to the component profile, so its box is
+# wider than tall.
+SHIFT_HEIGHT = 3.6
+
 DELTA_PFS = delta_column("pfs")
 
 DELTA_CENTER = delta_column("score_center")
@@ -465,8 +471,12 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
     return save_plate(figure, destination / f"fig_fidelity_components_{view}_{mode}")
 
 
-def _scatter_figure(handles: Sequence[Line2D]) -> tuple[Figure, Axes]:
-    figure = Figure(figsize=(SCATTER_WIDTH, 5.6 + legend_height(handles, 2)), layout="constrained")
+def _scatter_figure(
+    handles: Sequence[Line2D], height: float = SCATTER_HEIGHT
+) -> tuple[Figure, Axes]:
+    figure = Figure(
+        figsize=(SCATTER_WIDTH, height + legend_height(handles, 2)), layout="constrained"
+    )
     axis = figure.subplots(1, 1)
     axis.grid(color=GRID, linewidth=0.6)
     axis.set_axisbelow(True)
@@ -540,7 +550,7 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
     ]
     if replicated(drawable):
         handles.append(spread_handle())
-    figure, axis = _scatter_figure(handles)
+    figure, axis = _scatter_figure(handles, SHIFT_HEIGHT)
     axis.axvline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=1.1)
     axis.axhline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=1.1)
     for row in _rows(drawable):
