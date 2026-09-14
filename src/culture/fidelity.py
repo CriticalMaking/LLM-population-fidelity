@@ -485,6 +485,51 @@ def overall_paired(paired: pd.DataFrame) -> pd.DataFrame:
     return overall
 
 
+def _varies(values: FloatArray, kept: npt.NDArray[np.bool_]) -> npt.NDArray[np.bool_]:
+    highest = np.where(kept, values, -np.inf).max(axis=-1)
+    return np.asarray(highest > np.where(kept, values, np.inf).min(axis=-1))
+
+
+def _moment_correlation(
+    x: FloatArray, y: FloatArray, kept: npt.NDArray[np.bool_], defined: npt.NDArray[np.bool_]
+) -> FloatArray:
+    count = np.maximum(kept.sum(axis=-1, keepdims=True), 1)
+    dx = np.where(kept, x - np.where(kept, x, 0.0).sum(axis=-1, keepdims=True) / count, 0.0)
+    dy = np.where(kept, y - np.where(kept, y, 0.0).sum(axis=-1, keepdims=True) / count, 0.0)
+    numerator = (dx * dy).sum(axis=-1)
+    denominator = np.sqrt((dx**2).sum(axis=-1) * (dy**2).sum(axis=-1))
+    result = np.full(numerator.shape, np.nan)
+    np.divide(numerator, denominator, out=result, where=defined & (denominator > 0.0))
+    return result
+
+
+def correlations(x: FloatArray, y: FloatArray) -> dict[str, FloatArray]:
+    """Spearman and Pearson along the last axis, over the pairs where both are finite.
+
+    Blank where fewer than three pairs remain or either side does not vary.
+    """
+    kept = np.isfinite(x) & np.isfinite(y)
+    defined = (
+        (kept.sum(axis=-1) >= MIN_CONDITIONS_FOR_CORRELATION) & _varies(x, kept) & _varies(y, kept)
+    )
+    ranked = [rankdata(np.where(kept, values, np.inf), axis=-1) for values in (x, y)]
+    return {
+        "spearman": _moment_correlation(ranked[0], ranked[1], kept, defined),
+        "pearson": _moment_correlation(x, y, kept, defined),
+    }
+
+
+def interval(draws: FloatArray) -> tuple[FloatArray, FloatArray]:
+    """The percentile interval of the last axis, blank where no draw is defined."""
+    tail = 50.0 * (1.0 - CONFIDENCE)
+    low = np.full(draws.shape[:-1], np.nan)
+    high = np.full(draws.shape[:-1], np.nan)
+    finite = np.isfinite(draws).any(axis=-1)
+    if finite.any():
+        low[finite], high[finite] = np.nanpercentile(draws[finite], [tail, 100.0 - tail], axis=-1)
+    return low, high
+
+
 def cell_summary(cells: pd.DataFrame) -> pd.DataFrame:
     keys = ["question", "question_label", "mode", "subpopulation", *FAMILIES]
     summary = (
