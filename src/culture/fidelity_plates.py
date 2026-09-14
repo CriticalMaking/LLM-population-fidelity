@@ -183,6 +183,10 @@ BOX_POOLED_TICK = "All subpopulations"
 
 BOX_YLABEL = "Score (0 to 1)"
 
+# Score units past 0 and 1 on the short panel, enough for a flier on the floor to be
+# drawn whole.
+BOX_MARGIN = 0.04
+
 # The per-model and proprietary plates laid along the page: PFS above center, levels
 # across, one sub-column per variant or model inside every level.
 SUBGROUP_WIDE_PANEL = 2.6
@@ -1027,7 +1031,7 @@ def subgroups_wide_plate(
         axis.set_axisbelow(True)
         _boxes(axis, frame, rows, "vertical")
         _wide_ticks(axis, rows)
-        axis.set_ylim(-SUBGROUP_MARGIN, 1.0 + SUBGROUP_MARGIN)
+        axis.set_ylim(-BOX_MARGIN, 1.0 + BOX_MARGIN)
         axis.set_ylabel(BOX_YLABEL)
         legend_below(figure, handles, 3)
         return save_plate(figure, destination / f"fig_fidelity_subgroups_wide_{view}_{mode}")
