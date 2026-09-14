@@ -80,6 +80,10 @@ ROW_HEIGHT = 0.62
 # rows carry the series and the variant on one line and sit this close together.
 COMPONENT_ROW = 0.28
 
+# Score units either side of 0 and 1 on the component profile, so a mark on the floor
+# or the ceiling is drawn whole rather than cut by the axis.
+COMPONENT_MARGIN = 0.03
+
 ROW_LABEL_PAD = 10.0
 
 SCATTER_WIDTH = 5.8
@@ -423,7 +427,8 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             zorder=3.5,
         )
     _row_labels(axis, ordered, one_line=True)
-    axis.set_xlim(0.0, 1.0)
+    axis.set_xlim(-COMPONENT_MARGIN, 1.0 + COMPONENT_MARGIN)
+    axis.set_xticks(np.linspace(0.0, 1.0, 6))
     axis.set_xlabel(SCORE_XLABEL)
     # axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
     handles = [
