@@ -7,15 +7,28 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from scipy.stats import spearmanr
+from scipy.stats import rankdata, spearmanr
 
-from machine_bias_reproduction.config import EXPECTED_SUBPOPULATIONS, OUTPUTS_ROOT, paths_for
+from machine_bias_reproduction.config import (
+    EXPECTED_SUBPOPULATIONS,
+    GLOBAL_SEED,
+    OUTPUTS_ROOT,
+    paths_for,
+)
 from machine_bias_reproduction.data import PreparedData, load_subpops
 from machine_bias_reproduction.metrics import nemd, pairwise_nemd
 from machine_bias_reproduction.questions import Question, resolve_questions
 
 from .matching import WVS_COUNTRIES
-from .population import MODES, REPLICATE, RunSource, load_run, run_identity, sources
+from .population import (
+    MODES,
+    REPLICATE,
+    RunSource,
+    across_replicates,
+    load_run,
+    run_identity,
+    sources,
+)
 from .registry import BASE_ARM, is_base
 from .tables import read_csv
 
@@ -30,6 +43,8 @@ MISSING_TOKEN = "NA"
 MIN_CELLS_FOR_DISPERSION = 2
 
 MIN_CELLS_FOR_STRUCTURE = 3
+
+MIN_CONDITIONS_FOR_CORRELATION = 3
 
 AGE_BANDS: tuple[str, ...] = ("<25", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")
 
@@ -142,6 +157,22 @@ IDENTITY: tuple[str, ...] = (
 
 PAIRED_IDENTITY: tuple[str, ...] = (*IDENTITY, "base_source")
 
+SERVED = "served"
+
+EVERY_SERIES = "all"
+
+CORRELATION_SCOPES: tuple[str, ...] = (SERVED, EVERY_SERIES)
+
+CORRELATION_KEYS: tuple[str, ...] = ("question", "question_label", "mode", "group", "level")
+
+CORRELATION_STATISTICS: tuple[str, ...] = ("spearman", "pearson")
+
+INTERVAL_PARTS: tuple[str, ...] = ("", "_ci_low", "_ci_high")
+
+CENTER_RESAMPLES = 10_000
+
+CONFIDENCE = 0.95
+
 CELLS_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_cells.csv"
 
 GROUPS_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_groups.csv"
@@ -151,6 +182,10 @@ OVERALL_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_overall.csv"
 PAIRED_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_paired.csv"
 
 PAIRED_OVERALL_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_paired_overall.csv"
+
+CENTER_CORRELATION_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_center_correlation.csv"
+
+CENTER_SUMMARY_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_center_summary.csv"
 
 
 def delta_column(metric: str) -> str:
