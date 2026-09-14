@@ -530,6 +530,65 @@ def interval(draws: FloatArray) -> tuple[FloatArray, FloatArray]:
     return low, high
 
 
+CenterBlock = tuple[dict[str, Any], pd.DataFrame, dict[str, FloatArray]]
+
+
+def _center_blocks(groups: pd.DataFrame, resamples: int, seed: int) -> Iterator[CenterBlock]:
+    conditions = across_replicates(groups)
+    rng = np.random.default_rng(seed)
+    blocks = ["question", "question_label", "mode"]
+    for scope in CORRELATION_SCOPES:
+        scoped = conditions[conditions["model_key"].notna()] if scope == SERVED else conditions
+        for keys, block in scoped.groupby(blocks, dropna=False, sort=False):
+            levels = block[["group", "level"]].drop_duplicates().reset_index(drop=True)
+            series = pd.unique(block["series"])
+            pfs, center = (
+                block.pivot(index=["group", "level"], columns="series", values=column)
+                .reindex(index=pd.MultiIndex.from_frame(levels), columns=series)
+                .to_numpy(dtype=np.float64)
+                for column in ("pfs", "score_center")
+            )
+            sample = rng.integers(0, len(series), size=(resamples, len(series)))
+            draws = {
+                statistic: np.empty((len(levels), resamples))
+                for statistic in CORRELATION_STATISTICS
+            }
+            for row in range(len(levels)):
+                for statistic, values in correlations(
+                    pfs[row, sample], center[row, sample]
+                ).items():
+                    draws[statistic][row] = values
+            table = levels.assign(n_conditions=(np.isfinite(pfs) & np.isfinite(center)).sum(axis=1))
+            for statistic, values in correlations(pfs, center).items():
+                low, high = interval(draws[statistic])
+                table[statistic] = values
+                table[f"{statistic}_ci_low"] = low
+                table[f"{statistic}_ci_high"] = high
+            yield {"scope": scope, **dict(zip(blocks, keys, strict=True))}, table, draws
+
+
+def center_correlation(
+    groups: pd.DataFrame, resamples: int = CENTER_RESAMPLES, seed: int = GLOBAL_SEED
+) -> pd.DataFrame:
+    """PFS against center alignment across the model conditions of each level.
+
+    Replicates are averaged first, so a condition counts once. ``served`` keeps the
+    sweep's conditions, as the subgroup boxes do; ``all`` adds the Mixtral references,
+    as the component profile does. The interval resamples the conditions with
+    replacement and takes the percentiles of the recomputed correlation.
+    """
+    columns = [
+        "scope",
+        *CORRELATION_KEYS,
+        "n_conditions",
+        *(f"{name}{part}" for name in CORRELATION_STATISTICS for part in INTERVAL_PARTS),
+    ]
+    tables = [
+        table.assign(**identity) for identity, table, _ in _center_blocks(groups, resamples, seed)
+    ]
+    return pd.concat(tables, ignore_index=True)[columns]
+
+
 def cell_summary(cells: pd.DataFrame) -> pd.DataFrame:
     keys = ["question", "question_label", "mode", "subpopulation", *FAMILIES]
     summary = (
