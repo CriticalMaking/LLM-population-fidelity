@@ -526,6 +526,21 @@ def test_the_proprietary_plate_reads_each_archived_series_in_its_own_mode(tmp_pa
     ]
 
 
+def test_a_shift_plate_spans_each_axis_on_its_own_reach() -> None:
+    frame = pd.DataFrame(
+        {
+            fidelity_plates.DELTA_PFS: [-0.4, 0.1],
+            fidelity_plates.DELTA_CENTER: [0.05, -0.1],
+            f"{fidelity_plates.DELTA_CENTER}_sd": [0.02, np.nan],
+        }
+    )
+    assert fidelity_plates._span(frame, fidelity_plates.DELTA_PFS) == (-0.5, 0.5)
+    assert fidelity_plates._span(frame, fidelity_plates.DELTA_CENTER) == pytest.approx(
+        (-0.125, 0.125)
+    )
+    assert fidelity_plates._span(frame.iloc[0:0], fidelity_plates.DELTA_PFS) == (-0.125, 0.125)
+
+
 def test_replicates_are_drawn_as_one_marker_with_a_spread(tmp_path: Path) -> None:
     groups = scored()
     second = groups[groups["arm"].eq("german")].copy()
