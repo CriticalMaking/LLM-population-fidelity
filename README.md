@@ -343,6 +343,16 @@ its own cells and carries no deltas. `population_fidelity_paired_overall.csv` is
 the cross-question form, a geometric mean of each condition's per-question PFS
 before the difference is taken.
 
+`population_fidelity_center_correlation.csv` asks whether the two readings move
+together: for every question, mode, group and level it correlates PFS with
+`1 - C` across the model conditions, Spearman and Pearson, on the replicate means.
+Scope `served` keeps the sweep's conditions, as the subgroup boxes do; `all` adds
+the Mixtral references, as the components plate does. Every correlation carries a
+95% percentile bootstrap interval, the conditions resampled 10,000 times from
+`GLOBAL_SEED`. `population_fidelity_center_summary.csv` sets the pooled correlation
+beside the mean of the per-level ones, whose interval recomputes the mean inside
+every resample because the levels share their conditions.
+
 | Plate | Folder | Shows |
 | --- | --- | --- |
 | `fig_fidelity_ranking_<view>_<mode>` | `figures/fidelity/` | PFS per run, ranked |
