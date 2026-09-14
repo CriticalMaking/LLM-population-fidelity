@@ -574,7 +574,7 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
     axis.set_ylim(*_span(drawable, DELTA_CENTER))
     _corner_notes(axis, SHIFT_CORNERS)
     axis.set_xlabel("Change in PFS against the as-released variant")
-    axis.set_ylabel("Change in center alignment\nagainst the as-released variant")
+    axis.set_ylabel("Change in center alignment")
     # axis.set_title(_title(view, mode, POPULATION, "What the finetuning bought"))
     return save_plate(figure, destination / f"fig_fidelity_shift_{view}_{mode}")
 
