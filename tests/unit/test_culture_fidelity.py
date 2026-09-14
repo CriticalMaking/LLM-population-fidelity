@@ -352,6 +352,58 @@ def test_the_correlations_match_scipy_along_the_last_axis() -> None:
         assert found["pearson"][row] == pytest.approx(expected_r)
 
 
+def test_pfs_meets_center_over_the_served_conditions_and_over_every_series() -> None:
+    correlation = fidelity.center_correlation(centered(), RESAMPLES)
+    pooled = correlation[correlation["group"].eq(fidelity.POPULATION)].set_index("scope")
+    served = pooled.loc[fidelity.SERVED]
+    every = pooled.loc[fidelity.EVERY_SERIES]
+
+    assert len(correlation) == 4
+    assert correlation.columns.tolist() == [
+        "scope",
+        *fidelity.CORRELATION_KEYS,
+        "n_conditions",
+        "spearman",
+        "spearman_ci_low",
+        "spearman_ci_high",
+        "pearson",
+        "pearson_ci_low",
+        "pearson_ci_high",
+    ]
+    assert served["n_conditions"] == 4
+    assert served["spearman"] == pytest.approx(1.0)
+    assert (served["spearman_ci_low"], served["spearman_ci_high"]) == (1.0, 1.0)
+    assert served["pearson"] == pytest.approx(np.corrcoef(PFS[:4], CENTER[:4])[0, 1])
+    assert served["pearson_ci_low"] <= served["pearson"] <= served["pearson_ci_high"]
+    assert every["n_conditions"] == 5
+    assert every["spearman"] == pytest.approx(0.4)
+    assert every["spearman_ci_low"] < every["spearman"] < every["spearman_ci_high"]
+    assert every["pearson"] == pytest.approx(np.corrcoef(PFS, CENTER)[0, 1])
+    pd.testing.assert_frame_equal(correlation, fidelity.center_correlation(centered(), RESAMPLES))
+
+
+def test_a_repeated_condition_counts_once_and_a_flat_level_has_no_correlation() -> None:
+    frame = centered()
+    repeated = pd.concat(
+        [frame, frame[frame["series"].eq("Gemma (as released)")].assign(replicate=2)],
+        ignore_index=True,
+    )
+    repeated.loc[repeated["level"].eq("Female"), "score_center"] = 0.8
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        correlation = fidelity.center_correlation(repeated, RESAMPLES)
+        few = fidelity.center_correlation(frame[frame["arm"].isin(["base", "german"])], RESAMPLES)
+    indexed = correlation.set_index(["scope", "group"])
+    statistics = [column for column in correlation.columns if column.startswith(("spear", "pear"))]
+
+    assert indexed.loc[(fidelity.SERVED, fidelity.POPULATION), "n_conditions"] == 4
+    assert indexed.loc[(fidelity.SERVED, fidelity.POPULATION), "spearman"] == pytest.approx(1)
+    assert indexed.loc[(fidelity.SERVED, "sex"), "n_conditions"] == 4
+    assert indexed.loc[(fidelity.SERVED, "sex"), statistics].isna().to_numpy().all()
+    assert few["n_conditions"].eq(2).all()
+    assert few[statistics].isna().to_numpy().all()
+
+
 def test_the_checks_accept_paired_rows_that_never_exceed_their_runs() -> None:
     groups = scored()
 
