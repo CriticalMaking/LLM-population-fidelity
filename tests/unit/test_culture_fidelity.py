@@ -520,7 +520,7 @@ def test_the_subgroup_plate_lists_the_pooled_cells_first_and_each_family_after_a
         (None, None),
         ("sex", "Female"),
     ]
-    assert rows[0][2] == r"$\bf{All\ retained\ subpopulations}$"
+    assert rows[0][2] == r"$\bf{All\ subpop.}$"
     assert rows[2][2] == r"$\bf{Sex}$: Female"
     assert fidelity_plates.family_blocks(rows) == [("sex", 2.0, 2.0)]
 
@@ -680,13 +680,20 @@ def test_the_wide_box_plate_stands_its_level_names_upright_under_their_columns()
     leaning = Figure().subplots(1, 1)
     fidelity_plates._wide_ticks(leaning, rows)
     labels = leaning.get_xticklabels()
-    assert [label.get_text() for label in labels] == ["All subpopulations", "", "Female"]
+    assert [label.get_text() for label in labels] == ["All subpop.", "", "Female"]
+    assert fidelity_plates._tick_names([("marital", "Divorced or separated", "")]) == [
+        "Divor. / separ."
+    ]
+    marital = fidelity_plates.level_rows(
+        pd.DataFrame({"group": ["marital_status"], "level": ["Divorced or separated"]})
+    )
+    assert marital[0][2] == r"$\bf{Marital\ status}$: Divor. / separ."
     assert {label.get_rotation() for label in labels} == {90.0}
     assert {label.get_horizontalalignment() for label in labels} == {"center"}
 
     stacked = Figure().subplots(1, 1)
     fidelity_plates._wide_tick_labels(stacked, rows)
-    assert stacked.get_xticklabels()[0].get_text() == "All retained subpopulations"
+    assert stacked.get_xticklabels()[0].get_text() == "All subpop."
     assert {label.get_rotation() for label in stacked.get_xticklabels()} == {60.0}
 
 
