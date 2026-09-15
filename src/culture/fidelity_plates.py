@@ -163,7 +163,7 @@ SUBGROUP_WIDE_HEIGHT = 1.4
 
 # Room the constrained layout needs under and over the panel for the level names, the
 # family names and the legend, so the panel keeps SUBGROUP_WIDE_HEIGHT.
-SUBGROUP_WIDE_MARGINS = 1.5
+SUBGROUP_WIDE_MARGINS = 1.0
 
 BOX_PLATE_TEXT: dict[str, Any] = {
     "font.size": 13.0,
@@ -177,9 +177,12 @@ WIDE_TICK_ROTATION = 60
 
 BOX_TICK_ROTATION = 90
 
-POOLED_TICK = "All retained subpopulations"
+# The level names every subgroup plate writes beside its rows or under its columns: the
+# pooled cells and the longest level abbreviated, so no name stands much taller or wider
+# than the rest.
+POOLED_TICK = "All subpop."
 
-BOX_POOLED_TICK = "All subpopulations"
+TICK_NAMES: dict[str, str] = {"Divorced or separated": "Divor. / separ."}
 
 BOX_YLABEL = "Score (0 to 1)"
 
@@ -683,7 +686,7 @@ def level_rows(frame: pd.DataFrame) -> list[LevelRow]:
     """
     rows: list[LevelRow] = []
     if frame["group"].eq(POPULATION).any():
-        rows.append((POPULATION, EVERY_CELL, _bold(FAMILY_LABELS[POPULATION])))
+        rows.append((POPULATION, EVERY_CELL, _bold(POOLED_TICK)))
     for family in FAMILIES:
         names = levels(family, frame.loc[frame["group"].eq(family), "level"])
         if not names:
@@ -691,7 +694,7 @@ def level_rows(frame: pd.DataFrame) -> list[LevelRow]:
         if rows:
             rows.append((None, None, ""))
         label = _bold(FAMILY_LABELS[family])
-        rows.extend((family, level, f"{label}: {level}") for level in names)
+        rows.extend((family, level, f"{label}: {TICK_NAMES.get(level, level)}") for level in names)
     return rows
 
 
@@ -828,12 +831,19 @@ def family_blocks(rows: Sequence[LevelRow]) -> list[tuple[str, float, float]]:
     return blocks
 
 
+def _tick_names(rows: Sequence[LevelRow]) -> list[str]:
+    """One name per column: the pooled tick, the abbreviated level, or nothing for a spacer."""
+    return [
+        POOLED_TICK if family == POPULATION else TICK_NAMES.get(level or "", level or "")
+        for family, level, _ in rows
+    ]
+
+
 def _wide_tick_labels(axis: Axes, rows: Sequence[LevelRow]) -> None:
-    """Level names as rotated ticks below the axis, the pooled column named in full."""
-    labels = [POOLED_TICK if family == POPULATION else level or "" for family, level, _ in rows]
+    """Level names as leaning ticks below the axis of a stacked plate."""
     axis.set_xticks(
         range(len(rows)),
-        labels,
+        _tick_names(rows),
         rotation=WIDE_TICK_ROTATION,
         ha="right",
         rotation_mode="anchor",
@@ -865,10 +875,11 @@ def _wide_ticks(axis: Axes, rows: Sequence[LevelRow]) -> None:
 
     The one-panel plate is the main text's, so each level name stands upright and centred
     under its own column rather than leaning away from the tick as the stacked plates'
-    do, and the pooled column takes the shorter name so no name is taller than the rest.
+    do.
     """
-    labels = [BOX_POOLED_TICK if family == POPULATION else level or "" for family, level, _ in rows]
-    axis.set_xticks(range(len(rows)), labels, rotation=BOX_TICK_ROTATION, ha="center", va="top")
+    axis.set_xticks(
+        range(len(rows)), _tick_names(rows), rotation=BOX_TICK_ROTATION, ha="center", va="top"
+    )
     axis.set_xlim(-0.7, len(rows) - 0.3)
     _wide_blocks(axis, rows, named=True)
 
@@ -1371,7 +1382,8 @@ def _annotate(axis: Axes, matrix: pd.DataFrame, light_below: float | None) -> No
 
 
 def _matrix_ticks(axis: Axes, matrix: pd.DataFrame) -> None:
-    axis.set_xticks(range(matrix.shape[1]), list(matrix.columns), rotation=30, ha="right")
+    names = [TICK_NAMES.get(str(level), str(level)) for level in matrix.columns]
+    axis.set_xticks(range(matrix.shape[1]), names, rotation=30, ha="right")
     axis.set_yticks(range(matrix.shape[0]), [stacked(series) for series in matrix.index])
     axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
     axis.grid(visible=False)
