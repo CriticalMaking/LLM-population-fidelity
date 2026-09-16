@@ -365,9 +365,9 @@ def grouped_scores(
     return rows
 
 
-def _loaded_runs(question: Question) -> list[Loaded]:
+def loaded_runs(question: Question, runs: Sequence[RunSource] | None = None) -> list[Loaded]:
     found: list[Loaded] = []
-    for run in sources():
+    for run in runs if runs is not None else sources():
         prepared = load_run(run.source, run.key, run.arm, question)
         if prepared is not None:
             found.append((run, prepared))
@@ -387,7 +387,7 @@ def build_fidelity(
     rows: list[dict[str, Any]] = []
     paired_rows: list[dict[str, Any]] = []
     for question in questions or resolve_questions(None):
-        loaded = _loaded_runs(question)
+        loaded = loaded_runs(question)
         for run, prepared in loaded:
             names = prepared.names
             facet = facets.reindex(names)

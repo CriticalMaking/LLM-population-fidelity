@@ -127,6 +127,24 @@ def _group_counts(responses: pd.DataFrame, subpopulation: pd.Series) -> pd.Serie
     return answered.groupby(subpopulation.to_numpy()).sum()
 
 
+def respondent_counts(prepared: PreparedData) -> pd.Series:
+    """Valid survey answers to the run's question in each retained cell.
+
+    A weight for respondent-weighted readings, never a retention rule: a cell is kept
+    on its complete proportions however few respondents stand behind them.
+    """
+    question = prepared.question
+    answers = one_hot(
+        question.normalize(prepared.wvs[question.var]),
+        question.wvs_labels,
+        question.answer_columns,
+    )
+    counts = _group_counts(answers, prepared.subpops["subpop"]).reindex(prepared.names)
+    if counts.isna().any() or counts.le(0).any():
+        raise ValueError("every retained cell needs at least one valid survey answer")
+    return counts.astype(np.float64)
+
+
 def social_predictors(wvs: pd.DataFrame, subpopulation: pd.Series) -> pd.DataFrame:
     age_labels = ("<25", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")
     age = pd.cut(
