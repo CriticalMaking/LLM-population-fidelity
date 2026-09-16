@@ -353,6 +353,27 @@ the Mixtral references, as the components plate does. Every correlation carries 
 beside the mean of the per-level ones, whose interval recomputes the mean inside
 every resample because the levels share their conditions.
 
+The score fixes six implementation choices, and `culture.fidelity_sensitivity`
+asks what each one buys. `population_fidelity_sensitivity_readings.csv` and
+`population_fidelity_sensitivity_paired.csv` hold, for every row of the groups
+and paired tables, what a variant can read off its cells: the per-cell error,
+both condensed pairwise-distance vectors summarised by median and by mean,
+Spearman, Pearson and Kendall over them, the accuracy and center terms with and
+without respondent weights (the valid survey answers behind each cell, a weight
+and never a retention rule), and the respondent count. Nine variants are then
+pure arithmetic on those readings — the default, mean pairwise distance,
+one-sided `min(A, 1)`, Pearson, Kendall, an unclipped signed `rho` with
+`PFS = sign(rho) * (acc * adapt * |rho|)^(1/3)`, the arithmetic mean,
+respondent-weighted `E` and `C`, and mean-Pearson-unclipped-weighted at once —
+and `population_fidelity_sensitivity.csv` sets one row per variant beside the
+default: component levels over the 164 pooled combinations as both a mean and
+a median, binding counts pooled and group-resolved, nonpositive scores, rank
+agreement with the default
+pooled and per question, NTP–FA agreement, and each finetuning arm's paired
+changes pooled and inside its home country. The default variant reproduces the
+groups and paired tables to the last digit, which the notebook asserts before
+writing.
+
 | Plate | Folder | Shows |
 | --- | --- | --- |
 | `fig_fidelity_ranking_<view>_<mode>` | `figures/fidelity/` | PFS per run, ranked |
@@ -388,11 +409,13 @@ a column by being added there.
 | --- | --- |
 | `population_adaptability.ipynb` | `population_adaptability.csv`, 60 files in `figures/` |
 | `population_structure.ipynb` | `population_structure.csv`, 40 files in `figures/` |
-| `population_fidelity_evaluation.ipynb` | `population_fidelity_{cells,groups,overall,paired,paired_overall,center_correlation,center_summary,archived}.csv`, 620 files in `figures/fidelity/` |
+| `population_fidelity_evaluation.ipynb` | `population_fidelity_{cells,groups,overall,paired,paired_overall,center_correlation,center_summary,archived,sensitivity_readings,sensitivity_paired,sensitivity}.csv`, 620 files in `figures/fidelity/` |
 | `mds_model_comparison.ipynb` | `culture_mds_groups.csv` and the grouped MDS plates |
 
-Adaptability runs before structure, which joins its table; fidelity and MDS read
-neither and can run alone.
+Adaptability runs before structure, which joins its table. Fidelity reads
+`population_structure.csv` only to cross-check the pooled Pearson coefficients of
+its sensitivity readings, and skips that check when the file is absent; MDS reads
+neither.
 
 ```bash
 uv run --no-sync --with nbclient --with ipykernel python - <<'PY'
