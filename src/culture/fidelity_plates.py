@@ -94,6 +94,10 @@ SCATTER_HEIGHT = 5.6
 # wider than tall and each axis spans its own reach rather than the larger of the two.
 SHIFT_HEIGHT = 3.6
 
+# Each corner note on the shift plate names both scores over two lines, so the center
+# axis keeps this much of its reach to spare and no marker lands under a note.
+SHIFT_CENTER_SPARE = 0.7
+
 DELTA_PFS = delta_column("pfs")
 
 DELTA_CENTER = delta_column("score_center")
@@ -245,10 +249,10 @@ CENTER_CORNERS = (
 )
 
 SHIFT_CORNERS = (
-    (0.02, 0.97, "left", "top", "Center gained,\nfidelity lost"),
-    (0.98, 0.97, "right", "top", "Both improved"),
-    (0.02, 0.03, "left", "bottom", "Both worse"),
-    (0.98, 0.03, "right", "bottom", "Fidelity gained,\ncenter drifted"),
+    (0.02, 0.97, "left", "top", "Center improved,\nfidelity worsened"),
+    (0.98, 0.97, "right", "top", "Center improved,\nfidelity improved"),
+    (0.02, 0.03, "left", "bottom", "Center worsened,\nfidelity worsened"),
+    (0.98, 0.03, "right", "bottom", "Center worsened,\nfidelity improved"),
 )
 
 
@@ -570,9 +574,9 @@ def _reach(frame: pd.DataFrame, columns: Sequence[str]) -> float:
     return extent or 0.1
 
 
-def _span(frame: pd.DataFrame, column: str) -> tuple[float, float]:
-    """Symmetric limits around zero with a quarter of the column's reach to spare."""
-    reach = _reach(frame, (column,)) * 1.25
+def _span(frame: pd.DataFrame, column: str, spare: float = 0.25) -> tuple[float, float]:
+    """Symmetric limits around zero with a share of the column's reach to spare."""
+    reach = _reach(frame, (column,)) * (1.0 + spare)
     return -reach, reach
 
 
@@ -599,7 +603,7 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
             x, y, linestyle="none", markersize=MARKER_SIZE, markeredgewidth=MARKER_EDGE, **style
         )
     axis.set_xlim(*_span(drawable, DELTA_PFS))
-    axis.set_ylim(*_span(drawable, DELTA_CENTER))
+    axis.set_ylim(*_span(drawable, DELTA_CENTER, SHIFT_CENTER_SPARE))
     _corner_notes(axis, SHIFT_CORNERS)
     axis.set_xlabel("Change in PFS against the as-released variant")
     axis.set_ylabel("Change in center alignment")
