@@ -671,6 +671,18 @@ def test_a_shift_plate_spans_each_axis_on_its_own_reach() -> None:
         (-0.125, 0.125)
     )
     assert fidelity_plates._span(frame.iloc[0:0], fidelity_plates.DELTA_PFS) == (-0.125, 0.125)
+    assert fidelity_plates._span(frame, fidelity_plates.DELTA_CENTER, 0.7) == pytest.approx(
+        (-0.17, 0.17)
+    )
+
+
+def test_every_shift_corner_names_both_scores_in_the_direction_of_its_quadrant() -> None:
+    corners = fidelity_plates.SHIFT_CORNERS
+    assert len({(x > 0.5, y > 0.5) for x, y, *_ in corners}) == 4
+    for x, y, _, _, text in corners:
+        center = "improved" if y > 0.5 else "worsened"
+        pfs = "improved" if x > 0.5 else "worsened"
+        assert text == f"Center {center},\nfidelity {pfs}"
 
 
 def test_the_wide_box_plate_stands_its_level_names_upright_under_their_columns() -> None:
