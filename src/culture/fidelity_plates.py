@@ -118,7 +118,7 @@ CENTER_LABEL = "Cultural center alignment (1 - C)"
 
 PFS_LABEL = "Population Fidelity Score"
 
-CENTER_LEGEND = "Center: 1 - C (not in PFS)"
+CENTER_LEGEND = r"$S_{\mathrm{center}}$"
 
 SCORE_XLABEL = "Score (0 to 1, higher is better)"
 
