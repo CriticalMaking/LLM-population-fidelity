@@ -685,6 +685,20 @@ def test_every_shift_corner_names_both_scores_in_the_direction_of_its_quadrant()
         assert text == f"Center {center},\nfidelity {pfs}"
 
 
+def test_the_component_legend_names_each_score_in_words_and_by_its_symbol() -> None:
+    from matplotlib.mathtext import MathTextParser
+
+    parser = MathTextParser("path")
+    labels = [label for _, _, label in fidelity_plates.COMPONENTS]
+    assert labels == [
+        r"Accuracy ($S_{\mathrm{acc}}$)",
+        r"Adaptability ($S_{\mathrm{adapt}}$)",
+        r"Structure ($S_{\mathrm{struct}}$)",
+    ]
+    for label in labels:
+        parser.parse(label)
+
+
 def test_the_center_legend_names_the_score_in_words_and_by_its_symbol() -> None:
     from matplotlib.mathtext import MathTextParser
 
