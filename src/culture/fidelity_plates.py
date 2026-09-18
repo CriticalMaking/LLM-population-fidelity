@@ -106,10 +106,12 @@ SPREAD: tuple[str, ...] = (*SCORE_COLUMNS, "e_mean_nemd", DELTA_PFS, DELTA_CENTE
 
 BAR_SPREAD: dict[str, Any] = {"ecolor": MUTED_INK, "elinewidth": 1.1, "capsize": 2.6}
 
+# The three PFS components, each named as the text names it: the word and the symbol
+# the definition gives it, not the formula behind it.
 COMPONENTS: tuple[tuple[str, str, str], ...] = (
-    ("score_accuracy", "o", "Accuracy: 1 - mean nEMD"),
-    ("score_dispersion", "s", "Adaptability: min(A, 1/A)"),
-    ("score_structure", "^", "Structure: max(0, rho)"),
+    ("score_accuracy", "o", r"Accuracy ($S_{\mathrm{acc}}$)"),
+    ("score_dispersion", "s", r"Adaptability ($S_{\mathrm{adapt}}$)"),
+    ("score_structure", "^", r"Structure ($S_{\mathrm{struct}}$)"),
 )
 
 COMPONENT_INKS = magnitude_steps(len(COMPONENTS))
