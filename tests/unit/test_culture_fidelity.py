@@ -685,10 +685,10 @@ def test_every_shift_corner_names_both_scores_in_the_direction_of_its_quadrant()
         assert text == f"Center {center},\nfidelity {pfs}"
 
 
-def test_the_center_legend_names_the_score_by_its_symbol() -> None:
+def test_the_center_legend_names_the_score_in_words_and_by_its_symbol() -> None:
     from matplotlib.mathtext import MathTextParser
 
-    assert fidelity_plates.CENTER_LEGEND == r"$S_{\mathrm{center}}$"
+    assert fidelity_plates.CENTER_LEGEND == r"Center alignment ($S_{\mathrm{center}}$)"
     MathTextParser("path").parse(fidelity_plates.CENTER_LEGEND)
     labels = [handle.get_label() for handle in fidelity_plates._box_handles("FA 1")]
     assert labels[:2] == [fidelity_plates.PFS_LABEL, fidelity_plates.CENTER_LEGEND]
