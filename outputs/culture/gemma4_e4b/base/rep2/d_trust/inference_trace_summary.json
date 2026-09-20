@@ -1,0 +1,24 @@
+{
+  "code_revisions": [
+    "4d87701-dirty"
+  ],
+  "failed_records": [
+    "raw/fa/d2518b96f241c5fd3708b4c9.failed.json",
+    "raw/fa/b4096c1d645f58cf564668b8.failed.json",
+    "raw/fa/d5e184b9c6cac9cd782c4a10.failed.json"
+  ],
+  "indexed": 26978,
+  "missing": {
+    "fa": 3
+  },
+  "model_sha256": [
+    "ee0ef6023621cff504d758262d4e04895a5af4a2"
+  ],
+  "ok": false,
+  "problems": [],
+  "run_ids": [
+    "20260914T210946Z-b0ebcf47"
+  ],
+  "traced": 26978,
+  "untraced": 0
+}
