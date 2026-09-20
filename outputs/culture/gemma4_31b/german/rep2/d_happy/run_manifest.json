@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_distance_comparison.pdf": "310ed75269ee6ad6b95a374566d00a0f36365bc8758d7013a1e0df3137c12b6c",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_distance_comparison.png": "81004a524801ebb96abd6104658f4aa9276b9154c7e8734cbfe883ca209e07f3",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_full_coefficients.pdf": "1ef06fbbde3d4e3b7722216a0f2b4f5b77a742872fdaccb6d2efc418a7a72d51",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_full_coefficients.png": "96197df6541536a0db8fc128d694651a4d96b428d2f76392d4652d371b9feed9",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_full_standardized_coefficients.pdf": "5ba6d228d0c61f16502de00b49b67b8de4277fad89c7da5b491108eae4da2cf8",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_full_standardized_coefficients.png": "253595693667cc0dc1b0863542fe93ee8074e03ceafcb4e93a9e0673d7318072",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_mds_fa.pdf": "1aa7f68d0268af8456a765f4059cbd86c67d687f6ba7b6da4ff944f865e0834c",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_mds_fa.png": "71e4498461cf82835c1e58576d17e4350472edbf2508e1720b7fc58326a5a682",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_nemd_density_quality.pdf": "171d450c59fa8078a4d1c9f2aaaab38e963f2168de1a4b4bdbba6705f72f0b04",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_nemd_density_quality.png": "48ac0ae09b13933422195c640c2c0042bf8c7e415b32dacff3df3e8cd395be6b",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_social_coefficients.pdf": "fadab8c7f74c38d4492595971c892f7dd3c295de8884af67ecfb1f78b45b7c0b",
+    "figures/culture/gemma4_31b/german/rep2/d_happy/fig_social_coefficients.png": "bd05852a8492c8f388a7feba0946516bd50c9a97d7b8149f961225994d27991b",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/center_holdouts.csv": "6bca315aa812db50f73292c88146199cfddb6a4af63c9bc3cefeec3e94fe06d6",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/f_tests.csv": "882d22439fd2ccbe2a73b9b1bb116f4e0012f6b5c32dbd1c61ed724c94d8fca1",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/full_coefficients.csv": "1bc59c896bc0cfd20d49ae1542ed4b2dc93588e988eeae238c4cd7d6c8778201",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/full_standardized_coefficients.csv": "10333a564673f268e303207042a793fe100a691500bdc24b2b702a7a72e5fd12",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/pairwise_dispersion.csv": "64d1fbd0407cbed6a99acc870e53057a69eafcacd244bcfaca8f4eb71f320647",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/quality_bands.csv": "1917955850f15dba2f0b7cfc1ee6fcdb94ee784f4e4dba5efa7428f8e47e7d82",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/regression_fit.csv": "825c76d1be1fdb9a02d90e2bf1e8c034862512a314cc51fb94bf3dc90fa1352f",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/response_distributions.csv": "d10bcc0f9b7ae780fd93f0ea2c8108811978aae292726a1aefe9cbe492c0a105",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/social_coefficients.csv": "8937ca8eebc3a0ca69cdcae91b721bc4bed32f6f8e30ee6a25f2bac2fa289767",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/subpopulation_distances.csv": "844974af9a3be7fbceb9947f092f0e6ff6a720eb8852239722a7b711c1648831",
+    "outputs/culture/gemma4_31b/german/rep2/d_happy/summary_metrics.csv": "23fd214a383cc83ca268600d95bdad5cefd68106c7ed788a4fbe2fd40a5b381d"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26708,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 12,
+    "subpopulations_retained": 675,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-10T11:25:47.145116+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "google/gemma-4-31B-it + german LoRA",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/gemma4_31b/german/rep2"
+}

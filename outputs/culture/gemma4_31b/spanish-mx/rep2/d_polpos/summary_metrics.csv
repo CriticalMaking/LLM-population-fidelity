@@ -1,0 +1,7 @@
+metric,method,value
+wvs_rows,WVS,26981.0
+subpopulations,WVS,631.0
+subpopulations_dropped,WVS,56.0
+overall_nEMD,FA,0.04827079735568864
+median_pairwise_nEMD,WVS,0.10740740740740738
+median_pairwise_nEMD,FA,0.09614463601532566

@@ -1,0 +1,54 @@
+{
+  "code_revisions": [
+    "568e1cf-dirty"
+  ],
+  "failed_records": [
+    "raw/fa/0ff77fd05b11eb29de5779ca.failed.json",
+    "raw/fa/f7c86ad1b6e76e1a8a1bb276.failed.json",
+    "raw/fa/eea5143528e5f1f98927a9a3.failed.json",
+    "raw/fa/e65daecd44ba97285364523f.failed.json",
+    "raw/fa/f02aa8e6b79709a21ae1a3a9.failed.json",
+    "raw/fa/112a6642861e1f227fb4637d.failed.json",
+    "raw/fa/a5671855072b9e0e90fc8a2e.failed.json",
+    "raw/fa/c3aaa6717b21d1f4a15d55c2.failed.json",
+    "raw/fa/b11881eeda6640f2e8744b5e.failed.json",
+    "raw/fa/24064609253f78a9b69eb220.failed.json",
+    "raw/fa/f82c08a04ffe72b76bdc5340.failed.json",
+    "raw/fa/00821ce13de7c8e728e86b11.failed.json",
+    "raw/fa/63ad15c62ef619e277d7986e.failed.json",
+    "raw/fa/f608b7ea36eadf5ebbb19269.failed.json",
+    "raw/fa/f809ff4d4935c2fdfa30a5a7.failed.json",
+    "raw/fa/7a89629d30fc4950de9b733d.failed.json",
+    "raw/fa/9e01f4f1585050e73a7b8080.failed.json",
+    "raw/fa/73fe7b808845dbac687c0906.failed.json",
+    "raw/fa/1ea022c46af12c5f29eea6cd.failed.json",
+    "raw/fa/db09aaa4a4f0d6ec535e9d1d.failed.json",
+    "raw/fa/c5e8e7edd111f6a04886986e.failed.json",
+    "raw/fa/93f8d56adb0b3b1f5a3ca848.failed.json",
+    "raw/fa/291cdabd0f5198909a3fbe12.failed.json",
+    "raw/fa/c2e9b5d25c8eb7699dfb569e.failed.json",
+    "raw/fa/19c23daa83ad3eed47baa53c.failed.json",
+    "raw/fa/05f1bc3b6f15630702599408.failed.json",
+    "raw/fa/6220cc9b2282fea9d5b00cac.failed.json",
+    "raw/fa/7377a22d7e382ad5e880333c.failed.json",
+    "raw/fa/75a25c62afb6214f2321540a.failed.json",
+    "raw/fa/03f336c1daa21ea64da561b0.failed.json",
+    "raw/fa/7123984123a9f4bf5d29c637.failed.json",
+    "raw/fa/bb2ff1cb76a08be90bd148c5.failed.json",
+    "raw/fa/9b11e6d1a346942f42870e73.failed.json"
+  ],
+  "indexed": 26948,
+  "missing": {
+    "fa": 33
+  },
+  "model_sha256": [
+    "5a62855fff48c23d6dd7690473ade1a2428f6a2a31d9bc5ab724df20c7c8b6ab"
+  ],
+  "ok": false,
+  "problems": [],
+  "run_ids": [
+    "20260910T112602Z-85451417"
+  ],
+  "traced": 26948,
+  "untraced": 0
+}

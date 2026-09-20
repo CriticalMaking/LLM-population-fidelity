@@ -1,0 +1,123 @@
+{
+  "backend": {
+    "accelerate": "1.13.0",
+    "answer_token_ids": {
+      "A": 562,
+      "B": 603
+    },
+    "answer_tokens": {
+      "A": " A",
+      "B": " B"
+    },
+    "arm": "cultural",
+    "attn_implementation": "sdpa",
+    "base_model_id": "google/gemma-4-31B-it",
+    "base_revision": null,
+    "batch_size": 4,
+    "bitsandbytes": "0.49.2",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "fa_max_new_tokens": 12,
+    "lora_exclude_modules": ".*(vision_tower|audio_tower).*",
+    "lora_target_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "modalities_used": [
+      "text"
+    ],
+    "modality": "vision_text",
+    "model_class": "Gemma4ForConditionalGeneration",
+    "multi_token_answers": [],
+    "name": "transformers",
+    "oom_backoffs": 0,
+    "peft": "0.19.1",
+    "prompt_contract": "paper",
+    "quantization": "nf4",
+    "question": "d_trust",
+    "tokenizer_source": "/home/neemias/machine-bias-reproduction/models/culture/gemma4_31b/spanish-mx",
+    "torch": "2.12.0",
+    "version": "5.8.1"
+  },
+  "capacity": {
+    "by_mode": [
+      {
+        "distinct_distributions": null,
+        "failed": 616,
+        "invalid": 0,
+        "mean_valid_mass": null,
+        "median_valid_mass": null,
+        "mode": "FA",
+        "p10_valid_mass": null,
+        "prompts": 26981,
+        "response_std": null,
+        "tied_answers": null,
+        "valid": 26365,
+        "valid_rate": 0.9771691190096735
+      }
+    ],
+    "failed": 616,
+    "invalid": 0,
+    "ntp_distinct_distributions": null,
+    "prompts": 26981,
+    "valid": 26365,
+    "valid_rate": 0.9771691190096735
+  },
+  "code_revision": "4d87701-dirty",
+  "counts": {
+    "fa": {
+      "failed": 616,
+      "generated": 26365,
+      "reused": 0,
+      "reused_untraced": 0
+    }
+  },
+  "event_log": "logs/inference_events.jsonl",
+  "finished_at": "2026-09-14T06:46:03.825356+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "model": {
+    "adapter_path": "/home/neemias/machine-bias-reproduction/models/culture/gemma4_31b/spanish-mx",
+    "adapter_sha256": "5a62855fff48c23d6dd7690473ade1a2428f6a2a31d9bc5ab724df20c7c8b6ab",
+    "base_model_id": "google/gemma-4-31B-it",
+    "base_revision": null,
+    "culture": "spanish-mx",
+    "model_key": "gemma4_31b",
+    "replicate": 2,
+    "sha256": "5a62855fff48c23d6dd7690473ade1a2428f6a2a31d9bc5ab724df20c7c8b6ab"
+  },
+  "modes_requested": [
+    "fa"
+  ],
+  "modes_run": [
+    "fa"
+  ],
+  "parameters": {
+    "global_seed": 20240111,
+    "legacy_unseeded_fa": false,
+    "limit": null,
+    "modes": [
+      "fa"
+    ],
+    "replicate": 2
+  },
+  "preflight": {
+    "informative": true,
+    "max_mass": 0.9993625865317881,
+    "mean_mass": 0.9520021908788294,
+    "min_mass": 0.24503423273563385,
+    "prompts": 32,
+    "threshold": 0.1
+  },
+  "question": "d_trust",
+  "run_id": "20260913T184214Z-cfad61b0",
+  "schema_version": 2,
+  "started_at": "2026-09-13T18:42:14.185071+00:00"
+}
