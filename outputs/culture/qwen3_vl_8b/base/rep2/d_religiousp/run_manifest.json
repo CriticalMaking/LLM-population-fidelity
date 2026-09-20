@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_distance_comparison.pdf": "d61b65161dcb151d4671512680bd57325dd05f7a96e2bbde8b0a10d71613b4fe",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_distance_comparison.png": "a5a3ccd98c702aab38bb38851c3f9af148c8bfee26b9ab999b39e7048cbf1ac8",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_full_coefficients.pdf": "e21adc28397f7abacd14dd0454ce3d5882f94511782569e28411e9186c547358",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_full_coefficients.png": "82fb5dcc58e9c8b5828182b2434a567fd5303856973b9e487b20bfae29b8b53c",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_full_standardized_coefficients.pdf": "b9e88b5148518fb206bcedd6957566c5b6c1f81ddf08e4a69dee910cb46d76f4",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_full_standardized_coefficients.png": "4ff61ee76a1694d2704cbae889744a0e9239020b6751de2794a43c5ea856eba1",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_mds_fa.pdf": "db7064012acceb3f8288bea809b5b555cdcccecfda2efa0466e526a328f37e17",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_mds_fa.png": "92b60ca4ef87522deb29e8f50321c370a7f712860be005fc873ea911eafc1aca",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_nemd_density_quality.pdf": "61651b152a2035d4dfc0e658d5d57df5d9aced01a6b3e6b86da50c44243c838b",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_nemd_density_quality.png": "8f1ac32dda857500f1fcd00ed4c90dafe288bc33f61d3ab7dfc2dc6562418476",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_social_coefficients.pdf": "e4dc9b274394f3ef17a214724f903bd43b038739bc51b342d535ed9b49cca408",
+    "figures/culture/qwen3_vl_8b/base/rep2/d_religiousp/fig_social_coefficients.png": "2d19385ce840eec994f224825778c8075f2846fa47c1a874c2af8f9c821ac70e",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/f_tests.csv": "4ba12f2d4392b414eb0504b10ec466816532454355ad6fb9b27b9096d491c00b",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/full_coefficients.csv": "dcfd65cdff14089b15676478e0e38d9200abf9f848ae1577d52fecc5c9135313",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/full_standardized_coefficients.csv": "5f7298e0867105e99d2e1c298082e8eff20a986e1d298b9fca00e23769b3a8ec",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/pairwise_dispersion.csv": "078debaafc76d324e6cf6cec9f71a8f046ebca2107c2d264cade13204ee73cbf",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/quality_bands.csv": "a4d1be56d63b320d07870606369281dd78a3a245262b444c3a9df8831bd822fc",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/regression_fit.csv": "4357b91a0e94db11a6116fe118a017a71dbe2bb9ef5053a7d0ce5de9c551863d",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/response_distributions.csv": "3344a19b14eee9dbed2b950c026ad29209c557e4341ff4535e2f075161de0140",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/social_coefficients.csv": "6292963e7ac971ad1d2ed19cf211995e2b4a3815e94d0f43a4f9b87f23b0368d",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/subpopulation_distances.csv": "29ce8dae36040fbf8ce4dcddfc8d6a711771074e4181c6063df0f469709d0992",
+    "outputs/culture/qwen3_vl_8b/base/rep2/d_religiousp/summary_metrics.csv": "dff2081b5247f702daadac6fccafb8ee0bbf6957d52eda0d542090a4cf20d21b"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-14T17:47:27.418789+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 7,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Qwen/Qwen3-VL-8B-Thinking (not finetuned)",
+    "question": "d_religiousp",
+    "question_label": "Religion",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/qwen3_vl_8b/base/rep2"
+}
