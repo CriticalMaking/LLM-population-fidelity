@@ -1,5 +1,5 @@
 model_key,model_label,culture,question,question_label,hours,sessions,sweep_status
-terra,Terra,base,d_happy,Happiness,4.498840938611111,1,skipped
-terra,Terra,base,d_polpos,Politics,8.09892691111111,2,ok
-terra,Terra,base,d_religiousp,Religion,6.8912220091666665,1,ok
-terra,Terra,base,d_trust,Trust,3.5275655652777775,1,ok
+terra,GPT-5.6-Terra,base,d_happy,Happiness,4.498840938611111,1,skipped
+terra,GPT-5.6-Terra,base,d_polpos,Politics,8.09892691111111,2,ok
+terra,GPT-5.6-Terra,base,d_religiousp,Religion,6.8912220091666665,1,ok
+terra,GPT-5.6-Terra,base,d_trust,Trust,3.5275655652777775,1,ok
