@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_distance_comparison.pdf": "56ce1c30f0820ca7bab20e682c3d37ee5b084ffa152f9ee6f16dd7b91c5c4300",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_distance_comparison.png": "54ecec85d34af4c4f6dd071dfd2a6cd7333642dd61e1b56e1d50b96ebe3d883b",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_full_coefficients.pdf": "cb01b1ecf4b30f44bd38404aa5aeae238eecad104b169a29ac329cb72fd55ba2",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_full_coefficients.png": "a5b1293decb82a7854e650ca12e515c8e7d6357895b364fac385065181010ff2",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_full_standardized_coefficients.pdf": "bc23a61cd2ce1effb9f2dcc96d09cc66ba37c5535eda1910efc1554a728f9300",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_full_standardized_coefficients.png": "83d35f6b840dd9e2938b949fa1a391695ede157ec3c95692593e2808e6c3e8d5",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_mds_fa.pdf": "05b33e08c1e28b78109a0e8dfe2c25cc63f7881228b2f0320997747b361deab1",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_mds_fa.png": "9a024b6df20bb1add98f52bd38aea8e109f20c95e72f544906d26f2aad551e80",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_nemd_density_quality.pdf": "2a4974332731992c74ccdfe45b745778cf88d46d7aaf0152913a3a94592f7f13",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_nemd_density_quality.png": "c7efd04caf86330fb6cf781746cd2f01fa5f84e7a260e097f68117390ddc18ba",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_social_coefficients.pdf": "46ab049a1ff490d4a1a1475813aaeeccbcfbe3825a91ac2915a3e307447bf02d",
+    "figures/culture/muse_glimmer_30b/german/rep2/d_polpos/fig_social_coefficients.png": "e02355d16bf59490063693ac38ecd0407968789d1abf0906b700842265383b54",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/center_holdouts.csv": "43c442dd66d87d05f10f87936f9a8de4904b4e1e072a1d75705538e2abd9617f",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/f_tests.csv": "5f09b7a3a9cb703c947775f7bd5be9a7472c0d34b06d07cab5a055873e114ebe",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/full_coefficients.csv": "ea539d826a4b39fb5e3e95b1c06f36f55a20b15ad227bd4257aaa84816ef3219",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/full_standardized_coefficients.csv": "a0cbb6c57dc0d8627ba843388c78102d0a0716b6b08c73ed6dd452a675513061",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/pairwise_dispersion.csv": "f06916c38e251e3941a245d9d80c0a2d58ad89fce448df33e9f3af8aa35077bf",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/quality_bands.csv": "1b48f52eed17b4d5e473356f1a7b78ef47d5878ff6666bbe319a98d6759d6b26",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/regression_fit.csv": "d7d76096c70343810e7688a4f7b8c8b609d1629e41b374fc797f7c3b8c29d122",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/response_distributions.csv": "6a2a32f53daeafc2b0cc18cc632418d572aacb0b464fc0249248b9234f835d1d",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/social_coefficients.csv": "a85e98457921f7084fa850d759e119e550e7bff07f62ccd3bebc6b25fe459700",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/subpopulation_distances.csv": "a4c2be2f7faebdbae14d86b922f0e665d047751ad86db8449d378a4e26a8c8b0",
+    "outputs/culture/muse_glimmer_30b/german/rep2/d_polpos/summary_metrics.csv": "c9a97c19fd4fa44bfedf0170530d337f2919cda7645e18ca5052030e99c31a5a"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-15T09:24:17.970153+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "meta-models/Muse-Glimmer-30B + german LoRA",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/muse_glimmer_30b/german/rep2"
+}
