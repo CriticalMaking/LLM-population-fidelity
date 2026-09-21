@@ -381,13 +381,14 @@ def answer_array(prepared: PreparedData, props: pd.DataFrame, names: pd.Index) -
 
 def build_fidelity(
     questions: list[Question] | None = None,
+    runs: Sequence[RunSource] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     facets = cell_facets()
     cell_frames: list[pd.DataFrame] = []
     rows: list[dict[str, Any]] = []
     paired_rows: list[dict[str, Any]] = []
     for question in questions or resolve_questions(None):
-        loaded = loaded_runs(question)
+        loaded = loaded_runs(question, runs)
         for run, prepared in loaded:
             names = prepared.names
             facet = facets.reindex(names)
