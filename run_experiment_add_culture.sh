@@ -43,6 +43,15 @@ Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, qwen3_vl_2b, llama3_2_3b,
 Cultures:  arabic bengali chinese english german korean portuguese spanish
            spanish-mx turkish
            (sweep default german; --cultures all for the full grid)
+Arms:      base, the cultures above, global and subpop
+           (global is the distribution-matched variant: one adapter per
+           backbone trained to match country-level survey response
+           distributions instead of a country's modal answer, staged from
+           checkpoints/global/<model>/distributional. subpop is the
+           subgroup-matched variant: one adapter per backbone trained to
+           match the response distributions of demographic subgroups, staged
+           from checkpoints/subpop/<model>/subpop. Both are named explicitly
+           and stay out of --cultures all)
 Questions: d_happy d_polpos d_religiousp d_trust (default d_happy)
 
 The finetuned culture MLLMs answer the paper's own prompt, so their distances
@@ -74,6 +83,8 @@ takes the grid with it — with one log per run, finished runs skipped
   ./run_experiment_add_culture.sh sweep --models gemma4_31b --cultures all
   ./run_experiment_add_culture.sh sweep --cultures german spanish-mx \
                                         --questions all --replicates 3
+  ./run_experiment_add_culture.sh sweep --models qwen3_vl_2b --cultures global
+  ./run_experiment_add_culture.sh sweep --models qwen3_vl_2b --cultures subpop
 
 `--replicates N` repeats every cell N times: the first replicate is the run as
 it stands, and each further one resamples the full answers under its own seed

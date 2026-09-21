@@ -41,6 +41,13 @@ base arm, Germany's prompts first (ordering, not selection; --no-priority for
 the plain order), the cross-question summary rebuilt too, and a refusal to
 start while other work holds the GPU unless --allow-concurrent.
 
+`global` is the distribution-matched arm: one adapter per backbone, trained to
+match country-level survey response distributions rather than a country's modal
+answer. `subpop` is the subgroup-matched arm: one adapter per backbone, trained
+to match the response distributions of demographic subgroups. Both are named
+explicitly (--cultures global, --cultures subpop) and are not part of
+--cultures all, which stays the ten cultures.
+
 luna, terra and sol are served through the OpenAI API and never join the default
 set: name them with --models, on the base variant only, and expect API charges.
 They need OPENAI_API_KEY and one <MODEL>_MODEL_ID per model in .env, and they
@@ -62,6 +69,7 @@ EOF
 ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b muse_glimmer_30b)
 API_MODELS=(luna terra sol)
 ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish spanish-mx turkish)
+DISTRIBUTIONAL_ARMS=(global subpop)
 ALL_QUESTIONS=(d_happy d_polpos d_religiousp d_trust)
 
 base=0
@@ -143,8 +151,8 @@ for model in "${models[@]}"; do
 done
 if [[ $base -eq 0 ]]; then
     for culture in "${cultures[@]}"; do
-        printf '%s\n' "${ALL_CULTURES[@]}" | grep -qx -- "$culture" ||
-            die "unknown culture: $culture (known: ${ALL_CULTURES[*]})"
+        printf '%s\n' "${ALL_CULTURES[@]}" "${DISTRIBUTIONAL_ARMS[@]}" | grep -qx -- "$culture" ||
+            die "unknown culture: $culture (known: ${ALL_CULTURES[*]} ${DISTRIBUTIONAL_ARMS[*]})"
     done
 fi
 for question in "${questions[@]}"; do

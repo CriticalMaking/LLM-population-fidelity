@@ -575,9 +575,12 @@ def build_parser() -> argparse.ArgumentParser:
     adapters.add_argument(
         "--source",
         default=str(DEFAULT_CHECKPOINT_ROOT),
-        help="checkpoint root holding <culture>/<model>/cultural directories",
+        help="checkpoint root holding <arm>/<model>/<condition> directories",
     )
-    _add_selection_arguments(adapters, cultures_help="cultures (default: every culture)")
+    _add_selection_arguments(
+        adapters,
+        cultures_help="finetuned arms: every culture, 'global' and 'subpop' (default: all)",
+    )
     adapters.add_argument("--force", action="store_true", help="re-copy staged weights")
     adapters.set_defaults(handler=command_culture_adapters)
 
@@ -585,7 +588,10 @@ def build_parser() -> argparse.ArgumentParser:
         "culture-health",
         help="check staged adapters for divergence before spending GPU time",
     )
-    _add_selection_arguments(culture_health, cultures_help="cultures (default: every culture)")
+    _add_selection_arguments(
+        culture_health,
+        cultures_help="finetuned arms: every culture, 'global' and 'subpop' (default: all)",
+    )
     culture_health.set_defaults(handler=command_culture_health)
 
     culture = subparsers.add_parser(
@@ -594,7 +600,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_selection_arguments(
         culture,
-        cultures_help="arms: every culture and 'base' (default: base and every culture)",
+        cultures_help="arms: 'base', every culture, 'global' and 'subpop' (default: all)",
     )
     culture.add_argument(
         "--first-countries",
@@ -682,7 +688,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="build each culture variant's survey-comparison figures and reports "
         "from existing outputs",
     )
-    _add_selection_arguments(culture_compare, cultures_help="arms (default: base and every culture)")
+    _add_selection_arguments(
+        culture_compare, cultures_help="arms (default: base and every culture)"
+    )
     _add_question_argument(culture_compare, plural=True)
     culture_compare.set_defaults(handler=command_culture_compare)
 

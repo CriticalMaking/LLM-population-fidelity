@@ -6,7 +6,7 @@
 ![Transformers](https://img.shields.io/badge/Transformers-5.8-FFD21E?logo=huggingface&logoColor=black)
 ![Ruff](https://img.shields.io/badge/Ruff-passing-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2)
-![tests](https://img.shields.io/badge/tests-363-4c1)
+![tests](https://img.shields.io/badge/tests-390-4c1)
 
 Reproduction of *Machine Bias: How Do Generative Language Models Answer Opinion
 Polls?* (Boelaert, Coavoux, Ollion, Petev and Präg, *SMR* 2025), extended to
@@ -53,6 +53,8 @@ tar xzf hub/downloads/upstream/redraw-subset.tar.gz
 ./run_experiment_add_culture.sh adapters
 ./run_experiment_add_culture.sh sweep --models all --cultures german spanish-mx \
                                       --questions all --replicates 3
+./run_experiment_add_culture.sh sweep --models qwen3_vl_2b --cultures global
+./run_experiment_add_culture.sh sweep --models qwen3_vl_2b --cultures subpop
 ./run_experiment_add_culture.sh compare
 
 ./run_experiment_base_models.sh run --models all --replicates 3
@@ -64,7 +66,11 @@ tar xzf hub/downloads/upstream/redraw-subset.tar.gz
 `sweep` drives one model, culture and question per invocation, skips completed
 runs and logs one file each, so a failing run never takes the grid with it;
 detach it with `screen`. `--replicates N` repeats every cell under its own seed
-stream into `rep<k>/` directories, resampling full answers alone.
+stream into `rep<k>/` directories, resampling full answers alone. `--cultures
+global` is the distribution-matched arm, staged from
+`checkpoints/global/<model>/distributional`, and `--cultures subpop` the
+subgroup-matched arm, staged from `checkpoints/subpop/<model>/subpop`; both are
+named explicitly.
 
 Experiment 5 needs `OPENAI_API_KEY` and one model id per served model in `.env`
 (see `.env.example`); naming a served model is what starts a billable run.
