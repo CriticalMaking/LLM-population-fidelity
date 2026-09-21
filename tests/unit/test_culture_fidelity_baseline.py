@@ -131,6 +131,29 @@ def test_the_manuscript_runs_are_the_first_replicate_of_its_models_and_variants(
     ]
 
 
+def test_the_manuscript_runs_keep_every_replicate_when_asked() -> None:
+    found = [
+        _run("gemma4_31b", "base"),
+        _run("gemma4_31b", "german"),
+        _run("gemma4_31b", "german", replicate=2),
+        _run("gemma4_31b", "german", replicate=3),
+        _run("gemma4_31b", "spanish", replicate=2),
+        _run("qwen3_vl_2b", "global", replicate=3),
+        _run("qwen3_vl_2b", "subpop"),
+        _run(None, None),
+    ]
+
+    kept = fidelity_baseline.manuscript_runs(found, every_replicate=True)
+
+    assert [(run.key, run.arm, run.replicate) for run in kept] == [
+        ("gemma4_31b", "base", 1),
+        ("gemma4_31b", "german", 1),
+        ("gemma4_31b", "german", 2),
+        ("gemma4_31b", "german", 3),
+        (None, None, 1),
+    ]
+
+
 def test_the_home_scope_keeps_each_variant_inside_its_own_country() -> None:
     runs = [
         _run("gemma4_31b", "base"),
