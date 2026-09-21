@@ -1,0 +1,127 @@
+{
+  "backend": {
+    "accelerate": "1.13.0",
+    "answer_token_ids": {
+      "A": 362,
+      "B": 426,
+      "C": 356,
+      "D": 423
+    },
+    "answer_tokens": {
+      "A": " A",
+      "B": " B",
+      "C": " C",
+      "D": " D"
+    },
+    "arm": "cultural",
+    "attn_implementation": "sdpa",
+    "base_model_id": "meta-llama/Llama-3.2-3B",
+    "base_revision": "13afe5124825b4f3751f836b40dafda64c1ed062",
+    "batch_size": 32,
+    "bitsandbytes": "0.49.2",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "fa_max_new_tokens": 12,
+    "lora_exclude_modules": null,
+    "lora_target_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "modalities_used": [
+      "text"
+    ],
+    "modality": "text",
+    "model_class": "LlamaForCausalLM",
+    "multi_token_answers": [],
+    "name": "transformers",
+    "oom_backoffs": 0,
+    "peft": "0.19.1",
+    "prompt_contract": "paper",
+    "quantization": null,
+    "question": "d_happy",
+    "tokenizer_source": "/home/neemias/machine-bias-reproduction/models/culture/llama3_2_3b/spanish-mx",
+    "torch": "2.12.0",
+    "version": "5.8.1"
+  },
+  "capacity": {
+    "by_mode": [
+      {
+        "distinct_distributions": null,
+        "failed": 0,
+        "invalid": 0,
+        "mean_valid_mass": null,
+        "median_valid_mass": null,
+        "mode": "FA",
+        "p10_valid_mass": null,
+        "prompts": 26981,
+        "response_std": null,
+        "tied_answers": null,
+        "valid": 26981,
+        "valid_rate": 1.0
+      }
+    ],
+    "failed": 0,
+    "invalid": 0,
+    "ntp_distinct_distributions": null,
+    "prompts": 26981,
+    "valid": 26981,
+    "valid_rate": 1.0
+  },
+  "code_revision": "cf0e213-dirty",
+  "counts": {
+    "fa": {
+      "failed": 0,
+      "generated": 26981,
+      "reused": 0,
+      "reused_untraced": 0
+    }
+  },
+  "event_log": "logs/inference_events.jsonl",
+  "finished_at": "2026-09-17T14:14:59.001584+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "model": {
+    "adapter_path": "/home/neemias/machine-bias-reproduction/models/culture/llama3_2_3b/spanish-mx",
+    "adapter_sha256": "9b92026039b2b622fbcbee66e82a6cb3f919d93bdf16f77647d031c1e36a0ca2",
+    "base_model_id": "meta-llama/Llama-3.2-3B",
+    "base_revision": "13afe5124825b4f3751f836b40dafda64c1ed062",
+    "culture": "spanish-mx",
+    "model_key": "llama3_2_3b",
+    "replicate": 3,
+    "sha256": "9b92026039b2b622fbcbee66e82a6cb3f919d93bdf16f77647d031c1e36a0ca2"
+  },
+  "modes_requested": [
+    "fa"
+  ],
+  "modes_run": [
+    "fa"
+  ],
+  "parameters": {
+    "global_seed": 20240112,
+    "legacy_unseeded_fa": false,
+    "limit": null,
+    "modes": [
+      "fa"
+    ],
+    "replicate": 3
+  },
+  "preflight": {
+    "informative": true,
+    "max_mass": 0.9990854151546955,
+    "mean_mass": 0.9975391358602792,
+    "min_mass": 0.9883448407053947,
+    "prompts": 32,
+    "threshold": 0.1
+  },
+  "question": "d_happy",
+  "run_id": "20260917T140645Z-e84ff806",
+  "schema_version": 2,
+  "started_at": "2026-09-17T14:06:45.541655+00:00"
+}
