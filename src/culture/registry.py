@@ -32,13 +32,34 @@ CULTURES: tuple[str, ...] = (
 
 BASE_ARM = "base"
 
-ARM_DISPLAY = {BASE_ARM: "as released"}
+GLOBAL_ARM = "global"
+
+SUBPOP_ARM = "subpop"
+
+DISTRIBUTION_TRAINED_ARMS: tuple[str, ...] = (GLOBAL_ARM, SUBPOP_ARM)
+
+ARM_DISPLAY = {
+    BASE_ARM: "as released",
+    GLOBAL_ARM: "distribution-matched",
+    SUBPOP_ARM: "subgroup-matched",
+}
 
 SERVED_BACKEND = "openai"
 
-ARMS: tuple[str, ...] = (BASE_ARM, *CULTURES)
+FINETUNED_ARMS: tuple[str, ...] = (*CULTURES, *DISTRIBUTION_TRAINED_ARMS)
+
+ARMS: tuple[str, ...] = (BASE_ARM, *FINETUNED_ARMS)
 
 CHECKPOINT_CONDITION_DIRECTORY = "cultural"
+
+DISTRIBUTIONAL_CONDITION_DIRECTORY = "distributional"
+
+SUBPOP_CONDITION_DIRECTORY = "subpop"
+
+ARM_CONDITIONS: dict[str, str] = {
+    GLOBAL_ARM: DISTRIBUTIONAL_CONDITION_DIRECTORY,
+    SUBPOP_ARM: SUBPOP_CONDITION_DIRECTORY,
+}
 
 WEIGHTS_FILE = "adapter_model.safetensors"
 
@@ -80,7 +101,7 @@ class CultureModel:
     def run_label(self, culture: str) -> str:
         if is_base(culture):
             return f"{self.label} ({arm_display(culture)})"
-        return f"{self.label} + {culture} LoRA"
+        return f"{self.label} + {arm_display(culture)} LoRA"
 
 
 CULTURE_MODELS: dict[str, CultureModel] = {
@@ -199,6 +220,14 @@ def is_base(culture: str) -> bool:
     return culture == BASE_ARM
 
 
+def is_global(arm: str) -> bool:
+    return arm == GLOBAL_ARM
+
+
+def checkpoint_condition(arm: str) -> str:
+    return ARM_CONDITIONS.get(arm, CHECKPOINT_CONDITION_DIRECTORY)
+
+
 def arm_display(arm: str) -> str:
     return ARM_DISPLAY.get(arm, arm)
 
@@ -214,12 +243,12 @@ def resolve_cultures(selected: Sequence[str] | None) -> list[str]:
 
 
 def resolve_finetuned_cultures(selected: Sequence[str] | None) -> list[str]:
-    cultures = list(selected) if selected else list(CULTURES)
+    cultures = list(selected) if selected else list(FINETUNED_ARMS)
     if cultures == ["all"]:
-        cultures = list(CULTURES)
+        cultures = list(FINETUNED_ARMS)
     if any(is_base(culture) for culture in cultures):
         raise ValueError(f"{BASE_ARM!r} is not culture-finetuned; there is nothing to stage")
-    unknown = [culture for culture in cultures if culture not in CULTURES]
+    unknown = [culture for culture in cultures if culture not in FINETUNED_ARMS]
     if unknown:
         raise ValueError(f"unknown cultures: {', '.join(unknown)}")
     return cultures

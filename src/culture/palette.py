@@ -17,7 +17,7 @@ from machine_bias_reproduction.plates import (
     tone,
 )
 
-from .registry import BASE_ARM, CULTURES
+from .registry import BASE_ARM, CULTURES, DISTRIBUTION_TRAINED_ARMS, GLOBAL_ARM, SUBPOP_ARM
 
 MODES: tuple[str, str] = ("NTP", "FA")
 
@@ -25,6 +25,11 @@ MODE_TONES = {mode: METHOD_TONES[mode] for mode in MODES}
 MODE_MARKERS = dict(METHOD_MARKERS)
 
 CULTURE_SLOTS = {culture: index for index, culture in enumerate(CULTURES)}
+
+ARM_SLOTS = {
+    **CULTURE_SLOTS,
+    **{arm: len(CULTURE_SLOTS) + index for index, arm in enumerate(DISTRIBUTION_TRAINED_ARMS)},
+}
 
 MIXTRAL_ARCHIVED = "Mixtral archived"
 MIXTRAL_FRESH = "Mixtral fresh"
@@ -70,7 +75,7 @@ MDS_ARM_TONES: dict[str, Tone] = {"spanish": tone("#1f78b4"), BASE_ARM: MODEL_TO
 def arm_tone(arm: str) -> Tone:
     if arm in REFERENCE_TONES:
         return REFERENCE_TONES[arm]
-    return slot_tone(CULTURE_SLOTS.get(arm, len(CULTURE_SLOTS)))
+    return slot_tone(ARM_SLOTS.get(arm, len(ARM_SLOTS)))
 
 
 def mds_arm_tone(arm: str) -> Tone:
@@ -80,13 +85,13 @@ def mds_arm_tone(arm: str) -> Tone:
 def arm_marker(arm: str) -> str:
     if arm in REFERENCE_MARKERS:
         return REFERENCE_MARKERS[arm]
-    return slot_marker(CULTURE_SLOTS.get(arm, len(CULTURE_SLOTS)))
+    return slot_marker(ARM_SLOTS.get(arm, len(ARM_SLOTS)))
 
 
 def arm_linestyle(arm: str) -> Any:
     if arm in REFERENCE_LINESTYLES:
         return REFERENCE_LINESTYLES[arm]
-    return slot_linestyle(CULTURE_SLOTS.get(arm, len(CULTURE_SLOTS)))
+    return slot_linestyle(ARM_SLOTS.get(arm, len(ARM_SLOTS)))
 
 
 def model_tone(model_key: str, index: int = 0) -> Tone:
@@ -102,12 +107,22 @@ def model_marker(model_key: str, index: int = 0) -> str:
 # model as released, solid for the first culture, and a half-fill for each further one.
 # The half-fill is "bottom" because it stays legible at 6.5pt on every marker in
 # CATEGORICAL_MARKERS, including the triangles, where a left/right split is a sliver.
-ARM_FILLS: dict[str, str] = {"german": "full", "spanish-mx": "bottom"}
+ARM_FILLS: dict[str, str] = {
+    "german": "full",
+    "spanish-mx": "bottom",
+    GLOBAL_ARM: "left",
+    SUBPOP_ARM: "right",
+}
 
 FILL_CYCLE: tuple[str, ...] = ("left", "top", "right")
 
 # Bars cannot be half-filled, so they carry the same distinction as a hatch.
-ARM_HATCHES: dict[str, str] = {"german": "", "spanish-mx": "///"}
+ARM_HATCHES: dict[str, str] = {
+    "german": "",
+    "spanish-mx": "///",
+    GLOBAL_ARM: "xxx",
+    SUBPOP_ARM: "+++",
+}
 
 HATCH_CYCLE: tuple[str, ...] = ("\\\\\\", "...", "xxx")
 
@@ -117,7 +132,7 @@ def arm_fill(arm: Any) -> str:
         return "none"
     if arm in ARM_FILLS:
         return ARM_FILLS[arm]
-    return FILL_CYCLE[CULTURE_SLOTS.get(arm, 0) % len(FILL_CYCLE)]
+    return FILL_CYCLE[ARM_SLOTS.get(arm, 0) % len(FILL_CYCLE)]
 
 
 def arm_hatch(arm: Any) -> str:
@@ -125,7 +140,7 @@ def arm_hatch(arm: Any) -> str:
         return ""
     if arm in ARM_HATCHES:
         return ARM_HATCHES[arm]
-    return HATCH_CYCLE[CULTURE_SLOTS.get(arm, 0) % len(HATCH_CYCLE)]
+    return HATCH_CYCLE[ARM_SLOTS.get(arm, 0) % len(HATCH_CYCLE)]
 
 
 def arm_order(arms: Iterable[str]) -> list[str]:
