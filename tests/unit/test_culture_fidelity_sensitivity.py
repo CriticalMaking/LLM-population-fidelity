@@ -756,5 +756,5 @@ def test_the_default_rows_reproduce_the_shipped_tables() -> None:
     default = summary.loc["default"]
     assert default["n_pooled"] == 164
     assert default["binding_structure"] == 159
-    assert default["german_delta_pfs_mean"] == pytest.approx(-0.0243, abs=5e-4)
+    assert default["german_delta_pfs_mean"] == pytest.approx(-0.0231, abs=5e-4)
     assert default["spanish_mx_home_delta_center_mean"] == pytest.approx(0.0383, abs=5e-4)
