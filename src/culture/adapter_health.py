@@ -58,6 +58,10 @@ def _last(history: list[dict[str, Any]], key: str) -> float | None:
     return None
 
 
+def _series(history: list[dict[str, Any]], key: str) -> list[float]:
+    return [float(entry[key]) for entry in history if entry.get(key) is not None]
+
+
 def read_trainer_state(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as stream:
         state: dict[str, Any] = json.load(stream)
@@ -65,6 +69,7 @@ def read_trainer_state(path: Path) -> dict[str, Any]:
     first_loss = next(
         (float(entry["loss"]) for entry in history if entry.get("loss") is not None), None
     )
+    divergences = _series(history, "eval_kl")
     return {
         "first_loss": first_loss,
         "final_loss": _last(history, "loss"),
@@ -72,6 +77,8 @@ def read_trainer_state(path: Path) -> dict[str, Any]:
         "token_accuracy": _last(history, "mean_token_accuracy"),
         "eval_token_accuracy": _last(history, "eval_mean_token_accuracy"),
         "eval_f1_macro": _last(history, "eval_f1_macro"),
+        "first_eval_kl": divergences[0] if divergences else None,
+        "best_eval_kl": min(divergences) if divergences else None,
         "epoch": state.get("epoch"),
         "global_step": state.get("global_step"),
     }
@@ -184,11 +191,17 @@ def verdict(
     eval_token_accuracy: float | None,
     first_loss: float | None,
     guess_loss: float | None,
+    first_eval_kl: float | None = None,
+    best_eval_kl: float | None = None,
 ) -> str:
     """Healthy, diverged, or diverged from a base that was already broken.
-    A missing trainer state is unknown, not a pass."""
+    A missing trainer state is unknown, not a pass. A distribution-matching run
+    logs no token accuracy, so it is read on the held-out divergence it was
+    trained to lower instead."""
     if eval_token_accuracy is None:
-        return VERDICT_UNKNOWN
+        if first_eval_kl is None or best_eval_kl is None:
+            return VERDICT_UNKNOWN
+        return VERDICT_HEALTHY if best_eval_kl < first_eval_kl else VERDICT_DIVERGED
     if eval_token_accuracy >= ADAPTER_MIN_EVAL_TOKEN_ACCURACY:
         return VERDICT_HEALTHY
     if first_loss is not None and guess_loss is not None and first_loss > guess_loss:
@@ -205,6 +218,8 @@ def measure(directory: Path, config: dict[str, Any]) -> dict[str, Any]:
         "token_accuracy": None,
         "eval_token_accuracy": None,
         "eval_f1_macro": None,
+        "first_eval_kl": None,
+        "best_eval_kl": None,
         "epoch": None,
         "global_step": None,
     }
@@ -232,6 +247,8 @@ def measure(directory: Path, config: dict[str, Any]) -> dict[str, Any]:
         eval_token_accuracy=record["eval_token_accuracy"],
         first_loss=record["first_loss"],
         guess_loss=guess_loss,
+        first_eval_kl=record["first_eval_kl"],
+        best_eval_kl=record["best_eval_kl"],
     )
     record["trainer_state"] = str(state) if state is not None else None
     return record
