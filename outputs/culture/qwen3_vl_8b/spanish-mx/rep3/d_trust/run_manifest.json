@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_distance_comparison.pdf": "60f8e405cf2ee27b7802713095d15457433f2e7650073d285487d735dd3a3833",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_distance_comparison.png": "bd7dda478ea1ccb6f2377f0b5a40e949aae37690a94a4dadaa5fd87b6a342943",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_full_coefficients.pdf": "47c2f7ec9194e32fad0426fca1c49e480acc4eb59c6bb5217b1e152e9e57cbe9",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_full_coefficients.png": "c7f3598a1ae1a7ad2ddee2fdc05ecac607eed6968d38e3a8a690981f5c5cb479",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_full_standardized_coefficients.pdf": "3a0fd80ff445a05f408636df796f04202752e2d8b9c6f0a5b15eb10cc4bba386",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_full_standardized_coefficients.png": "11578b54b8d51f2f0e201d027c8334150623d5bdc87402aad1b7b76d09c30039",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_mds_fa.pdf": "55eabf7305144996c25d4390a12fb9f8b666574c8ef49920ac70c6788bb38e14",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_mds_fa.png": "e7ae2e396c173493a59506f4127b064cfbb5a7c57c59341e3445920150410f26",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_nemd_density_quality.pdf": "69322b6f6a6ca302cb8ebf27d66cbde103fe98fe664db90009d86b2fa567ce75",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_nemd_density_quality.png": "7b26b7ff19ad8b763582bc833ddfc325842f0530d1ac1b87986fcd83e4aac058",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_social_coefficients.pdf": "ee213e33ebcffdf405fda941692b05b3f99cdd6ab771c789ce24ac5191ada067",
+    "figures/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/fig_social_coefficients.png": "02a6a2e17b93f90aa99e989e200049b6599ec67a07a3cf0491fd9386d753a5ad",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/f_tests.csv": "011b77e0b8baf7a9d6d3bfcb159fa30e9b0e3c7949e0110abea3a0c0a79ba5d2",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/full_coefficients.csv": "8bf3dc78f3b05a60b73bce3ce81aa638d66b18fa5f261b71bbad31b955b86012",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/full_standardized_coefficients.csv": "72e03ab04f3744f6bc18b47590feabe93054eaa470d287bd1f40db9b503e0c02",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/pairwise_dispersion.csv": "f1f0b5651e28cac630ac7a51faecd6db152584bb0ee5333d1ceb774a2558ab51",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/quality_bands.csv": "41e9bec336b748e04d90d2c11c88fe2ed8791c794f1e11db248ea5e82e999c65",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/regression_fit.csv": "2a4df9646bed6e7f1a7e023f72c8e5398d284f1a028dbcaeaa5a83953729564d",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/response_distributions.csv": "1ab2d3ef23361ce14855093921882ef3b19ee2d275b89075a680722bbdc44f24",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/social_coefficients.csv": "9f0fc44a8721fbbab490e3cc40558ee99d20bcda74f4859f28524a730ee68a2b",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/subpopulation_distances.csv": "67f08993a357a098d09dfaff79d19baf3b4fdc4cd13bb3732df023157595e6d8",
+    "outputs/culture/qwen3_vl_8b/spanish-mx/rep3/d_trust/summary_metrics.csv": "0ed452a945c20bd515a152e991938bae04e2033f97e06dd1df651f857d1211d5"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-20T03:29:46.809569+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 2,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Qwen/Qwen3-VL-8B-Thinking + spanish-mx LoRA",
+    "question": "d_trust",
+    "question_label": "Trust",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/qwen3_vl_8b/spanish-mx/rep3"
+}
