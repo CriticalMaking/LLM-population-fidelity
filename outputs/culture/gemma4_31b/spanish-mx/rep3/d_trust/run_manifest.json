@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_distance_comparison.pdf": "729883d05934d8340225fc09b009be256d2c07153fcfe12572cad195cf39705f",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_distance_comparison.png": "46472f0269e60f50d2144780eb5e38768fb8f944290babf4fe97c80110c2ae64",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_full_coefficients.pdf": "c69acb421e6a9fe11a70aae5ab34602b7a73e077657359c4006e45783fbca9e5",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_full_coefficients.png": "c2475c6798c5b3b8cf1129b168804ee731f8009b4750dc3551ef92d03d2896f3",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_full_standardized_coefficients.pdf": "0d922eb392b5d997b4e460d3aec91d5dfdb1d496fee8e6cd4e35dadf16667fe4",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_full_standardized_coefficients.png": "88f889bf39d2404356bb14642dcef6673cb507f11662889e8ca85d1ac6c9806a",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_mds_fa.pdf": "be16491909f845346333190d2040915912cccc18633203f37f8563d19729d71f",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_mds_fa.png": "2da2c366b1cf0771724e27148ac276066ba9e4ed8c0d5eee2df6daf56e1251f7",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_nemd_density_quality.pdf": "138db7138e40607f26bb1f96fc147866043f647017127f60d6991f1ac2b87e5c",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_nemd_density_quality.png": "967e6de1bd159fcede2fea47458d466c94c521b0643964e5fd25d61786847c3c",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_social_coefficients.pdf": "c409155e3b3e2d3ab5a886bbfda15f67667a793d9fdf4e72087e65ef654904e7",
+    "figures/culture/gemma4_31b/spanish-mx/rep3/d_trust/fig_social_coefficients.png": "12f8989fc81581181e5530ab5ec7f7ec62edb04b04c638350c7f8fd6a5408e0b",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/center_holdouts.csv": "5d089037c318103400167c27b79241686622b3b719d83081e30a15f539114d61",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/f_tests.csv": "41fb72577b4a98d55b991c41cccdbce76e11247b0f377b56c9d353cd9600ed3b",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/full_coefficients.csv": "9608c5c52ffdef2f4c869af10e95819c0bbf50248c42b9f711ab5fbdb1c049ba",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/full_standardized_coefficients.csv": "4f88c499ff132b282779448cb9dc26f309a791e51b83fedb750ba49f2b8ab894",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/pairwise_dispersion.csv": "32e484fa74f8d88793dbf5579312fbee2697fbae76b6b38f0c260582147b9850",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/quality_bands.csv": "657dacd2b17667c61dc08e7783caf077ba272b98906cf35158b49c5cd57a6dc7",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/regression_fit.csv": "b0f2ca76c4696ea8dfa45f9f2877922012e3561d89b120bab88f2bb4adfcf9e0",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/response_distributions.csv": "84b5d8905395e576f69ef54df0492538ea4ed69b28cee3744bba690723e86d46",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/social_coefficients.csv": "0ceb4a4027f674e70bf39de6730d94a89998f7202e43d729e4a95cf16397c19b",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/subpopulation_distances.csv": "ff3b0cced11bc4d5c27ceb62d551116c414d8921673946e9827062646df89ec4",
+    "outputs/culture/gemma4_31b/spanish-mx/rep3/d_trust/summary_metrics.csv": "e67a6fe8ddeef7985c4532a30e4a65ac7bccf1fa58bec85ba359d1fe9a0717ae"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26372,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 10,
+    "subpopulations_retained": 677,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-21T17:23:38.851632+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 2,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "google/gemma-4-31B-it + spanish-mx LoRA",
+    "question": "d_trust",
+    "question_label": "Trust",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/gemma4_31b/spanish-mx/rep3"
+}

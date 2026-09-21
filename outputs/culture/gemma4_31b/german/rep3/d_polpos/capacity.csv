@@ -1,0 +1,2 @@
+mode,prompts,valid,invalid,failed,valid_rate,mean_valid_mass,median_valid_mass,p10_valid_mass,distinct_distributions,tied_answers,response_std
+FA,26981,26306,0,675,0.9749823950187169,,,,,,
