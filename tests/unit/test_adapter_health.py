@@ -193,3 +193,63 @@ def test_an_unreadable_adapter_reports_no_modules_rather_than_raising(tmp_path: 
     assert adapter_health.measure(directory, {"r": 8, "lora_alpha": 16})["verdict"] == (
         adapter_health.VERDICT_UNKNOWN
     )
+
+
+def _distributional_state(*, divergences: list[float]) -> dict[str, Any]:
+    return {
+        "epoch": 3.5,
+        "global_step": 3000,
+        "log_history": [
+            {"loss": 0.085, "step": 25},
+            *(
+                {"eval_loss": value / 5, "eval_kl": value, "step": 200 * (index + 1)}
+                for index, value in enumerate(divergences)
+            ),
+        ],
+    }
+
+
+def test_a_distribution_matching_adapter_is_read_on_its_held_out_divergence(
+    tmp_path: Path,
+) -> None:
+    directory = _adapter(
+        tmp_path / "distributional",
+        factor_a=np.full((2, 4), 0.01),
+        factor_b=np.full((4, 2), 0.01),
+        trainer_state=_distributional_state(divergences=[0.513, 0.505, 0.349, 0.388]),
+    )
+
+    record = adapter_health.measure(directory, {"r": 8, "lora_alpha": 32})
+
+    assert record["verdict"] == adapter_health.VERDICT_HEALTHY
+    assert record["eval_token_accuracy"] is None
+    assert record["first_eval_kl"] == 0.513
+    assert record["best_eval_kl"] == 0.349
+
+
+def test_a_distribution_matching_adapter_that_never_improved_has_diverged(
+    tmp_path: Path,
+) -> None:
+    directory = _adapter(
+        tmp_path / "flat",
+        factor_a=np.full((2, 4), 900.0),
+        factor_b=np.full((4, 2), 900.0),
+        trainer_state=_distributional_state(divergences=[0.51, 0.62, 0.77]),
+    )
+
+    record = adapter_health.measure(directory, {"r": 8, "lora_alpha": 32})
+
+    assert record["verdict"] == adapter_health.VERDICT_DIVERGED
+
+
+def test_an_adapter_with_no_trainer_state_stays_unknown(tmp_path: Path) -> None:
+    directory = _adapter(
+        tmp_path / "stateless",
+        factor_a=np.full((2, 4), 0.01),
+        factor_b=np.full((4, 2), 0.01),
+    )
+
+    record = adapter_health.measure(directory, {"r": 8, "lora_alpha": 32})
+
+    assert record["verdict"] == adapter_health.VERDICT_UNKNOWN
+    assert record["best_eval_kl"] is None

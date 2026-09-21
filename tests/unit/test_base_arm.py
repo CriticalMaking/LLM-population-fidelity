@@ -25,7 +25,7 @@ UNITED_STATES = "United States 1995 Male 35-44 Low Working Single"
 def test_base_is_an_arm_but_never_a_culture() -> None:
     assert culture.BASE_ARM == "base"
     assert culture.BASE_ARM not in culture.CULTURES
-    assert list(culture.ARMS) == ["base", *culture.CULTURES]
+    assert list(culture.ARMS) == ["base", *culture.CULTURES, "global", "subpop"]
     assert len(culture.CULTURES) == 10
     assert culture.is_base("base")
     assert not culture.is_base("german")
@@ -36,8 +36,8 @@ def test_resolvers_split_on_whether_weights_must_exist() -> None:
     assert culture.resolve_cultures(["all"]) == list(culture.ARMS)
     assert culture.resolve_cultures(["base"]) == ["base"]
 
-    assert culture.resolve_finetuned_cultures(None) == list(culture.CULTURES)
-    assert culture.resolve_finetuned_cultures(["all"]) == list(culture.CULTURES)
+    assert culture.resolve_finetuned_cultures(None) == list(culture.FINETUNED_ARMS)
+    assert culture.resolve_finetuned_cultures(["all"]) == list(culture.FINETUNED_ARMS)
     with pytest.raises(ValueError, match="not culture-finetuned"):
         culture.resolve_finetuned_cultures(["base"])
     with pytest.raises(ValueError, match="unknown cultures"):
