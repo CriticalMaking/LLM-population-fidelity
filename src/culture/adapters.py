@@ -20,6 +20,7 @@ from .registry import (
     CULTURE_ROOT,
     WEIGHTS_FILE,
     CultureModel,
+    checkpoint_condition,
 )
 
 ADAPTER_FILES: tuple[str, ...] = (
@@ -43,7 +44,7 @@ REQUIRED_ADAPTER_FILES: tuple[str, ...] = (
 
 
 def adapter_source(root: Path, model_key: str, culture: str) -> Path:
-    directory = root / culture / model_key / CHECKPOINT_CONDITION_DIRECTORY
+    directory = root / culture / model_key / checkpoint_condition(culture)
     if not directory.is_dir():
         raise FileNotFoundError(f"no adapter for {model_key}/{culture}: {directory}")
     missing = [name for name in REQUIRED_ADAPTER_FILES if not (directory / name).is_file()]
@@ -87,6 +88,7 @@ def _adapter_record(
     return {
         "model_key": model.key,
         "culture": culture,
+        "condition": checkpoint_condition(culture),
         "source": str(source),
         "destination": _relative_to_project(destination),
         "base_model_name_or_path": declared_base,
@@ -126,6 +128,30 @@ def _is_staged(destination: Path, source: Path) -> bool:
     return sha256_file(staged) == sha256_file(source / WEIGHTS_FILE)
 
 
+def _previous_records() -> list[dict[str, Any]]:
+    if not ADAPTERS_MANIFEST.is_file():
+        return []
+    with ADAPTERS_MANIFEST.open(encoding="utf-8") as stream:
+        payload: dict[str, Any] = json.load(stream)
+    found = payload.get("adapters")
+    return list(found) if isinstance(found, list) else []
+
+
+def _carried_over(
+    records: Sequence[dict[str, Any]],
+    staged: set[tuple[str, str]],
+) -> list[dict[str, Any]]:
+    return [
+        record
+        for record in records
+        if (record.get("model_key"), record.get("culture")) not in staged
+        and (
+            adapter_destination(str(record.get("model_key")), str(record.get("culture")))
+            / WEIGHTS_FILE
+        ).is_file()
+    ]
+
+
 def copy_adapters(
     root: Path,
     models: Sequence[CultureModel],
@@ -150,17 +176,25 @@ def copy_adapters(
                 copied += 1
             records.append(_adapter_record(source, destination, model, culture))
 
+    staged = {(model.key, culture) for model in models for culture in cultures}
+    everything = sorted(
+        [*_carried_over(_previous_records(), staged), *records],
+        key=lambda record: (str(record.get("model_key")), str(record.get("culture"))),
+    )
     manifest: dict[str, Any] = {
         "schema_version": 1,
         "created_at": datetime.now(UTC).isoformat(),
         "checkpoint_root": str(root),
-        "condition": CHECKPOINT_CONDITION_DIRECTORY,
+        "conditions": sorted(
+            {str(record.get("condition", CHECKPOINT_CONDITION_DIRECTORY)) for record in everything}
+        ),
         "policy": (
             "Only the end-of-training adapter is staged. Per-step checkpoint-N "
-            "directories are training state and are excluded."
+            "directories are training state and are excluded. Staging one arm "
+            "refreshes its records and carries the rest of the ledger over."
         ),
-        "counts": {"copied": copied, "reused": reused, "adapters": len(records)},
-        "adapters": records,
+        "counts": {"copied": copied, "reused": reused, "adapters": len(everything)},
+        "adapters": everything,
     }
     atomic_write_json(ADAPTERS_MANIFEST, manifest)
     return manifest
@@ -192,6 +226,8 @@ HEALTH_COLUMNS: tuple[str, ...] = (
     "random_guess_loss",
     "first_loss_over_guess",
     "eval_f1_macro",
+    "first_eval_kl",
+    "best_eval_kl",
     "epoch",
     "global_step",
     "update_norm_mean",
@@ -244,11 +280,17 @@ def health_lines(frame: pd.DataFrame) -> list[str]:
     lines = []
     for _, row in frame.iterrows():
         accuracy = row.get("eval_token_accuracy")
-        shown = "n/a" if pd.isna(accuracy) else f"{float(accuracy):.1%}"
+        divergence = row.get("best_eval_kl")
+        first = row.get("first_eval_kl")
+        if pd.isna(accuracy) and not pd.isna(divergence) and not pd.isna(first):
+            signal = f"best eval KL {float(divergence):.4g} from {float(first):.4g}"
+        else:
+            shown = "n/a" if pd.isna(accuracy) else f"{float(accuracy):.1%}"
+            signal = f"eval token accuracy {shown}"
         norm = row.get("update_norm_mean")
         norm_shown = "n/a" if pd.isna(norm) else f"{float(norm):.4g}"
         lines.append(
             f"{row['model_key']}/{row['culture']}: {row['verdict']} "
-            f"(eval token accuracy {shown}, mean update norm {norm_shown})"
+            f"({signal}, mean update norm {norm_shown})"
         )
     return lines
