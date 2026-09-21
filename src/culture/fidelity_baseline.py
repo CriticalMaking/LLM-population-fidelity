@@ -50,11 +50,14 @@ BASELINE_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_baseline.csv"
 BASELINE_SUMMARY_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_baseline_summary.csv"
 
 
-def manuscript_runs(found: Sequence[RunSource] | None = None) -> list[RunSource]:
+def manuscript_runs(
+    found: Sequence[RunSource] | None = None,
+    every_replicate: bool = False,
+) -> list[RunSource]:
     return [
         run
         for run in (sources() if found is None else found)
-        if run.replicate == FIRST_REPLICATE
+        if (every_replicate or run.replicate == FIRST_REPLICATE)
         and (run.key is None or (run.key in MANUSCRIPT_MODELS and run.arm in MANUSCRIPT_ARMS))
     ]
 

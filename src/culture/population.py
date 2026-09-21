@@ -265,10 +265,11 @@ def _build(
     metrics: Any,
     questions: list[Question] | None = None,
     with_reported_center: bool = False,
+    runs: Sequence[RunSource] | None = None,
 ) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     for question in questions or resolve_questions(None):
-        for run in sources():
+        for run in runs if runs is not None else sources():
             prepared = load_run(run.source, run.key, run.arm, question)
             if prepared is None:
                 continue
@@ -284,12 +285,18 @@ def _build(
     return pd.DataFrame(rows)
 
 
-def build_adaptability(questions: list[Question] | None = None) -> pd.DataFrame:
-    return _build(population_metrics, questions, with_reported_center=True)
+def build_adaptability(
+    questions: list[Question] | None = None,
+    runs: Sequence[RunSource] | None = None,
+) -> pd.DataFrame:
+    return _build(population_metrics, questions, with_reported_center=True, runs=runs)
 
 
-def build_structure(questions: list[Question] | None = None) -> pd.DataFrame:
-    return _build(structure_metrics, questions)
+def build_structure(
+    questions: list[Question] | None = None,
+    runs: Sequence[RunSource] | None = None,
+) -> pd.DataFrame:
+    return _build(structure_metrics, questions, runs=runs)
 
 
 def _complete(table: pd.DataFrame) -> pd.DataFrame:
