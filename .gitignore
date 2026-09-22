@@ -31,12 +31,6 @@ outputs/**/raw-*.parquet
 logs/
 *.tmp
 
-# The LaTeX rendering of outputs/reports/. run_reports.sh writes one .tex per
-# table of Machine Bias (Boelaert et al., SMR 2025); every one has a tracked
-# .csv twin beside it holding the same numbers, so the tree keeps the data and
-# not the typesetting. Regenerate with ./run_reports.sh.
-outputs/reports/tex/
-
 # The Hugging Face staging mirror of outputs/, rebuilt by `hub build`. Anchored,
 # so it never matches the src/hub package.
 /hub/
