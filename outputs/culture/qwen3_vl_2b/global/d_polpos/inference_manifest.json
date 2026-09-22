@@ -1,0 +1,160 @@
+{
+  "backend": {
+    "accelerate": "1.13.0",
+    "answer_token_ids": {
+      "A": 15,
+      "B": 16,
+      "C": 17,
+      "D": 18,
+      "E": 19,
+      "F": 20,
+      "G": 21,
+      "H": 22,
+      "I": 23,
+      "J": 24
+    },
+    "answer_tokens": {
+      "A": "0",
+      "B": "1",
+      "C": "2",
+      "D": "3",
+      "E": "4",
+      "F": "5",
+      "G": "6",
+      "H": "7",
+      "I": "8",
+      "J": "9"
+    },
+    "arm": "cultural",
+    "attn_implementation": "sdpa",
+    "base_model_id": "Qwen/Qwen3-VL-2B-Thinking",
+    "base_revision": "33e0ad94c327808ebc7d3bbc97e78e600f1eeecd",
+    "batch_size": 32,
+    "bitsandbytes": "0.49.2",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "fa_max_new_tokens": 12,
+    "lora_exclude_modules": ".*(vision_tower|audio_tower).*",
+    "lora_target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "modalities_used": [
+      "text"
+    ],
+    "modality": "vision_text",
+    "model_class": "Qwen3VLForConditionalGeneration",
+    "multi_token_answers": [],
+    "name": "transformers",
+    "oom_backoffs": 0,
+    "peft": "0.19.1",
+    "prompt_contract": "paper",
+    "quantization": null,
+    "question": "d_polpos",
+    "tokenizer_source": "/home/neemias/machine-bias-reproduction/models/culture/qwen3_vl_2b/global",
+    "torch": "2.12.0",
+    "version": "5.8.1"
+  },
+  "capacity": {
+    "by_mode": [
+      {
+        "distinct_distributions": 7746.0,
+        "failed": 0,
+        "invalid": 0,
+        "mean_valid_mass": 0.9995480425520136,
+        "median_valid_mass": 0.9995526093989611,
+        "mode": "NTP",
+        "p10_valid_mass": 0.9994966528378427,
+        "prompts": 13904,
+        "response_std": 0.012837354380733999,
+        "tied_answers": 12938.0,
+        "valid": 13904,
+        "valid_rate": 1.0
+      },
+      {
+        "distinct_distributions": NaN,
+        "failed": 0,
+        "invalid": 0,
+        "mean_valid_mass": NaN,
+        "median_valid_mass": NaN,
+        "mode": "FA",
+        "p10_valid_mass": NaN,
+        "prompts": 26981,
+        "response_std": NaN,
+        "tied_answers": NaN,
+        "valid": 26981,
+        "valid_rate": 1.0
+      }
+    ],
+    "failed": 0,
+    "invalid": 0,
+    "ntp_distinct_distributions": 7746,
+    "prompts": 40885,
+    "valid": 40885,
+    "valid_rate": 1.0
+  },
+  "code_revision": "4647220-dirty",
+  "counts": {
+    "fa": {
+      "failed": 0,
+      "generated": 26981,
+      "reused": 0,
+      "reused_untraced": 0
+    },
+    "ntp": {
+      "failed": 0,
+      "generated": 13552,
+      "reused": 352,
+      "reused_untraced": 0
+    }
+  },
+  "event_log": "logs/inference_events.jsonl",
+  "finished_at": "2026-09-21T02:35:54.916385+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "model": {
+    "adapter_path": "/home/neemias/machine-bias-reproduction/models/culture/qwen3_vl_2b/global",
+    "adapter_sha256": "d6d1dc18599bb43f19aa3b24cc61fb4d608250ad1dcbf320d4f5eef61a4dfb38",
+    "base_model_id": "Qwen/Qwen3-VL-2B-Thinking",
+    "base_revision": "33e0ad94c327808ebc7d3bbc97e78e600f1eeecd",
+    "culture": "global",
+    "model_key": "qwen3_vl_2b",
+    "replicate": 1,
+    "sha256": "d6d1dc18599bb43f19aa3b24cc61fb4d608250ad1dcbf320d4f5eef61a4dfb38"
+  },
+  "modes_requested": [
+    "ntp",
+    "fa"
+  ],
+  "modes_run": [
+    "ntp",
+    "fa"
+  ],
+  "parameters": {
+    "global_seed": 20240110,
+    "legacy_unseeded_fa": false,
+    "limit": null,
+    "modes": [
+      "ntp",
+      "fa"
+    ],
+    "replicate": 1
+  },
+  "preflight": {
+    "informative": true,
+    "max_mass": 0.999604694545269,
+    "mean_mass": 0.9995329048106214,
+    "min_mass": 0.9993848484009504,
+    "prompts": 32,
+    "threshold": 0.1
+  },
+  "question": "d_polpos",
+  "run_id": "20260921T021905Z-a7ea3d70",
+  "schema_version": 2,
+  "started_at": "2026-09-21T02:19:05.574880+00:00"
+}
