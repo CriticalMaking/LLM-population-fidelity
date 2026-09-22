@@ -6,7 +6,7 @@
 ![Transformers](https://img.shields.io/badge/Transformers-5.8-FFD21E?logo=huggingface&logoColor=black)
 ![Ruff](https://img.shields.io/badge/Ruff-passing-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2)
-![tests](https://img.shields.io/badge/tests-390-4c1)
+![tests](https://img.shields.io/badge/tests-398-4c1)
 
 Reproduction of *Machine Bias: How Do Generative Language Models Answer Opinion
 Polls?* (Boelaert, Coavoux, Ollion, Petev and Präg, *SMR* 2025), extended to
@@ -84,10 +84,11 @@ table and figure set.
 
 ## Dataset
 
-Published (private now) as
+Published as
 [MInDS-lab-UTFPR/TowardsSociallyGroundedAISafety](https://huggingface.co/datasets/MInDS-lab-UTFPR/TowardsSociallyGroundedAISafety):
 every derived table under `outputs/`, the raw per-prompt records as parquet, and
-the upstream subset. Public, so `pull` needs no token.
+the upstream subset. The repository stays private until publication, so `pull`
+needs a token with access to the organization (`hf auth login`).
 
 ```bash
 uv run --no-sync python -m machine_bias_reproduction hub status
