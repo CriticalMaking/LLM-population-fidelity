@@ -1,0 +1,3 @@
+mode,reduced_model,added_terms,f_statistic,p_value,df_difference,residual_df
+fa,center,social,2.9269040026973947,6.8844025265443726e-06,23,642
+fa,social,center,1183.615614399393,7.90829933707725e-148,1,642
