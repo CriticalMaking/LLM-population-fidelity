@@ -329,7 +329,7 @@ def _ordered(frame: pd.DataFrame, column: str) -> pd.DataFrame:
     return frame.dropna(subset=[column]).sort_values(column, ascending=True)
 
 
-def _row_figure(count: int, width: float, row: float = ROW_HEIGHT) -> tuple[Figure, Axes]:
+def row_figure(count: int, width: float, row: float = ROW_HEIGHT) -> tuple[Figure, Axes]:
     figure = Figure(figsize=(width, row * count + 3.0), layout="constrained")
     axis = figure.subplots(1, 1)
     axis.grid(axis="x", color=GRID, linewidth=0.6)
@@ -386,7 +386,7 @@ def _reference_handle(label: str) -> Line2D:
 
 def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     ordered = _ordered(frame, "pfs")
-    figure, axis = _row_figure(len(ordered), ROW_WIDTH)
+    figure, axis = row_figure(len(ordered), ROW_WIDTH)
     for position, row in enumerate(_rows(ordered)):
         spread = spread_of(row, "pfs")
         axis.barh(
@@ -421,56 +421,57 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
     return save_plate(figure, destination / f"fig_fidelity_ranking_{view}_{mode}")
 
 
-def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
-    ordered = _ordered(frame, "pfs")
-    figure, axis = _row_figure(len(ordered), ROW_WIDTH, COMPONENT_ROW)
-    for position, row in enumerate(_rows(ordered)):
-        scores = [float(getattr(row, column)) for column, _, _ in COMPONENTS]
+def component_row(axis: Axes, row: Any, position: float) -> None:
+    scores = [float(getattr(row, column)) for column, _, _ in COMPONENTS]
+    axis.plot(
+        [min(scores), max(scores)],
+        [position, position],
+        color=GRID,
+        linewidth=1.4,
+        zorder=1.5,
+    )
+    for (column, marker, _), shade in zip(COMPONENTS, COMPONENT_INKS, strict=True):
+        _spread_bar(axis, float(getattr(row, column)), position, spread_of(row, column), shade)
         axis.plot(
-            [min(scores), max(scores)],
-            [position, position],
-            color=GRID,
-            linewidth=1.4,
-            zorder=1.5,
-        )
-        for (column, marker, _), shade in zip(COMPONENTS, COMPONENT_INKS, strict=True):
-            _spread_bar(axis, float(getattr(row, column)), position, spread_of(row, column), shade)
-            axis.plot(
-                float(getattr(row, column)),
-                position,
-                marker=marker,
-                markersize=MARKER_SIZE,
-                linestyle="none",
-                color=shade,
-                markeredgecolor=shade,
-                zorder=3,
-            )
-        axis.plot(
-            float(row.score_center),
+            float(getattr(row, column)),
             position,
-            marker="s",
-            markersize=12,
+            marker=marker,
+            markersize=MARKER_SIZE,
             linestyle="none",
-            markerfacecolor="none",
-            markeredgecolor=MUTED_INK,
-            markeredgewidth=MARKER_EDGE,
-            zorder=2.5,
+            color=shade,
+            markeredgecolor=shade,
+            zorder=3,
         )
-        _spread_bar(axis, float(row.pfs), position, spread_of(row, "pfs"), INK)
-        axis.plot(
-            float(row.pfs),
-            position,
-            marker="D",
-            markersize=10,
-            linestyle="none",
-            color=INK,
-            zorder=3.5,
-        )
-    _row_labels(axis, ordered, one_line=True)
+    axis.plot(
+        float(row.score_center),
+        position,
+        marker="s",
+        markersize=12,
+        linestyle="none",
+        markerfacecolor="none",
+        markeredgecolor=MUTED_INK,
+        markeredgewidth=MARKER_EDGE,
+        zorder=2.5,
+    )
+    _spread_bar(axis, float(row.pfs), position, spread_of(row, "pfs"), INK)
+    axis.plot(
+        float(row.pfs),
+        position,
+        marker="D",
+        markersize=10,
+        linestyle="none",
+        color=INK,
+        zorder=3.5,
+    )
+
+
+def component_axis(axis: Axes) -> None:
     axis.set_xlim(-COMPONENT_MARGIN, 1.0 + COMPONENT_MARGIN)
     axis.set_xticks(np.linspace(0.0, 1.0, 6))
     axis.set_xlabel(SCORE_XLABEL)
-    # axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
+
+
+def component_handles(frame: pd.DataFrame) -> list[Line2D]:
     handles = [
         Line2D(
             [],
@@ -499,9 +500,20 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
             label=CENTER_LEGEND,
         )
     )
-    if replicated(ordered):
+    if replicated(frame):
         handles.append(spread_handle())
-    legend_below(figure, handles, 2)
+    return handles
+
+
+def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
+    ordered = _ordered(frame, "pfs")
+    figure, axis = row_figure(len(ordered), ROW_WIDTH, COMPONENT_ROW)
+    for position, row in enumerate(_rows(ordered)):
+        component_row(axis, row, position)
+    _row_labels(axis, ordered, one_line=True)
+    component_axis(axis)
+    # axis.set_title(_title(view, mode, POPULATION, "What each PFS is made of"))
+    legend_below(figure, component_handles(ordered), 2)
     return save_plate(figure, destination / f"fig_fidelity_components_{view}_{mode}")
 
 
@@ -615,7 +627,7 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
 
 def cells_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     ordered = _ordered(frame, "e_mean_nemd").iloc[::-1]
-    figure, axis = _row_figure(len(ordered), ROW_WIDTH)
+    figure, axis = row_figure(len(ordered), ROW_WIDTH)
     for position, row in enumerate(_rows(ordered)):
         shade = bar_style(str(row.series), row.model_key, row.arm)
         axis.plot(
