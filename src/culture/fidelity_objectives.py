@@ -406,16 +406,4 @@ def objective_plates(
                     view,
                     destination,
                 )
-                for country in HOME_COUNTRIES:
-                    produced += _plates(
-                        within_country(
-                            view_frame(levels, levels, view, mode, COUNTRY_FAMILY), country
-                        ),
-                        within_country(
-                            view_frame(shifts, shifts, view, mode, COUNTRY_FAMILY), country
-                        ),
-                        mode,
-                        view,
-                        destination / country.lower(),
-                    )
     return produced
