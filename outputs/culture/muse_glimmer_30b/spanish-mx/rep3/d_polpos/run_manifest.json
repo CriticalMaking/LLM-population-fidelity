@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_distance_comparison.pdf": "51ae67635545fd3c3eff49322cf01139e04564ae6a7788b51f894345c717fcf8",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_distance_comparison.png": "771f5eb80e2596b4494dfc73d8624d42fb00020be69034a2c0497644d6f46726",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_full_coefficients.pdf": "bdcbb87671131da92fa65982bf1762292699d15097f53bcb6a31feae24d8ba62",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_full_coefficients.png": "13509b8c6670bf2e780bcf4e41ee76acf75441d59ee83af59d19cb24ec9f37be",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_full_standardized_coefficients.pdf": "f0c54cf2c4237e7dfb083c596f2bdae26654284c22b49eee32bb41aa1e5b8b23",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_full_standardized_coefficients.png": "d85bdb8ad73c6212f62948bf9c62c0835b08505138aa2b210ebd2472043e41e0",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_mds_fa.pdf": "dd62da3e56ff78a8e74522524c5911caca19504dcedb105b9539c1188a6f93ff",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_mds_fa.png": "b0261827abd80ef89688d45d36ec79b8e24df813fce8c10a19bfcd002bc3e045",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_nemd_density_quality.pdf": "f86e85c03c8823ef88e241ef11bb0f13fd4f58f30407c140217a8edb1e9c11cc",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_nemd_density_quality.png": "0a30ac58079554720226203922117b621b01627220baa3f55e1b29fa2da5964f",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_social_coefficients.pdf": "9daa5e1427c230955dc4c8e928ad8dcbe20779b2caa8ebc22987b58499a08512",
+    "figures/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/fig_social_coefficients.png": "f2a46294e33bc334fea7588b9a8855875e35cd7fa3c7270110af99d6a63c0a29",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/center_holdouts.csv": "43c442dd66d87d05f10f87936f9a8de4904b4e1e072a1d75705538e2abd9617f",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/f_tests.csv": "7d8b0342a0b95a3d5625d367b6df90cff04b9c48d99a8d28dce6a26578c554cf",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/full_coefficients.csv": "4585b3e0a34460f7e7f358ed015155434b6a09f699968b6aca62106df24d41a9",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/full_standardized_coefficients.csv": "1ac25298c00d5d623bff2d3e2b2e27e689910471db6e798a4b8d7ee46a986f0f",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/pairwise_dispersion.csv": "5aeba7ec5727b10c34adf134f073959107d1cbbc88d77e5e278ff031f13e2513",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/quality_bands.csv": "ee8dc39bc5bb9ae7daab52e8a11d7a1fee57101b648c643f4c35ed43541aa51d",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/regression_fit.csv": "339e0eedf7cf5f8e9a69fcd68574787644ce98ec6aa30734c3a26f42662bafa2",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/response_distributions.csv": "bae0ff9ba00a63531361dc51a46916f3ac37e5084d89430d20af4b073794d8cd",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/social_coefficients.csv": "b887eb1bbf726e999cd88fc72ae161f7cc97b9228e8d41542d8617f6808062e1",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/subpopulation_distances.csv": "e8e0c10c7936cd79e8b58e90e86f63e9565be8ad50a5967ee8df54618a64cf4f",
+    "outputs/culture/muse_glimmer_30b/spanish-mx/rep3/d_polpos/summary_metrics.csv": "bb755b3d0057f8d08aea477dfa88a951ccaa3bcd490b32bf1e539090f8b2a85c"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-23T03:42:21.222763+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "meta-models/Muse-Glimmer-30B + spanish-mx LoRA",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/muse_glimmer_30b/spanish-mx/rep3"
+}
