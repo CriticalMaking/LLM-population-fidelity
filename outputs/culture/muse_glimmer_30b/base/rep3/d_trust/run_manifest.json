@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_distance_comparison.pdf": "96dffcce3c6b245eb1d7b3302bcbf1627676eb7f8aad6b1d24dbdae17cafcd95",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_distance_comparison.png": "40583c3af4dede847134b8f2c264a96f949d37b678d0f9e82ebe41546bf6e74e",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_full_coefficients.pdf": "bea9c59b08c0b2c9668d098a8e5878d588806ec05a7e55d9fe88e1adfa3a48ed",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_full_coefficients.png": "ccb80e899651758ebbbc12603aa3cbf1f04d64042b50402128040918350867d0",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_full_standardized_coefficients.pdf": "92ab3ed977b654f0fd990f15f5296d64e7ec7632ce0edca835c565df9ac83d48",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_full_standardized_coefficients.png": "74665b6cd2e02f070f00dc619a3c32e23ca3880e07057c4f8ae91c80396e9a30",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_mds_fa.pdf": "ca927549621ddf496a665906458386c4e052b4c6623b238fdce08a9e2ab340cc",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_mds_fa.png": "95ceebd1ef49dda469f886b8ae28e497bbb00f152413ff548e3ba76d9c1e00ad",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_nemd_density_quality.pdf": "2512b1b32208504d58ceabd565fcba8de5ed99344bf87b8768b6f2faecf41b40",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_nemd_density_quality.png": "b6e38fbc93ddafabc1fafc349dce02a4785f423eacd4849675586a950a134d7f",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_social_coefficients.pdf": "0f63976a5dca7ad43fbe4f21904887059419765437bf4a77054bb214d5fe031b",
+    "figures/culture/muse_glimmer_30b/base/rep3/d_trust/fig_social_coefficients.png": "efa155d6f6f36169df98e4dc20e6876cca5b1b11d8ebbb86ffc3031b1f6ea626",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/f_tests.csv": "c5baf1a8b9cb0a5c3735e289713392544cb5cc8db4b9195fa72e7fc977069efa",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/full_coefficients.csv": "4387d409d9da50c005274aa8d9d2d4274cb7088881b4a6f1014a586ec0189e61",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/full_standardized_coefficients.csv": "8f32c87594c18567432fa7a06ce843a3884d511a8ad56d32804a1a6788981c02",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/pairwise_dispersion.csv": "4a53675b267a66c87cb3361acea717ae31ff989db6baf2f450299382f24e54a5",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/quality_bands.csv": "072f0a9d3ba8decde3d77c81738a735dc1e622a6fd5235ee9213399ac05f81d4",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/regression_fit.csv": "02151f69ae1a5f8cbf5a3aa210aeba9982e7e53214797f3cbe81395347d0b6f4",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/response_distributions.csv": "af838def5a09f5f182c2c06f38f8e357b7fc7b85975bd12cdc395fa8e97e0f4b",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/social_coefficients.csv": "1d52aa87e25ce8ee9ceb00a32f9a1a2a8ee4662ec7959d639854e944461dd684",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/subpopulation_distances.csv": "7296a798a760d8e6513a5a359bf3673cd76e24aa2afc0bd71e391e65ec9a4003",
+    "outputs/culture/muse_glimmer_30b/base/rep3/d_trust/summary_metrics.csv": "24ff92d0471946f463aa5a6a3e83c0934a3069bb01436f9aff62a6c2a4b670c5"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-24T16:17:12.940272+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 2,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "meta-models/Muse-Glimmer-30B (not finetuned)",
+    "question": "d_trust",
+    "question_label": "Trust",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/muse_glimmer_30b/base/rep3"
+}

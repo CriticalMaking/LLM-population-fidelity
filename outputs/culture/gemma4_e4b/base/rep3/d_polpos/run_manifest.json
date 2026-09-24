@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_distance_comparison.pdf": "b00235d73e6f0b742b76545a8a8d399f3c8d5edeccdfbcbeb9a34ca34b26aba3",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_distance_comparison.png": "dc40435bfbb2fa8a8858ea1da386608664ee9577d6d52d2081f7450aa54b971e",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_full_coefficients.pdf": "7a284970f26e6badbfedb6154dc2680b76a417526690fe8c3e2ec56b7b4b547f",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_full_coefficients.png": "168b61d184d4dd9c07787d1d9c21c34c0f59521312d301187b63d940fe2d3439",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_full_standardized_coefficients.pdf": "c326beedcc6fcb7c8c34d34f03ecfc414f46abfce7676b2671fa7bf8d77c8afb",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_full_standardized_coefficients.png": "a0837b591ad03f487eb733e1aacafd927d92420aff4a68f68be947cb9d40a9dc",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_mds_fa.pdf": "5a0d5f12ee15658c4650675de4d34f7086048af409e6f330c0982b8340f6e7e7",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_mds_fa.png": "f3911820115b1c01e8274e1cb7c5df9dceb265af65b5fcbe2e2ae036709b3204",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_nemd_density_quality.pdf": "9ce82ae998371a891cd3915f0c1b7959a7ec9dd8ebdef173431f1719a8cbf846",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_nemd_density_quality.png": "6b7951dc3a4d794ad4e561a72319999bbbc54d620ffec51662cd72ea63d4d3ab",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_social_coefficients.pdf": "6dcf1521d018103d4888ee1482cb65035c1022ddd9ab2e0343fee73e80a16cac",
+    "figures/culture/gemma4_e4b/base/rep3/d_polpos/fig_social_coefficients.png": "a641ad1afdfcfd789867726b34ebbaaa4fb53cae261657db4f7fc2207e75642b",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/center_holdouts.csv": "43c442dd66d87d05f10f87936f9a8de4904b4e1e072a1d75705538e2abd9617f",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/f_tests.csv": "f90306d7bd8fce358146511a52a63433037a00db861ec958c9d0093554ae51cc",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/full_coefficients.csv": "20c9da5781455eba9ecb0407c3986800c741a70dcd6d2d1ef2621d16f37127b9",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/full_standardized_coefficients.csv": "6f2d6aaa3f5c7e117b451dd7a986f86151bf8e46d8857f2f876cebfdfa6dac97",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/pairwise_dispersion.csv": "81fc5a9cffadda4344324749575a3eff78459a27ebec0d7a1ceb0666660b8cea",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/quality_bands.csv": "35f924b478bd049ac39c0874b46164efc2ef70eb6063c3b866d23e9ea2535ea9",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/regression_fit.csv": "1e5cf98964bede68181bcd7a708490f3402f0a5244c6d127e51d9e998f9e6403",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/response_distributions.csv": "61700bee01dde3d61debb24d2122f943a727840d9bd2bfa1a23f47d06006642c",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/social_coefficients.csv": "85822ec17322a5ba5caa08e4bb81d54e8e2c630457165fbb0d433e4a398d3035",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/subpopulation_distances.csv": "6b71d41d8577e5ec6f6ca962f3ddb470b27a479ee75218ac50ef9fc6e8943dfc",
+    "outputs/culture/gemma4_e4b/base/rep3/d_polpos/summary_metrics.csv": "27f22fa65903c59e1fa8af967aeff3537660bb449812456e57c5f8d7b77ec4aa"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-24T17:57:04.947723+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "google/gemma-4-E4B-it (not finetuned)",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/gemma4_e4b/base/rep3"
+}

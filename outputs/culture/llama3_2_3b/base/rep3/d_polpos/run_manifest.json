@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_distance_comparison.pdf": "06e9ad21c124d05b76e85a35a80beb13351ff4329840e26fe3d10e392004f32d",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_distance_comparison.png": "b6751d9fbefd63f7f4372bd5a8245a300da6054385b5d3c8125f56c69fdf48b1",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_full_coefficients.pdf": "ae2eab98a055caf3c22a366bb9dfafb1ac9969b7ab3bf0195759cded57e7a40b",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_full_coefficients.png": "408b545742e9eb19c38bd7abc5b747a735485e7fcbd4252733f2de547c849682",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_full_standardized_coefficients.pdf": "71ca28e4859f60c9181de51527a0a2f47ef3fb61374682cbda210485579a9971",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_full_standardized_coefficients.png": "3d1be6385803494f3d184669c354bbd411b048e9f83bbcb92d350e18db34811f",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_mds_fa.pdf": "210a5bbac8c6558f7a75e57b2725233248ffcb86e7322ae444ae6315df107fe2",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_mds_fa.png": "62632a57024c27da1b4bc36f95f64507010ebfbf6da591fc154e59bb987266a0",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_nemd_density_quality.pdf": "81dea69d0eb4abf9cc80e86fa57df2bd9d8d9e94f6a86181d33b79982f53531e",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_nemd_density_quality.png": "2724bd69cc49f7aea351e6c175eb59e1f4729b0384705240f78a0dba306598b3",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_social_coefficients.pdf": "6e1c5ba8d53872890dc1a2eda69434775f93bfc9ce4a185cb8a4f96698c5100b",
+    "figures/culture/llama3_2_3b/base/rep3/d_polpos/fig_social_coefficients.png": "42894a196bd7556cd122886c92a280aa4a7515d459e28aaff78b32a4ebea405c",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/center_holdouts.csv": "43c442dd66d87d05f10f87936f9a8de4904b4e1e072a1d75705538e2abd9617f",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/f_tests.csv": "a561801c786ec09b1268890cdd43f5f95067f63245982ca0e3084d4bea3cfae2",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/full_coefficients.csv": "b878cd4db41cd367976cca16f102a383f35d1ad27efe18d548b5308cdac28122",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/full_standardized_coefficients.csv": "8196770a319d88992fa1bcd87ffddb81918ef82a27c52c083ebdf92224d57985",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/pairwise_dispersion.csv": "c95abcdb230d209269b6b53591e4445761f6d9142b1dcdd9e363efa4566f3ec5",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/quality_bands.csv": "7bfd050331f55ca303ab359209ddf0dab2750bfc4cd2185a110cf3e11dfab6a7",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/regression_fit.csv": "1f84ee8c4c7c1043a898f915fd212ce7c726fda5e942f576bc39ac4f84b890cb",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/response_distributions.csv": "d7ce8dd222cea891bba125411e05953c1c0e5560a511bb652ea3b20a8280497b",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/social_coefficients.csv": "72db956e5a587eab1b668cc642d25553f9af978c2e02276b69497db3620c47a4",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/subpopulation_distances.csv": "9bfff3250e60e2104a028398835d74bb96e5130de1fac5fd48e0c1721adcdee5",
+    "outputs/culture/llama3_2_3b/base/rep3/d_polpos/summary_metrics.csv": "b447ab4d22a9bd1683036cc82f0fd5bb33ce3fe60fd54eb81f89c1d2fd025ed0"
+  },
+  "coverage": {
+    "complete": false,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 48,
+    "subpopulations_retained": 639,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-09-24T18:44:41.554548+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 10,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "meta-llama/Llama-3.2-3B (not finetuned)",
+    "question": "d_polpos",
+    "question_label": "Politics",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/llama3_2_3b/base/rep3"
+}
