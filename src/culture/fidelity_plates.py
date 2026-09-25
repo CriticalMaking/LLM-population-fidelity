@@ -29,6 +29,7 @@ from machine_bias_reproduction.plates import (
 )
 
 from .fidelity import (
+    COUNTRY_FAMILY,
     EVERY_CELL,
     FAMILIES,
     FAMILY_LABELS,
@@ -38,6 +39,8 @@ from .fidelity import (
     levels,
     overall_fidelity,
 )
+from .fidelity_baseline import HOME_SCOPE, scope_rows
+from .matching import HOME
 from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, arm_hatch, arm_order, model_tone
 from .population import MODEL_INDEX, MODES, across_replicates
 from .population_plates import (
@@ -48,6 +51,7 @@ from .population_plates import (
     PLATE_TEXT,
     SPREAD_BAR,
     VIEWS,
+    arm_plot_name,
     compact_handles,
     legend_below,
     legend_height,
@@ -58,7 +62,7 @@ from .population_plates import (
     spread_of,
     stacked,
 )
-from .registry import is_base
+from .registry import ARMS, BASE_ARM, is_base
 
 FIDELITY_FIGURES = FIGURES_ROOT / "fidelity"
 
@@ -88,6 +92,28 @@ COMPONENT_MARGIN = 0.03
 
 ROW_LABEL_PAD = 10.0
 
+# The stacked component plate: one block of rows per set of cells, a bold header tick
+# over each block and a rule between blocks.
+BLOCK_LABELS: dict[str, str] = {
+    POPULATION: "All retained cells",
+    "Germany": "German cells only",
+    "Mexico": "Mexican cells only",
+    "United States": "United States cells only",
+}
+
+BLOCK_GAP = 1.4
+
+BLOCK_RULE_INK = "#b8b8b8"
+
+# Side by side, one panel per set of cells: the blocks run across the page instead of
+# down it, so the plate is as tall as its longest block rather than as tall as all of
+# them, and each panel carries its own row labels.
+BLOCK_PANEL_WIDTH = 5.4
+
+BLOCK_PANEL_PAD = 1.9
+
+Block = tuple[str, pd.DataFrame]
+
 SCATTER_WIDTH = 5.8
 
 SCATTER_HEIGHT = 5.6
@@ -99,6 +125,16 @@ SHIFT_HEIGHT = 3.6
 # Each corner note on the shift plate names both scores over two lines, so the center
 # axis keeps this much of its reach to spare and no marker lands under a note.
 SHIFT_CENTER_SPARE = 0.7
+
+SHIFT_STEMS: dict[str, str] = {
+    POPULATION: "fig_fidelity_shift",
+    HOME_SCOPE: "fig_fidelity_shift_home",
+}
+
+SHIFT_XLABELS: dict[str, str] = {
+    POPULATION: "Change in PFS against the as-released variant",
+    HOME_SCOPE: "Change in PFS against the as-released variant\n(target-country cells)",
+}
 
 DELTA_PFS = delta_column("pfs")
 
@@ -519,6 +555,135 @@ def components_plate(frame: pd.DataFrame, mode: str, view: str, destination: Pat
     return save_plate(figure, destination / f"fig_fidelity_components_{view}_{mode}")
 
 
+def component_blocks_plate(
+    blocks: Sequence[Block], label: Callable[[Any], str], stem: Path
+) -> list[Path]:
+    slots = sum(len(rows) + 1 for _, rows in blocks) + BLOCK_GAP * (len(blocks) - 1)
+    figure, axis = row_figure(int(np.ceil(slots)), ROW_WIDTH, COMPONENT_ROW)
+    ticks: list[float] = []
+    labels: list[str] = []
+    headers: list[bool] = []
+    position = 0.0
+    for index, (header, rows) in enumerate(blocks):
+        if index:
+            axis.axhline(position - BLOCK_GAP / 2.0, color=BLOCK_RULE_INK, linewidth=0.8)
+            position -= BLOCK_GAP
+        ticks.append(position)
+        labels.append(header)
+        headers.append(True)
+        for row in _rows(rows):
+            position -= 1.0
+            component_row(axis, row, position)
+            ticks.append(position)
+            labels.append(label(row))
+            headers.append(False)
+    axis.set_yticks(ticks, labels)
+    for tick, bold in zip(axis.get_yticklabels(), headers, strict=True):
+        if bold:
+            tick.set_fontweight("bold")
+    axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
+    axis.set_ylim(position - 0.6, 0.6)
+    component_axis(axis)
+    drawn = pd.concat([rows for _, rows in blocks], ignore_index=True)
+    legend_below(figure, component_handles(drawn), 2)
+    return save_plate(figure, stem)
+
+
+def condition_label(row: Any) -> str:
+    arm = getattr(row, "arm", None)
+    if isinstance(arm, str) and arm in ARMS:
+        return f"{row.model_label} ({arm_plot_name(arm)})"
+    return str(row.series)
+
+
+def component_panels_plate(
+    blocks: Sequence[Block], label: Callable[[Any], str], stem: Path
+) -> list[Path]:
+    tallest = max(len(rows) for _, rows in blocks)
+    drawn = pd.concat([rows for _, rows in blocks], ignore_index=True)
+    handles = component_handles(drawn)
+    figure = Figure(
+        figsize=(
+            BLOCK_PANEL_WIDTH * len(blocks),
+            COMPONENT_ROW * tallest + legend_height(handles, len(handles)) + BLOCK_PANEL_PAD,
+        ),
+        layout="constrained",
+    )
+    panels = np.atleast_1d(figure.subplots(1, len(blocks), sharex=True))
+    middle = len(blocks) // 2
+    for index, (axis, (header, rows)) in enumerate(zip(panels, blocks, strict=True)):
+        axis.grid(axis="x", color=GRID, linewidth=0.6)
+        axis.set_axisbelow(True)
+        ticks: list[float] = []
+        labels: list[str] = []
+        head = (tallest - len(rows)) / 2.0
+        for offset, row in enumerate(_rows(rows)):
+            position = -(head + float(offset))
+            component_row(axis, row, position)
+            ticks.append(position)
+            labels.append(label(row))
+        axis.set_yticks(ticks, labels)
+        axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
+        axis.set_ylim(-tallest + 0.4, 0.6)
+        axis.set_title(header, fontweight="bold")
+        component_axis(axis)
+        axis.set_xticks(np.linspace(0.0, 1.0, 3))
+        if index != middle:
+            axis.set_xlabel("")
+    legend_below(figure, handles, len(handles))
+    return save_plate(figure, stem)
+
+
+def released_rows(frame: pd.DataFrame) -> pd.Series:
+    return frame["arm"].isna() | frame["arm"].eq(BASE_ARM)
+
+
+def home_pairs(inside: pd.DataFrame, arm: str) -> pd.DataFrame:
+    tuned = inside[inside["arm"].eq(arm)].dropna(subset=["pfs"])
+    released = inside[released_rows(inside) & inside["model_key"].isin(tuned["model_key"])]
+    released = released.dropna(subset=["pfs"])
+    lead = released.set_index("model_key")["pfs"]
+    kept = pd.concat([released, tuned[tuned["model_key"].isin(lead.index)]])
+    order = kept.assign(lead=kept["model_key"].map(lead), tuned=kept["arm"].eq(arm))
+    ordered = order.sort_values(
+        ["lead", "model_key", "tuned"], ascending=[False, True, True], kind="stable"
+    )
+    return ordered.drop(columns=["lead", "tuned"])
+
+
+def home_blocks(pooled: pd.DataFrame, countries: pd.DataFrame) -> list[Block]:
+    released = pooled[released_rows(pooled)].dropna(subset=["pfs"])
+    blocks: list[Block] = [
+        (BLOCK_LABELS[POPULATION], released.sort_values("pfs", ascending=False, kind="stable"))
+    ]
+    for arm, country in HOME.items():
+        pairs = home_pairs(countries[countries["level"].eq(country)], arm)
+        if not pairs.empty:
+            blocks.append((BLOCK_LABELS[country], pairs))
+    return blocks if len(blocks) > 1 else []
+
+
+def home_components_plate(
+    per_question: pd.DataFrame,
+    overall: pd.DataFrame,
+    view: str,
+    mode: str,
+    destination: Path,
+) -> list[Path]:
+    pooled = view_frame(per_question, overall, view, mode, POPULATION)
+    countries = view_frame(per_question, overall, view, mode, COUNTRY_FAMILY)
+    if pooled.empty or countries.empty:
+        return []
+    blocks = home_blocks(pooled, countries)
+    if not blocks:
+        return []
+    return component_panels_plate(
+        blocks,
+        condition_label,
+        destination / f"fig_fidelity_components_home_{view}_{mode}",
+    )
+
+
 def _scatter_figure(
     handles: Sequence[Line2D], height: float = SCATTER_HEIGHT
 ) -> tuple[Figure, Axes]:
@@ -596,7 +761,22 @@ def _span(frame: pd.DataFrame, column: str, spare: float = 0.25) -> tuple[float,
     return -reach, reach
 
 
-def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
+def home_shifts(
+    paired: pd.DataFrame, paired_overall: pd.DataFrame, view: str, mode: str
+) -> pd.DataFrame:
+    countries = view_frame(paired, paired_overall, view, mode, COUNTRY_FAMILY)
+    if countries.empty:
+        return countries
+    return scope_rows(countries, HOME_SCOPE)
+
+
+def shift_plate(
+    frame: pd.DataFrame,
+    mode: str,
+    view: str,
+    destination: Path,
+    scope: str = POPULATION,
+) -> list[Path]:
     drawable = frame.dropna(subset=[DELTA_PFS, DELTA_CENTER])
     handles = [
         *compact_handles(drawable),
@@ -621,10 +801,10 @@ def shift_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) ->
     axis.set_xlim(*_span(drawable, DELTA_PFS))
     axis.set_ylim(*_span(drawable, DELTA_CENTER, SHIFT_CENTER_SPARE))
     _corner_notes(axis, SHIFT_CORNERS)
-    axis.set_xlabel("Change in PFS against the as-released variant")
+    axis.set_xlabel(SHIFT_XLABELS[scope])
     axis.set_ylabel("Change in center alignment")
     # axis.set_title(_title(view, mode, POPULATION, "What the finetuning bought"))
-    return save_plate(figure, destination / f"fig_fidelity_shift_{view}_{mode}")
+    return save_plate(figure, destination / f"{SHIFT_STEMS[scope]}_{view}_{mode}")
 
 
 def cells_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
@@ -1543,6 +1723,7 @@ def fidelity_plates(
                     continue
                 produced += ranking_plate(pooled, mode, view, destination)
                 produced += components_plate(pooled, mode, view, destination)
+                produced += home_components_plate(groups, overall, view, mode, destination)
                 produced += center_plate(pooled, mode, view, destination)
                 produced += cells_plate(pooled, mode, view, destination)
                 produced += subgroup_models_plate(groups, overall, view, mode, destination)
@@ -1554,6 +1735,9 @@ def fidelity_plates(
                 shifts = view_frame(paired, paired_overall, view, mode, POPULATION)
                 if not shifts.empty:
                     produced += shift_plate(shifts, mode, view, destination)
+                homed = home_shifts(paired, paired_overall, view, mode)
+                if not homed.empty:
+                    produced += shift_plate(homed, mode, view, destination, HOME_SCOPE)
                 for family in FAMILIES:
                     frame = view_frame(groups, overall, view, mode, family)
                     if frame.empty:

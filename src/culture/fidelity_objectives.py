@@ -9,10 +9,10 @@ import pandas as pd
 from matplotlib import rc_context
 
 from machine_bias_reproduction.config import FIGURES_ROOT, FIRST_REPLICATE, OUTPUTS_ROOT
-from machine_bias_reproduction.figures import save_plate
 from machine_bias_reproduction.questions import Question
 
 from .fidelity import (
+    COUNTRY_FAMILY,
     IDENTITY,
     PAIRED_METRICS,
     POPULATION,
@@ -21,23 +21,20 @@ from .fidelity import (
     check_fidelity,
     delta_column,
 )
-from .fidelity_baseline import HOME, MANUSCRIPT_ARMS, build_baseline
+from .fidelity_baseline import MANUSCRIPT_ARMS, build_baseline
 from .fidelity_plates import (
-    COMPONENT_ROW,
-    ROW_LABEL_PAD,
-    ROW_WIDTH,
+    BLOCK_LABELS,
     SPREAD,
-    component_axis,
-    component_handles,
-    component_row,
+    Block,
+    component_blocks_plate,
     components_plate,
-    row_figure,
     shift_plate,
     view_frame,
 )
+from .matching import HOME
 from .population import MODES, REPLICATE, RunSource, across_replicates, sources
-from .population_plates import PLATE_TEXT, VIEWS, legend_below
-from .registry import BASE_ARM, DISTRIBUTION_TRAINED_ARMS, arm_display
+from .population_plates import PLATE_TEXT, VIEWS, arm_plot_name
+from .registry import BASE_ARM, DISTRIBUTION_TRAINED_ARMS, SUBPOP_ARM
 
 OBJECTIVE_MODELS: tuple[str, ...] = ("qwen3_vl_2b",)
 
@@ -47,27 +44,13 @@ OBJECTIVE_ARMS: tuple[str, ...] = (*MANUSCRIPT_ARMS, *DISTRIBUTION_ARMS)
 
 SUBGROUPS = "subgroups"
 
-COUNTRY_FAMILY = "country"
+OBJECTIVE_HOMES: dict[str, str] = {**HOME, SUBPOP_ARM: "United States"}
 
-HOME_COUNTRIES: tuple[str, ...] = tuple(dict.fromkeys(HOME.values()))
+HOME_COUNTRIES: tuple[str, ...] = tuple(dict.fromkeys(OBJECTIVE_HOMES.values()))
 
 SCOPES: tuple[str, ...] = (POPULATION, SUBGROUPS, *HOME_COUNTRIES)
 
 BLOCK_SCOPES: tuple[str, ...] = (POPULATION, *HOME_COUNTRIES)
-
-BLOCK_LABELS: dict[str, str] = {
-    POPULATION: "All retained cells",
-    "Germany": "German cells only",
-    "Mexico": "Mexican cells only",
-}
-
-BLOCK_GAP = 1.4
-
-BLOCK_RULE_INK = "#b8b8b8"
-
-SPREAD_MODE = "fa"
-
-EVERY_QUESTION = "all"
 
 STRUCTURE_TERM = "structure"
 
@@ -83,14 +66,6 @@ LEVEL_SCORES: tuple[str, ...] = (
 LEVEL_STATISTICS: tuple[str, ...] = ("median", "min", "max")
 
 CHANGE_STATISTIC = "mean"
-
-SPREAD_SCORES: tuple[str, ...] = (
-    "score_accuracy",
-    "score_dispersion",
-    "score_structure",
-    "pfs",
-    "score_center",
-)
 
 RECONCILE_TOLERANCE = 1e-12
 
@@ -242,35 +217,6 @@ def objective_summary(
     return pd.DataFrame(rows)
 
 
-def pooled_deviation(deviations: pd.Series) -> float:
-    squared = np.square(deviations.to_numpy(dtype=np.float64))
-    return float(np.sqrt(squared.mean()))
-
-
-def replicate_spread(groups: pd.DataFrame) -> pd.DataFrame:
-    pooled = groups[groups["group"].eq(POPULATION) & groups["mode"].eq(SPREAD_MODE)]
-    variant = ["model_key", "model_label", "arm", "series"]
-    grouped = pooled.groupby([*variant, "question", "question_label"], sort=False)
-    spread = grouped[list(SPREAD_SCORES)].std(ddof=1).add_suffix("_sd")
-    spread.insert(0, "n_runs", grouped[REPLICATE].nunique())
-    per_question = spread.reset_index()
-    rows: list[dict[str, Any]] = []
-    for identity, block in per_question.groupby(variant, sort=False):
-        rows.append(
-            {
-                **dict(zip(variant, identity, strict=True)),
-                "question": EVERY_QUESTION,
-                "question_label": EVERY_QUESTION,
-                "n_runs": int(block["n_runs"].min()),
-                **{
-                    f"{score}_sd": pooled_deviation(block[f"{score}_sd"]) for score in SPREAD_SCORES
-                },
-            }
-        )
-    every = pd.DataFrame(rows, columns=list(per_question.columns))
-    return pd.concat([per_question, every], ignore_index=True)
-
-
 def _published_rows(published: pd.DataFrame) -> pd.DataFrame:
     return published[
         published["model_key"].isin(OBJECTIVE_MODELS)
@@ -333,8 +279,7 @@ def _plates(
 def block_arms(scope: str) -> tuple[str, ...]:
     if scope == POPULATION:
         return OBJECTIVE_ARMS
-    targeted = tuple(arm for arm, country in HOME.items() if country == scope)
-    return (BASE_ARM, *targeted, *DISTRIBUTION_ARMS)
+    return tuple(arm for arm in OBJECTIVE_ARMS if OBJECTIVE_HOMES.get(arm, scope) == scope)
 
 
 def block_rows(levels: pd.DataFrame, scope: str) -> pd.DataFrame:
@@ -347,40 +292,18 @@ def block_rows(levels: pd.DataFrame, scope: str) -> pd.DataFrame:
 def scoped_components_plate(
     levels: pd.DataFrame, mode: str, view: str, destination: Path
 ) -> list[Path]:
-    blocks = [(scope, block_rows(levels, scope)) for scope in BLOCK_SCOPES]
-    blocks = [(scope, rows) for scope, rows in blocks if not rows.empty]
+    scoped: list[Block] = [
+        (BLOCK_LABELS[scope], block_rows(levels, scope)) for scope in BLOCK_SCOPES
+    ]
+    blocks = [(header, rows) for header, rows in scoped if not rows.empty]
     if not blocks:
         return []
     destination.mkdir(parents=True, exist_ok=True)
-    slots = sum(len(rows) + 1 for _, rows in blocks) + BLOCK_GAP * (len(blocks) - 1)
-    figure, axis = row_figure(int(np.ceil(slots)), ROW_WIDTH, COMPONENT_ROW)
-    ticks: list[float] = []
-    labels: list[str] = []
-    headers: list[bool] = []
-    position = 0.0
-    for index, (scope, rows) in enumerate(blocks):
-        if index:
-            axis.axhline(position - BLOCK_GAP / 2.0, color=BLOCK_RULE_INK, linewidth=0.8)
-            position -= BLOCK_GAP
-        ticks.append(position)
-        labels.append(BLOCK_LABELS[scope])
-        headers.append(True)
-        for row in rows.itertuples():
-            position -= 1.0
-            component_row(axis, row, position)
-            ticks.append(position)
-            labels.append(arm_display(str(row.arm)))
-            headers.append(False)
-    axis.set_yticks(ticks, labels)
-    for label, header in zip(axis.get_yticklabels(), headers, strict=True):
-        if header:
-            label.set_fontweight("bold")
-    axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
-    axis.set_ylim(position - 0.6, 0.6)
-    component_axis(axis)
-    drawn = pd.concat([rows for _, rows in blocks], ignore_index=True)
-    legend_below(figure, component_handles(drawn), 2)
-    return save_plate(figure, destination / f"fig_fidelity_components_scoped_{view}_{mode}")
+    return component_blocks_plate(
+        blocks,
+        lambda row: arm_plot_name(str(row.arm)),
+        destination / f"fig_fidelity_components_scoped_{view}_{mode}",
+    )
 
 
 def objective_plates(

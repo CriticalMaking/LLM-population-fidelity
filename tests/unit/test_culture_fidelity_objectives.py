@@ -18,6 +18,7 @@ CELLS = (
     "Mexico 2005 Female 55-64 Low Retired Widowed",
     "Mexico 2017 Male <25 High Working Single",
     "United States 1995 Female 75+ Middle Homemaker Cohabiting",
+    "United States 2017 Male 35-44 High Working Single",
 )
 
 SURVEY = np.array(
@@ -27,6 +28,7 @@ SURVEY = np.array(
         [0.25, 0.25, 0.25, 0.25],
         [0.7, 0.1, 0.1, 0.1],
         [0.1, 0.1, 0.1, 0.7],
+        [0.2, 0.2, 0.3, 0.3],
     ]
 )
 
@@ -37,6 +39,7 @@ RELEASED = np.array(
         [0.2, 0.3, 0.3, 0.2],
         [0.6, 0.2, 0.1, 0.1],
         [0.2, 0.1, 0.2, 0.5],
+        [0.25, 0.25, 0.25, 0.25],
     ]
 )
 
@@ -169,7 +172,7 @@ def test_the_summary_scores_each_target_country_on_its_own_cells() -> None:
     summary = fidelity_objectives.objective_summary(groups, _paired(), _baseline())
 
     assert list(dict.fromkeys(summary["scope"])) == list(fidelity_objectives.SCOPES)
-    assert fidelity_objectives.HOME_COUNTRIES == ("Germany", "Mexico")
+    assert fidelity_objectives.HOME_COUNTRIES == ("Germany", "Mexico", "United States")
     germany = summary[summary["scope"].eq("Germany")].set_index("arm")
     assert list(germany.index) == list(fidelity_objectives.OBJECTIVE_ARMS)
     assert germany["n_scores"].eq(1).all()
@@ -177,18 +180,33 @@ def test_the_summary_scores_each_target_country_on_its_own_cells() -> None:
     assert set(inside["level"]) == {"Germany"}
     expected = float(inside[inside["arm"].eq("base")]["score_center"].iloc[0])
     assert germany["score_center_median"]["base"] == pytest.approx(expected)
+    states = summary[summary["scope"].eq("United States")].set_index("arm")
+    assert list(states.index) == list(fidelity_objectives.OBJECTIVE_ARMS)
+    assert set(fidelity_objectives.within_country(groups, "United States")["level"]) == {
+        "United States"
+    }
 
 
 def test_each_block_scores_the_variants_that_belong_on_its_cells(tmp_path: Any) -> None:
     groups = _groups()
     levels = groups.assign(n_replicates=1)
 
+    assert fidelity_objectives.BLOCK_SCOPES == (
+        fidelity.POPULATION,
+        "Germany",
+        "Mexico",
+        "United States",
+    )
     assert fidelity_objectives.block_arms(fidelity.POPULATION) == fidelity_objectives.OBJECTIVE_ARMS
-    assert fidelity_objectives.block_arms("Germany") == ("base", "german", "global", "subpop")
-    assert fidelity_objectives.block_arms("Mexico") == ("base", "spanish-mx", "global", "subpop")
+    assert fidelity_objectives.block_arms("Germany") == ("base", "german", "global")
+    assert fidelity_objectives.block_arms("Mexico") == ("base", "spanish-mx", "global")
+    assert fidelity_objectives.block_arms("United States") == ("base", "global", "subpop")
     germany = fidelity_objectives.block_rows(levels, "Germany")
-    assert germany["arm"].tolist() == ["base", "german", "global", "subpop"]
+    assert germany["arm"].tolist() == ["base", "german", "global"]
     assert set(germany["level"]) == {"Germany"}
+    states = fidelity_objectives.block_rows(levels, "United States")
+    assert states["arm"].tolist() == ["base", "global", "subpop"]
+    assert set(states["level"]) == {"United States"}
     pooled = fidelity_objectives.block_rows(levels, fidelity.POPULATION)
     assert pooled["arm"].tolist() == list(fidelity_objectives.OBJECTIVE_ARMS)
 
@@ -201,35 +219,6 @@ def test_each_block_scores_the_variants_that_belong_on_its_cells(tmp_path: Any) 
     assert (
         fidelity_objectives.scoped_components_plate(levels.iloc[:0], "ntp", "happiness", tmp_path)
         == []
-    )
-
-
-def test_the_spread_pools_the_run_to_run_deviation_across_questions() -> None:
-    groups = pd.concat(
-        [_groups("fa", 1), _groups("fa", 2, nudge=0.02), _groups("ntp", 1)], ignore_index=True
-    )
-
-    spread = fidelity_objectives.replicate_spread(groups)
-    own = spread[spread["arm"].eq("global")].set_index("question")
-
-    assert list(own.index) == ["d_happy", fidelity_objectives.EVERY_QUESTION]
-    assert own["n_runs"].tolist() == [2, 2]
-    runs = groups[
-        groups["arm"].eq("global")
-        & groups["mode"].eq("fa")
-        & groups["group"].eq(fidelity.POPULATION)
-    ]
-    assert own.loc["d_happy", "score_accuracy_sd"] == pytest.approx(
-        runs["score_accuracy"].std(ddof=1)
-    )
-    assert own.loc[fidelity_objectives.EVERY_QUESTION, "pfs_sd"] == pytest.approx(
-        own.loc["d_happy", "pfs_sd"]
-    )
-
-
-def test_the_pooled_deviation_is_the_root_mean_square() -> None:
-    assert fidelity_objectives.pooled_deviation(pd.Series([0.03, 0.04])) == pytest.approx(
-        np.sqrt((0.03**2 + 0.04**2) / 2)
     )
 
 

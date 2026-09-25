@@ -753,3 +753,201 @@ def test_replicates_are_drawn_as_one_marker_with_a_spread(tmp_path: Path) -> Non
     )
 
     assert (tmp_path / "fig_fidelity_shift_happiness_ntp.png") in written
+
+
+HOME_CONDITIONS: tuple[tuple[str | None, str | None, str], ...] = (
+    ("gemma4_31b", "base", "Gemma (as released)"),
+    ("gemma4_31b", "german", "Gemma (german)"),
+    ("gemma4_31b", "spanish-mx", "Gemma (spanish-mx)"),
+    ("llama3_2_3b", "base", "Llama (as released)"),
+    ("llama3_2_3b", "german", "Llama (german)"),
+    ("llama3_2_3b", "spanish-mx", "Llama (spanish-mx)"),
+    ("terra", "base", "GPT-5.6-Terra (as released)"),
+    (None, None, "Mixtral archived"),
+)
+
+HOME_LEVELS: tuple[tuple[str, str], ...] = (
+    (fidelity.POPULATION, fidelity.EVERY_CELL),
+    ("country", "Germany"),
+    ("country", "Mexico"),
+)
+
+HOME_PFS: dict[tuple[str, str], float] = {
+    ("Gemma (as released)", fidelity.EVERY_CELL): 0.30,
+    ("Llama (as released)", fidelity.EVERY_CELL): 0.50,
+    ("GPT-5.6-Terra (as released)", fidelity.EVERY_CELL): 0.40,
+    ("Mixtral archived", fidelity.EVERY_CELL): 0.45,
+    ("Gemma (as released)", "Germany"): 0.50,
+    ("Gemma (german)", "Germany"): 0.55,
+    ("Llama (as released)", "Germany"): 0.60,
+    ("Llama (german)", "Germany"): 0.40,
+    ("GPT-5.6-Terra (as released)", "Germany"): 0.70,
+    ("Mixtral archived", "Germany"): 0.65,
+    ("Gemma (as released)", "Mexico"): 0.60,
+    ("Gemma (spanish-mx)", "Mexico"): 0.30,
+    ("Llama (as released)", "Mexico"): 0.50,
+    ("Llama (spanish-mx)", "Mexico"): 0.45,
+    ("GPT-5.6-Terra (as released)", "Mexico"): 0.70,
+    ("Mixtral archived", "Mexico"): 0.65,
+}
+
+TUNED_ELSEWHERE_PFS = 0.95
+
+
+def _home_identity(question: str, key: str | None, arm: str | None, series: str) -> dict[str, Any]:
+    return {
+        "question": question,
+        "question_label": question,
+        "model_key": key,
+        "model_label": series.split(" (")[0],
+        "arm": arm,
+        "series": series,
+        "source": "archived" if key is None else f"culture/{key}/{arm}",
+        "mode": "ntp",
+        "replicate": 1,
+    }
+
+
+def homed() -> pd.DataFrame:
+    rows = []
+    for question in ("d_happy", "d_trust"):
+        for key, arm, series in HOME_CONDITIONS:
+            for group, level in HOME_LEVELS:
+                rows.append(
+                    {
+                        **_home_identity(question, key, arm, series),
+                        "group": group,
+                        "level": level,
+                        **fidelity.group_fidelity(SURVEY, BASE if arm == "base" else MODEL),
+                        "pfs": HOME_PFS.get((series, level), TUNED_ELSEWHERE_PFS),
+                    }
+                )
+    frame = pd.DataFrame(rows)
+    frame["binding_term"] = fidelity.binding_term(frame)
+    return frame
+
+
+def homed_pairs() -> pd.DataFrame:
+    rows = []
+    for question in ("d_happy", "d_trust"):
+        for key, arm, series in HOME_CONDITIONS:
+            if arm in (None, "base"):
+                continue
+            for group, level in (*HOME_LEVELS, ("country", "Russia")):
+                rows.append(
+                    {
+                        **_home_identity(question, key, arm, series),
+                        "base_source": f"culture/{key}/base",
+                        "group": group,
+                        "level": level,
+                        **fidelity.paired_fidelity(SURVEY, MODEL, BASE),
+                    }
+                )
+    frame = pd.DataFrame(rows)
+    frame["binding_term"] = fidelity.binding_term(frame)
+    frame["base_binding_term"] = fidelity.binding_term(frame, "base_")
+    return frame
+
+
+def test_the_home_plate_pairs_each_finetuned_condition_with_its_released_model_on_its_own_cells(
+    tmp_path: Path,
+) -> None:
+    levels = homed().assign(n_replicates=1)
+    pooled = fidelity_plates.view_frame(levels, levels, "happiness", "ntp", fidelity.POPULATION)
+    countries = fidelity_plates.view_frame(levels, levels, "happiness", "ntp", "country")
+
+    blocks = fidelity_plates.home_blocks(pooled, countries)
+
+    assert [header for header, _ in blocks] == [
+        "All retained cells",
+        "German cells only",
+        "Mexican cells only",
+    ]
+    released, germany, mexico = (rows for _, rows in blocks)
+    assert released["series"].tolist() == [
+        "Llama (as released)",
+        "Mixtral archived",
+        "GPT-5.6-Terra (as released)",
+        "Gemma (as released)",
+    ]
+    assert set(released["level"]) == {fidelity.EVERY_CELL}
+    assert germany["series"].tolist() == [
+        "Llama (as released)",
+        "Llama (german)",
+        "Gemma (as released)",
+        "Gemma (german)",
+    ]
+    assert set(germany["level"]) == {"Germany"}
+    assert mexico["series"].tolist() == [
+        "Gemma (as released)",
+        "Gemma (spanish-mx)",
+        "Llama (as released)",
+        "Llama (spanish-mx)",
+    ]
+    assert set(mexico["level"]) == {"Mexico"}
+
+    files = fidelity_plates.home_components_plate(levels, levels, "happiness", "ntp", tmp_path)
+
+    assert {path.name for path in files} == {
+        "fig_fidelity_components_home_happiness_ntp.pdf",
+        "fig_fidelity_components_home_happiness_ntp.png",
+    }
+    flat = scored().assign(n_replicates=1)
+    assert fidelity_plates.home_components_plate(flat, flat, "happiness", "ntp", tmp_path) == []
+
+
+def test_the_home_shift_reads_each_finetuned_condition_on_its_target_country(
+    tmp_path: Path,
+) -> None:
+    shifts = homed_pairs()
+
+    homed_rows = fidelity_plates.home_shifts(
+        shifts, fidelity.overall_paired(shifts), "happiness", "ntp"
+    )
+
+    assert sorted(zip(homed_rows["series"], homed_rows["level"], strict=True)) == [
+        ("Gemma (german)", "Germany"),
+        ("Gemma (spanish-mx)", "Mexico"),
+        ("Llama (german)", "Germany"),
+        ("Llama (spanish-mx)", "Mexico"),
+    ]
+    written = fidelity_plates.shift_plate(
+        homed_rows.assign(n_replicates=1), "ntp", "happiness", tmp_path, fidelity_plates.HOME_SCOPE
+    )
+    assert {path.name for path in written} == {
+        "fig_fidelity_shift_home_happiness_ntp.pdf",
+        "fig_fidelity_shift_home_happiness_ntp.png",
+    }
+    pooled = fidelity_plates.view_frame(shifts, shifts, "happiness", "ntp", fidelity.POPULATION)
+    default = fidelity_plates.shift_plate(
+        pooled.assign(n_replicates=1), "ntp", "happiness", tmp_path
+    )
+    assert {path.name for path in default} == {
+        "fig_fidelity_shift_happiness_ntp.pdf",
+        "fig_fidelity_shift_happiness_ntp.png",
+    }
+    assert fidelity_plates.SHIFT_XLABELS[fidelity_plates.HOME_SCOPE].endswith(
+        "(target-country cells)"
+    )
+    assert fidelity_plates.home_shifts(
+        paired(), fidelity.overall_paired(paired()), "happiness", "ntp"
+    ).empty
+
+
+def test_the_sweep_draws_the_home_plates_when_the_country_cells_are_scored(tmp_path: Path) -> None:
+    groups, shifts = homed(), homed_pairs()
+
+    written = fidelity_plates.fidelity_plates(
+        groups,
+        fidelity.overall_fidelity(groups),
+        shifts,
+        fidelity.overall_paired(shifts),
+        tmp_path,
+    )
+
+    assert {
+        "fig_fidelity_components_home_happiness_ntp.png",
+        "fig_fidelity_components_home_all_ntp.png",
+        "fig_fidelity_shift_home_happiness_ntp.png",
+        "fig_fidelity_shift_home_all_ntp.png",
+    } <= {path.name for path in written}
