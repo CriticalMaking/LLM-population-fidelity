@@ -87,11 +87,10 @@ table and figure set.
 
 ## Dataset
 
-Published as
-[MInDS-lab-UTFPR/TowardsSociallyGroundedAISafety](https://huggingface.co/datasets/MInDS-lab-UTFPR/TowardsSociallyGroundedAISafety):
-every derived table under `outputs/`, the raw per-prompt records as parquet, and
-the upstream subset. The repository stays private until publication, so `pull`
-needs a token with access to the organization (`hf auth login`).
+The dataset will be published on Hugging Face with the paper, and its link will go
+here. It holds every derived table under `outputs/`, the raw per-prompt records as
+parquet, and the upstream subset. Until then it stays private, so `pull` needs a
+token with access to the organization (`hf auth login`).
 
 ```bash
 uv run --no-sync python -m machine_bias_reproduction hub status
