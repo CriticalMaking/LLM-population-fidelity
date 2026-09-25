@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+from scipy import stats
 
 from culture import population, population_plates
 from machine_bias_reproduction.data import Coverage, PreparedData
@@ -280,13 +281,50 @@ def test_across_replicates_averages_each_series_and_keeps_the_spread() -> None:
     assert german["n_replicates"] == 2
     assert german["e_mean_nemd"] == pytest.approx(0.10)
     assert german["e_mean_nemd_sd"] == pytest.approx(np.std([0.08, 0.12], ddof=1))
+    assert german["e_mean_nemd_ci"] == pytest.approx(
+        stats.t.ppf(0.975, 1) * np.std([0.08, 0.12], ddof=1) / np.sqrt(2)
+    )
     assert german["adaptability_ratio"] == pytest.approx(0.6)
     assert german["source"] == "culture/gemma4_31b/german"
     single = collapsed[collapsed["series"].eq("Mixtral archived")].iloc[0]
     assert single["n_replicates"] == 1
     assert np.isnan(single["e_mean_nemd_sd"])
+    assert np.isnan(single["e_mean_nemd_ci"])
     assert "absent_sd" not in collapsed.columns
+    assert "absent_ci" not in collapsed.columns
     assert population.across_replicates(table()).equals(table())
+
+
+def test_the_interval_pools_the_run_to_run_variance_of_every_condition_in_scope() -> None:
+    runs = _replicated()
+    second = runs[runs["series"].eq("Gemma (as released)") & runs["replicate"].eq(1)].copy()
+    second["replicate"] = 2
+    second["e_mean_nemd"] = second["e_mean_nemd"] + 0.04
+    runs = pd.concat([runs, second], ignore_index=True)
+
+    collapsed = population.across_replicates(runs, spread=("e_mean_nemd",))
+
+    happiness = collapsed[collapsed["question"].eq("d_happy")].set_index("series")
+    deviations = happiness.loc[["Gemma (as released)", "Gemma (german)"], "e_mean_nemd_sd"]
+    pooled = np.sqrt(np.mean(np.square(deviations)))
+    expected = stats.t.ppf(0.975, 2) * pooled / np.sqrt(2)
+    assert happiness.loc["Gemma (as released)", "e_mean_nemd_ci"] == pytest.approx(expected)
+    assert happiness.loc["Gemma (german)", "e_mean_nemd_ci"] == pytest.approx(expected)
+    assert happiness.loc["Gemma (german)", "e_mean_nemd_ci"] < stats.t.ppf(
+        0.975, 1
+    ) * happiness.loc["Gemma (german)", "e_mean_nemd_sd"] / np.sqrt(2)
+    reference = collapsed[
+        collapsed["series"].eq("Mixtral archived") & collapsed["question"].eq("d_happy")
+    ].iloc[0]
+    assert np.isnan(reference["e_mean_nemd_ci"])
+
+
+def test_the_whisker_legend_draws_a_capped_bar() -> None:
+    handle = population_plates.spread_handle()
+    assert handle.get_label() == "95% CI across runs"
+    assert handle.get_marker() == "|"
+    assert handle.get_linestyle() == "-"
+    assert type(handle) in population_plates.LEGEND_HANDLERS
 
 
 def test_replicated_runs_draw_one_marker_with_a_spread_bar(tmp_path: Path) -> None:

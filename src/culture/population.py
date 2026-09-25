@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from pandas.api.types import is_bool_dtype, is_numeric_dtype
-from scipy.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr, t
 
 from machine_bias_reproduction.analysis import load_source
 from machine_bias_reproduction.config import (
@@ -44,6 +44,10 @@ RUN_KEYS: tuple[str, ...] = (
     "group",
     "level",
 )
+
+CONDITION_KEYS: tuple[str, ...] = ("model_key", "model_label", "arm", "series")
+
+CONFIDENCE = 0.95
 
 REFERENCE_COUNTRIES: dict[str, str] = {"german": "Germany", "mexican": "Mexico"}
 
@@ -121,8 +125,44 @@ def across_replicates(
     measured = [column for column in spread if column in numeric]
     if measured:
         collapsed = pd.concat([collapsed, grouped[measured].std(ddof=1).add_suffix("_sd")], axis=1)
-    ordered = [*present, *rest, "n_replicates", *(f"{column}_sd" for column in measured)]
-    return collapsed.reset_index()[ordered]
+    collapsed = collapsed.reset_index()
+    if measured:
+        scope = [key for key in present if key not in CONDITION_KEYS]
+        collapsed = pd.concat([collapsed, pooled_interval(collapsed, scope, measured)], axis=1)
+    ordered = [
+        *present,
+        *rest,
+        "n_replicates",
+        *(f"{column}_sd" for column in measured),
+        *(f"{column}_ci" for column in measured),
+    ]
+    return collapsed[ordered]
+
+
+def pooled_interval(
+    collapsed: pd.DataFrame, scope: Sequence[str], measured: Sequence[str]
+) -> pd.DataFrame:
+    runs = collapsed["n_replicates"].astype(float)
+    freedom = runs.sub(1.0).clip(lower=0.0)
+    interval = pd.DataFrame(
+        np.nan, index=collapsed.index, columns=[f"{column}_ci" for column in measured]
+    )
+    blocks = (
+        collapsed.groupby(list(scope), dropna=False, sort=False).indices.values()
+        if scope
+        else [np.arange(len(collapsed))]
+    )
+    for positions in blocks:
+        rows = collapsed.index[positions]
+        for column in measured:
+            variance = collapsed.loc[rows, f"{column}_sd"].pow(2)
+            counted = freedom.loc[rows].where(variance.notna(), 0.0)
+            if counted.sum() <= 0.0:
+                continue
+            pooled = np.sqrt((counted * variance.fillna(0.0)).sum() / counted.sum())
+            half = t.ppf((1.0 + CONFIDENCE) / 2.0, counted.sum()) * pooled / np.sqrt(runs.loc[rows])
+            interval.loc[rows[counted.gt(0.0)], f"{column}_ci"] = half[counted.gt(0.0)]
+    return interval
 
 
 def load_run(

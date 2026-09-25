@@ -41,6 +41,7 @@ from .fidelity import (
 from .palette import MIXTRAL_ARCHIVED, REFERENCE_TONES, arm_hatch, arm_order, model_tone
 from .population import MODEL_INDEX, MODES, across_replicates
 from .population_plates import (
+    LEGEND_HANDLERS,
     MARKER_EDGE,
     MARKER_SIZE,
     NOTE_SIZE,
@@ -417,7 +418,7 @@ def ranking_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) 
         handles.append(_reference_handle("reference: Mixtral archived"))
     if replicated(ordered):
         handles.append(spread_handle())
-    axis.legend(handles=handles, loc="lower right")
+    axis.legend(handles=handles, loc="lower right", handler_map=LEGEND_HANDLERS)
     return save_plate(figure, destination / f"fig_fidelity_ranking_{view}_{mode}")
 
 
@@ -581,8 +582,8 @@ def _reach(frame: pd.DataFrame, columns: Sequence[str]) -> float:
     extent = 0.0
     for column in columns:
         values = frame[column].abs()
-        if f"{column}_sd" in frame.columns:
-            values = values + frame[f"{column}_sd"].fillna(0.0)
+        if f"{column}_ci" in frame.columns:
+            values = values + frame[f"{column}_ci"].fillna(0.0)
         if not values.empty:
             extent = max(extent, float(values.max()))
     return extent or 0.1

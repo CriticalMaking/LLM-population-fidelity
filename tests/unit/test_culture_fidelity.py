@@ -663,7 +663,7 @@ def test_a_shift_plate_spans_each_axis_on_its_own_reach() -> None:
         {
             fidelity_plates.DELTA_PFS: [-0.4, 0.1],
             fidelity_plates.DELTA_CENTER: [0.05, -0.1],
-            f"{fidelity_plates.DELTA_CENTER}_sd": [0.02, np.nan],
+            f"{fidelity_plates.DELTA_CENTER}_ci": [0.02, np.nan],
         }
     )
     assert fidelity_plates._span(frame, fidelity_plates.DELTA_PFS) == (-0.5, 0.5)

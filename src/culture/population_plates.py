@@ -10,6 +10,7 @@ import pandas as pd
 from matplotlib import rc_context
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from matplotlib.legend_handler import HandlerLine2D
 from matplotlib.lines import Line2D
 
 from machine_bias_reproduction.config import FIGURES_ROOT
@@ -101,6 +102,15 @@ SPREAD_BAR: dict[str, Any] = {
     "alpha": 0.75,
     "zorder": 2.8,
 }
+
+SPREAD_LABEL = "95% CI across runs"
+
+
+class Whisker(Line2D):
+    pass
+
+
+LEGEND_HANDLERS: dict[Any, Any] = {Whisker: HandlerLine2D(numpoints=2, marker_pad=0.1)}
 
 FILL_NAMES: dict[str, str] = {
     "none": "hollow",
@@ -207,11 +217,16 @@ def legend_height(handles: Sequence[Line2D], columns: int) -> float:
 
 
 def legend_below(figure: Figure, handles: Sequence[Line2D], columns: int) -> None:
-    figure.legend(handles=list(handles), loc="outside lower center", ncols=columns)
+    figure.legend(
+        handles=list(handles),
+        loc="outside lower center",
+        ncols=columns,
+        handler_map=LEGEND_HANDLERS,
+    )
 
 
 def spread_of(row: Any, column: str) -> float | None:
-    value = getattr(row, f"{column}_sd", None)
+    value = getattr(row, f"{column}_ci", None)
     if value is None or not np.isfinite(value) or float(value) <= 0.0:
         return None
     return float(value)
@@ -226,11 +241,15 @@ def spread_bars(axis: Axes, row: pd.Series, x_column: str, y_column: str, ink: s
 
 
 def spread_handle() -> Line2D:
-    return Line2D(
+    return Whisker(
         [], [],
         color=MUTED_INK,
         linewidth=SPREAD_BAR["elinewidth"],
-        label="± one s.d. across runs",
+        alpha=SPREAD_BAR["alpha"],
+        marker="|",
+        markersize=2.0 * SPREAD_BAR["capsize"],
+        markeredgewidth=SPREAD_BAR["capthick"],
+        label=SPREAD_LABEL,
     )
 
 
