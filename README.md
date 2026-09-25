@@ -1,4 +1,4 @@
-# Towards Socially Grounded AI Safety
+# Population Fidelity: Evaluating Population Representativeness in LLMs
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
@@ -6,14 +6,17 @@
 ![Transformers](https://img.shields.io/badge/Transformers-5.8-FFD21E?logo=huggingface&logoColor=black)
 ![Ruff](https://img.shields.io/badge/Ruff-passing-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2)
-![tests](https://img.shields.io/badge/tests-398-4c1)
+![tests](https://img.shields.io/badge/tests-400-4c1)
 
-Reproduction of *Machine Bias: How Do Generative Language Models Answer Opinion
-Polls?* (Boelaert, Coavoux, Ollion, Petev and Präg, *SMR* 2025), extended to
-culture-finetuned LLMs.
-
-This README is how to run the code. The method, the metrics and the findings are
-in the paper.
+LLMs asked to answer as survey respondents compress the range of attitudes within a
+population and misplace particular subgroups. Population Fidelity scores a set of
+LLM-generated responses on three conditions for representing a population: accuracy
+for each group, how much the groups differ, and whether they differ along the same
+lines as the survey. This code replicates and extends *Machine Bias: How Do
+Generative Language Models Answer Opinion Polls?* (Boelaert, Coavoux, Ollion, Petev
+and Präg, *SMR* 2025) with the framework, then evaluates cultural fine-tuning, which
+can move a model toward the survey center without improving how it represents the
+differences within the population.
 
 ## Install
 
