@@ -52,6 +52,7 @@ from .population_plates import (
     legend_below,
     legend_height,
     replicated,
+    series_plot_name,
     series_style,
     spread_handle,
     spread_of,
@@ -340,7 +341,7 @@ def row_figure(count: int, width: float, row: float = ROW_HEIGHT) -> tuple[Figur
 
 def _row_labels(axis: Axes, frame: pd.DataFrame, one_line: bool = False) -> None:
     """One tick per row, the variant under the series or, on one line, beside it."""
-    shape = str if one_line else stacked
+    shape = series_plot_name if one_line else stacked
     axis.set_yticks(range(len(frame)), [shape(series) for series in frame["series"]])
     axis.tick_params(axis="y", pad=ROW_LABEL_PAD)
     axis.set_ylim(-0.6, len(frame) - 0.4)

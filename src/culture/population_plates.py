@@ -169,8 +169,32 @@ def is_served_model(row: pd.Series) -> bool:
     return isinstance(row["model_key"], str)
 
 
+# Plot-only names for the two cultural arms. They stay out of ARM_DISPLAY, which also
+# builds the series label written to every table, so the tables keep the arm identifier.
+ARM_PLOT_NAME: dict[str, str] = {
+    "german": "German",
+    "spanish-mx": "Mexican",
+}
+
+SERIES_PLOT_NAME: dict[str, str] = {
+    f"({arm_display(arm)})": f"({name})" for arm, name in ARM_PLOT_NAME.items()
+}
+
+
+def arm_plot_name(arm: str) -> str:
+    return ARM_PLOT_NAME.get(arm, arm_display(arm))
+
+
+def series_plot_name(series: Any) -> str:
+    text = str(series)
+    for written, shown in SERIES_PLOT_NAME.items():
+        if text.endswith(written):
+            return text[: -len(written)] + shown
+    return text
+
+
 def stacked(series: Any) -> str:
-    return str(series).replace(" (", "\n(", 1)
+    return series_plot_name(series).replace(" (", "\n(", 1)
 
 
 def compact_handles(frame: pd.DataFrame) -> list[Line2D]:
@@ -200,14 +224,21 @@ def compact_handles(frame: pd.DataFrame) -> list[Line2D]:
                 markerfacecoloralt=SURFACE,
                 markeredgecolor=MUTED_INK,
                 fillstyle=cast(Any, fill),
-                label=f"{FILL_NAMES.get(fill, fill)}: {arm_display(arm)}",
+                label=f"{FILL_NAMES.get(fill, fill)}: {arm_plot_name(arm)}",
             )
         )
     references = frame[frame["model_key"].isna()].drop_duplicates("series")
     for row in references.itertuples():
         style = series_style(str(row.series), None, None)
         handles.append(
-            Line2D([], [], linestyle="none", markersize=MARKER_SIZE, label=str(row.series), **style)
+            Line2D(
+                [],
+                [],
+                linestyle="none",
+                markersize=MARKER_SIZE,
+                label=series_plot_name(row.series),
+                **style,
+            )
         )
     return handles
 

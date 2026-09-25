@@ -251,10 +251,10 @@ def test_the_legend_names_each_model_once_and_the_fills_apart() -> None:
     assert labels == [
         "Gemma (as released)",
         "hollow: as released",
-        "solid: german",
+        "solid: German",
         "Mixtral archived",
     ]
-    assert population_plates.stacked("Gemma-4-31B-it (german)") == "Gemma-4-31B-it\n(german)"
+    assert population_plates.stacked("Gemma-4-31B-it (german)") == "Gemma-4-31B-it\n(German)"
     assert population_plates.stacked("Mixtral archived") == "Mixtral archived"
 
 
