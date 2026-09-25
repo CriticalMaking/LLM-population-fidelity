@@ -21,6 +21,10 @@ CULTURE_COUNTRIES: dict[str, tuple[str, ...]] = {
 
 MATCHED_CULTURES: tuple[str, ...] = tuple(CULTURE_COUNTRIES)
 
+HOME: dict[str, str] = {
+    culture: countries[0] for culture, countries in CULTURE_COUNTRIES.items() if len(countries) == 1
+}
+
 
 def countries_for(culture: str) -> tuple[str, ...]:
     return CULTURE_COUNTRIES.get(culture, ())

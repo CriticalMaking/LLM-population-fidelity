@@ -11,6 +11,7 @@ from machine_bias_reproduction.metrics import nemd
 from machine_bias_reproduction.questions import Question, resolve_questions
 
 from .fidelity import (
+    COUNTRY_FAMILY,
     IDENTITY,
     MIN_CELLS_FOR_DISPERSION,
     POPULATION,
@@ -23,7 +24,7 @@ from .fidelity import (
     lead_with,
     loaded_runs,
 )
-from .matching import countries_for
+from .matching import HOME
 from .population import REPLICATE, RunSource, run_identity, sources
 from .registry import BASE_ARM
 
@@ -39,9 +40,9 @@ MANUSCRIPT_MODELS: tuple[str, ...] = (
 
 MANUSCRIPT_ARMS: tuple[str, ...] = (BASE_ARM, "german", "spanish-mx")
 
-HOME: dict[str, str] = {arm: countries_for(arm)[0] for arm in MANUSCRIPT_ARMS if arm != BASE_ARM}
+HOME_SCOPE = "home"
 
-SCOPES: tuple[str, ...] = ("population", "subgroups", "home")
+SCOPES: tuple[str, ...] = ("population", "subgroups", HOME_SCOPE)
 
 EVERY = "all"
 
@@ -126,8 +127,8 @@ def scope_rows(frame: pd.DataFrame, scope: str) -> pd.DataFrame:
         return frame[pooled]
     if scope == "subgroups":
         return frame[~pooled & frame["model_key"].notna()]
-    if scope == "home":
-        return frame[frame["group"].eq("country") & frame["level"].eq(frame["arm"].map(HOME))]
+    if scope == HOME_SCOPE:
+        return frame[frame["group"].eq(COUNTRY_FAMILY) & frame["level"].eq(frame["arm"].map(HOME))]
     raise ValueError(f"unknown scope: {scope}")
 
 

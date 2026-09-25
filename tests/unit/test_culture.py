@@ -306,6 +306,12 @@ def test_culture_prompts_are_the_papers_prompts_byte_for_byte() -> None:
         assert record.text.encode() == upstream.read_bytes()
 
 
+def test_the_home_country_is_the_single_country_of_a_culture() -> None:
+    from culture.matching import HOME
+
+    assert HOME == {"german": "Germany", "spanish-mx": "Mexico"}
+
+
 def test_no_chat_contract_survives() -> None:
     import machine_bias_reproduction.inference as inference
     import machine_bias_reproduction.prompts as prompts

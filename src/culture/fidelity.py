@@ -38,6 +38,8 @@ POPULATION = "population"
 
 EVERY_CELL = "every retained cell"
 
+COUNTRY_FAMILY = "country"
+
 MISSING_TOKEN = "NA"
 
 MIN_CELLS_FOR_DISPERSION = 2

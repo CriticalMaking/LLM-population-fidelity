@@ -55,7 +55,7 @@ from .fidelity import (
     paired_runs,
     structure_score,
 )
-from .matching import countries_for
+from .matching import HOME
 from .population import (
     MODES,
     RUN_KEYS,
@@ -128,9 +128,7 @@ VARIANT = "variant"
 
 EPS = 1e-12
 
-CULTURES: tuple[str, ...] = ("german", "spanish-mx")
-
-HOME: dict[str, str] = {arm: countries_for(arm)[0] for arm in CULTURES}
+CULTURES: tuple[str, ...] = tuple(HOME)
 
 COEFFICIENTS: dict[str, str] = {
     "spearman": "rho_spearman",
