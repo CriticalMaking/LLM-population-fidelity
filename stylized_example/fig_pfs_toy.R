@@ -248,7 +248,12 @@ p_scores <- map(split(metrics, metrics$panel)[names(models)], score_table)
 p_toy <- wrap_plots(c(list(p_survey), p_models, list(scale_labels), p_scores),
                     nrow = 2, heights = c(1, 0.42))
 
+# Base pdf() rather than cairo_pdf: Pango rounds glyph advances at these small
+# sizes, which spaces letters unevenly ("swapp ed"). Base pdf() uses the
+# Helvetica AFM metrics with kerning; embedFonts() (Ghostscript) then embeds
+# the fonts for submission.
 out_dir <- file.path("figures", "stylized_example")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-ggsave(file.path(out_dir, "fig_pfs_toy.pdf"), p_toy, device = cairo_pdf,
-       width = 5.5, height = 1.6, units = "in")
+pdf_path <- file.path(out_dir, "fig_pfs_toy.pdf")
+ggsave(pdf_path, p_toy, device = pdf, width = 5.5, height = 1.6, units = "in")
+embedFonts(pdf_path, options = "-dPDFSETTINGS=/prepress -dEmbedAllFonts=true")
