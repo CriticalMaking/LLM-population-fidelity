@@ -1,6 +1,7 @@
 # Population Fidelity: Evaluating Population Representativeness in LLMs
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![R](https://img.shields.io/badge/R-0.8%25-276DC3?logo=r&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-locked-DE5FE9?logo=uv&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.12-EE4C2C?logo=pytorch&logoColor=white)
 ![Transformers](https://img.shields.io/badge/Transformers-5.8-FFD21E?logo=huggingface&logoColor=black)
