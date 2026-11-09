@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_distance_comparison.pdf": "1c9ce461da7e9a42a9e839b8e180cd1a170806963a95c9deecbdab56d4160f44",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_distance_comparison.png": "0c18bf74dbccfad1006dc8d2ee3a0ce68a13169f727ee4b3ea9fe43776fb4bed",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_full_coefficients.pdf": "993868fa6210598eb581fcdd3430576fb75ddf79dfc1cc3e08e1f946bf184d77",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_full_coefficients.png": "ae6f48a4ce969e02d208a6f6e1d9fa253efc3b36db108357d16302f6502342f5",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_full_standardized_coefficients.pdf": "2980f7040aac96f09f2f2631a20872aceb12ee3041e128b5b71ecf7b9d72db23",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_full_standardized_coefficients.png": "52972f086d81d45571763a0e8d76a0bc80e508f79bc105ccc5d64e5e252348e5",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_mds_fa.pdf": "3d0b987b1553b1e1926bd6fd4ceba99e17363976f9b1b67b1532ad7301f4eed5",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_mds_fa.png": "c0b1a379569330a705df311393d31a5466965236605298597608e55dc824f1f7",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_nemd_density_quality.pdf": "d1abdceb097ed77ac234e3e541348250bdaa9bbe89d9356227026df731b791f5",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_nemd_density_quality.png": "957c24a6e30f87583f21e88ef0de9fa360b58cef9f1da16e3e06b38cb3b2f185",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_social_coefficients.pdf": "a29d9e0064898defc59729ef855923e5fd492360008361f2726108fb969541e7",
+    "figures/culture/qwen3_vl_8b/global/rep2/d_happy/fig_social_coefficients.png": "2f36038e144c37e63d19380d5e6431e06d14c8b2f280225ee0758e764cfc3076",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/f_tests.csv": "1f60adde6d783a653246ee2aac92a559f486eca169842b1145e78564464b7485",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/full_coefficients.csv": "918783c66d20cd7b79366eaf982d44878af6db2914b1428779fd76d40e7d17ba",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/full_standardized_coefficients.csv": "1deb5109b2fd39ddfa4062ace120d665cc76e10884580e62b2f6165c5d201a45",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/pairwise_dispersion.csv": "23f56933670f8b724461e04b1e149bfc5a32449537901d8c4461cd013208386c",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/quality_bands.csv": "34de19f177034dd08aebdef373ea26ac22c418ea6f3305c561b3f3fa99b8fd1c",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/regression_fit.csv": "3527024779b4695ee62c30f5e928b4636d33f0666590d7280d621b6f54de42eb",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/response_distributions.csv": "5bad12815d5a97c94a9a40561ac2f06442c28108dbf86ffe27ae2973a89d73ba",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/social_coefficients.csv": "8ff967a54aa287ac0b812a37e78b2ef604e00f7b2a5f7fa96469986a1a718b66",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/subpopulation_distances.csv": "6e138bf19d28df4fd7d413ad51f385426b99847db8fdd49373f2db021de926ea",
+    "outputs/culture/qwen3_vl_8b/global/rep2/d_happy/summary_metrics.csv": "9b5ea1b66b7dcd4fa5c148f84e738fce26d82beb2bd7117e4619772829f79a9d"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-10-23T15:04:36.907505+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "Qwen/Qwen3-VL-8B-Thinking + global LoRA",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/qwen3_vl_8b/global/rep2"
+}
