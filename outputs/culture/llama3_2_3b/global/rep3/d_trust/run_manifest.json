@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_distance_comparison.pdf": "bc6d440de2ed7a6bae429edb875f88b633be86c441a82494ec661da6aab70dc8",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_distance_comparison.png": "454454be4c593acc42cc042409ae5569f88bbe254db29eccb7117bdc9dd5a08c",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_full_coefficients.pdf": "a12d78265f4b04d51a5989fac3c4f3fe687852e7da5beb29484b799ebbf6e9e7",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_full_coefficients.png": "180df051da703b51b1a822758e339edbbe7af269f01adcd2c04f85cb13c38c13",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_full_standardized_coefficients.pdf": "2c04531d021917b59a719922776f20bf770b173a58db790aba1ea4e787c4d221",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_full_standardized_coefficients.png": "48eb79a923de1d779a037a5be13e0c56638dc0bef87fb8135bc545add01bf467",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_mds_fa.pdf": "fb071653d0a907128a75709e164efd31ca8bcc43e90ea7a082899b231a6c21b7",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_mds_fa.png": "f056d097d1090424ac233a7e7f375ba52cdd2c09a1c30be74ce6bd59022eb25f",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_nemd_density_quality.pdf": "cc8686ff9926e2b697c9d3bd31fa2e488887b6319e39edd6149168d90756d884",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_nemd_density_quality.png": "3aad450ff5dca1903bfe00d2678b624077d5d6e881a1a9866749051b15ee3992",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_social_coefficients.pdf": "1282200f1a3aac5de694ea3748dfa1ff4f101c32e45469ddba21173defd00380",
+    "figures/culture/llama3_2_3b/global/rep3/d_trust/fig_social_coefficients.png": "18e3236dbc908455ea139ad4cf272003e5e4140261736e4109e4a42d93b36c85",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/center_holdouts.csv": "42ddded3874df4ce9a6ed79c75885dda9dca5f3d756abeaf260d09215d1418cb",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/f_tests.csv": "c5c5e27c14f8bbc385fabe0778fcb9c1b9c5dce08a896e2d204d9f08da056500",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/full_coefficients.csv": "b12d43e72d44bf25b53387d1f2c936d17bb434add27f2a0c539e55235d86d6f0",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/full_standardized_coefficients.csv": "7899a0ee0398c61947de948a22da05021b02cecafe3cf4da0178875c629d2737",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/pairwise_dispersion.csv": "7180bf7cefa88e5c07b9f5c9a69c8ed59c32adf30f37d116272994738b0818cb",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/quality_bands.csv": "bff6613216827b32c9633b1607320acea480ad3b8a99ba15cd46cdc646afbdc1",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/regression_fit.csv": "f080c24ce0e2cfb3f9ac8072df8360d691394cadb5c918b7b816b8a030837667",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/response_distributions.csv": "c235b834742546187d82e56488f83d78fcddd3b410284ee4663df3140ee4dc9d",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/social_coefficients.csv": "9d2e4a6a660f690e6c3b3a62c1d5961bf3dc3a75cbacdff61a8b0ea6ec5c0ce8",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/subpopulation_distances.csv": "e381634c905d3e28d5f5b0c47af3ca059fbd9f33503e14586af008833a5727a8",
+    "outputs/culture/llama3_2_3b/global/rep3/d_trust/summary_metrics.csv": "b89a85178ffecc3896632fbf53ae64cbfef7d40232bf6fab5e08eb7846ccbbf4"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 0,
+    "ntp_observed": 0,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-10-28T05:31:29.029093+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 2,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "meta-llama/Llama-3.2-3B + global LoRA",
+    "question": "d_trust",
+    "question_label": "Trust",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/llama3_2_3b/global/rep3"
+}
