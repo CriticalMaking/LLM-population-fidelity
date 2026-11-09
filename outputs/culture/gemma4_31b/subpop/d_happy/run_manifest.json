@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_distance_comparison.pdf": "2fa4635c02a29df0021e148ba59475dae7d05f33db0cc682c12b99541ba28cbd",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_distance_comparison.png": "0da1462b07b380f9ec0dc58825a8ed959c786be0342e759e8bc24c65c5d429ad",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_full_coefficients.pdf": "21567105210011a1f36b03d9fc152c7569fed2de84f3a8490c62888b8e61a5db",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_full_coefficients.png": "4a9423835e706c87d9c4a992cf7da97d31a2cae5741dbeb6377b95619d203a71",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_full_standardized_coefficients.pdf": "9d27106d814347a332d1c10e8198790b983e54f061f351166e8cfc0421ec5ca1",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_full_standardized_coefficients.png": "b2efd5f7f5d56f5919bcbea9b9f8e3f6d073e8872fd9a5144fb68d5aff6f08be",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_mds_fa.pdf": "7ae04b9bbcf3678e8b2eb54fa01a678683e1b558a810175f32b27c4d873e2d2e",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_mds_fa.png": "c98d83befd8a28d5861bcf3dcc46d203b49448e17e2b007fdd21c179ef084cef",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_mds_ntp.pdf": "29cd13ce31a5c711e63100170133c726b0da0d032376128d0122f5bda1db5f57",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_mds_ntp.png": "d7fefb40437bd48874efdf8518304c88c8ae72095026ca57bdc00df5d4a6f51b",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_nemd_density_quality.pdf": "8d676944f1b6166465daa390b263264199e6c639f204265a5e3c31913f214582",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_nemd_density_quality.png": "fa6619bf833ee2b7eb7ba24ba266d0d9a62920f3b51a8b0e820072b074ab2c0a",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_social_coefficients.pdf": "7221e744ef64236d4aa6d1d56846a13d6b9d811032f3ace922bf1b2b9bdc3ccc",
+    "figures/culture/gemma4_31b/subpop/d_happy/fig_social_coefficients.png": "443bda729f1ad04ffd7a6d8db8d0b8d3ba14bee5ab76a235278aa249137331ee",
+    "outputs/culture/gemma4_31b/subpop/d_happy/center_holdouts.csv": "49fec4517d975c7085c0f169295a93ae38af28ff8e34cc5f3785c656d566becf",
+    "outputs/culture/gemma4_31b/subpop/d_happy/f_tests.csv": "182956f320be16495e1fb4afc8c42350c857b591568f063246efc5c2a8022c79",
+    "outputs/culture/gemma4_31b/subpop/d_happy/full_coefficients.csv": "d008526be4074d9cd67b63d42a4608e917750d6bf0abc727fafa45b3cbe62d89",
+    "outputs/culture/gemma4_31b/subpop/d_happy/full_standardized_coefficients.csv": "ce0d0aec08d93c0487c0e7fddb1b55b4ca3478ae98a5f7d752099cfa66f121e8",
+    "outputs/culture/gemma4_31b/subpop/d_happy/pairwise_dispersion.csv": "c1fa037b7bb4a96ac857c32fc3edf14b9718bb45773679a4aafce504a39b65c1",
+    "outputs/culture/gemma4_31b/subpop/d_happy/quality_bands.csv": "d6bf5d7fd390ba564304b4ff5108780764dba5f50838e041436ae0e60b1e8310",
+    "outputs/culture/gemma4_31b/subpop/d_happy/regression_fit.csv": "72b2ccf4a8f0109c9ec23c470a560d0f9c3de04d4f69bd8f6d41581aa58b61a8",
+    "outputs/culture/gemma4_31b/subpop/d_happy/response_distributions.csv": "24532479944edff5805789788c54f7af853ef60fe9487f52ca32ad2440d35543",
+    "outputs/culture/gemma4_31b/subpop/d_happy/social_coefficients.csv": "62815bbc3cc32513768d07cf0ea7f287b9f466db6de01035e3f734a116817669",
+    "outputs/culture/gemma4_31b/subpop/d_happy/subpopulation_distances.csv": "d2cb925fcd601798b7986330b5dc61ec72b9a2e0b2abdba0975240fb6d143e28",
+    "outputs/culture/gemma4_31b/subpop/d_happy/summary_metrics.csv": "1bcf0134646de633d26d83bdd3a0d6ee69c4e983161a46842ffc7372f4d6f64f"
+  },
+  "coverage": {
+    "complete": true,
+    "fa_expected": 26981,
+    "fa_observed": 26981,
+    "ntp_expected": 13904,
+    "ntp_observed": 13904,
+    "subpopulations_dropped": 0,
+    "subpopulations_retained": 687,
+    "subpopulations_total": 687
+  },
+  "created_at": "2026-10-20T12:23:08.648790+00:00",
+  "hardware": {
+    "cpu_count": 32,
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.11.15"
+  },
+  "parameters": {
+    "answer_levels": 4,
+    "center_holdout_size": 20,
+    "distances": [
+      "nEMD",
+      "EMD",
+      "KL",
+      "JS",
+      "MMD"
+    ],
+    "generation_modes": [
+      "ntp",
+      "fa"
+    ],
+    "kl_epsilon": 1e-09,
+    "mmd_bandwidth": 1.0,
+    "model": "google/gemma-4-31B-it + subpop LoRA",
+    "question": "d_happy",
+    "question_label": "Happiness",
+    "random_baseline_replicates": 20
+  },
+  "schema_version": 2,
+  "seed": 20240110,
+  "source": "culture/gemma4_31b/subpop"
+}
