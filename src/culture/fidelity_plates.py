@@ -190,6 +190,24 @@ SUBGROUP_MODEL_MARKER = 7.0
 
 SUBGROUP_MODEL_COLUMNS = 4
 
+MODEL_ROW = 0.5
+
+MODEL_PANEL_WIDTH = 2.4
+
+MODEL_LABEL_WIDTH = 2.6
+
+MODEL_MARKER = 6.5
+
+MODEL_LEGEND_COLUMNS = 4
+
+MODEL_PANEL_SPACE = 0.08
+
+SCORE_PANELS: tuple[tuple[str, str], ...] = (
+    *((column, label.replace(" (", "\n(", 1)) for column, _, label in COMPONENTS),
+    ("pfs", "Population\nFidelity Score"),
+    ("score_center", CENTER_LEGEND.replace(" (", "\n(", 1)),
+)
+
 # The two scores the per-model subgroup plates put side by side, one panel each, both
 # on the full 0 to 1 scale so the panels read against each other.
 SUBGROUP_SCORES: tuple[tuple[str, str], ...] = (
@@ -631,6 +649,89 @@ def component_panels_plate(
         if index != middle:
             axis.set_xlabel("")
     legend_below(figure, handles, len(handles))
+    return save_plate(figure, stem)
+
+
+def model_offsets(frame: pd.DataFrame) -> dict[str, float]:
+    keys = sorted(set(frame["model_key"].dropna()), key=MODEL_INDEX.__getitem__)
+    _, offsets = bar_layout(len(keys))
+    return {key: -float(offset) for key, offset in zip(keys, offsets, strict=True)}
+
+
+def _condition_markers(
+    axis: Axes,
+    conditions: pd.DataFrame,
+    column: str,
+    position: float,
+    offsets: dict[str, float],
+) -> None:
+    for row in _rows(conditions.dropna(subset=[column])):
+        score = float(getattr(row, column))
+        slot = position + offsets[str(row.model_key)]
+        style = series_style(str(row.series), row.model_key, row.arm)
+        _spread_bar(axis, score, slot, spread_of(row, column), style["color"])
+        axis.plot(
+            score,
+            slot,
+            linestyle="none",
+            markersize=MODEL_MARKER,
+            markeredgewidth=1.1,
+            **style,
+        )
+
+
+def condition_blocks_plate(
+    blocks: Sequence[Block], label: Callable[[str], str], stem: Path
+) -> list[Path]:
+    drawn = pd.concat([rows for _, rows in blocks], ignore_index=True)
+    offsets = model_offsets(drawn)
+    handles: list[Line2D] = list(compact_handles(drawn))
+    if replicated(drawn):
+        handles.append(spread_handle())
+    slots = sum(rows["arm"].nunique() + 1 for _, rows in blocks) + BLOCK_GAP * (len(blocks) - 1)
+    figure = Figure(
+        figsize=(
+            MODEL_PANEL_WIDTH * len(SCORE_PANELS) + MODEL_LABEL_WIDTH,
+            MODEL_ROW * slots + legend_height(handles, MODEL_LEGEND_COLUMNS) + 1.0,
+        ),
+        layout="constrained",
+    )
+    figure.set_layout_engine("constrained", wspace=MODEL_PANEL_SPACE)
+    panels = figure.subplots(1, len(SCORE_PANELS), sharey=True, squeeze=False)[0]
+    ticks: list[float] = []
+    labels: list[str] = []
+    headers: list[bool] = []
+    position = 0.0
+    for index, (header, rows) in enumerate(blocks):
+        if index:
+            for axis in panels:
+                axis.axhline(position - BLOCK_GAP / 2.0, color=BLOCK_RULE_INK, linewidth=0.8)
+            position -= BLOCK_GAP
+        ticks.append(position)
+        labels.append(header)
+        headers.append(True)
+        for arm in dict.fromkeys(rows["arm"]):
+            position -= 1.0
+            conditions = rows[rows["arm"].eq(arm)]
+            for axis, (column, _) in zip(panels, SCORE_PANELS, strict=True):
+                _condition_markers(axis, conditions, column, position, offsets)
+            ticks.append(position)
+            labels.append(label(str(arm)))
+            headers.append(False)
+    panels[0].set_yticks(ticks, labels)
+    for tick, bold in zip(panels[0].get_yticklabels(), headers, strict=True):
+        if bold:
+            tick.set_fontweight("bold")
+    panels[0].tick_params(axis="y", pad=ROW_LABEL_PAD)
+    panels[0].set_ylim(position - 0.6, 0.6)
+    middle = len(panels) // 2
+    for index, (axis, (_, title)) in enumerate(zip(panels, SCORE_PANELS, strict=True)):
+        _score_axis(axis)
+        axis.set_xticks(np.linspace(0.0, 1.0, 3))
+        axis.set_title(title, fontweight="bold")
+        if index != middle:
+            axis.set_xlabel("")
+    legend_below(figure, handles, MODEL_LEGEND_COLUMNS)
     return save_plate(figure, stem)
 
 
