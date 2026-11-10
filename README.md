@@ -7,7 +7,7 @@
 ![Transformers](https://img.shields.io/badge/Transformers-5.8-FFD21E?logo=huggingface&logoColor=black)
 ![Ruff](https://img.shields.io/badge/Ruff-passing-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2)
-![tests](https://img.shields.io/badge/tests-400-4c1)
+![tests](https://img.shields.io/badge/tests-421-4c1)
 
 LLMs asked to answer as survey respondents compress the range of attitudes within a
 population and misplace particular subgroups. Population Fidelity scores a set of
