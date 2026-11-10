@@ -21,7 +21,7 @@ from .fidelity import (
     check_fidelity,
     delta_column,
 )
-from .fidelity_baseline import MANUSCRIPT_ARMS, build_baseline
+from .fidelity_baseline import EVERY, MANUSCRIPT_ARMS, build_baseline
 from .fidelity_plates import (
     BLOCK_LABELS,
     SPREAD,
@@ -34,9 +34,18 @@ from .fidelity_plates import (
 from .matching import HOME
 from .population import MODES, REPLICATE, RunSource, across_replicates, sources
 from .population_plates import PLATE_TEXT, VIEWS, arm_plot_name
-from .registry import BASE_ARM, DISTRIBUTION_TRAINED_ARMS, SUBPOP_ARM
+from .registry import BASE_ARM, DISTRIBUTION_TRAINED_ARMS, SUBPOP_ARM, arm_display
 
-OBJECTIVE_MODELS: tuple[str, ...] = ("qwen3_vl_2b",)
+OBJECTIVE_MODELS: tuple[str, ...] = (
+    "gemma4_31b",
+    "gemma4_e4b",
+    "qwen3_vl_8b",
+    "qwen3_vl_2b",
+    "llama3_2_3b",
+    "muse_glimmer_30b",
+)
+
+MANUSCRIPT_MODEL = "qwen3_vl_2b"
 
 DISTRIBUTION_ARMS: tuple[str, ...] = DISTRIBUTION_TRAINED_ARMS
 
@@ -68,6 +77,8 @@ LEVEL_STATISTICS: tuple[str, ...] = ("median", "min", "max")
 CHANGE_STATISTIC = "mean"
 
 RECONCILE_TOLERANCE = 1e-12
+
+PAIRED_RUN: tuple[str, ...] = ("model_key", "arm", "mode", REPLICATE)
 
 OBJECTIVES_FIGURES = FIGURES_ROOT / "fidelity" / "objectives"
 
@@ -101,17 +112,9 @@ def build_objectives(
     runs: Sequence[RunSource] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     selected = objective_runs() if runs is None else list(runs)
-    parts: list[tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]] = []
-    for replicate in sorted({run.replicate for run in selected}):
-        drawn = [run for run in selected if run.replicate == replicate]
-        built = build_fidelity(questions, drawn)
-        check_fidelity(*built)
-        parts.append(built)
-    cells, groups, paired = (
-        pd.concat([frame for frame in frames if not frame.empty], ignore_index=True)
-        for frames in zip(*parts, strict=True)
-    )
-    return cells, groups, paired
+    built = build_fidelity(questions, selected)
+    check_fidelity(*built)
+    return built
 
 
 def objective_baseline(
@@ -139,8 +142,16 @@ def _scoped(frame: pd.DataFrame, scope: str) -> pd.DataFrame:
     return within_country(frame, scope)
 
 
+def _model(frame: pd.DataFrame, key: str) -> pd.DataFrame:
+    return frame[frame["model_key"].eq(key)]
+
+
+def _arm(frame: pd.DataFrame, arm: str) -> pd.DataFrame:
+    return frame[frame["arm"].eq(arm)]
+
+
 def _variant(frame: pd.DataFrame, key: str, arm: str) -> pd.DataFrame:
-    return frame[frame["model_key"].eq(key) & frame["arm"].eq(arm)]
+    return _arm(_model(frame, key), arm)
 
 
 def level_column(score: str, statistic: str) -> str:
@@ -189,6 +200,63 @@ def _shift_row(block: pd.DataFrame) -> dict[str, Any]:
     }
 
 
+def _summary_row(
+    scope: str,
+    identity: dict[str, Any],
+    levels: pd.DataFrame,
+    nulls: pd.DataFrame,
+    shifts: pd.DataFrame,
+) -> dict[str, Any]:
+    return {
+        "scope": scope,
+        **identity,
+        **_level_row(levels),
+        **_null_row(nulls),
+        **_shift_row(shifts),
+    }
+
+
+def _model_rows(
+    scope: str, levels: pd.DataFrame, nulls: pd.DataFrame, shifts: pd.DataFrame
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for key in OBJECTIVE_MODELS:
+        for arm in OBJECTIVE_ARMS:
+            block = _variant(levels, key, arm)
+            if block.empty:
+                continue
+            identity = {
+                "model_key": key,
+                "model_label": block["model_label"].iat[0],
+                "arm": arm,
+                "series": block["series"].iat[0],
+            }
+            rows.append(
+                _summary_row(
+                    scope, identity, block, _variant(nulls, key, arm), _variant(shifts, key, arm)
+                )
+            )
+    return rows
+
+
+def _pooled_rows(
+    scope: str, levels: pd.DataFrame, nulls: pd.DataFrame, shifts: pd.DataFrame
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for arm in OBJECTIVE_ARMS:
+        block = _arm(levels, arm)
+        if block.empty:
+            continue
+        identity = {
+            "model_key": EVERY,
+            "model_label": EVERY,
+            "arm": arm,
+            "series": f"{EVERY} ({arm_display(arm)})",
+        }
+        rows.append(_summary_row(scope, identity, block, _arm(nulls, arm), _arm(shifts, arm)))
+    return rows
+
+
 def objective_summary(
     groups: pd.DataFrame, paired: pd.DataFrame, baseline: pd.DataFrame
 ) -> pd.DataFrame:
@@ -197,23 +265,8 @@ def objective_summary(
         levels, shifts, nulls = (
             _scoped(_first(frame), scope) for frame in (groups, paired, baseline)
         )
-        for key in OBJECTIVE_MODELS:
-            for arm in OBJECTIVE_ARMS:
-                block = _variant(levels, key, arm)
-                if block.empty:
-                    continue
-                rows.append(
-                    {
-                        "scope": scope,
-                        "model_key": key,
-                        "model_label": block["model_label"].iat[0],
-                        "arm": arm,
-                        "series": block["series"].iat[0],
-                        **_level_row(block),
-                        **_null_row(_variant(nulls, key, arm)),
-                        **_shift_row(_variant(shifts, key, arm)),
-                    }
-                )
+        rows += _model_rows(scope, levels, nulls, shifts)
+        rows += _pooled_rows(scope, levels, nulls, shifts)
     return pd.DataFrame(rows)
 
 
@@ -248,16 +301,29 @@ def _reconcile(frame: pd.DataFrame, published: pd.DataFrame, columns: Sequence[s
     return len(merged)
 
 
+def _scored_runs(frame: pd.DataFrame) -> set[tuple[Any, ...]]:
+    return set(frame[list(PAIRED_RUN)].drop_duplicates().itertuples(index=False, name=None))
+
+
+def check_variants(groups: pd.DataFrame, paired: pd.DataFrame) -> None:
+    for key, block in groups.groupby("model_key", sort=False):
+        scored = set(block["arm"])
+        assert scored <= set(OBJECTIVE_ARMS), f"an unexpected variant was scored for {key}"
+        assert scored == set(OBJECTIVE_ARMS), f"a variant of the comparison is missing for {key}"
+        assert set(_model(paired, str(key))["arm"]) == scored - {BASE_ARM}
+    tuned = groups[groups["arm"].ne(BASE_ARM)]
+    assert _scored_runs(tuned) == _scored_runs(paired), (
+        "a finetuned run has no as-released run to pair with"
+    )
+
+
 def check_objectives(
     groups: pd.DataFrame,
     paired: pd.DataFrame,
     published_groups: pd.DataFrame,
     published_paired: pd.DataFrame,
 ) -> int:
-    scored = set(groups["arm"])
-    assert set(MANUSCRIPT_ARMS) <= scored <= set(OBJECTIVE_ARMS), "an unexpected variant was scored"
-    assert scored & set(DISTRIBUTION_ARMS), "a variant of the comparison is missing"
-    assert set(paired["arm"]) == scored - {BASE_ARM}
+    check_variants(groups, paired)
     deltas = [delta_column(metric) for metric in PAIRED_METRICS]
     return _reconcile(groups, published_groups, SCORE_COLUMNS) + _reconcile(
         paired, published_paired, deltas
@@ -306,27 +372,42 @@ def scoped_components_plate(
     )
 
 
+def plate_folder(key: str, destination: Path = OBJECTIVES_FIGURES) -> Path:
+    return destination if key == MANUSCRIPT_MODEL else destination / key
+
+
+def model_plates(levels: pd.DataFrame, shifts: pd.DataFrame, destination: Path) -> list[Path]:
+    produced: list[Path] = []
+    for mode in MODES:
+        for view, question in VIEWS.items():
+            if question is None:
+                continue
+            produced += scoped_components_plate(
+                levels[levels["question"].eq(question) & levels["mode"].eq(mode)],
+                mode,
+                view,
+                destination,
+            )
+            produced += _plates(
+                view_frame(levels, levels, view, mode, POPULATION),
+                view_frame(shifts, shifts, view, mode, POPULATION),
+                mode,
+                view,
+                destination,
+            )
+    return produced
+
+
 def objective_plates(
     groups: pd.DataFrame, paired: pd.DataFrame, destination: Path = OBJECTIVES_FIGURES
 ) -> list[Path]:
-    levels, shifts = (across_replicates(frame, spread=SPREAD) for frame in (groups, paired))
     produced: list[Path] = []
     with rc_context(cast(Any, PLATE_TEXT)):
-        for mode in MODES:
-            for view, question in VIEWS.items():
-                if question is None:
-                    continue
-                produced += scoped_components_plate(
-                    levels[levels["question"].eq(question) & levels["mode"].eq(mode)],
-                    mode,
-                    view,
-                    destination,
-                )
-                produced += _plates(
-                    view_frame(levels, levels, view, mode, POPULATION),
-                    view_frame(shifts, shifts, view, mode, POPULATION),
-                    mode,
-                    view,
-                    destination,
-                )
+        for key in OBJECTIVE_MODELS:
+            levels, shifts = (
+                across_replicates(_model(frame, key), spread=SPREAD) for frame in (groups, paired)
+            )
+            if levels.empty:
+                continue
+            produced += model_plates(levels, shifts, plate_folder(key, destination))
     return produced
