@@ -339,6 +339,48 @@ class TransformersBackend:
     def ntp(self, prompt: str) -> dict[str, float]:
         return self.ntp_batch([prompt])[0]
 
+    def continuation_token_ids(self, stub: str, continuations: Sequence[str]) -> list[int]:
+        prefix = self._tokenizer.encode(stub, add_special_tokens=False)
+        resolved: list[int] = []
+        for continuation in continuations:
+            encoded = self._tokenizer.encode(stub + continuation, add_special_tokens=False)
+            tail = encoded[len(prefix) :]
+            if encoded[: len(prefix)] != prefix or len(tail) != 1:
+                raise RuntimeError(
+                    f"tokenizer for {self._model_spec.base_model_id} does not read "
+                    f"{continuation!r} as one token after {stub!r}: {tail}"
+                )
+            resolved.append(int(tail[0]))
+        if len(set(resolved)) != len(resolved):
+            raise RuntimeError(
+                f"tokenizer for {self._model_spec.base_model_id} maps two continuations of "
+                f"{stub!r} to the same token: {dict(zip(continuations, resolved, strict=True))}"
+            )
+        return resolved
+
+    def first_token_batch(
+        self, prompts: Sequence[str], token_ids: Sequence[int]
+    ) -> list[list[float]]:
+        if not prompts:
+            return []
+        return self._with_oom_backoff(prompts, self._first_token_batch, token_ids=token_ids)
+
+    def _first_token_batch(
+        self, prompts: Sequence[str], *, token_ids: Sequence[int]
+    ) -> list[list[float]]:
+        torch = self._torch
+        encoded = self._encode(prompts)
+        with torch.inference_mode():
+            output = self._model(
+                input_ids=encoded["input_ids"],
+                attention_mask=encoded["attention_mask"],
+                logits_to_keep=1,
+            )
+        probabilities = torch.softmax(output.logits[:, -1, :].float(), dim=-1)
+        index = torch.tensor(list(token_ids), device=self._model.device)
+        selected = probabilities.index_select(1, index).cpu()
+        return [[float(value) for value in row] for row in selected]
+
     def full_answer_batch(
         self,
         prompts: Sequence[str],
