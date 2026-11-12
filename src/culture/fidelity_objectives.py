@@ -155,7 +155,7 @@ def change_column(score: str) -> str:
     return f"{delta_column(score)}_{CHANGE_STATISTIC}"
 
 
-def _level_row(block: pd.DataFrame) -> dict[str, Any]:
+def level_row(block: pd.DataFrame) -> dict[str, Any]:
     levels = block[list(LEVEL_SCORES)].agg(list(LEVEL_STATISTICS)).to_dict()
     return {
         "n_scores": len(block),
@@ -176,7 +176,7 @@ def _null_row(block: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def _shift_row(block: pd.DataFrame) -> dict[str, Any]:
+def shift_row(block: pd.DataFrame) -> dict[str, Any]:
     if block.empty:
         return {}
     moved = block[delta_column("pfs")].dropna()
@@ -213,9 +213,9 @@ def objective_summary(
                         "model_label": block["model_label"].iat[0],
                         "arm": arm,
                         "series": block["series"].iat[0],
-                        **_level_row(block),
+                        **level_row(block),
                         **_null_row(_variant(nulls, key, arm)),
-                        **_shift_row(_variant(shifts, key, arm)),
+                        **shift_row(_variant(shifts, key, arm)),
                     }
                 )
     return pd.DataFrame(rows)
