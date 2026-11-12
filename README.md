@@ -45,6 +45,7 @@ tar xzf hub/downloads/upstream/redraw-subset.tar.gz
 | 3 | **Cultural** — culture-finetuned LLMs on each base | `./run_experiment_add_culture.sh sweep` | CUDA GPU |
 | 4 | **Base models** — the same bases, un-finetuned | `./run_experiment_base_models.sh run --models all` | CUDA GPU |
 | 5 | **Served** — proprietary models through the OpenAI API | `./run_experiment_add_culture.sh served-smoke` | API key |
+| 6 | **Second survey** — SubPOP-Eval, the General Social Survey questions | `./run_experiment_add_culture.sh gss` | CUDA GPU, SubPOP tables |
 
 ```bash
 ./run_experiment.sh archived --questions all
@@ -64,6 +65,9 @@ tar xzf hub/downloads/upstream/redraw-subset.tar.gz
 ./run_experiment_base_models.sh run --models all --replicates 3
 ./run_experiment_base_models.sh summary
 
+./run_experiment_add_culture.sh gss-stage
+./run_experiment_add_culture.sh gss
+
 ./run_reports.sh
 ```
 
@@ -75,6 +79,15 @@ global` is the distribution-matched arm, staged from
 `checkpoints/global/<model>/distributional`, and `--cultures subpop` the
 subgroup-matched arm, staged from `checkpoints/subpop/<model>/subpop`; both are
 named explicitly.
+
+Experiment 6 scores the as-released and the subgroup-matched variant of every local
+model on SubPOP-Eval: 133 questions of the 2022 General Social Survey, each put to the
+22 United States subgroups SubPOP is trained on, in SubPOP's own prompt and read as
+next-token probabilities. `gss-stage` copies `subpop_eval.jsonl` and
+`steering_prompts.json` from the training repository into `upstream/subpop/` and checks
+their pinned hashes (`--download` fetches them, with access to the gated
+`jjssuh/subpop`). `gss` writes `outputs/culture/<model>/<arm>/gss/`, one process per
+model and arm, and `notebooks/population_fidelity_gss.ipynb` scores the runs.
 
 Experiment 5 needs `OPENAI_API_KEY` and one model id per served model in `.env`
 (see `.env.example`); naming a served model is what starts a billable run.
@@ -100,7 +113,8 @@ rsync -a hub/downloads/data/ outputs/
 ```
 
 The survey data are the World Values Survey's, and the replication package terms
-govern their reuse.
+govern their reuse. SubPOP-Eval derives from NORC's General Social Survey 2022; it is
+gated under CC-BY-NC-SA-4.0 and is never redistributed here.
 
 ## Citation
 
