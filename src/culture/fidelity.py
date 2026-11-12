@@ -117,14 +117,24 @@ SCORE_COLUMNS: tuple[str, ...] = (
     "pfs_with_center",
 )
 
-GEOMETRIC_ACROSS_QUESTIONS: tuple[str, ...] = ("pfs", "pfs_with_center")
+ORIGINAL_STRUCTURE = "score_structure_original"
+
+ORIGINAL_PFS = "pfs_original"
+
+ORIGINAL_SCORES: tuple[str, ...] = (ORIGINAL_STRUCTURE, ORIGINAL_PFS)
+
+ORIENTATION = "rho_orientation"
+
+GEOMETRIC_ACROSS_QUESTIONS: tuple[str, ...] = ("pfs", "pfs_with_center", ORIGINAL_PFS)
 
 OVERALL_METRICS: tuple[str, ...] = (
     *SCORE_COLUMNS,
+    *ORIGINAL_SCORES,
     "e_mean_nemd",
     *(name for name, _ in QUANTILES),
     "adaptability_ratio",
     "rho_structure",
+    ORIENTATION,
     "c_center_nemd",
 )
 
@@ -133,8 +143,10 @@ PAIRED_METRICS: tuple[str, ...] = (
     "d_llm",
     "adaptability_ratio",
     "rho_structure",
+    ORIENTATION,
     "c_center_nemd",
     *SCORE_COLUMNS,
+    *ORIGINAL_SCORES,
 )
 
 BASE_PREFIX = "base_"
@@ -243,6 +255,30 @@ def structure_score(rho: float) -> float:
     return float(np.clip(rho, 0.0, 1.0))
 
 
+def anchor_scores(props: FloatArray) -> FloatArray:
+    reference = np.zeros(props.shape[1], dtype=np.float64)
+    reference[0] = 1.0
+    return np.atleast_1d(np.asarray(nemd(props, reference), dtype=np.float64))
+
+
+def orientation_rho(survey_anchor: FloatArray, model_anchor: FloatArray) -> float:
+    if survey_anchor.size < MIN_CELLS_FOR_STRUCTURE:
+        return float("nan")
+    if float(np.ptp(survey_anchor)) == 0.0 or float(np.ptp(model_anchor)) == 0.0:
+        return float("nan")
+    return float(spearmanr(survey_anchor, model_anchor).statistic)
+
+
+def orientation_credit(orientation: float) -> float:
+    return structure_score(orientation) if np.isfinite(orientation) else 0.0
+
+
+def oriented_structure(structure: float, orientation: float) -> float:
+    if not np.isfinite(structure):
+        return structure
+    return min(structure, orientation_credit(orientation))
+
+
 def group_fidelity(wvs: FloatArray, llm: FloatArray) -> dict[str, Any]:
     count = int(wvs.shape[0])
     error = np.atleast_1d(np.asarray(nemd(wvs, llm), dtype=np.float64))
@@ -271,16 +307,21 @@ def group_fidelity(wvs: FloatArray, llm: FloatArray) -> dict[str, Any]:
         "adaptability_ratio": ratio,
         "rho_structure": rho,
         "rho_structure_p_value": p_value,
+        ORIENTATION: orientation_rho(anchor_scores(wvs), anchor_scores(llm)),
         "model_flat": flat,
         "c_center_nemd": center,
     }
+    original = 0.0 if flat else structure_score(rho)
     row["score_accuracy"] = closeness_score(row["e_mean_nemd"])
     row["score_dispersion"] = dispersion_score(ratio)
-    row["score_structure"] = 0.0 if flat else structure_score(rho)
+    row["score_structure"] = oriented_structure(original, row[ORIENTATION])
     row["score_center"] = closeness_score(center)
-    parts = [row["score_accuracy"], row["score_dispersion"], row["score_structure"]]
+    shared = [row["score_accuracy"], row["score_dispersion"]]
+    parts = [*shared, row["score_structure"]]
     row["pfs"] = geometric_mean(parts)
     row["pfs_with_center"] = geometric_mean([*parts, row["score_center"]])
+    row[ORIGINAL_STRUCTURE] = original
+    row[ORIGINAL_PFS] = geometric_mean([*shared, original])
     return row
 
 
@@ -700,9 +741,12 @@ def check_fidelity(cells: pd.DataFrame, groups: pd.DataFrame, paired: pd.DataFra
         family_rows = groups[groups["group"].eq(family)]
         totals = family_rows.groupby(["question", "mode", "source"])["n_cells"].sum()
         assert totals.le(pooled.reindex(totals.index)).all(), f"{family} covers unseen cells"
-    scored = groups[list(SCORE_COLUMNS)].to_numpy(dtype=np.float64)
+    scored = groups[[*SCORE_COLUMNS, *ORIGINAL_SCORES]].to_numpy(dtype=np.float64)
     finite = scored[np.isfinite(scored)]
     assert np.all((finite >= 0.0) & (finite <= 1.0))
+    for oriented, original in (("score_structure", ORIGINAL_STRUCTURE), ("pfs", ORIGINAL_PFS)):
+        gap = (groups[original] - groups[oriented]).to_numpy(dtype=np.float64)
+        assert np.all(gap[np.isfinite(gap)] >= 0.0), f"{oriented} exceeds {original}"
     population = _population(groups)
     for (question, mode), group in population.groupby(["question", "mode"]):
         complete = group[group["n_cells"].eq(group["n_cells"].max())]

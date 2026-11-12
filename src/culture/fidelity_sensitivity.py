@@ -7,12 +7,16 @@ for every cell. This module recomputes every score with one choice changed at a 
 and with three changed at once, on the same runs, cells, common cells and nEMD distances,
 so the manuscript can show which conclusions depend on which choice.
 
+Structure is the smaller of two correlations, the one over pairwise distances and the one
+over the cells' normalized mean responses. A variant's correlation statistic is used for
+both, and an unclipped variant keeps the sign of the smaller one.
+
 Every alternative is pure arithmetic on one row of *readings* taken once per set of
 cells: the per-cell error, both condensed pairwise-distance vectors summarised by median
-and by mean, Spearman, Pearson and Kendall over those vectors, and the accuracy and center
-terms with and without respondent weights. The default variant reproduces
-``fidelity.group_fidelity`` to the last digit, which ``check_sensitivity`` asserts against
-the frames the fidelity notebook has just built before anything is written.
+and by mean, Spearman, Pearson and Kendall over those vectors and over the cell means, and
+the accuracy and center terms with and without respondent weights. The default variant
+reproduces ``fidelity.group_fidelity`` to the last digit, which ``check_sensitivity``
+asserts against the frames the fidelity notebook has just built before anything is written.
 """
 
 from __future__ import annotations
@@ -37,11 +41,13 @@ from .fidelity import (
     MIN_CELLS_FOR_DISPERSION,
     MIN_CELLS_FOR_STRUCTURE,
     MIN_CONDITIONS_FOR_CORRELATION,
+    ORIENTATION,
     PAIRED_IDENTITY,
     PAIRED_METRICS,
     POPULATION,
     TERMS,
     FloatArray,
+    anchor_scores,
     answer_array,
     binding_term,
     cell_facets,
@@ -52,6 +58,7 @@ from .fidelity import (
     grouped_scores,
     lead_with,
     loaded_runs,
+    orientation_credit,
     paired_runs,
     structure_score,
 )
@@ -136,6 +143,12 @@ COEFFICIENTS: dict[str, str] = {
     "kendall": "tau_kendall",
 }
 
+ORIENTATION_SUFFIX = "_orientation"
+
+ORIENTATIONS: dict[str, str] = {
+    statistic: f"{column}{ORIENTATION_SUFFIX}" for statistic, column in COEFFICIENTS.items()
+}
+
 COUNTS: tuple[str, ...] = ("n_cells", "n_pairs", "n_respondents")
 
 READINGS: tuple[str, ...] = (
@@ -148,6 +161,7 @@ READINGS: tuple[str, ...] = (
     "d_wvs_mean",
     "d_llm_mean",
     *COEFFICIENTS.values(),
+    *ORIENTATIONS.values(),
     "c_center_nemd",
     "c_center_nemd_weighted",
 )
@@ -156,7 +170,11 @@ BASE_READINGS: tuple[str, ...] = tuple(
     f"{BASE_PREFIX}{column}" for column in READINGS if column not in COUNTS
 )
 
-DIAGNOSTICS: tuple[str, ...] = ("adaptability_ratio", "structure_coefficient")
+DIAGNOSTICS: tuple[str, ...] = (
+    "adaptability_ratio",
+    "structure_coefficient",
+    "orientation_coefficient",
+)
 
 SCORES: tuple[str, ...] = (
     "score_accuracy",
@@ -175,6 +193,7 @@ DEFAULT_COLUMNS: dict[str, str] = {
     "d_llm_median": "d_llm",
     "adaptability_ratio": "adaptability_ratio",
     "structure_coefficient": "rho_structure",
+    "orientation_coefficient": ORIENTATION,
     "c_center_nemd": "c_center_nemd",
     **{score: score for score in SCORES},
 }
@@ -205,6 +224,20 @@ def _coefficients(
     }
 
 
+def _orientations(wvs: FloatArray, llm: FloatArray, count: int) -> dict[str, float]:
+    blank = {column: float("nan") for column in ORIENTATIONS.values()}
+    if count < MIN_CELLS_FOR_STRUCTURE:
+        return blank
+    survey, model = anchor_scores(wvs), anchor_scores(llm)
+    if float(np.ptp(survey)) == 0.0 or float(np.ptp(model)) == 0.0:
+        return blank
+    return {
+        ORIENTATIONS["spearman"]: float(spearmanr(survey, model).statistic),
+        ORIENTATIONS["pearson"]: float(pearsonr(survey, model).statistic),
+        ORIENTATIONS["kendall"]: float(kendalltau(survey, model).statistic),
+    }
+
+
 def readings(wvs: FloatArray, llm: FloatArray, weights: FloatArray) -> dict[str, Any]:
     """Everything a variant can read off one set of cells, each pair vector taken once.
 
@@ -231,6 +264,7 @@ def readings(wvs: FloatArray, llm: FloatArray, weights: FloatArray) -> dict[str,
         "d_wvs_mean": float(survey.mean()) if paired else float("nan"),
         "d_llm_mean": float(model.mean()) if paired else float("nan"),
         **_coefficients(survey, model, count, flat),
+        **_orientations(wvs, llm, count),
         "c_center_nemd": float(nemd(wvs.mean(axis=0), llm.mean(axis=0))),
         "c_center_nemd_weighted": float(nemd(share @ wvs, share @ llm)),
     }
@@ -328,6 +362,19 @@ def arithmetic_mean(values: npt.ArrayLike) -> float:
     return float(array.mean())
 
 
+def signed_structure(coefficient: float, orientation: float) -> float:
+    if not np.isfinite(coefficient):
+        return coefficient
+    return min(coefficient, orientation if np.isfinite(orientation) else 0.0)
+
+
+def clipped_structure(coefficient: float, orientation: float) -> float:
+    score = structure_score(coefficient)
+    if not np.isfinite(score):
+        return score
+    return min(score, orientation_credit(orientation))
+
+
 def variant_row(reading: Mapping[Any, Any], variant: Variant, prefix: str = "") -> dict[str, float]:
     """One variant's diagnostics and scores from one row of readings."""
 
@@ -339,6 +386,7 @@ def variant_row(reading: Mapping[Any, Any], variant: Variant, prefix: str = "") 
     ratio = d_llm / d_wvs if d_wvs > 0.0 else float("nan")
     flat = bool(read("model_flat"))
     coefficient = float(read(COEFFICIENTS[variant.structure]))
+    orientation = float(read(ORIENTATIONS[variant.structure]))
     suffix = "_weighted" if variant.weighted else ""
     accuracy = closeness_score(float(read(f"e_mean_nemd{suffix}")))
     center = closeness_score(float(read(f"c_center_nemd{suffix}")))
@@ -349,9 +397,9 @@ def variant_row(reading: Mapping[Any, Any], variant: Variant, prefix: str = "") 
     if flat:
         structure = 0.0
     elif variant.clipped:
-        structure = structure_score(coefficient)
+        structure = clipped_structure(coefficient, orientation)
     else:
-        structure = coefficient
+        structure = signed_structure(coefficient, orientation)
     parts = [accuracy, dispersion, structure]
     if variant.aggregate == "arithmetic":
         pfs = arithmetic_mean(parts)
@@ -362,6 +410,7 @@ def variant_row(reading: Mapping[Any, Any], variant: Variant, prefix: str = "") 
     return {
         "adaptability_ratio": ratio,
         "structure_coefficient": coefficient,
+        "orientation_coefficient": orientation,
         "score_accuracy": accuracy,
         "score_dispersion": dispersion,
         "score_structure": structure,
@@ -684,10 +733,11 @@ def _check_default(scored: pd.DataFrame, reference: pd.DataFrame, keys: Sequence
     assert merged["binding_term"].eq(merged["binding_term_ref"]).all(), "default binding term"
     if f"{BASE_PREFIX}score_accuracy" not in reference.columns:
         return
+    named = {theirs: ours for ours, theirs in DEFAULT_COLUMNS.items()}
     for metric in PAIRED_METRICS:
-        if metric == "pfs_with_center":
+        if metric not in named:
             continue
-        ours = next(k for k, v in DEFAULT_COLUMNS.items() if v == metric)
+        ours = named[metric]
         _close(
             merged[f"{BASE_PREFIX}{ours}"], merged[f"{BASE_PREFIX}{metric}_ref"], f"base {metric}"
         )

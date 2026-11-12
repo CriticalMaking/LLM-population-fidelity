@@ -53,6 +53,11 @@ BASE = np.array(
 )
 
 
+def _binary(shares: tuple[float, ...]) -> np.ndarray:
+    yes = np.array(shares)
+    return np.column_stack([1.0 - yes, yes])
+
+
 def test_a_cell_is_grouped_by_its_label_not_by_its_respondents() -> None:
     facets = fidelity.cell_facets(CELLS)
 
@@ -126,6 +131,64 @@ def test_a_model_with_one_answer_for_every_cell_scores_zero_not_undefined() -> N
     assert values["pfs"] == 0.0
 
 
+def test_the_anchor_is_the_normalized_mean_response() -> None:
+    scale = np.linspace(0.0, 1.0, SURVEY.shape[1])
+    trusting = np.array([[0.8, 0.2], [0.5, 0.5], [0.1, 0.9]])
+
+    assert np.allclose(fidelity.anchor_scores(SURVEY), SURVEY @ scale)
+    assert np.allclose(fidelity.anchor_scores(trusting), trusting[:, 1])
+    assert fidelity.anchor_scores(SURVEY[:1]).shape == (1,)
+
+
+def test_a_reversed_ordering_keeps_its_distances_and_earns_no_structure() -> None:
+    values = fidelity.group_fidelity(SURVEY, SURVEY[:, ::-1])
+
+    assert values["rho_structure"] > 0.95
+    assert values["rho_orientation"] == pytest.approx(-1.0)
+    assert values["score_structure_original"] == pytest.approx(values["rho_structure"])
+    assert values["pfs_original"] > 0.0
+    assert values["score_structure"] == 0.0
+    assert values["pfs"] == 0.0
+    assert values["pfs_with_center"] == 0.0
+
+
+def test_structure_is_the_smaller_of_the_distance_and_the_ordering_correlation() -> None:
+    survey = _binary((0.10, 0.22, 0.80, 0.93))
+    model = _binary((0.21, 0.10, 0.81, 0.93))
+
+    capped = fidelity.group_fidelity(survey, model)
+    kept = fidelity.group_fidelity(SURVEY, MODEL)
+
+    assert capped["rho_orientation"] == pytest.approx(0.8)
+    assert capped["score_structure_original"] > capped["rho_orientation"]
+    assert capped["score_structure"] == pytest.approx(capped["rho_orientation"])
+    assert capped["pfs"] < capped["pfs_original"]
+    assert kept["rho_orientation"] > kept["rho_structure"] > 0.0
+    assert kept["score_structure"] == pytest.approx(kept["score_structure_original"])
+    assert kept["pfs"] == pytest.approx(kept["pfs_original"])
+
+
+def test_an_undefined_ordering_earns_no_structure_and_an_undefined_distance_stays_blank() -> None:
+    survey = np.array([[0.5, 0.3, 0.2], [0.2, 0.3, 0.5], [0.1, 0.6, 0.3], [0.3, 0.3, 0.4]])
+    unordered = np.array([[0.25, 0.5, 0.25], [0.5, 0.0, 0.5], [0.0, 1.0, 0.0], [0.1, 0.8, 0.1]])
+
+    values = fidelity.group_fidelity(survey, unordered)
+    alone = fidelity.group_fidelity(SURVEY[:1], MODEL[:1])
+
+    assert values["model_flat"] is False
+    assert np.isnan(values["rho_orientation"])
+    assert np.isfinite(values["score_structure_original"])
+    assert values["score_structure"] == 0.0
+    assert values["pfs"] == 0.0
+    assert fidelity.oriented_structure(0.4, float("nan")) == 0.0
+    assert fidelity.oriented_structure(0.4, -0.2) == 0.0
+    assert fidelity.oriented_structure(0.4, 0.1) == pytest.approx(0.1)
+    assert fidelity.oriented_structure(0.4, 0.9) == pytest.approx(0.4)
+    assert np.isnan(alone["rho_orientation"])
+    assert np.isnan(alone["score_structure"])
+    assert np.isnan(alone["pfs"])
+
+
 def test_a_paired_score_reads_both_conditions_off_the_same_cells() -> None:
     values = fidelity.paired_fidelity(SURVEY, MODEL, BASE)
     tuned = fidelity.group_fidelity(SURVEY, MODEL)
@@ -138,6 +201,9 @@ def test_a_paired_score_reads_both_conditions_off_the_same_cells() -> None:
         assert values[fidelity.delta_column(metric)] == pytest.approx(
             tuned[metric] - reference[metric]
         )
+    assert {"rho_orientation", "score_structure_original", "pfs_original"} <= set(
+        fidelity.PAIRED_METRICS
+    )
     assert values["base_model_flat"] is False
 
 

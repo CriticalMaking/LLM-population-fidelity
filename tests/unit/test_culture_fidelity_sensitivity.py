@@ -212,6 +212,57 @@ def test_unclipped_structure_keeps_the_sign_and_agrees_with_the_default_when_rho
     assert np.isnan(sensitivity.signed_geometric_mean([0.9, float("nan"), 0.5]))
 
 
+def test_each_variant_reads_the_ordering_with_its_own_statistic() -> None:
+    reading = sensitivity.readings(SURVEY, BASE, ONES)
+    survey, model = fidelity.anchor_scores(SURVEY), fidelity.anchor_scores(BASE)
+
+    assert reading["rho_spearman_orientation"] == pytest.approx(spearmanr(survey, model).statistic)
+    assert reading["r_pearson_orientation"] == pytest.approx(pearsonr(survey, model).statistic)
+    assert reading["tau_kendall_orientation"] == pytest.approx(kendalltau(survey, model).statistic)
+    assert reading["rho_spearman_orientation"] == pytest.approx(
+        fidelity.group_fidelity(SURVEY, BASE)["rho_orientation"]
+    )
+    for name, statistic in (("pearson_structure", "pearson"), ("kendall_structure", "kendall")):
+        row = sensitivity.variant_row(reading, BY_NAME[name])
+        assert row["orientation_coefficient"] == reading[sensitivity.ORIENTATIONS[statistic]]
+        assert row["score_structure"] == pytest.approx(
+            min(
+                fidelity.structure_score(row["structure_coefficient"]),
+                fidelity.structure_score(row["orientation_coefficient"]),
+            )
+        )
+
+    two_cells = sensitivity.readings(SURVEY[:2], BASE[:2], ONES[:2])
+    for column in sensitivity.ORIENTATIONS.values():
+        assert np.isnan(two_cells[column])
+    assert set(sensitivity.ORIENTATIONS.values()) <= set(sensitivity.READINGS)
+
+
+def test_a_reversed_ordering_scores_zero_when_clipped_and_below_zero_when_not() -> None:
+    mirrored = sensitivity.readings(SURVEY, SURVEY[:, ::-1], ONES)
+    default = sensitivity.variant_row(mirrored, sensitivity.DEFAULT)
+    unclipped = sensitivity.variant_row(mirrored, BY_NAME["unclipped_structure"])
+
+    assert mirrored["rho_spearman"] > 0.95
+    assert mirrored["rho_spearman_orientation"] == pytest.approx(-1.0)
+    assert default["score_structure"] == 0.0
+    assert default["pfs"] == 0.0
+    assert unclipped["score_structure"] == pytest.approx(-1.0)
+    assert unclipped["pfs"] < 0.0
+    for name in ("pearson_structure", "kendall_structure", "mean_dispersion", "weighted_cells"):
+        assert sensitivity.variant_row(mirrored, BY_NAME[name])["pfs"] == 0.0
+
+    assert sensitivity.clipped_structure(0.4, 0.2) == pytest.approx(0.2)
+    assert sensitivity.clipped_structure(0.4, 0.9) == pytest.approx(0.4)
+    assert sensitivity.clipped_structure(0.4, float("nan")) == 0.0
+    assert np.isnan(sensitivity.clipped_structure(float("nan"), 0.5))
+    assert sensitivity.signed_structure(0.4, -0.7) == pytest.approx(-0.7)
+    assert sensitivity.signed_structure(-0.4, 0.7) == pytest.approx(-0.4)
+    assert sensitivity.signed_structure(0.4, float("nan")) == 0.0
+    assert sensitivity.signed_structure(-0.4, float("nan")) == pytest.approx(-0.4)
+    assert np.isnan(sensitivity.signed_structure(float("nan"), 0.5))
+
+
 def test_directions_count_changes_beyond_the_tolerance_and_signs_treat_the_rest_as_zero() -> None:
     assert sensitivity._directions(np.array([2e-12, -2e-12, 5e-13, np.nan])) == (1, 1, 1)
     assert sensitivity._directions(np.array([], dtype=np.float64)) == (0, 0, 0)
@@ -755,6 +806,6 @@ def test_the_default_rows_reproduce_the_shipped_tables() -> None:
     summary = pd.read_csv(sensitivity.SENSITIVITY_TABLE).set_index("variant")
     default = summary.loc["default"]
     assert default["n_pooled"] == 164
-    assert default["binding_structure"] == 159
-    assert default["german_delta_pfs_mean"] == pytest.approx(-0.0246, abs=5e-4)
+    assert default["binding_structure"] == 160
+    assert default["german_delta_pfs_mean"] == pytest.approx(-0.0430, abs=5e-4)
     assert default["spanish_mx_home_delta_center_mean"] == pytest.approx(0.0383, abs=5e-4)

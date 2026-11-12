@@ -12,19 +12,21 @@ from pandas.api.types import is_numeric_dtype
 from scipy.stats import spearmanr
 
 from machine_bias_reproduction.config import FIGURES_ROOT, FIRST_REPLICATE, OUTPUTS_ROOT
-from machine_bias_reproduction.metrics import nemd, pairwise_nemd
+from machine_bias_reproduction.metrics import pairwise_nemd
 from machine_bias_reproduction.questions import Question, resolve_questions
 
 from .fidelity import (
     BASE_PREFIX,
     IDENTITY,
     MIN_CELLS_FOR_DISPERSION,
-    MIN_CELLS_FOR_STRUCTURE,
+    ORIENTATION,
+    ORIGINAL_STRUCTURE,
     PAIRED_IDENTITY,
     PAIRED_METRICS,
     POPULATION,
     TERMS,
     FloatArray,
+    anchor_scores,
     answer_array,
     binding_term,
     cell_facets,
@@ -34,6 +36,7 @@ from .fidelity import (
     grouped_scores,
     lead_with,
     loaded_runs,
+    orientation_credit,
     overall_fidelity,
     overall_paired,
     paired_runs,
@@ -56,6 +59,8 @@ from .population_plates import PLATE_TEXT, VIEWS
 Structure = Literal["unsigned", "gated", "capped", "signed"]
 
 ORIGINAL = "original"
+
+DEFAULT = "capped"
 
 EXACT_TIES = "exact"
 
@@ -91,7 +96,7 @@ class Variant:
 VARIANTS: tuple[Variant, ...] = (
     Variant(ORIGINAL, "Original"),
     Variant("gated", "Sign-gated", "gated"),
-    Variant("capped", "Orientation-capped", "capped"),
+    Variant(DEFAULT, "Orientation-capped", "capped"),
     Variant("signed", "Signed distances", "signed"),
     Variant("signed_tie_01", "Signed distances, ties within 0.01", "signed", "01"),
     Variant("signed_tie_02", "Signed distances, ties within 0.02", "signed", "02"),
@@ -104,11 +109,13 @@ VARIANTS: tuple[Variant, ...] = (
     ),
 )
 
+SCORED_BY_DEFAULT: tuple[str, ...] = (ORIGINAL, DEFAULT)
+
 ALTERNATIVES: tuple[Variant, ...] = tuple(
-    variant for variant in VARIANTS if variant.name != ORIGINAL
+    variant for variant in VARIANTS if variant.name not in SCORED_BY_DEFAULT
 )
 
-PLATE_VARIANTS: tuple[str, ...] = ("capped", "signed")
+PLATE_VARIANTS: tuple[str, ...] = (ORIGINAL, "signed")
 
 ORIENTATION_FIGURES = FIGURES_ROOT / "fidelity" / "orientation"
 
@@ -128,11 +135,11 @@ def pairs_column(ties: str) -> str:
 
 
 def structure_column(variant: Variant) -> str:
-    return "score_structure" if variant.name == ORIGINAL else f"score_structure_{variant.name}"
+    return "score_structure" if variant.name == DEFAULT else f"score_structure_{variant.name}"
 
 
 def pfs_column(variant: Variant) -> str:
-    return "pfs" if variant.name == ORIGINAL else f"pfs_{variant.name}"
+    return "pfs" if variant.name == DEFAULT else f"pfs_{variant.name}"
 
 
 def variant_named(variant: Variant | str) -> Variant:
@@ -144,10 +151,9 @@ def variant_named(variant: Variant | str) -> Variant:
     raise ValueError(f"unknown variant: {variant}")
 
 
-ORIENTATION_READINGS: tuple[str, ...] = (
-    "rho_orientation",
-    *(signed_column(rule) for rule in TIE_RULES),
-)
+SIGNED_READINGS: tuple[str, ...] = tuple(signed_column(rule) for rule in TIE_RULES)
+
+ORIENTATION_READINGS: tuple[str, ...] = (ORIENTATION, *SIGNED_READINGS)
 
 VARIANT_SCORES: tuple[str, ...] = tuple(
     column
@@ -155,7 +161,7 @@ VARIANT_SCORES: tuple[str, ...] = tuple(
     for column in (structure_column(variant), pfs_column(variant))
 )
 
-ORIENTATION_METRICS: tuple[str, ...] = (*ORIENTATION_READINGS, *VARIANT_SCORES)
+ORIENTATION_METRICS: tuple[str, ...] = (*SIGNED_READINGS, *VARIANT_SCORES)
 
 REVERSED = "orientation_reversed"
 
@@ -168,12 +174,6 @@ VIEWED_SCORES: tuple[str, ...] = ("score_structure", "pfs", "pfs_with_center")
 CENTERED_TERMS: tuple[str, ...] = (*(column for column, _ in TERMS), "score_center")
 
 
-def anchor_scores(props: FloatArray) -> FloatArray:
-    reference = np.zeros(props.shape[1], dtype=np.float64)
-    reference[0] = 1.0
-    return np.atleast_1d(np.asarray(nemd(props, reference), dtype=np.float64))
-
-
 def standard_errors(props: FloatArray, counts: FloatArray) -> FloatArray:
     scale = np.linspace(0.0, 1.0, props.shape[1])
     variance = props @ scale**2 - (props @ scale) ** 2
@@ -182,14 +182,6 @@ def standard_errors(props: FloatArray, counts: FloatArray) -> FloatArray:
 
 def directions(gap: FloatArray) -> FloatArray:
     return np.asarray(np.where(np.abs(gap) > FLOAT_TIE, np.sign(gap), 0.0), dtype=np.float64)
-
-
-def orientation_rho(survey_anchor: FloatArray, model_anchor: FloatArray) -> float:
-    if survey_anchor.size < MIN_CELLS_FOR_STRUCTURE:
-        return float("nan")
-    if float(np.ptp(survey_anchor)) == 0.0 or float(np.ptp(model_anchor)) == 0.0:
-        return float("nan")
-    return float(spearmanr(survey_anchor, model_anchor).statistic)
 
 
 def signed_rho(survey: FloatArray, model: FloatArray) -> float:
@@ -224,7 +216,7 @@ def signed_readings(wvs: FloatArray, llm: FloatArray, counts: FloatArray) -> dic
 
 
 def variant_structure(row: Mapping[str, Any], variant: Variant) -> float:
-    original = float(row["score_structure"])
+    original = float(row[ORIGINAL_STRUCTURE])
     if variant.structure == "unsigned" or not np.isfinite(original):
         return original
     if variant.structure == "signed":
@@ -232,8 +224,7 @@ def variant_structure(row: Mapping[str, Any], variant: Variant) -> float:
         if bool(row["model_flat"]) or not np.isfinite(rho):
             return 0.0
         return structure_score(rho)
-    orientation = float(row["rho_orientation"])
-    credit = structure_score(orientation) if np.isfinite(orientation) else 0.0
+    credit = orientation_credit(float(row[ORIENTATION]))
     if variant.structure == "gated":
         return original if credit > 0.0 else 0.0
     return min(original, credit)
@@ -241,9 +232,7 @@ def variant_structure(row: Mapping[str, Any], variant: Variant) -> float:
 
 def orientation_fidelity(wvs: FloatArray, llm: FloatArray, counts: FloatArray) -> dict[str, Any]:
     row = group_fidelity(wvs, llm)
-    orientation = orientation_rho(anchor_scores(wvs), anchor_scores(llm))
-    row["rho_orientation"] = orientation
-    row[REVERSED] = bool(row["rho_structure"] > 0.0 and orientation < 0.0)
+    row[REVERSED] = bool(row["rho_structure"] > 0.0 and row[ORIENTATION] < 0.0)
     row.update(signed_readings(wvs, llm, counts))
     for variant in ALTERNATIVES:
         structure = variant_structure(row, variant)
@@ -327,7 +316,7 @@ def variant_view(frame: pd.DataFrame, variant: Variant | str) -> pd.DataFrame:
     chosen = variant_named(variant)
     added = [column for column in frame.columns if _metric_of(column) in ADDED_COLUMNS]
     view = frame.drop(columns=added)
-    if chosen.name == ORIGINAL:
+    if chosen.name == DEFAULT:
         return view
     prefixes = [
         prefix for prefix in ("", BASE_PREFIX) if f"{prefix}score_structure" in frame.columns
@@ -361,7 +350,7 @@ def _rank_agreement(original: FloatArray, scored: FloatArray) -> float:
 
 
 def _level_row(block: pd.DataFrame, variant: Variant) -> dict[str, Any]:
-    original = block["pfs"].to_numpy(dtype=np.float64)
+    original = block[pfs_column(variant_named(ORIGINAL))].to_numpy(dtype=np.float64)
     scored = block[pfs_column(variant)].to_numpy(dtype=np.float64)
     structure = block[structure_column(variant)]
     changed = ~np.isclose(scored, original, equal_nan=True)
@@ -393,7 +382,7 @@ def _shift_row(block: pd.DataFrame, variant: Variant, culture: str) -> dict[str,
             f"{slug}_sign_agreement": float("nan"),
         }
     moved = block[delta_column(pfs_column(variant))].to_numpy(dtype=np.float64)
-    original = block[delta_column("pfs")].to_numpy(dtype=np.float64)
+    original = block[delta_column(pfs_column(variant_named(ORIGINAL)))].to_numpy(dtype=np.float64)
     kept = np.isfinite(moved) & np.isfinite(original)
     agreed = directions(moved[kept]) == directions(original[kept])
     return {
@@ -476,8 +465,11 @@ def _check_readings(frame: pd.DataFrame) -> None:
     readings = frame[list(ORIENTATION_READINGS)].to_numpy(dtype=np.float64)
     bounded = np.abs(readings[np.isfinite(readings)])
     assert np.all(bounded <= 1.0 + RECONCILE_TOLERANCE), "a correlation left its range"
-    assert _ordered(frame, "pfs_capped", "pfs_gated"), "the cap scored above the gate"
-    assert _ordered(frame, "pfs_gated", "pfs"), "the gate scored above the original"
+    capped, gated, original = (
+        pfs_column(variant_named(name)) for name in (DEFAULT, "gated", ORIGINAL)
+    )
+    assert _ordered(frame, capped, gated), "the cap scored above the gate"
+    assert _ordered(frame, gated, original), "the gate scored above the original"
     widening = [pairs_column(rule) for rule in TIE_TOLERANCES]
     for wider, narrower in zip(widening[1:], widening[:-1], strict=True):
         assert frame[wider].le(frame[narrower]).all(), "a wider tolerance kept more pairs"

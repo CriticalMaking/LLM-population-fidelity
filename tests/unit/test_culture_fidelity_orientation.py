@@ -65,6 +65,8 @@ EVEN = np.full(3, 50.0)
 
 ALTERNATIVES = fidelity_orientation.ALTERNATIVES
 
+SCORED = tuple(variant for variant in fidelity_orientation.VARIANTS if variant.name != "original")
+
 
 def _binary(shares: tuple[float, ...]) -> np.ndarray:
     yes = np.array(shares)
@@ -140,23 +142,29 @@ def _pooled(frame: pd.DataFrame, arm: str) -> pd.Series:
     return rows.iloc[0]
 
 
-def test_the_anchor_is_the_normalized_mean_response() -> None:
-    scale = np.linspace(0.0, 1.0, SURVEY.shape[1])
+def test_the_default_is_the_capped_variant_and_the_original_keeps_its_own_columns() -> None:
+    original, capped = (fidelity_orientation.variant_named(name) for name in ("original", "capped"))
 
-    assert np.allclose(fidelity_orientation.anchor_scores(SURVEY), SURVEY @ scale)
-    assert np.allclose(fidelity_orientation.anchor_scores(TRUSTING), TRUSTING[:, 1])
-    assert fidelity_orientation.anchor_scores(SURVEY[:1]).shape == (1,)
+    assert fidelity_orientation.structure_column(capped) == "score_structure"
+    assert fidelity_orientation.pfs_column(capped) == "pfs"
+    assert fidelity_orientation.structure_column(original) == fidelity.ORIGINAL_STRUCTURE
+    assert fidelity_orientation.pfs_column(original) == fidelity.ORIGINAL_PFS
+    assert {variant.name for variant in ALTERNATIVES} == {
+        variant.name for variant in fidelity_orientation.VARIANTS
+    } - {"original", "capped"}
 
 
-def test_a_reversed_ordering_keeps_its_structure_and_loses_it_under_every_variant() -> None:
+def test_a_reversed_ordering_keeps_its_distances_and_loses_its_structure_under_every_variant() -> (
+    None
+):
     row = fidelity_orientation.orientation_fidelity(TRUSTING, TRUSTING[:, ::-1], EVEN)
 
     assert row["rho_structure"] == pytest.approx(1.0)
-    assert row["pfs"] > 0.0
+    assert row["pfs_original"] > 0.0
     assert row["rho_orientation"] == pytest.approx(-1.0)
     assert row["rho_signed"] == pytest.approx(-1.0)
     assert row["orientation_reversed"] is True
-    for variant in ALTERNATIVES:
+    for variant in SCORED:
         assert row[fidelity_orientation.structure_column(variant)] == 0.0
         assert row[fidelity_orientation.pfs_column(variant)] == 0.0
 
@@ -167,10 +175,10 @@ def test_the_worked_example_reverses_three_groups_that_structure_scores_high() -
     assert row["rho_structure"] > 0.86
     assert row["rho_orientation"] == pytest.approx(-1.0)
     assert row["rho_signed"] < -0.86
-    assert row["score_structure_capped"] == 0.0
+    assert row["score_structure"] == 0.0
     assert row["score_structure_signed"] == 0.0
-    assert row["pfs"] > 0.0
-    assert row["pfs_capped"] == 0.0
+    assert row["pfs_original"] > 0.0
+    assert row["pfs"] == 0.0
     assert row["pfs_signed"] == 0.0
 
 
@@ -184,10 +192,10 @@ def test_a_mirror_image_of_the_survey_scores_zero_under_every_variant() -> None:
     assert row["rho_structure"] > 0.99
     assert row["adaptability_ratio"] == pytest.approx(1.0)
     assert row["score_center"] == pytest.approx(1.0)
-    assert row["pfs"] > 0.8
+    assert row["pfs_original"] > 0.8
     assert row["rho_orientation"] == pytest.approx(-1.0)
     assert row["rho_signed"] < -0.99
-    for variant in ALTERNATIVES:
+    for variant in SCORED:
         assert row[fidelity_orientation.pfs_column(variant)] == 0.0
 
 
@@ -202,9 +210,11 @@ def test_a_model_that_keeps_the_ordering_scores_what_the_original_scores() -> No
     assert row["orientation_reversed"] is False
     assert row["rho_signed"] == pytest.approx(row["rho_structure"])
     assert row["n_pairs_signed"] == row["n_pairs"] == 6
-    for variant in ("gated", "capped", "signed"):
-        assert row[f"score_structure_{variant}"] == pytest.approx(row["score_structure"])
-        assert row[f"pfs_{variant}"] == pytest.approx(row["pfs"])
+    for variant in SCORED[:3]:
+        assert row[fidelity_orientation.structure_column(variant)] == pytest.approx(
+            row["score_structure_original"]
+        )
+        assert row[fidelity_orientation.pfs_column(variant)] == pytest.approx(row["pfs_original"])
 
 
 def test_the_cap_lowers_a_structure_that_outruns_its_orientation() -> None:
@@ -214,10 +224,10 @@ def test_the_cap_lowers_a_structure_that_outruns_its_orientation() -> None:
     row = fidelity_orientation.orientation_fidelity(survey, model, np.full(4, 50.0))
 
     assert row["rho_orientation"] == pytest.approx(0.8)
-    assert 0.0 < row["rho_orientation"] < row["score_structure"]
-    assert row["score_structure_gated"] == pytest.approx(row["score_structure"])
-    assert row["score_structure_capped"] == pytest.approx(row["rho_orientation"])
-    assert row["pfs_capped"] < row["pfs_gated"] == pytest.approx(row["pfs"])
+    assert 0.0 < row["rho_orientation"] < row["score_structure_original"]
+    assert row["score_structure_gated"] == pytest.approx(row["score_structure_original"])
+    assert row["score_structure"] == pytest.approx(row["rho_orientation"])
+    assert row["pfs"] < row["pfs_gated"] == pytest.approx(row["pfs_original"])
 
 
 def test_the_readings_ignore_the_order_of_the_cells_and_the_direction_of_the_scale() -> None:
@@ -230,6 +240,9 @@ def test_the_readings_ignore_the_order_of_the_cells_and_the_direction_of_the_sca
         *fidelity_orientation.ORIENTATION_READINGS,
         *fidelity_orientation.PAIR_COUNTS,
         *fidelity_orientation.VARIANT_SCORES,
+        *fidelity.ORIGINAL_SCORES,
+        "score_structure",
+        "pfs",
     )
 
     row = fidelity_orientation.orientation_fidelity(survey, model, counts)
@@ -272,7 +285,7 @@ def test_a_model_without_an_ordering_earns_no_structure() -> None:
     assert np.isnan(row["rho_orientation"])
     assert np.isnan(row["rho_signed"])
     assert row["orientation_reversed"] is False
-    for variant in ALTERNATIVES:
+    for variant in SCORED:
         assert row[fidelity_orientation.structure_column(variant)] == 0.0
         assert row[fidelity_orientation.pfs_column(variant)] == 0.0
 
@@ -281,20 +294,20 @@ def test_a_level_too_small_for_structure_stays_blank_or_flat_as_the_original_doe
     alone = fidelity_orientation.orientation_fidelity(SURVEY[:1], RELEASED[:1], COUNTS[:1])
     two = fidelity_orientation.orientation_fidelity(SURVEY[:2], RELEASED[:2], COUNTS[:2])
 
-    assert np.isnan(alone["pfs"])
+    assert np.isnan(alone["pfs_original"])
     assert np.isnan(two["rho_orientation"])
-    assert two["score_structure"] == 0.0
-    for variant in ALTERNATIVES:
+    assert two["score_structure_original"] == 0.0
+    for variant in SCORED:
         assert np.isnan(alone[fidelity_orientation.pfs_column(variant)])
         assert two[fidelity_orientation.structure_column(variant)] == 0.0
 
 
-def test_the_original_columns_are_the_scores_the_original_scorer_gives() -> None:
+def test_the_shared_columns_are_the_scores_the_default_scorer_gives() -> None:
     row = fidelity_orientation.orientation_fidelity(SURVEY, RELEASED, COUNTS)
-    original = fidelity.group_fidelity(SURVEY, RELEASED)
+    scored = fidelity.group_fidelity(SURVEY, RELEASED)
 
-    assert list(row)[: len(original)] == list(original)
-    for column, value in original.items():
+    assert list(row)[: len(scored)] == list(scored)
+    for column, value in scored.items():
         assert row[column] == pytest.approx(value, nan_ok=True)
 
 
@@ -312,27 +325,30 @@ def test_a_paired_row_changes_by_tuned_minus_base_under_every_variant() -> None:
         )
     assert row["base_orientation_reversed"] is False
     assert row["orientation_reversed"] is True
-    assert row[fidelity.delta_column("pfs_capped")] < row[fidelity.delta_column("pfs")]
+    assert row[fidelity.delta_column("pfs")] < row[fidelity.delta_column("pfs_original")]
 
 
 def test_the_view_of_a_variant_reads_as_the_published_groups_table() -> None:
     frame, published = _groups(), _groups(published=True)
 
-    original = fidelity_orientation.variant_view(frame, "original")
     capped = fidelity_orientation.variant_view(frame, "capped")
+    original = fidelity_orientation.variant_view(frame, "original")
 
-    assert list(original.columns) == list(published.columns)
-    pd.testing.assert_frame_equal(original, published)
     assert list(capped.columns) == list(published.columns)
-    assert np.allclose(capped["pfs"], frame["pfs_capped"], equal_nan=True)
-    assert np.allclose(capped["score_structure"], frame["score_structure_capped"], equal_nan=True)
-    assert capped["binding_term"].equals(fidelity.binding_term(capped))
+    pd.testing.assert_frame_equal(capped, published)
+    assert list(original.columns) == list(published.columns)
+    assert np.allclose(original["pfs"], frame["pfs_original"], equal_nan=True)
+    assert np.allclose(
+        original["score_structure"], frame["score_structure_original"], equal_nan=True
+    )
+    assert original["binding_term"].equals(fidelity.binding_term(original))
     reversed_row = _pooled(capped, "german")
-    assert _pooled(published, "german")["pfs"] > 0.0
+    assert _pooled(original, "german")["pfs"] > 0.0
+    assert _pooled(original, "german")["pfs_with_center"] > 0.0
     assert reversed_row["pfs"] == 0.0
     assert reversed_row["pfs_with_center"] == 0.0
     assert reversed_row["binding_term"] == "structure"
-    kept = _pooled(capped, "spanish-mx")
+    kept = _pooled(original, "spanish-mx")
     assert kept["pfs_with_center"] == pytest.approx(
         fidelity.geometric_mean(
             [
@@ -350,11 +366,16 @@ def test_the_view_of_a_variant_reads_as_the_published_groups_table() -> None:
 def test_the_view_of_a_paired_variant_differences_its_own_scores() -> None:
     paired, published = _paired(), _paired(published=True)
 
+    capped = fidelity_orientation.variant_view(paired, "capped")
     original = fidelity_orientation.variant_view(paired, "original")
     signed = fidelity_orientation.variant_view(paired, "signed")
 
-    assert set(original.columns) == set(published.columns)
-    pd.testing.assert_frame_equal(original[list(published.columns)], published)
+    assert set(capped.columns) == set(published.columns)
+    pd.testing.assert_frame_equal(capped[list(published.columns)], published)
+    assert np.allclose(
+        original["delta_pfs_vs_base"], paired["delta_pfs_original_vs_base"], equal_nan=True
+    )
+    assert np.allclose(original["base_pfs"], paired["base_pfs_original"], equal_nan=True)
     assert set(signed.columns) == set(published.columns)
     assert np.allclose(
         signed["delta_pfs_vs_base"], paired["delta_pfs_signed_vs_base"], equal_nan=True
@@ -381,10 +402,12 @@ def test_the_summary_counts_what_each_variant_changes_on_the_first_run() -> None
     assert pooled["n_scores"].eq(len(ANSWERS)).all()
     every_level = frame[frame["replicate"].eq(1) & frame["group"].ne(fidelity.POPULATION)]
     assert summary[summary["scope"].eq("levels")]["n_scores"].eq(len(every_level)).all()
+    first_pooled = frame[frame["replicate"].eq(1) & frame["group"].eq(fidelity.POPULATION)]
     assert pooled.loc["original", "structure_mean"] == pytest.approx(
-        frame[frame["replicate"].eq(1) & frame["group"].eq(fidelity.POPULATION)][
-            "score_structure"
-        ].mean()
+        first_pooled["score_structure_original"].mean()
+    )
+    assert pooled.loc["capped", "structure_mean"] == pytest.approx(
+        first_pooled["score_structure"].mean()
     )
     assert pooled.loc["original", "n_changed"] == 0
     assert pooled.loc["original", "rank_vs_original"] == pytest.approx(1.0)
@@ -401,10 +424,10 @@ def test_the_summary_counts_what_each_variant_changes_on_the_first_run() -> None
     german = first[first["arm"].eq("german")]
     assert pooled.loc["capped", "german_n_paired"] == len(german) == 1
     assert pooled.loc["capped", "german_delta_pfs_mean"] == pytest.approx(
-        german["delta_pfs_capped_vs_base"].mean()
+        german["delta_pfs_vs_base"].mean()
     )
     assert pooled.loc["original", "german_delta_pfs_mean"] == pytest.approx(
-        german["delta_pfs_vs_base"].mean()
+        german["delta_pfs_original_vs_base"].mean()
     )
     assert pooled.loc["original", "german_sign_agreement"] == pytest.approx(1.0)
     assert pooled.loc["capped", "german_n_pfs_down"] == 1
@@ -427,7 +450,7 @@ def test_the_check_reconciles_the_published_tables_and_refuses_a_drifted_score()
         fidelity_orientation.check_orientation(
             frame[frame["level"].ne("Germany")], paired, published, published_paired
         )
-    above = frame.assign(pfs_capped=frame["pfs_gated"] + 0.01)
+    above = frame.assign(pfs_gated=frame["pfs"] * 0.5)
     with pytest.raises(AssertionError, match="above the gate"):
         fidelity_orientation.check_orientation(above, paired, published, published_paired)
 
@@ -470,6 +493,6 @@ def test_the_shipped_table_keeps_the_original_scores_beside_its_variants() -> No
     assert matched == len(groups) == len(shipped)
     first = shipped[shipped["replicate"].eq(1) & shipped["group"].eq(fidelity.POPULATION)]
     assert int(first["orientation_reversed"].sum()) == 19
-    assert int(first["pfs"].eq(0.0).sum()) == 30
+    assert int(first["pfs_original"].eq(0.0).sum()) == 30
     assert int(first["pfs_gated"].eq(0.0).sum()) == 49
-    assert int(first["pfs_capped"].eq(0.0).sum()) == 49
+    assert int(first["pfs"].eq(0.0).sum()) == 49
