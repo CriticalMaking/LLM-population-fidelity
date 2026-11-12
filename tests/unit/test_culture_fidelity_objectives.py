@@ -5,6 +5,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import pytest
+from matplotlib.axes import Axes
 
 from culture import fidelity, fidelity_baseline, fidelity_objectives, fidelity_plates
 from culture.population import RunSource, run_identity
@@ -249,6 +250,106 @@ def test_the_backbone_plate_dodges_every_model_inside_each_variant_row(tmp_path:
     )
 
 
+def test_the_backbone_plate_bands_every_other_variant_row_and_draws_no_rule(
+    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    second = fidelity_objectives.OBJECTIVE_MODELS[1]
+    groups = pd.concat([_groups(), _groups(key=second)], ignore_index=True)
+    levels = groups.assign(n_replicates=1)
+    bands: list[tuple[float, float]] = []
+    rules: list[float] = []
+    plain_span, plain_rule = Axes.axhspan, Axes.axhline
+
+    def banded(axis: Axes, low: float, high: float, *args: Any, **kwargs: Any) -> Any:
+        bands.append((low, high))
+        return plain_span(axis, low, high, *args, **kwargs)
+
+    def ruled(axis: Axes, y: float = 0.0, *args: Any, **kwargs: Any) -> Any:
+        rules.append(y)
+        return plain_rule(axis, y, *args, **kwargs)
+
+    monkeypatch.setattr(Axes, "axhspan", banded)
+    monkeypatch.setattr(Axes, "axhline", ruled)
+    fidelity_objectives.scoped_models_plate(levels, "ntp", "happiness", tmp_path)
+
+    blocks = fidelity_objectives.scoped_blocks(levels)
+    panels = len(fidelity_plates.SCORE_PANELS)
+    shaded = sum((rows["arm"].nunique() + 1) // 2 for _, rows in blocks)
+    assert shaded > 0
+    assert len(bands) == panels * shaded
+    assert len(set(bands)) == shaded
+    assert all(high - low == pytest.approx(2.0 * fidelity_plates.BAND_HALF) for low, high in bands)
+    assert rules == []
+
+
+def test_each_score_panel_is_headed_by_its_name_over_its_symbol() -> None:
+    assert fidelity_plates.panel_heading(r"Accuracy ($S_{\mathrm{acc}}$)") == (
+        "Accuracy",
+        r"$S_{\mathrm{acc}}$",
+    )
+    assert [column for column, _, _ in fidelity_plates.SCORE_PANELS] == [
+        "score_accuracy",
+        "score_dispersion",
+        "score_structure",
+        "pfs",
+        "score_center",
+    ]
+    assert fidelity_plates.SCORE_PANELS[3][1:] == ("Population Fidelity", "Score")
+    assert fidelity_plates.SCORE_PANELS[4][1:] == ("Center alignment", r"$S_{\mathrm{center}}$")
+
+
+def test_the_center_gap_plate_links_each_score_to_its_center_alignment(
+    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    second = fidelity_objectives.OBJECTIVE_MODELS[1]
+    groups = pd.concat(
+        [
+            _groups(mode=mode, replicate=replicate, key=key)
+            for key in (MODEL_KEY, second)
+            for mode in ("ntp", "fa")
+            for replicate in (1, 2)
+        ],
+        ignore_index=True,
+    )
+    drawn: list[Any] = []
+    plain = fidelity_plates.save_plate
+
+    def kept(figure: Any, stem: Any, **kwargs: Any) -> Any:
+        drawn.append(figure)
+        return plain(figure, stem, **kwargs)
+
+    monkeypatch.setattr(fidelity_plates, "save_plate", kept)
+    files = fidelity_objectives.center_gap_models_plate(groups, tmp_path)
+
+    stem = fidelity_objectives.CENTER_GAP_STEM
+    assert {path.name for path in files} == {f"{stem}.pdf", f"{stem}.png"}
+    blocks = fidelity_objectives.model_blocks(groups[groups["replicate"].eq(1)])
+    assert [header for header, _ in blocks] == [rows["model_label"].iat[0] for _, rows in blocks]
+    assert [rows["model_key"].iat[0] for _, rows in blocks] == [MODEL_KEY, second]
+    arms = list(fidelity_objectives.OBJECTIVE_ARMS)
+    assert all(list(dict.fromkeys(rows["arm"])) == arms for _, rows in blocks)
+    assert all(set(rows["group"]) == {fidelity.POPULATION} for _, rows in blocks)
+    panels = drawn[0].axes
+    assert fidelity_plates.GAP_MODES == ("fa", "ntp")
+    assert [axis.get_title() for axis in panels] == ["Happiness", "Happiness"]
+    scored = pd.concat([rows for _, rows in blocks], ignore_index=True)
+    for axis, mode in zip(panels, fidelity_plates.GAP_MODES, strict=True):
+        expected = scored[scored["mode"].eq(mode)]
+        centers = [float(line.get_xdata()[0]) for line in axis.lines if line.get_marker() == "|"]
+        links = [
+            line
+            for line in axis.lines
+            if len(line.get_xdata()) == 2 and line.get_ydata()[0] == line.get_ydata()[1]
+        ]
+        ends = sorted((float(line.get_xdata()[0]), float(line.get_xdata()[1])) for line in links)
+        assert len(centers) == len(expected) == 2 * len(arms)
+        assert sorted(centers) == pytest.approx(sorted(expected["score_center"]))
+        assert ends == pytest.approx(
+            sorted(zip(expected["pfs"], expected["score_center"], strict=True))
+        )
+    assert fidelity_objectives.center_gap_models_plate(groups.iloc[:0], tmp_path) == []
+
+
 def test_the_plates_draw_the_common_backbone_alone_and_every_backbone_together(
     tmp_path: Any,
 ) -> None:
@@ -265,10 +366,12 @@ def test_the_plates_draw_the_common_backbone_alone_and_every_backbone_together(
         "fig_fidelity_components_happiness_ntp",
         "fig_fidelity_shift_happiness_ntp",
     }
+    gap = fidelity_objectives.CENTER_GAP_STEM
     own = {path.stem for path in files if path.parent == tmp_path / "own"}
     every = {path.stem for path in files if path.parent == tmp_path / "models"}
-    assert own == every == stems
-    assert len(files) == 2 * 2 * len(stems)
+    assert own == stems
+    assert every == stems | {gap}
+    assert len(files) == 2 * (2 * len(stems) + 1)
     alone = fidelity_objectives.objective_plates(
         groups[groups["model_key"].eq(MODEL_KEY)],
         paired.iloc[:0],
@@ -276,7 +379,7 @@ def test_the_plates_draw_the_common_backbone_alone_and_every_backbone_together(
         tmp_path / "one",
     )
     assert {path.parent.name for path in alone} == {"one"}
-    assert {path.stem for path in alone} == stems - {"fig_fidelity_shift_happiness_ntp"}
+    assert {path.stem for path in alone} == (stems - {"fig_fidelity_shift_happiness_ntp"}) | {gap}
 
 
 def test_the_check_reconciles_the_published_variants_and_refuses_a_drifted_score() -> None:

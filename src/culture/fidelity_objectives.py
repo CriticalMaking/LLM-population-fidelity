@@ -26,6 +26,7 @@ from .fidelity_plates import (
     BLOCK_LABELS,
     SPREAD,
     Block,
+    center_gap_plate,
     component_blocks_plate,
     components_plate,
     condition_blocks_plate,
@@ -75,6 +76,8 @@ RECONCILE_TOLERANCE = 1e-12
 OBJECTIVES_FIGURES = FIGURES_ROOT / "fidelity" / "objectives"
 
 OBJECTIVES_MODELS_FIGURES = OBJECTIVES_FIGURES / "models"
+
+CENTER_GAP_STEM = "fig_fidelity_center_gap_questions"
 
 OBJECTIVES_GROUPS_TABLE = OUTPUTS_ROOT / "culture" / "population_fidelity_objectives_groups.csv"
 
@@ -323,6 +326,27 @@ def scoped_models_plate(
     return condition_blocks_plate(blocks, arm_plot_name, destination / scoped_stem(view, mode))
 
 
+def model_blocks(levels: pd.DataFrame) -> list[Block]:
+    order = {arm: index for index, arm in enumerate(OBJECTIVE_ARMS)}
+    pooled = _scoped(levels, POPULATION)
+    kept = pooled[pooled["arm"].isin(order)].dropna(subset=["pfs", "score_center"])
+    ranked = kept.iloc[kept["arm"].map(order).argsort(kind="stable")]
+    blocks: list[Block] = []
+    for key in OBJECTIVE_MODELS:
+        rows = _backbone(ranked, key)
+        if not rows.empty:
+            blocks.append((str(rows["model_label"].iat[0]), rows))
+    return blocks
+
+
+def center_gap_models_plate(groups: pd.DataFrame, destination: Path) -> list[Path]:
+    blocks = model_blocks(_first(groups))
+    if not blocks:
+        return []
+    destination.mkdir(parents=True, exist_ok=True)
+    return center_gap_plate(blocks, arm_plot_name, destination / CENTER_GAP_STEM)
+
+
 ScopedPlate = Callable[[pd.DataFrame, str, str, Path], list[Path]]
 
 
@@ -367,4 +391,5 @@ def objective_plates(
             destination,
         )
         every = _plate_set(groups, paired, scoped_models_plate, backbones)
+        every += center_gap_models_plate(groups, backbones)
     return own + every

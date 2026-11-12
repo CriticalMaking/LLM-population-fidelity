@@ -105,6 +105,58 @@ BLOCK_GAP = 1.4
 
 BLOCK_RULE_INK = "#b8b8b8"
 
+BAND_INK = "#f6f5f2"
+
+BAND_GRID_INK = "#e4e2dd"
+
+BAND_LABEL_INK = "#55534f"
+
+BAND_NOTE_INK = "#8a8883"
+
+BAND_HEADER_DROP = 0.85
+
+BAND_BLOCK_GAP = 0.35
+
+BAND_HALF = 0.5
+
+BAND_HEAD_ROOM = 0.35
+
+BAND_MARGIN = 0.04
+
+BAND_GRID_WIDTH = 0.8
+
+BAND_TICKS: tuple[float, ...] = (0.0, 0.5, 1.0)
+
+BAND_TICK_LABELS: tuple[str, ...] = ("0", "0.5", "1")
+
+BAND_TITLE_PAD = 30.0
+
+BAND_NOTE_LIFT = 6.0
+
+GAP_MODES: tuple[str, ...] = ("fa", "ntp")
+
+GAP_MODE_NAMES: dict[str, str] = {"fa": "FA", "ntp": "NTP"}
+
+GAP_PANEL_WIDTH = 1.15
+
+GAP_LABEL_WIDTH = 2.6
+
+GAP_ROW = 0.27
+
+GAP_MODE_SPACE = 0.22
+
+GAP_PANEL_SPACE = 0.03
+
+GAP_TITLE_SIZE = 15.0
+
+GAP_TICK = 10.0
+
+GAP_TICK_EDGE = 1.5
+
+GAP_LINK_WIDTH = 1.0
+
+GAP_LINK_TINT = 0.55
+
 # Side by side, one panel per set of cells: the blocks run across the page instead of
 # down it, so the plate is as tall as its longest block rather than as tall as all of
 # them, and each panel carries its own row labels.
@@ -202,10 +254,16 @@ MODEL_LEGEND_COLUMNS = 4
 
 MODEL_PANEL_SPACE = 0.08
 
-SCORE_PANELS: tuple[tuple[str, str], ...] = (
-    *((column, label.replace(" (", "\n(", 1)) for column, _, label in COMPONENTS),
-    ("pfs", "Population\nFidelity Score"),
-    ("score_center", CENTER_LEGEND.replace(" (", "\n(", 1)),
+
+def panel_heading(label: str) -> tuple[str, str]:
+    title, _, symbol = label.partition(" (")
+    return title, symbol.removesuffix(")")
+
+
+SCORE_PANELS: tuple[tuple[str, str, str], ...] = (
+    *((column, *panel_heading(label)) for column, _, label in COMPONENTS),
+    ("pfs", "Population Fidelity", "Score"),
+    ("score_center", *panel_heading(CENTER_LEGEND)),
 )
 
 # The two scores the per-model subgroup plates put side by side, one panel each, both
@@ -295,7 +353,7 @@ PROPRIETARY_COLUMNS = 2
 GROUP_COMPONENTS: tuple[tuple[str, str], ...] = (
     ("score_accuracy", "Accuracy: 1 - mean nEMD"),
     ("score_dispersion", "Adaptability: min(A, 1/A)"),
-    ("score_structure", "Structure: max(0, rho) — the usual bottleneck"),
+    ("score_structure", "Structure: max(0, min(rho, rho_orient)) — the usual bottleneck"),
     ("score_center", "Center: 1 - C — reported, never inside PFS"),
 )
 
@@ -688,7 +746,11 @@ def condition_blocks_plate(
     handles: list[Line2D] = list(compact_handles(drawn))
     if replicated(drawn):
         handles.append(spread_handle())
-    slots = sum(rows["arm"].nunique() + 1 for _, rows in blocks) + BLOCK_GAP * (len(blocks) - 1)
+    slots = (
+        sum(rows["arm"].nunique() for _, rows in blocks)
+        + BAND_HEADER_DROP * len(blocks)
+        + BAND_BLOCK_GAP * (len(blocks) - 1)
+    )
     figure = Figure(
         figsize=(
             MODEL_PANEL_WIDTH * len(SCORE_PANELS) + MODEL_LABEL_WIDTH,
@@ -704,34 +766,228 @@ def condition_blocks_plate(
     position = 0.0
     for index, (header, rows) in enumerate(blocks):
         if index:
-            for axis in panels:
-                axis.axhline(position - BLOCK_GAP / 2.0, color=BLOCK_RULE_INK, linewidth=0.8)
-            position -= BLOCK_GAP
+            position -= BAND_BLOCK_GAP
         ticks.append(position)
         labels.append(header)
         headers.append(True)
-        for arm in dict.fromkeys(rows["arm"]):
-            position -= 1.0
+        position -= BAND_HEADER_DROP
+        for order, arm in enumerate(dict.fromkeys(rows["arm"])):
             conditions = rows[rows["arm"].eq(arm)]
-            for axis, (column, _) in zip(panels, SCORE_PANELS, strict=True):
+            for axis, (column, _, _) in zip(panels, SCORE_PANELS, strict=True):
+                if order % 2 == 0:
+                    axis.axhspan(
+                        position - BAND_HALF,
+                        position + BAND_HALF,
+                        color=BAND_INK,
+                        linewidth=0.0,
+                        zorder=0.0,
+                    )
                 _condition_markers(axis, conditions, column, position, offsets)
             ticks.append(position)
             labels.append(label(str(arm)))
             headers.append(False)
+            position -= 1.0
     panels[0].set_yticks(ticks, labels)
     for tick, bold in zip(panels[0].get_yticklabels(), headers, strict=True):
+        tick.set_color(INK if bold else BAND_LABEL_INK)
         if bold:
             tick.set_fontweight("bold")
     panels[0].tick_params(axis="y", pad=ROW_LABEL_PAD)
-    panels[0].set_ylim(position - 0.6, 0.6)
+    panels[0].set_ylim(position + BAND_HALF, BAND_HEAD_ROOM)
     middle = len(panels) // 2
-    for index, (axis, (_, title)) in enumerate(zip(panels, SCORE_PANELS, strict=True)):
-        _score_axis(axis)
-        axis.set_xticks(np.linspace(0.0, 1.0, 3))
-        axis.set_title(title, fontweight="bold")
-        if index != middle:
-            axis.set_xlabel("")
+    for index, (axis, (_, title, note)) in enumerate(zip(panels, SCORE_PANELS, strict=True)):
+        for mark in BAND_TICKS:
+            axis.axvline(mark, color=BAND_GRID_INK, linewidth=BAND_GRID_WIDTH, zorder=1.0)
+        for spine in axis.spines.values():
+            spine.set_visible(False)
+        axis.set_xlim(-BAND_MARGIN, 1.0 + BAND_MARGIN)
+        axis.set_xticks(BAND_TICKS, BAND_TICK_LABELS)
+        axis.tick_params(axis="x", length=0.0, labelcolor=BAND_LABEL_INK)
+        axis.tick_params(axis="y", length=0.0)
+        axis.set_title(title, fontweight="bold", color=INK, pad=BAND_TITLE_PAD)
+        axis.annotate(
+            note,
+            xy=(0.5, 1.0),
+            xycoords="axes fraction",
+            xytext=(0.0, BAND_NOTE_LIFT),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            color=BAND_NOTE_INK,
+        )
+        axis.set_xlabel(SCORE_XLABEL if index == middle else "", color=BAND_NOTE_INK)
     legend_below(figure, handles, MODEL_LEGEND_COLUMNS)
+    for text in figure.legends[-1].get_texts():
+        text.set_color(BAND_LABEL_INK)
+    return save_plate(figure, stem)
+
+
+GapPanel = tuple[str, str, str]
+
+
+def gap_panels(frame: pd.DataFrame) -> list[GapPanel]:
+    titles = dict(zip(frame["question"], frame["question_label"], strict=True))
+    questions = [name for name in VIEWS.values() if name is not None and name in titles]
+    drawn = set(frame["mode"])
+    return [
+        (mode, question, str(titles[question]))
+        for mode in GAP_MODES
+        if mode in drawn
+        for question in questions
+    ]
+
+
+def gap_handles() -> list[Line2D]:
+    return [
+        Line2D(
+            [],
+            [],
+            linestyle="none",
+            marker="o",
+            markersize=MARKER_SIZE,
+            color=MUTED_INK,
+            label=PFS_LABEL,
+        ),
+        Line2D(
+            [],
+            [],
+            linestyle="none",
+            marker="|",
+            markersize=GAP_TICK + 2.0,
+            markeredgewidth=GAP_TICK_EDGE,
+            color=MUTED_INK,
+            label=CENTER_LEGEND,
+        ),
+    ]
+
+
+def _gap_marks(axis: Axes, row: Any, position: float) -> None:
+    style = series_style(str(row.series), row.model_key, row.arm)
+    score, center = float(row.pfs), float(row.score_center)
+    axis.plot(
+        [score, center],
+        [position, position],
+        color=tinted(style["color"], GAP_LINK_TINT),
+        linewidth=GAP_LINK_WIDTH,
+        solid_capstyle="butt",
+        zorder=2.0,
+    )
+    axis.plot(
+        center,
+        position,
+        linestyle="none",
+        marker="|",
+        markersize=GAP_TICK,
+        markeredgewidth=GAP_TICK_EDGE,
+        color=style["color"],
+        zorder=3.0,
+    )
+    axis.plot(
+        score,
+        position,
+        linestyle="none",
+        markersize=MODEL_MARKER,
+        markeredgewidth=1.1,
+        **style,
+    )
+
+
+def center_gap_plate(
+    blocks: Sequence[Block], label: Callable[[str], str], stem: Path
+) -> list[Path]:
+    drawn = pd.concat([rows for _, rows in blocks], ignore_index=True)
+    panels = gap_panels(drawn)
+    handles = gap_handles()
+    slots = (
+        sum(rows["arm"].nunique() for _, rows in blocks)
+        + BAND_HEADER_DROP * len(blocks)
+        + BAND_BLOCK_GAP * (len(blocks) - 1)
+    )
+    ratios: list[float] = []
+    for index, (mode, _, _) in enumerate(panels):
+        if index and mode != panels[index - 1][0]:
+            ratios.append(GAP_MODE_SPACE)
+        ratios.append(1.0)
+    figure = Figure(
+        figsize=(
+            GAP_PANEL_WIDTH * sum(ratios) + GAP_LABEL_WIDTH,
+            GAP_ROW * slots + legend_height(handles, len(handles)) + 1.9,
+        ),
+        layout="constrained",
+    )
+    figure.set_layout_engine("constrained", wspace=GAP_PANEL_SPACE)
+    grid = figure.add_gridspec(1, len(ratios), width_ratios=ratios)
+    axes: list[Axes] = []
+    for column, ratio in enumerate(ratios):
+        if ratio == 1.0:
+            axes.append(figure.add_subplot(grid[0, column], sharey=axes[0] if axes else None))
+    ticks: list[float] = []
+    labels: list[str] = []
+    headers: list[bool] = []
+    position = 0.0
+    for index, (header, rows) in enumerate(blocks):
+        if index:
+            position -= BAND_BLOCK_GAP
+        ticks.append(position)
+        labels.append(header)
+        headers.append(True)
+        position -= BAND_HEADER_DROP
+        for order, arm in enumerate(dict.fromkeys(rows["arm"])):
+            conditions = rows[rows["arm"].eq(arm)]
+            for axis, (mode, question, _) in zip(axes, panels, strict=True):
+                if order % 2 == 0:
+                    axis.axhspan(
+                        position - BAND_HALF,
+                        position + BAND_HALF,
+                        color=BAND_INK,
+                        linewidth=0.0,
+                        zorder=0.0,
+                    )
+                cell = conditions[conditions["mode"].eq(mode) & conditions["question"].eq(question)]
+                for row in _rows(cell.dropna(subset=["pfs", "score_center"])):
+                    _gap_marks(axis, row, position)
+            ticks.append(position)
+            labels.append(label(str(arm)))
+            headers.append(False)
+            position -= 1.0
+    axes[0].set_yticks(ticks, labels)
+    for tick, bold in zip(axes[0].get_yticklabels(), headers, strict=True):
+        tick.set_color(INK if bold else BAND_LABEL_INK)
+        if bold:
+            tick.set_fontweight("bold")
+    axes[0].tick_params(axis="y", pad=ROW_LABEL_PAD)
+    axes[0].set_ylim(position + BAND_HALF, BAND_HEAD_ROOM)
+    for index, (axis, (mode, _, title)) in enumerate(zip(axes, panels, strict=True)):
+        for mark in BAND_TICKS:
+            axis.axvline(mark, color=BAND_GRID_INK, linewidth=BAND_GRID_WIDTH, zorder=1.0)
+        for spine in axis.spines.values():
+            spine.set_visible(False)
+        axis.set_xlim(-BAND_MARGIN, 1.0 + BAND_MARGIN)
+        axis.set_xticks(BAND_TICKS, BAND_TICK_LABELS)
+        marks = axis.get_xticklabels()
+        marks[0].set_horizontalalignment("left")
+        marks[-1].set_horizontalalignment("right")
+        axis.tick_params(axis="x", length=0.0, labelcolor=BAND_LABEL_INK)
+        axis.tick_params(axis="y", length=0.0, labelleft=index == 0)
+        axis.set_title(
+            title, fontweight="bold", fontsize=GAP_TITLE_SIZE, color=INK, pad=BAND_TITLE_PAD
+        )
+        axis.annotate(
+            GAP_MODE_NAMES.get(mode, mode),
+            xy=(0.5, 1.0),
+            xycoords="axes fraction",
+            xytext=(0.0, BAND_NOTE_LIFT),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            color=BAND_NOTE_INK,
+        )
+    legend_below(figure, handles, len(handles))
+    legend = figure.legends[-1]
+    legend.set_title(SCORE_XLABEL)
+    legend.get_title().set_color(BAND_NOTE_INK)
+    for text in legend.get_texts():
+        text.set_color(BAND_LABEL_INK)
     return save_plate(figure, stem)
 
 
