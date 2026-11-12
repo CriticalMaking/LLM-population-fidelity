@@ -30,6 +30,7 @@ from culture import (
 from culture.api_backend import REASONING_EFFORT, REASONING_EFFORTS
 from culture.cross_culture import DEFAULT_PAIR, culture_cross
 from culture.figures import compare_cultures
+from culture.gss import DEFAULT_GSS_SOURCE, GSS_ARMS
 from culture.mds import culture_mds
 from culture.runner import run_one
 from culture.served_smoke import SMOKE_ATTEMPTS, SMOKE_FA_MAX_TOKENS, SMOKE_PROMPTS
@@ -392,6 +393,76 @@ def command_culture(arguments: argparse.Namespace) -> None:
     _json_print({"runs": results, "comparison": comparison})
 
 
+def _release_gpu() -> None:
+    import gc
+
+    gc.collect()
+    try:
+        import torch
+    except ImportError:
+        return
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
+def command_culture_gss_stage(arguments: argparse.Namespace) -> None:
+    from culture.gss import stage_gss
+
+    _json_print(stage_gss(Path(arguments.source), download=arguments.download))
+
+
+def command_culture_gss(arguments: argparse.Namespace) -> None:
+    from culture.backend import TransformersBackend
+    from culture.gss import load_records, load_steering, run_gss, run_table
+
+    models = resolve_models(arguments.models)
+    if arguments.models is None:
+        models = [model for model in models if model.backend == "transformers"]
+    served = [model.key for model in models if model.backend != "transformers"]
+    if served:
+        raise ValueError(
+            f"{', '.join(served)} gives no next-token probabilities; the GSS evaluation "
+            "runs on the local models"
+        )
+    arms = resolve_cultures(arguments.arms or list(GSS_ARMS))
+    records = load_records()
+    steering = load_steering()
+    results: list[dict[str, Any]] = []
+    for model in models:
+        for group, adapters in _culture_groups(model.key, arms):
+            pending = [
+                arm
+                for arm in group
+                if arguments.force
+                or arguments.limit is not None
+                or not run_table(model.key, arm).is_file()
+            ]
+            for arm in group:
+                if arm not in pending:
+                    print(f"[{model.key}/{arm}] gss: already run, skipping", flush=True)
+                    results.append({"model": model.key, "arm": arm, "skipped": True})
+            if not pending:
+                continue
+            print(
+                f"loading {model.base_model_id} ({model.quantization or 'unquantized'}) "
+                f"for the GSS questions — {', '.join(pending)}",
+                flush=True,
+            )
+            backend = TransformersBackend(
+                model,
+                {arm: adapters[arm] for arm in pending if arm in adapters},
+                DEFAULT_QUESTION,
+                batch_size=arguments.batch_size,
+            )
+            for arm in pending:
+                results.append(
+                    run_gss(model, arm, backend, records, steering, limit=arguments.limit)
+                )
+            del backend
+            _release_gpu()
+    _json_print({"runs": results})
+
+
 def command_culture_served_smoke(arguments: argparse.Namespace) -> None:
     from culture.served_smoke import run_smoke
 
@@ -639,6 +710,39 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_question_argument(culture, plural=True)
     culture.set_defaults(handler=command_culture)
+
+    culture_gss_stage = subparsers.add_parser(
+        "culture-gss-stage",
+        help="stage the SubPOP-Eval tables (GSS 2022) and steering prompts under upstream/subpop",
+    )
+    culture_gss_stage.add_argument(
+        "--source",
+        default=str(DEFAULT_GSS_SOURCE),
+        help="directory holding subpop_eval.jsonl and steering_prompts.json",
+    )
+    culture_gss_stage.add_argument(
+        "--download",
+        action="store_true",
+        help="fetch the pinned files instead of copying them from --source",
+    )
+    culture_gss_stage.set_defaults(handler=command_culture_gss_stage)
+
+    culture_gss = subparsers.add_parser(
+        "culture-gss",
+        help="read next-token answers to the GSS questions of SubPOP-Eval",
+    )
+    culture_gss.add_argument("--models", nargs="+", help="local model keys (default: all)")
+    culture_gss.add_argument(
+        "--arms",
+        nargs="+",
+        help=f"arms to run (default: {' '.join(GSS_ARMS)})",
+    )
+    culture_gss.add_argument("--limit", type=int, help="smoke-test only the first N prompts")
+    culture_gss.add_argument(
+        "--batch-size", type=int, help="override the model's default batch size"
+    )
+    culture_gss.add_argument("--force", action="store_true", help="rerun completed arms")
+    culture_gss.set_defaults(handler=command_culture_gss)
 
     culture_served_smoke = subparsers.add_parser(
         "culture-served-smoke",

@@ -9,6 +9,10 @@ API_FA_MAX_TOKENS_DEFAULT=300
 
 SERVED_MODELS=(luna terra sol)
 
+LOCAL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b muse_glimmer_30b)
+
+GSS_ARMS=(base subpop)
+
 is_served_model() {
     printf '%s\n' "${SERVED_MODELS[@]}" | grep -qx -- "$1"
 }
@@ -89,6 +93,34 @@ run_culture() {
         fi
     fi
     run_python --extra "$extra" culture "${arguments[@]}"
+}
+
+run_gss() {
+    local models=() arms=() rest=() failed=() collecting="" argument model arm
+    for argument in "$@"; do
+        case "$argument" in
+            --models) collecting=models; continue ;;
+            --arms) collecting=arms; continue ;;
+            --*) collecting="" ;;
+        esac
+        case "$collecting" in
+            models) models+=("$argument") ;;
+            arms) arms+=("$argument") ;;
+            *) rest+=("$argument") ;;
+        esac
+    done
+    [[ ${#models[@]} -gt 0 ]] || models=(all)
+    [[ "${models[0]}" == "all" ]] && models=("${LOCAL_MODELS[@]}")
+    [[ ${#arms[@]} -gt 0 ]] || arms=("${GSS_ARMS[@]}")
+    export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+    for model in "${models[@]}"; do
+        for arm in "${arms[@]}"; do
+            run_python --extra "$(culture_extra_for --models "$model")" \
+                culture-gss --models "$model" --arms "$arm" ${rest[@]+"${rest[@]}"} ||
+                failed+=("$model/$arm")
+        done
+    done
+    [[ ${#failed[@]} -eq 0 ]] || die "the GSS run failed for: ${failed[*]}"
 }
 
 run_served_smoke() {

@@ -31,6 +31,9 @@ Usage:
                                       [--outcomes]
   ./run_experiment_add_culture.sh summary [--models KEY...] [--cultures NAME...]
                                           [--questions Q...]
+  ./run_experiment_add_culture.sh gss-stage [--source DIR] [--download]
+  ./run_experiment_add_culture.sh gss [--models all|KEY...] [--arms ARM...]
+                                      [--limit N] [--batch-size N] [--force]
 
 Models:    gemma4_31b, gemma4_e4b, qwen3_vl_8b, qwen3_vl_2b, llama3_2_3b,
            muse_glimmer_30b, luna, terra, sol
@@ -91,6 +94,20 @@ it stands, and each further one resamples the full answers under its own seed
 stream into outputs/culture/<model>/<arm>/rep<k>/, so the analysis can carry
 the spread across runs. `run --replicate K --mode fa` is the single-cell form.
 
+`gss` is the second evaluation: the 133 General Social Survey questions of
+SubPOP-Eval, each put to the 22 United States subgroups SubPOP is trained on, in
+SubPOP's own prompt, read as next-token probabilities over the option letters.
+It runs the base and subpop arms of every local model, one model and arm per
+process, skips an arm whose table exists (--force to rerun) and writes
+outputs/culture/<model>/<arm>/gss/. `gss-stage` copies the two SubPOP files it
+reads from the training repository into upstream/subpop and checks them against
+their pinned hashes; --download fetches them instead, which needs access to the
+gated jjssuh/subpop dataset:
+
+  ./run_experiment_add_culture.sh gss-stage
+  ./run_experiment_add_culture.sh gss --models qwen3_vl_2b --limit 64
+  ./run_experiment_add_culture.sh gss
+
 `run` is the single-invocation form. Both are resumable: every prompt writes
 its own atomic result file. `compare` rebuilds the per-question cross-culture
 figures and tables, `mds` the shared-space plates, and `summary` the three
@@ -114,5 +131,7 @@ case "$command_name" in
     compare) run_python culture-compare "$@" ;;
     mds) run_python culture-mds "$@" ;;
     summary) run_python culture-summary "$@" ;;
+    gss-stage) run_python --extra culture culture-gss-stage "$@" ;;
+    gss) run_gss "$@" ;;
     *) echo "Unknown command: $command_name" >&2; usage >&2; exit 2 ;;
 esac

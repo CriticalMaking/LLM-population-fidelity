@@ -66,7 +66,7 @@ Unrecognised options pass through to the underlying run: --mode, --batch-size,
 EOF
 }
 
-ALL_MODELS=(gemma4_31b gemma4_e4b qwen3_vl_8b qwen3_vl_2b llama3_2_3b muse_glimmer_30b)
+ALL_MODELS=("${LOCAL_MODELS[@]}")
 API_MODELS=(luna terra sol)
 ALL_CULTURES=(arabic bengali chinese english german korean portuguese spanish spanish-mx turkish)
 DISTRIBUTIONAL_ARMS=(global subpop)
