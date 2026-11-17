@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from scipy import stats
 
-from culture import population, population_plates
+from culture import arm_display, population, population_plates
 from machine_bias_reproduction.data import Coverage, PreparedData
 from machine_bias_reproduction.plates import CATEGORICAL_MARKERS
 from machine_bias_reproduction.questions import QUESTIONS
@@ -256,6 +256,16 @@ def test_the_legend_names_each_model_once_and_the_fills_apart() -> None:
     ]
     assert population_plates.stacked("Gemma-4-31B-it (german)") == "Gemma-4-31B-it\n(German)"
     assert population_plates.stacked("Mixtral archived") == "Mixtral archived"
+
+
+def test_the_plates_name_the_distribution_trained_arms_after_their_methods() -> None:
+    assert population_plates.arm_plot_name("global") == "SimLLCultureDist"
+    assert population_plates.arm_plot_name("subpop") == "SubPOP"
+    assert (
+        population_plates.series_plot_name("Llama-3.2-3B (subgroup-matched)")
+        == "Llama-3.2-3B (SubPOP)"
+    )
+    assert arm_display("global") == "distribution-matched"
 
 
 def _replicated() -> pd.DataFrame:

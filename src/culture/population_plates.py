@@ -28,7 +28,7 @@ from .palette import (
     model_tone,
 )
 from .population import MODEL_INDEX, REFERENCE_COUNTRIES, across_replicates
-from .registry import BASE_ARM, arm_display, is_base
+from .registry import BASE_ARM, GLOBAL_ARM, SUBPOP_ARM, arm_display, is_base
 
 VIEWS: dict[str, str | None] = {
     "all": None,
@@ -169,11 +169,13 @@ def is_served_model(row: pd.Series) -> bool:
     return isinstance(row["model_key"], str)
 
 
-# Plot-only names for the two cultural arms. They stay out of ARM_DISPLAY, which also
+# Plot-only names for the fine-tuned arms. They stay out of ARM_DISPLAY, which also
 # builds the series label written to every table, so the tables keep the arm identifier.
 ARM_PLOT_NAME: dict[str, str] = {
     "german": "German",
     "spanish-mx": "Mexican",
+    GLOBAL_ARM: "SimLLCultureDist",
+    SUBPOP_ARM: "SubPOP",
 }
 
 SERIES_PLOT_NAME: dict[str, str] = {
