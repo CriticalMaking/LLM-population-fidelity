@@ -256,6 +256,15 @@ def legend_below(figure: Figure, handles: Sequence[Line2D], columns: int) -> Non
     )
 
 
+def legend_left(figure: Figure, handles: Sequence[Line2D]) -> None:
+    figure.legend(
+        handles=list(handles),
+        loc="outside left center",
+        ncols=1,
+        handler_map=LEGEND_HANDLERS,
+    )
+
+
 def spread_of(row: Any, column: str) -> float | None:
     value = getattr(row, f"{column}_ci", None)
     if value is None or not np.isfinite(value) or float(value) <= 0.0:

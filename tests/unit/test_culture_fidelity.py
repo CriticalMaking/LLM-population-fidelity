@@ -1030,6 +1030,37 @@ def test_the_home_shift_reads_each_finetuned_condition_on_its_target_country(
     ).empty
 
 
+def test_the_home_shift_plate_runs_its_legend_down_the_left_and_the_pooled_one_below(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    drawn: dict[str, Any] = {}
+
+    def keep(figure: Any, stem: Path) -> list[Path]:
+        figure.draw_without_rendering()
+        drawn[stem.name] = (figure.legends[0], figure.axes[0])
+        return [stem]
+
+    monkeypatch.setattr(fidelity_plates, "save_plate", keep)
+    shifts = homed_pairs()
+    homed_rows = fidelity_plates.home_shifts(
+        shifts, fidelity.overall_paired(shifts), "happiness", "ntp"
+    ).assign(n_replicates=1)
+    pooled = fidelity_plates.view_frame(
+        shifts, shifts, "happiness", "ntp", fidelity.POPULATION
+    ).assign(n_replicates=1)
+    fidelity_plates.shift_plate(
+        homed_rows, "ntp", "happiness", tmp_path, fidelity_plates.HOME_SCOPE
+    )
+    fidelity_plates.shift_plate(pooled, "ntp", "happiness", tmp_path)
+
+    legend, axis = drawn["fig_fidelity_shift_home_happiness_ntp"]
+    texts = [text.get_window_extent() for text in legend.get_texts()]
+    assert legend.get_window_extent().x1 < axis.get_window_extent().x0
+    assert len({round(box.x0) for box in texts}) == 1
+    legend, axis = drawn["fig_fidelity_shift_happiness_ntp"]
+    assert legend.get_window_extent().y1 < axis.get_window_extent().y0
+
+
 def test_the_sweep_draws_the_home_plates_when_the_country_cells_are_scored(tmp_path: Path) -> None:
     groups, shifts = homed(), homed_pairs()
 

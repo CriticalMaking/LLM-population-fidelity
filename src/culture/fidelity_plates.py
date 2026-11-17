@@ -55,6 +55,7 @@ from .population_plates import (
     compact_handles,
     legend_below,
     legend_height,
+    legend_left,
     replicated,
     series_plot_name,
     series_style,
@@ -177,6 +178,12 @@ SHIFT_HEIGHT = 3.6
 # Each corner note on the shift plate names both scores over two lines, so the center
 # axis keeps this much of its reach to spare and no marker lands under a note.
 SHIFT_CENTER_SPARE = 0.7
+
+SHIFT_LEGEND_LEFT: frozenset[str] = frozenset({HOME_SCOPE})
+
+SIDE_LEGEND_WIDTH = 2.9
+
+SIDE_LEGEND_HEIGHT = 4.4
 
 SHIFT_STEMS: dict[str, str] = {
     POPULATION: "fig_fidelity_shift",
@@ -1054,6 +1061,21 @@ def _scatter_figure(
     return figure, axis
 
 
+def _scatter_figure_left(handles: Sequence[Line2D]) -> tuple[Figure, Axes]:
+    figure = Figure(
+        figsize=(
+            SCATTER_WIDTH + SIDE_LEGEND_WIDTH,
+            max(SIDE_LEGEND_HEIGHT, legend_height(handles, 1)),
+        ),
+        layout="constrained",
+    )
+    axis = figure.subplots(1, 1)
+    axis.grid(color=GRID, linewidth=0.6)
+    axis.set_axisbelow(True)
+    legend_left(figure, handles)
+    return figure, axis
+
+
 def center_plate(frame: pd.DataFrame, mode: str, view: str, destination: Path) -> list[Path]:
     drawable = frame.dropna(subset=["pfs", "score_center"])
     handles = [
@@ -1141,7 +1163,11 @@ def shift_plate(
     ]
     if replicated(drawable):
         handles.append(spread_handle())
-    figure, axis = _scatter_figure(handles, SHIFT_HEIGHT)
+    figure, axis = (
+        _scatter_figure_left(handles)
+        if scope in SHIFT_LEGEND_LEFT
+        else _scatter_figure(handles, SHIFT_HEIGHT)
+    )
     axis.axvline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=1.1)
     axis.axhline(0.0, linestyle=REFERENCE_DASH, color=MUTED_INK, linewidth=1.1)
     for row in _rows(drawable):
