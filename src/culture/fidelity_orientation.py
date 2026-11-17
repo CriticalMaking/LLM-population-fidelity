@@ -41,6 +41,7 @@ from .fidelity import (
     overall_paired,
     paired_runs,
     structure_score,
+    survey_ordered,
 )
 from .fidelity_baseline import HOME_SCOPE, SCOPES, manuscript_runs, scope_rows
 from .fidelity_plates import (
@@ -215,7 +216,7 @@ def signed_readings(wvs: FloatArray, llm: FloatArray, counts: FloatArray) -> dic
     return row
 
 
-def variant_structure(row: Mapping[str, Any], variant: Variant) -> float:
+def variant_structure(row: Mapping[str, Any], variant: Variant, ordered: bool = True) -> float:
     original = float(row[ORIGINAL_STRUCTURE])
     if variant.structure == "unsigned" or not np.isfinite(original):
         return original
@@ -224,7 +225,7 @@ def variant_structure(row: Mapping[str, Any], variant: Variant) -> float:
         if bool(row["model_flat"]) or not np.isfinite(rho):
             return 0.0
         return structure_score(rho)
-    credit = orientation_credit(float(row[ORIENTATION]))
+    credit = orientation_credit(float(row[ORIENTATION]), ordered)
     if variant.structure == "gated":
         return original if credit > 0.0 else 0.0
     return min(original, credit)
@@ -234,8 +235,9 @@ def orientation_fidelity(wvs: FloatArray, llm: FloatArray, counts: FloatArray) -
     row = group_fidelity(wvs, llm)
     row[REVERSED] = bool(row["rho_structure"] > 0.0 and row[ORIENTATION] < 0.0)
     row.update(signed_readings(wvs, llm, counts))
+    ordered = survey_ordered(anchor_scores(wvs))
     for variant in ALTERNATIVES:
-        structure = variant_structure(row, variant)
+        structure = variant_structure(row, variant, ordered)
         row[structure_column(variant)] = structure
         row[pfs_column(variant)] = geometric_mean(
             [row["score_accuracy"], row["score_dispersion"], structure]

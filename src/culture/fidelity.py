@@ -269,14 +269,20 @@ def orientation_rho(survey_anchor: FloatArray, model_anchor: FloatArray) -> floa
     return float(spearmanr(survey_anchor, model_anchor).statistic)
 
 
-def orientation_credit(orientation: float) -> float:
+def survey_ordered(survey_anchor: FloatArray) -> bool:
+    return float(np.ptp(survey_anchor)) > 0.0
+
+
+def orientation_credit(orientation: float, ordered: bool = True) -> float:
+    if not ordered:
+        return 1.0
     return structure_score(orientation) if np.isfinite(orientation) else 0.0
 
 
-def oriented_structure(structure: float, orientation: float) -> float:
+def oriented_structure(structure: float, orientation: float, ordered: bool = True) -> float:
     if not np.isfinite(structure):
         return structure
-    return min(structure, orientation_credit(orientation))
+    return min(structure, orientation_credit(orientation, ordered))
 
 
 def group_fidelity(wvs: FloatArray, llm: FloatArray) -> dict[str, Any]:
@@ -297,6 +303,7 @@ def group_fidelity(wvs: FloatArray, llm: FloatArray) -> dict[str, Any]:
         rho = float("nan")
         p_value = float("nan")
     center = float(nemd(wvs.mean(axis=0), llm.mean(axis=0)))
+    survey_anchor = anchor_scores(wvs)
     row: dict[str, Any] = {
         "n_cells": count,
         "n_pairs": int(survey.size),
@@ -307,14 +314,16 @@ def group_fidelity(wvs: FloatArray, llm: FloatArray) -> dict[str, Any]:
         "adaptability_ratio": ratio,
         "rho_structure": rho,
         "rho_structure_p_value": p_value,
-        ORIENTATION: orientation_rho(anchor_scores(wvs), anchor_scores(llm)),
+        ORIENTATION: orientation_rho(survey_anchor, anchor_scores(llm)),
         "model_flat": flat,
         "c_center_nemd": center,
     }
     original = 0.0 if flat else structure_score(rho)
     row["score_accuracy"] = closeness_score(row["e_mean_nemd"])
     row["score_dispersion"] = dispersion_score(ratio)
-    row["score_structure"] = oriented_structure(original, row[ORIENTATION])
+    row["score_structure"] = oriented_structure(
+        original, row[ORIENTATION], survey_ordered(survey_anchor)
+    )
     row["score_center"] = closeness_score(center)
     shared = [row["score_accuracy"], row["score_dispersion"]]
     parts = [*shared, row["score_structure"]]

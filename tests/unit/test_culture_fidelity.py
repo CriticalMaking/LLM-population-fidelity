@@ -53,6 +53,9 @@ BASE = np.array(
 )
 
 
+UNORDERED = np.array([[0.5, 0.0, 0.5], [0.0, 1.0, 0.0], [0.25, 0.5, 0.25], [0.125, 0.75, 0.125]])
+
+
 def _binary(shares: tuple[float, ...]) -> np.ndarray:
     yes = np.array(shares)
     return np.column_stack([1.0 - yes, yes])
@@ -187,6 +190,33 @@ def test_an_undefined_ordering_earns_no_structure_and_an_undefined_distance_stay
     assert np.isnan(alone["rho_orientation"])
     assert np.isnan(alone["score_structure"])
     assert np.isnan(alone["pfs"])
+
+
+def test_an_exact_copy_of_a_survey_without_an_ordering_scores_one() -> None:
+    values = fidelity.group_fidelity(UNORDERED, UNORDERED)
+
+    assert not fidelity.survey_ordered(fidelity.anchor_scores(UNORDERED))
+    assert fidelity.survey_ordered(fidelity.anchor_scores(SURVEY))
+    assert np.isnan(values["rho_orientation"])
+    assert values["rho_structure"] == pytest.approx(1.0)
+    assert values["score_structure"] == pytest.approx(1.0)
+    assert values["pfs"] == pytest.approx(1.0)
+
+
+def test_a_survey_without_an_ordering_leaves_structure_to_the_distances() -> None:
+    model = np.array([[0.5, 0.25, 0.25], [0.0, 0.75, 0.25], [0.25, 0.5, 0.25], [0.25, 0.75, 0.0]])
+
+    values = fidelity.group_fidelity(UNORDERED, model)
+
+    assert np.ptp(fidelity.anchor_scores(model)) > 0.0
+    assert np.isnan(values["rho_orientation"])
+    assert 0.0 < values["score_structure_original"] < 1.0
+    assert values["score_structure"] == pytest.approx(values["score_structure_original"])
+    assert values["pfs"] == pytest.approx(values["pfs_original"])
+    assert fidelity.orientation_credit(float("nan"), False) == 1.0
+    assert fidelity.orientation_credit(float("nan")) == 0.0
+    assert fidelity.oriented_structure(0.4, float("nan"), False) == pytest.approx(0.4)
+    assert np.isnan(fidelity.oriented_structure(float("nan"), float("nan"), False))
 
 
 def test_a_paired_score_reads_both_conditions_off_the_same_cells() -> None:

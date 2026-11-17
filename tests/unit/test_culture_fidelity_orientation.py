@@ -290,6 +290,28 @@ def test_a_model_without_an_ordering_earns_no_structure() -> None:
         assert row[fidelity_orientation.pfs_column(variant)] == 0.0
 
 
+def test_a_survey_without_an_ordering_keeps_the_original_structure_under_the_cap_and_the_gate() -> (
+    None
+):
+    unordered = np.array(
+        [[0.5, 0.0, 0.5], [0.0, 1.0, 0.0], [0.25, 0.5, 0.25], [0.125, 0.75, 0.125]]
+    )
+    model = np.array([[0.5, 0.25, 0.25], [0.0, 0.75, 0.25], [0.25, 0.5, 0.25], [0.25, 0.75, 0.0]])
+
+    row = fidelity_orientation.orientation_fidelity(unordered, model, np.full(4, 50.0))
+    copy = fidelity_orientation.orientation_fidelity(unordered, unordered, np.full(4, 50.0))
+
+    assert np.isnan(row["rho_orientation"])
+    assert row["orientation_reversed"] is False
+    assert row["score_structure_original"] > 0.0
+    for name in (fidelity_orientation.DEFAULT, "gated"):
+        variant = fidelity_orientation.variant_named(name)
+        assert row[fidelity_orientation.structure_column(variant)] == pytest.approx(
+            row["score_structure_original"]
+        )
+        assert copy[fidelity_orientation.pfs_column(variant)] == pytest.approx(1.0)
+
+
 def test_a_level_too_small_for_structure_stays_blank_or_flat_as_the_original_does() -> None:
     alone = fidelity_orientation.orientation_fidelity(SURVEY[:1], RELEASED[:1], COUNTS[:1])
     two = fidelity_orientation.orientation_fidelity(SURVEY[:2], RELEASED[:2], COUNTS[:2])
