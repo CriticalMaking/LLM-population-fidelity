@@ -92,6 +92,62 @@ def test_the_pull_group_selects_only_the_archive_and_is_pulled_by_default() -> N
     assert "upstream/*.tar.gz" in fetch.allow_patterns(None)
 
 
+def _recorded(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, Any]]:
+    hub = pytest.importorskip("huggingface_hub", reason="requires the hub extra")
+    asked: list[dict[str, Any]] = []
+
+    def fetched(**kwargs: Any) -> str:
+        asked.append(kwargs)
+        return str(Path(kwargs["local_dir"]) / kwargs["filename"])
+
+    monkeypatch.setattr(hub, "hf_hub_download", fetched)
+    return asked
+
+
+def test_named_files_are_the_only_ones_fetched(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    asked = _recorded(monkeypatch)
+    files = [
+        "data/culture/terra/base/d_happy/FA-terra-base-d_happy.csv",
+        "data/culture/terra/base/d_trust/FA-terra-base-d_trust.csv",
+    ]
+    destination = tmp_path / "downloads"
+    path = fetch.download_files("lab/dataset", destination, files, revision="abc1234")
+    assert path == destination
+    assert destination.is_dir()
+    assert [call["filename"] for call in asked] == files
+    assert {call["revision"] for call in asked} == {"abc1234"}
+    assert {call["repo_type"] for call in asked} == {"dataset"}
+    assert {call["repo_id"] for call in asked} == {"lab/dataset"}
+    assert {call["local_dir"] for call in asked} == {str(destination)}
+
+
+def test_one_name_is_one_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    asked = _recorded(monkeypatch)
+    fetch.download_files("lab/dataset", tmp_path, "README.md")
+    assert [call["filename"] for call in asked] == ["README.md"]
+
+
+def test_fetching_no_file_is_refused(tmp_path: Path) -> None:
+    pytest.importorskip("huggingface_hub", reason="requires the hub extra")
+    with pytest.raises(SystemExit, match="at least one file"):
+        fetch.download_files("lab/dataset", tmp_path, [])
+
+
+def test_a_file_the_revision_lacks_stops_the_fetch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    hub = pytest.importorskip("huggingface_hub", reason="requires the hub extra")
+
+    def absent(**kwargs: Any) -> str:
+        raise FileNotFoundError(kwargs["filename"])
+
+    monkeypatch.setattr(hub, "hf_hub_download", absent)
+    with pytest.raises(FileNotFoundError, match=r"gone\.csv"):
+        fetch.download_files("lab/dataset", tmp_path, ["data/gone.csv"])
+
+
 def test_the_staged_archive_is_left_to_its_own_upload(tmp_path: Path) -> None:
     staging = tmp_path / "staging"
     (staging / "upstream").mkdir(parents=True)
